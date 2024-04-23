@@ -89,34 +89,6 @@ stages:
               containerRegistry: '$(dockerRegistryServiceConnection)'
               repository: '$(imageRepository)'
               command: 'buildAndPush'
-              buildContext: '.'
-              Dockerfile: 'mypay4-be/Dockerfile'
-              tags: |
-                latest
-                $(Build.SourceVersion)
-                $(getAppVersion.appVersion)
-
-          - task: Docker@2
-            condition: and(succeeded(), ${{ parameters.executeBuild }})
-            displayName: 'Build $(imageRepository)-azure image'
-            inputs:
-              containerRegistry: '$(dockerRegistryServiceConnection)'
-              repository: '$(imageRepository)-azure'
-              command: 'build'
-              buildContext: '.'
-              Dockerfile: 'Dockerfile'
-              arguments: "--build-arg TAG=$(Build.SourceVersion) --build-arg REGISTRY=$(dockerRegistryName).azurecr.io"
-              tags: |
-                latest
-                $(Build.SourceVersion)
-                $(getAppVersion.appVersion)
-          - task: Docker@2
-            condition: and(succeeded(), ${{ parameters.executeBuild }})
-            displayName: 'Push $(imageRepository)-azure image'
-            inputs:
-              containerRegistry: '$(dockerRegistryServiceConnection)'
-              repository: '$(imageRepository)-azure'
-              command: 'push'
               tags: |
                 latest
                 $(Build.SourceVersion)

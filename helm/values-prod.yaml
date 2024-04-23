@@ -4,8 +4,8 @@ microservice-chart:
     tag: latest
     pullPolicy: Always
 
-  #  ingress:
-  #    host: "dev01.idpay.internal.dev.cstar.pagopa.it"
+    ingress:
+      host: "hub.internal.p4pa.pagopa.it"
 
   resources:
     requests:
@@ -16,21 +16,20 @@ microservice-chart:
       cpu: "300m"
 
   autoscaling:
-    enable: true
-    minReplica: 1
-    maxReplica: 2
-    pollingInterval: 30 # seconds
-    cooldownPeriod: 300 # seconds
-    triggers:
-      - type: cpu
-        metadata:
-          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-          value: "70"
+    enable: false
+  #    minReplica: 1
+  #    maxReplica: 1
+  #    pollingInterval: 30 # seconds
+  #    cooldownPeriod: 300 # seconds
+  #    triggers:
+  #      - type: cpu
+  #        metadata:
+  #          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+  #          value: "70"
 
   envConfig:
     ENV: "PROD"
     JAVA_OPTS: "-Djava.util.concurrent.ForkJoinPool.common.parallelism=7 -agentlib:jdwp=transport=dt_socket,server=y,address=8001,suspend=n -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=3002 -Dcom.sun.management.jmxremote.rmi.port=3003 -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
-#   CORS_ORIGINS: "http://localhost:4200,http://localhost:4201,https://p4paditnpayhub.blob.core.windows.net" ?
 
 
   envSecret:

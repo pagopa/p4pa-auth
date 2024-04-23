@@ -5,7 +5,7 @@ microservice-chart:
 
   livenessProbe:
     httpGet:
-      path: /actuator/health
+      path: /actuator/health/liveness
       port: 8080
     initialDelaySeconds: 120
     failureThreshold: 15
@@ -13,7 +13,7 @@ microservice-chart:
 
   readinessProbe:
     httpGet:
-      path: /actuator/health
+      path: /actuator/health/readiness
       port: 8080
     initialDelaySeconds: 120
     failureThreshold: 15
@@ -45,12 +45,11 @@ microservice-chart:
   securityContext:
     allowPrivilegeEscalation: false
 
-  # TODO uncomment when applicationInsight configuration has been created
-#    externalConfigMapFiles:
-#      create: true
-#      configMaps:
-#        - name: appinsights-config
-#          key: applicationinsights.json
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
 
   envConfig:
     APPLICATIONINSIGHTS_ROLE_NAME: "p4paauth"
