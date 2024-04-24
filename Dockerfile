@@ -6,6 +6,7 @@ FROM maven:3.9.6-amazoncorretto-17-al2023@sha256:459be099faa25a32c06cd45ed1ef2bc
 WORKDIR /build
 COPY . .
 
+RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
 
 #
