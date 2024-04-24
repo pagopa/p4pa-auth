@@ -17,6 +17,6 @@ WORKDIR /app
 
 COPY --from=buildtime /build/build/libs/*.jar /app/app.jar
 # The agent is enabled at runtime via JAVA_TOOL_OPTIONS.
-ADD https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.5.2/applicationinsights-agent-3.5..jar /app/applicationinsights-agent.jar
+ADD https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.5.2/applicationinsights-agent-3.5.2.jar /app/applicationinsights-agent.jar
 
 ENTRYPOINT ["java", "$JAVA_OPTS", "-jar","/app/app.jar"]
