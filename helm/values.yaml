@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "p4pa"
+  namespace: "payhub"
   nameOverride: ""
   fullnameOverride: ""
 
