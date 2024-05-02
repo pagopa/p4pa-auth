@@ -157,3 +157,4 @@ stages:
                     install: true
                     waitForExecution: true
                     arguments: --timeout 5m0s
+                      --values buildMetadata.yaml
