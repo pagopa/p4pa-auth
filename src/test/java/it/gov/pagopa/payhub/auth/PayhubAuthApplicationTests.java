@@ -1,10 +1,10 @@
-package it.gov.pagopa.auth;
+package it.gov.pagopa.payhub.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class P4paAuthApplicationTests {
+class PayhubAuthApplicationTests {
 
 	@Test
 	void contextLoads() {
