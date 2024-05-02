@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.common.config;
+package it.gov.pagopa.payhub.common.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
