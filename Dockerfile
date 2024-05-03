@@ -14,17 +14,16 @@ RUN ./gradlew bootJar
 #
 FROM amazoncorretto:17-alpine3.19@sha256:2122cb140fa94053abce343fb854d24f4c62ba3c1ac701882dce12980396b477 AS runtime
 
-RUN useradd --uid 10000 runner
-
 VOLUME /tmp
 WORKDIR /app
 
 COPY --from=buildtime /build/build/libs/*.jar /app/app.jar
 # The agent is enabled at runtime via JAVA_TOOL_OPTIONS.
 ADD https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.5.2/applicationinsights-agent-3.5.2.jar /app/applicationinsights-agent.jar
+RUN chown -R nobody:nobody /app
 
-RUN chown -R runner:runner /app
+EXPOSE 8080
 
-USER 10000
+USER 65534 # user nobody
 
 ENTRYPOINT ["java","-jar","/app/app.jar"]
