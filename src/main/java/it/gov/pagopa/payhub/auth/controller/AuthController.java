@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/payhub/")
+@RequestMapping("/payhub")
 interface AuthController {
 
-    @PostMapping("auth")
+    @PostMapping("/auth")
     @ResponseStatus(code = HttpStatus.OK)
     void authToken(@RequestParam String token);
 }

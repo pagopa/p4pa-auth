@@ -8,19 +8,21 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import it.gov.pagopa.payhub.auth.constants.AuthConstants;
 import it.gov.pagopa.payhub.auth.exception.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.TokenExpiredException;
+import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class JWTValidator {
 
-    private JWTValidator() {}
 
-    public static Map<String, Claim> validate(String token, String urlJwkProvider) {
+    public Map<String, String> validate(String token, String urlJwkProvider) {
         try {
             DecodedJWT jwt = JWT.decode(token);
 
@@ -30,12 +32,14 @@ public class JWTValidator {
             JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(token);
 
-            return jwt.getClaims();
+            Map<String, String> claimsMap = new HashMap<>();
+            jwt.getClaims().forEach((key, value) -> claimsMap.put(key, value.asString()));
+            return claimsMap;
 
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JwkException | JWTVerificationException ex) {
-            throw new InvalidTokenException("The token is not valid");
+            throw new InvalidTokenException(AuthConstants.ExceptionCode.INVALID_TOKEN, "The token is not valid", true, ex);
         }
     }
 }
