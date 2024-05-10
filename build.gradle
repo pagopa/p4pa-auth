@@ -85,12 +85,9 @@ test {
 jacocoTestReport {
 	dependsOn test
 	reports {
-		html.enabled = true
-		xml.enabled = true
-		csv.enabled = false
+		xml.required = true
 	}
 }
-
 
 processResources {
 	expand(project.properties)

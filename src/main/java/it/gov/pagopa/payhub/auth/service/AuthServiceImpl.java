@@ -32,5 +32,6 @@ public class AuthServiceImpl implements AuthService{
         if (!(data.get("aud").equals(audience) && data.get("iss").equals(issuer))){
             throw new InvalidTokenException("Invalid audience or issuer in the token");
         }
+        log.info("Token validated successfully");
     }
 }
