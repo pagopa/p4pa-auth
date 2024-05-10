@@ -24,4 +24,4 @@ RUN chown -R nobody:nobody /app
 EXPOSE 8080
 USER 65534 # user nobody
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
