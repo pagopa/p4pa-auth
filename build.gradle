@@ -50,17 +50,26 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 	implementation 'org.codehaus.janino:janino:3.1.12'
 
-	//	Security fixes
+	// Security fixes
 	implementation 'org.yaml:snakeyaml:2.0'
 
+	// validation token jwt
+	implementation 'com.auth0:java-jwt:4.4.0'
+	implementation 'com.auth0:jwks-rsa:0.22.1'
+	implementation 'com.nimbusds:nimbus-jose-jwt:9.38-rc5'
+	implementation 'io.jsonwebtoken:jjwt:0.12.5'
+
+	// TESTS
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine'
 	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'org.projectlombok:lombok'
+	testImplementation 'org.wiremock:wiremock-standalone:3.5.4'
+
 
 
 	compileOnly 'org.projectlombok:lombok:1.18.32'
@@ -69,12 +78,21 @@ dependencies {
 }
 
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+	}
 }
 
 processResources {
 	expand(project.properties)
+	exclude 'logback-spring.xml'
 }
 
 springBoot {

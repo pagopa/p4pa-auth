@@ -5,6 +5,13 @@ spring:
     jmx.enabled: true
 
 
+auth:
+    token:
+        issuer: "\${AUTH_TOKEN_ISS:https://dev.selfcare.pagopa.it}"
+        audience: "\${AUTH_TOKEN_AUD:dev.piattaformaunitaria.pagopa.it}"
+        jwk: "\${AUTH_TOKEN_JWK:https://dev.selfcare.pagopa.it}"
+
+
 management:
     endpoint:
         health:
