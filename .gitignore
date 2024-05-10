@@ -4,8 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-charts/
-*.tgz
+helm/charts/
 
 ### STS ###
 .apt_generated
