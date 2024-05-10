@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import io.jsonwebtoken.Claims;
 import it.gov.pagopa.payhub.auth.exception.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public void authToken(String token) {
         Map<String, String> data = jwtValidator.validate(token, urlJwkProvider);
-        if (!(data.get("aud").equals(audience) && data.get("iss").equals(issuer))){
+        if (!(data.get(Claims.AUDIENCE).equals(audience) && data.get(Claims.ISSUER).equals(issuer))){
             throw new InvalidTokenException("Invalid audience or issuer in the token");
         }
         log.info("Token validated successfully");

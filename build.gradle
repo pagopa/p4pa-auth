@@ -60,6 +60,7 @@ dependencies {
 	implementation 'com.auth0:java-jwt:4.4.0'
 	implementation 'com.auth0:jwks-rsa:0.22.1'
 	implementation 'com.nimbusds:nimbus-jose-jwt:9.38-rc5'
+	implementation 'io.jsonwebtoken:jjwt:0.12.5'
 
 	// TESTS
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

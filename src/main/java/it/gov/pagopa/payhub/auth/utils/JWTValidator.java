@@ -34,6 +34,7 @@ public class JWTValidator {
 
             Map<String, String> claimsMap = new HashMap<>();
             jwt.getClaims().forEach((key, value) -> claimsMap.put(key, value.asString()));
+
             return claimsMap;
 
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
