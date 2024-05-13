@@ -33,7 +33,7 @@ class AuthControllerTest {
     AuthService authServiceMock;
 
     @Test
-    void authTokenOk() throws Exception {
+    void givenExpectedAuthTokenThenOk() throws Exception {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
@@ -45,7 +45,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void authTokenThrowMissingServletRequestParameterException() throws Exception {
+    void givenRequestWithoutAuthTokenThenBadRequest() throws Exception {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(

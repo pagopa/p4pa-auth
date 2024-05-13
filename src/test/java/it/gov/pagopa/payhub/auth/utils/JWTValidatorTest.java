@@ -48,7 +48,7 @@ class JWTValidatorTest {
     }
 
     @Test
-    void givenTokenThenThrowTokenExpiredException() throws Exception {
+    void givenTokenWithExpiredDateThenThrowTokenExpiredException() throws Exception {
         String expiredToken = utils.generateJWK(new Date(System.currentTimeMillis() - 3600000));
         String urlJwkProvider = utils.getUrlJwkProvider();
 
@@ -56,7 +56,7 @@ class JWTValidatorTest {
     }
 
     @Test
-    void givenTokenThenThrowInvalidTokenException() {
+    void givenInvalidTokenThenThrowInvalidTokenException() {
         String invalidToken = "your_invalid_token_here";
         String urlJwkProvider = "your_jwk_provider_url_here";
 
