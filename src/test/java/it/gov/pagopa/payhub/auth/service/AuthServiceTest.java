@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.service;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import it.gov.pagopa.payhub.auth.constants.AuthConstants;
-import it.gov.pagopa.payhub.auth.exception.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
 import org.junit.jupiter.api.AfterEach;

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.configuration.AuthErrorManagerConfig;
 import it.gov.pagopa.payhub.auth.constants.AuthConstants;
 import it.gov.pagopa.payhub.auth.service.AuthService;
-import it.gov.pagopa.payhub.common.web.dto.ErrorDTO;
-import it.gov.pagopa.payhub.common.web.exception.ValidationExceptionHandler;
+import it.gov.pagopa.payhub.auth.exception.dto.ErrorDTO;
+import it.gov.pagopa.payhub.auth.exception.ValidationExceptionHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.common.utils;
+package it.gov.pagopa.payhub.auth.utils;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;

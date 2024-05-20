@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.configuration;
 
 import it.gov.pagopa.payhub.auth.constants.AuthConstants;
-import it.gov.pagopa.payhub.common.web.dto.ErrorDTO;
+import it.gov.pagopa.payhub.auth.exception.dto.ErrorDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

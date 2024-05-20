@@ -16,10 +16,10 @@ trigger:
   paths:
     include:
       - src/*
-      - build.gradle
+      - build.gradle.kts
       - helm/*
       - Dockerfile
-      - settings.gradle
+      - settings.gradle.kts
 
 pr: none
 

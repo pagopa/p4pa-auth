@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.common.web.dto;
+package it.gov.pagopa.payhub.auth.exception.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;

@@ -10,8 +10,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.constants.AuthConstants;
-import it.gov.pagopa.payhub.auth.exception.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.exception.TokenExpiredException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;

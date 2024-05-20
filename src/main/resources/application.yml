@@ -1,7 +1,7 @@
 spring:
     application:
-        name: "${name}"
-        version: "${version}"
+        name: ${artifactId}
+        version: ${version}
     jmx.enabled: true
 
 

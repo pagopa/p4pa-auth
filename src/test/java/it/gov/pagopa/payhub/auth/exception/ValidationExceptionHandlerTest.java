@@ -1,12 +1,6 @@
-package it.gov.pagopa.payhub.common.exception;
+package it.gov.pagopa.payhub.auth.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.payhub.common.web.exception.ValidationExceptionHandler;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
