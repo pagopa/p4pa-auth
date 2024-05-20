@@ -17,9 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthControllerImpl.class)
@@ -35,11 +33,11 @@ class AuthControllerTest {
     AuthService authServiceMock;
 
     @Test
-    void authToken() throws Exception {
+    void givenExpectedAuthTokenThenOk() throws Exception {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                post("/payhub/auth")
+                get("/payhub/auth")
                         .param("token", "token")
         ).andExpect(status().is2xxSuccessful()).andReturn();
 
@@ -47,11 +45,11 @@ class AuthControllerTest {
     }
 
     @Test
-    void authToken1() throws Exception {
+    void givenRequestWithoutAuthTokenThenBadRequest() throws Exception {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                post("/payhub/auth")
+                get("/payhub/auth")
         ).andExpect(status().isBadRequest()).andReturn();
 
         ErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
