@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/payhub")
 interface AuthController {
 
-    @PostMapping("/auth")
+    @GetMapping("/auth")
     @ResponseStatus(code = HttpStatus.OK)
     void authToken(@RequestParam String token);
 }

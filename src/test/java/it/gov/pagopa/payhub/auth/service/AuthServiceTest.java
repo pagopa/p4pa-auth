@@ -50,7 +50,7 @@ public class AuthServiceTest {
         wireMockServer.stop();
     }
     @Test
-    void authToken() throws Exception {
+    void authTokenOk() throws Exception {
         String token = utils.generateJWK(EXPIRES_AT);
         Map<String, String> claimsMap = createJWKClaims(ISS, AUD);
 
