@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import it.gov.pagopa.payhub.auth.constants.AuthConstants;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.openapi.example.model.AuthErrorDTO;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Date;
@@ -73,7 +73,7 @@ public class AuthServiceTest {
                 assertThrows(InvalidTokenException.class, () ->
                                 authService.authToken(token));
 
-        assertEquals(AuthConstants.ExceptionCode.INVALID_TOKEN, result.getCode());
+        assertEquals(AuthErrorDTO.CodeEnum.INVALID_TOKEN.getValue(), result.getCode());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class AuthServiceTest {
                 assertThrows(InvalidTokenException.class, () ->
                         authService.authToken(token));
 
-        assertEquals(AuthConstants.ExceptionCode.INVALID_TOKEN, result.getCode());
+        assertEquals(AuthErrorDTO.CodeEnum.INVALID_TOKEN.getValue(), result.getCode());
     }
 
     private Map<String, String> createJWKClaims (String iss, String aud){

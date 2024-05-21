@@ -37,7 +37,7 @@ class ValidationExceptionHandlerTest {
     @Slf4j
     static class TestController {
 
-        @PutMapping("/test")
+        @GetMapping("/test")
         String testEndpoint(@RequestParam("data") String data) {
             return "OK";
         }
@@ -46,11 +46,11 @@ class ValidationExceptionHandlerTest {
     @Test
     void handleMissingServletRequestParameterException() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/test")
+        mockMvc.perform(MockMvcRequestBuilders.get("/test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("INVALID_REQUEST"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_INVALID_REQUEST"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request parameter 'data' for method parameter type String is not present"));
 
     }

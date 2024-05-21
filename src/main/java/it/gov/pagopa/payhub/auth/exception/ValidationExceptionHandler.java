@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.auth.exception;
 
-import it.gov.pagopa.payhub.auth.exception.dto.AuthExceptionHandler;
-import it.gov.pagopa.payhub.auth.exception.dto.ErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.openapi.example.model.AuthErrorDTO;
@@ -16,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Optional;
 
-import static org.openapi.example.model.AuthErrorDTO.CodeEnum.INVALID_TOKEN;
+import static org.openapi.example.model.AuthErrorDTO.CodeEnum.INVALID_REQUEST;
 
 @RestControllerAdvice
 @Slf4j
@@ -27,7 +25,7 @@ public class ValidationExceptionHandler {
 
     public ValidationExceptionHandler(@Nullable AuthErrorDTO templateValidationErrorDTO) {
         this.templateValidationErrorDTO = Optional.ofNullable(templateValidationErrorDTO)
-                .orElse(new AuthErrorDTO(INVALID_TOKEN, "Invalid request"));
+                .orElse(new AuthErrorDTO(INVALID_REQUEST, "Invalid request"));
     }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)

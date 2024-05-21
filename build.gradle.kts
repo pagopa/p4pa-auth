@@ -36,6 +36,7 @@ val jwksRsaVersion = "0.22.1"
 val nimbusJoseJwtVersion = "9.38-rc5"
 val jjwtVersion = "0.12.5"
 val wiremockVersion = "3.5.4"
+val findbugsVersion = "3.0.2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -45,6 +46,7 @@ dependencies {
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+	implementation("com.google.code.findbugs:jsr305:$findbugsVersion")
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")

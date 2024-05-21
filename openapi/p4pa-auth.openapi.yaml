@@ -7,7 +7,7 @@ servers:
   - url: https://api.dev.p4pa.pagopa.it/payhub
 paths:
   /auth:
-    post:
+    get:
       tags:
         - authToken
       operationId: authToken
@@ -26,18 +26,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
-              example:
-                code: "AUTH_TOKEN_EXPIRED_DATE"
-                message: "Token date expired"
         '500':
           description: Server ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
-              example:
-                code: "AUTH_GENERIC_ERROR"
-                message: "Application error"
 components:
   schemas:
     AuthErrorDTO:

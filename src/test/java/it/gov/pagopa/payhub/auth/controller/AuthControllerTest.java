@@ -1,13 +1,11 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.payhub.auth.configuration.AuthErrorManagerConfig;
-import it.gov.pagopa.payhub.auth.constants.AuthConstants;
-import it.gov.pagopa.payhub.auth.service.AuthService;
-import it.gov.pagopa.payhub.auth.exception.dto.ErrorDTO;
 import it.gov.pagopa.payhub.auth.exception.ValidationExceptionHandler;
+import it.gov.pagopa.payhub.auth.service.AuthService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openapi.example.model.AuthErrorDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthControllerImpl.class)
-@Import({AuthErrorManagerConfig.class, ValidationExceptionHandler.class})
+@Import({ValidationExceptionHandler.class})
 class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -52,8 +50,8 @@ class AuthControllerTest {
                 get("/payhub/auth")
         ).andExpect(status().isBadRequest()).andReturn();
 
-        ErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
-                ErrorDTO.class);
-        assertEquals(AuthConstants.ExceptionCode.INVALID_REQUEST, actual.getCode());
+        AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                AuthErrorDTO.class);
+        assertEquals(AuthErrorDTO.CodeEnum.INVALID_REQUEST, actual.getCode());
     }
 }

@@ -1,0 +1,59 @@
+trigger:
+  branches:
+    include:
+      - develop
+      - uat
+      - main
+pr:
+  branches:
+    include:
+      - '*'
+
+schedules:
+  - cron: '0 7 * * *'
+    branches:
+      include:
+        - 'main'
+    always: true
+
+variables:
+  vmImageNameDefault: ubuntu-22.04
+  imageName: 'trivy-scan'
+  trivyVersion: '0.50.1'
+
+jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-22.04'
+    steps:
+      - checkout: self
+        displayName: Checkout
+        fetchDepth: 1
+
+      - task: Docker@2
+        displayName: 'Build image'
+        inputs:
+          command: 'build'
+          repository: '$(imageName)'
+          buildContext: '.'
+          Dockerfile: 'Dockerfile'
+
+      - task: trivy@1
+        displayName: 'Security scan with trivy'
+        inputs:
+          severities: 'CRITICAL,HIGH'
+          version: 'v$(trivyVersion)'
+          docker: false
+          image: $(imageName):$(Build.BuildId)
+          options: --timeout 15m0s
+
+      - task: 'Bash@3'
+        displayName: 'Send message on Slack'
+        condition: and(failed(), ne(variables['Build.Reason'], 'PullRequest'))
+        inputs:
+          targetType: 'inline'
+          script: >
+            curl -X POST \
+              -H "Content-type: application/json" \
+              --data '{"text": "*Attention: The build has failed in pipeline $(System.DefinitionName)!*\nCheck the logs for more details $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId) to view the build results."}' \
+              $(SLACK_WEBHOOK_URL)
