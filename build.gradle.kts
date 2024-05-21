@@ -112,7 +112,7 @@ configure<SourceSetContainer> {
 }
 
 springBoot {
-	mainClass.value("pagopa.payhub.ionotification.IoNotificationApplication")
+	mainClass.value("it.gov.pagopa.payhub.auth.PayhubAuthApplication")
 }
 
 openApiGenerate {
