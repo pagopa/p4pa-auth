@@ -119,9 +119,8 @@ openApiGenerate {
 	generatorName.set("spring")
 	inputSpec.set("$rootDir/openapi/p4pa-auth.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
-	apiPackage.set("org.openapi.example.api")
-	invokerPackage.set("org.openapi.example.invoker")
-	modelPackage.set("org.openapi.example.model")
+	apiPackage.set("openapi.pagopa.payhub.controller")
+	modelPackage.set("openapi.pagopa.payhub.model")
 	configOptions.set(mapOf(
 			"dateLibrary" to "java8",
 			"requestMappingMode" to "api_interface",

@@ -11,16 +11,30 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
-import org.openapi.example.model.AuthErrorDTO;
+import openapi.pagopa.payhub.model.AuthErrorDTO;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Utility class for validating JSON Web Tokens (JWTs).
+ * This class uses Auth0's JWT and JWK libraries to decode, verify, and extract claims from a JWT.
+ */
 @Component
 public class JWTValidator {
 
+    /**
+     * Validates a JWT against a JWK provider URL.
+     *
+     * @param token the JWT to validate
+     * @param urlJwkProvider the URL of the JWK provider to use for validating the token
+     * @return a map of claims extracted from the JWT
+     * @throws TokenExpiredException if the token has expired
+     * @throws InvalidTokenException if the token is invalid for any other reason
+     */
 
     public Map<String, String> validate(String token, String urlJwkProvider) {
         try {

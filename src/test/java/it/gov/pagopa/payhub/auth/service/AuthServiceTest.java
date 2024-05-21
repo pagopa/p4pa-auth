@@ -4,13 +4,13 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
+import openapi.pagopa.payhub.model.AuthErrorDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.openapi.example.model.AuthErrorDTO;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Date;

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.openapi.example.model.AuthErrorDTO;
+import openapi.pagopa.payhub.model.AuthErrorDTO;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Optional;
 
-import static org.openapi.example.model.AuthErrorDTO.CodeEnum.INVALID_REQUEST;
+import static openapi.pagopa.payhub.model.AuthErrorDTO.CodeEnum.INVALID_REQUEST;
 
 @RestControllerAdvice
 @Slf4j

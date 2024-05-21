@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.exception.custom;
 
 import lombok.Getter;
-import org.openapi.example.model.AuthErrorDTO;
+import openapi.pagopa.payhub.model.AuthErrorDTO;
 
 @Getter
 public class TokenExpiredException extends RuntimeException {
