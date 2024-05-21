@@ -64,9 +64,6 @@ microservice-chart:
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
-    JWT_TOKEN_ISS: jwt-token-iss
-    JWT_TOKEN_AUD: jwt-token-aud
-    JWT_TOKEN_JWK: jwt-token-jwk
 
   # nodeSelector: {}
 

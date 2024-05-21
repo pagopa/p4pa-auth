@@ -7,9 +7,9 @@ spring:
 
 jwt:
     token:
-        issuer: "\${JWT_TOKEN_ISS:}"
-        audience: "\${JWT_TOKEN_AUD:}"
-        jwk: "\${JWT_TOKEN_JWK:https:}"
+        issuer: "\${JWT_TOKEN_ISS:https://dev.selfcare.pagopa.it}"
+        audience: "\${JWT_TOKEN_AUD:dev.piattaformaunitaria.pagopa.it}"
+        jwk: "\${JWT_TOKEN_JWK:https://dev.selfcare.pagopa.it}"
 
 
 management:
