@@ -73,7 +73,7 @@ public class AuthServiceTest {
                 assertThrows(InvalidTokenException.class, () ->
                                 authService.authToken(token));
 
-        assertEquals(AuthErrorDTO.CodeEnum.INVALID_TOKEN.getValue(), result.getCode());
+        assertEquals(AuthErrorDTO.CodeEnum.INVALID_TOKEN, result.getCode());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class AuthServiceTest {
                 assertThrows(InvalidTokenException.class, () ->
                         authService.authToken(token));
 
-        assertEquals(AuthErrorDTO.CodeEnum.INVALID_TOKEN.getValue(), result.getCode());
+        assertEquals(AuthErrorDTO.CodeEnum.INVALID_TOKEN, result.getCode());
     }
 
     private Map<String, String> createJWKClaims (String iss, String aud){

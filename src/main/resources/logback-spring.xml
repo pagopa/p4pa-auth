@@ -44,26 +44,6 @@
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <if condition='"TRUE".equalsIgnoreCase("${ENABLE_FILE_APPENDER}")'>
-        <then>
-            <property name="LOG_FILE"
-                      value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
-            <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
-
-            <appender name="ASYNC_FILE"
-                      class="ch.qos.logback.classic.AsyncAppender">
-                <neverBlock>true</neverBlock>
-                <queueSize>20000</queueSize>
-                <discardingThreshold>0</discardingThreshold>
-                <appender-ref ref="FILE"/>
-            </appender>
-
-            <root level="INFO">
-                <appender-ref ref="ASYNC_FILE"/>
-            </root>
-        </then>
-    </if>
-
     <logger name="AUDIT" additivity="false">
         <appender-ref ref="AUDIT"/>
     </logger>

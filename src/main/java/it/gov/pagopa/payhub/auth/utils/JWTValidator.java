@@ -54,7 +54,7 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JwkException | JWTVerificationException ex) {
-            throw new InvalidTokenException(AuthErrorDTO.CodeEnum.INVALID_TOKEN.getValue(), "The token is not valid", true, ex);
+            throw new InvalidTokenException(AuthErrorDTO.CodeEnum.INVALID_TOKEN, "The token is not valid", true, ex);
         }
     }
 }

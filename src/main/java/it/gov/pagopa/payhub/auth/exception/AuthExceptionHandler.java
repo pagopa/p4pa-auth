@@ -17,28 +17,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthExceptionHandler {
 
-    @ExceptionHandler(InvalidTokenException.class)
+    @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public AuthErrorDTO handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request){
-        String message = getMessage(ex, request);
-
-        return new AuthErrorDTO(AuthErrorDTO.CodeEnum.fromValue(ex.getCode()), message);
-    }
-
-    @ExceptionHandler(TokenExpiredException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public AuthErrorDTO handleTokenExpiredException(TokenExpiredException ex, HttpServletRequest request){
-        String message = getMessage(ex, request);
-        return new AuthErrorDTO(AuthErrorDTO.CodeEnum.fromValue(ex.getCode()), message);
-    }
-
-    private static String getMessage(Throwable ex, HttpServletRequest request) {
+    public AuthErrorDTO handleInvalidTokenException(ServiceException ex, HttpServletRequest request){
+        logStackTrace(ex, request);
         String message = ex.getMessage();
 
         log.info("A {} occurred handling request {}: HttpStatus 401 - {}",
                 ex.getClass(),
                 getRequestDetails(request), message);
-        return message;
+        return new AuthErrorDTO(ex.getCode(), message);
+    }
+
+    public static void logStackTrace(ServiceException error, HttpServletRequest request) {
+        if(error.isPrintStackTrace()){
+            log.info("A {} occurred handling request {} at {}",
+                    error.getClass().getSimpleName() ,
+                    getRequestDetails(request),
+                    error.getStackTrace().length > 0 ? error.getStackTrace()[0] : "UNKNOWN");
+        }
     }
 
     public static String getRequestDetails(HttpServletRequest request) {
