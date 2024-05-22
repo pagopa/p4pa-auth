@@ -35,7 +35,7 @@ class AuthControllerTest {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                get("/payhub/auth")
+                get("/auth")
                         .param("token", "token")
         ).andExpect(status().is2xxSuccessful()).andReturn();
 
@@ -47,7 +47,7 @@ class AuthControllerTest {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                get("/payhub/auth")
+                get("/auth")
         ).andExpect(status().isBadRequest()).andReturn();
 
         AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),

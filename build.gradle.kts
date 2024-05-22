@@ -124,6 +124,7 @@ openApiGenerate {
 	configOptions.set(mapOf(
 			"dateLibrary" to "java8",
 			"requestMappingMode" to "api_interface",
-			"useSpringBoot3" to "true"
+			"useSpringBoot3" to "true",
+			"interfaceOnly" to "true"
 	))
 }
