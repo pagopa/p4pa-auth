@@ -4,7 +4,7 @@ info:
   description: Api and Models
   version: 0.0.1
 servers:
-  - url: https://api.dev.p4pa.pagopa.it/payhub
+  - url: "http://localhost:8080"
 paths:
   /auth:
     get:
