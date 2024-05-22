@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.service.AuthService;
-import openapi.pagopa.payhub.controller.AuthApi;
+import it.gov.pagopa.payhub.controller.generated.AuthApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

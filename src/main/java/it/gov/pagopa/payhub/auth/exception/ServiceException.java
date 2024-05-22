@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.exception;
 
+import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import lombok.Getter;
-import openapi.pagopa.payhub.model.AuthErrorDTO;
 
 @Getter
 public class ServiceException extends RuntimeException {

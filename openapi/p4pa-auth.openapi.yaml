@@ -9,7 +9,7 @@ paths:
   /auth:
     get:
       tags:
-        - authToken
+        - auth
       operationId: authToken
       parameters:
         - name: token

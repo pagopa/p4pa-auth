@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.exception.ValidationExceptionHandler;
 import it.gov.pagopa.payhub.auth.service.AuthService;
-import openapi.pagopa.payhub.model.AuthErrorDTO;
+import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,7 +11,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
-import openapi.pagopa.payhub.model.AuthErrorDTO;
+import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;
