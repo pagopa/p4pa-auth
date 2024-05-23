@@ -143,15 +143,6 @@ stages:
                           "build/sourceVersion": "$(Build.SourceVersion)"' > buildMetadata.yaml
                   displayName: Writing build metadata
 
-                - task: Bash@3
-                  displayName: Lock Gradle Dependencies
-                  inputs:
-                    targetType: 'inline'
-                    script: |
-                      cd $(Build.Repository.LocalPath)
-                      ./gradlew dependencies --write-locks
-                    failOnStderr: true
-
                 - task: HelmDeploy@0
                   displayName: Helm upgrade
                   inputs:
