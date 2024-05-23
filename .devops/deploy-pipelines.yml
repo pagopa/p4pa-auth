@@ -82,15 +82,6 @@ stages:
                 echo "##vso[task.setvariable variable=appVersion;isOutput=true]$version"
               failOnStderr: true
 
-          - task: Bash@3
-            displayName: Lock Gradle Dependencies
-            condition: and(succeeded(), eq(variables.canDeploy, true))
-            inputs:
-              targetType: 'inline'
-              script: |
-                ./gradlew dependencies --write-locks
-              failOnStderr: true
-
           - task: Docker@2
             condition: and(succeeded(), ${{ parameters.executeBuild }})
             displayName: 'Build and publish $(imageRepository) image'
@@ -151,6 +142,14 @@ stages:
                           "build/appVersion": "$(appVersion)"
                           "build/sourceVersion": "$(Build.SourceVersion)"' > buildMetadata.yaml
                   displayName: Writing build metadata
+
+                - task: Bash@3
+                  displayName: Lock Gradle Dependencies
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      ./gradlew dependencies --write-locks
+                  failOnStderr: true
 
                 - task: HelmDeploy@0
                   displayName: Helm upgrade
