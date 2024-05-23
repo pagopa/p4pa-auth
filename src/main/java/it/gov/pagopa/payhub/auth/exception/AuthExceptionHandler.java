@@ -57,7 +57,7 @@ public class AuthExceptionHandler {
         return message;
     }
 
-    public static String getRequestDetails(HttpServletRequest request) {
+    private static String getRequestDetails(HttpServletRequest request) {
         return "%s %s".formatted(request.getMethod(), request.getRequestURI());
     }
 
