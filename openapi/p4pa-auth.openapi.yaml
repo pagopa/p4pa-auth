@@ -47,18 +47,8 @@ components:
             - AUTH_GENERIC_ERROR
             - AUTH_INVALID_TOKEN
             - AUTH_INVALID_REQUEST
-          description: >-
-            "ENG: Error code: AUTH_TOKEN_EXPIRED_DATE: Token date expired,
-             AUTH_INVALID_TOKEN: The token is not valid
-             AUTH_INVALID_REQUEST: Something went wrong handling request,
-             AUTH_GENERIC_ERROR: Application Error - IT: Codice di errore:
-             AUTH_TOKEN_EXPIRED_DATE: Token scaduto,
-             AUTH_INVALID_TOKEN: Il Token non è valido
-             AUTH_INVALID_REQUEST: Qualcosa è andato storto durante l'invio della richiesta,
-             AUTH_GENERIC_ERROR: Errore generico"
         message:
           type: string
-          description: "ENG: Error message - IT: Messaggio di errore"
 security:
   - apiKeyHeader: []
   - apiKeyQuery: []

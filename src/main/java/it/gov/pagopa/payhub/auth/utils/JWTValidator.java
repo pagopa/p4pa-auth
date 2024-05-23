@@ -11,7 +11,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
-import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;
@@ -54,7 +53,7 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JwkException | JWTVerificationException ex) {
-            throw new InvalidTokenException(AuthErrorDTO.CodeEnum.INVALID_TOKEN, "The token is not valid", true, ex);
+            throw new InvalidTokenException("The token is not valid");
         }
     }
 }

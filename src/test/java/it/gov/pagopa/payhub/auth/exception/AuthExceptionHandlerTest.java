@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.auth.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
-import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,9 +31,6 @@ class AuthExceptionHandlerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    ObjectMapper objectMapper;
-
     @SpyBean
     private TestController testControllerSpy;
 
@@ -52,20 +47,6 @@ class AuthExceptionHandlerTest {
     @Test
     void handleInvalidTokenException() throws Exception {
         doThrow(new InvalidTokenException("Error")).when(testControllerSpy).testEndpoint();
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/test")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_INVALID_TOKEN"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
-
-    }
-
-    @Test
-    void handleInvalidTokenExceptionWithStackTrace() throws Exception {
-        doThrow(new InvalidTokenException(AuthErrorDTO.CodeEnum.INVALID_TOKEN, "Error", true, new Throwable()))
-                .when(testControllerSpy).testEndpoint();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/test")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -11,10 +11,6 @@ public class InvalidTokenException extends ServiceException {
     }
 
     public InvalidTokenException(AuthErrorDTO.CodeEnum code, String message) {
-        this(code, message, false, null);
-    }
-
-    public InvalidTokenException(AuthErrorDTO.CodeEnum code, String message, boolean printStackTrace, Throwable ex) {
-        super(code, message, printStackTrace, ex);
+        super(code, message);
     }
 }
