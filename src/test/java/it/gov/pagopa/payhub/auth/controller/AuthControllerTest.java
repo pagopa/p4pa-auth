@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.payhub.auth.exception.ValidationExceptionHandler;
+import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.service.AuthService;
 import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthControllerImpl.class)
-@Import({ValidationExceptionHandler.class})
+@Import({AuthExceptionHandler.class})
 class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;

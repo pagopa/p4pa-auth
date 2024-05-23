@@ -8,12 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static it.gov.pagopa.payhub.model.generated.AuthErrorDTO.CodeEnum.INVALID_TOKEN;
-import static it.gov.pagopa.payhub.model.generated.AuthErrorDTO.CodeEnum.TOKEN_EXPIRED_DATE;
+import static it.gov.pagopa.payhub.model.generated.AuthErrorDTO.CodeEnum.*;
 
 @RestControllerAdvice
 @Slf4j
@@ -34,6 +34,19 @@ public class AuthExceptionHandler {
         String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
 
         return new AuthErrorDTO(TOKEN_EXPIRED_DATE, message);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public AuthErrorDTO handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException ex, HttpServletRequest request) {
+
+        String message = ex.getMessage();
+
+        log.info("A MissingServletRequestParameterException occurred handling request {}: HttpStatus 400 - {}",
+                AuthExceptionHandler.getRequestDetails(request), message);
+        log.debug("Something went wrong handling request", ex);
+        return new AuthErrorDTO(INVALID_REQUEST, message);
     }
 
     private static String logAndReturnUnauthorizedExceptionMessage(RuntimeException ex, HttpServletRequest request) {
