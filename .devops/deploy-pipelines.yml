@@ -148,6 +148,7 @@ stages:
                   inputs:
                     targetType: 'inline'
                     script: |
+                      cd $(Build.Repository.LocalPath)
                       ./gradlew dependencies --write-locks
                     failOnStderr: true
 
