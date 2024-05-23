@@ -149,7 +149,7 @@ stages:
                     targetType: 'inline'
                     script: |
                       ./gradlew dependencies --write-locks
-                  failOnStderr: true
+                    failOnStderr: true
 
                 - task: HelmDeploy@0
                   displayName: Helm upgrade
