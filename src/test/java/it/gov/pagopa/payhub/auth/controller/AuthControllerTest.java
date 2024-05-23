@@ -1,11 +1,9 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.payhub.auth.configuration.AuthErrorManagerConfig;
-import it.gov.pagopa.payhub.auth.constants.AuthConstants;
+import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.service.AuthService;
-import it.gov.pagopa.payhub.common.web.dto.ErrorDTO;
-import it.gov.pagopa.payhub.common.web.exception.ValidationExceptionHandler;
+import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthControllerImpl.class)
-@Import({AuthErrorManagerConfig.class, ValidationExceptionHandler.class})
+@Import({AuthExceptionHandler.class})
 class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -37,7 +35,7 @@ class AuthControllerTest {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                get("/payhub/auth")
+                get("/auth")
                         .param("token", "token")
         ).andExpect(status().is2xxSuccessful()).andReturn();
 
@@ -49,11 +47,11 @@ class AuthControllerTest {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                get("/payhub/auth")
+                get("/auth")
         ).andExpect(status().isBadRequest()).andReturn();
 
-        ErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
-                ErrorDTO.class);
-        assertEquals(AuthConstants.ExceptionCode.INVALID_REQUEST, actual.getCode());
+        AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                AuthErrorDTO.class);
+        assertEquals(AuthErrorDTO.CodeEnum.INVALID_REQUEST, actual.getCode());
     }
 }

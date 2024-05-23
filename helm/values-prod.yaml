@@ -4,8 +4,8 @@ microservice-chart:
     tag: latest
     pullPolicy: Always
 
-    ingress:
-      host: "hub.internal.p4pa.pagopa.it"
+  ingress:
+    host: "hub.internal.p4pa.pagopa.it"
 
   resources:
     requests:

@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import io.jsonwebtoken.Claims;
-import it.gov.pagopa.payhub.auth.exception.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +17,9 @@ public class AuthServiceImpl implements AuthService{
     private final String urlJwkProvider;
     private final JWTValidator jwtValidator;
 
-    public AuthServiceImpl(@Value("${auth.token.audience:}")String audience,
-                           @Value("${auth.token.issuer:}")String issuer,
-                           @Value("${auth.token.jwk:}")String urlJwkProvider,
+    public AuthServiceImpl(@Value("${jwt.token.audience:}")String audience,
+                           @Value("${jwt.token.issuer:}")String issuer,
+                           @Value("${jwt.token.jwk:}")String urlJwkProvider,
                            JWTValidator jwtValidator) {
         this.audience = audience;
         this.issuer = issuer;

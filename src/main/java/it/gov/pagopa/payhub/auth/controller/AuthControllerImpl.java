@@ -1,10 +1,13 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.service.AuthService;
+import it.gov.pagopa.payhub.controller.generated.AuthApi;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class AuthControllerImpl implements AuthController{
+public class AuthControllerImpl implements AuthApi {
 
     private final AuthService authService;
 
@@ -13,7 +16,8 @@ public class AuthControllerImpl implements AuthController{
     }
 
     @Override
-    public void authToken(String token) {
+    public ResponseEntity<Void> authToken(String token) {
         authService.authToken(token);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

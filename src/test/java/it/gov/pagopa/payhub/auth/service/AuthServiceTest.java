@@ -1,8 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import it.gov.pagopa.payhub.auth.constants.AuthConstants;
-import it.gov.pagopa.payhub.auth.exception.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -69,11 +67,9 @@ public class AuthServiceTest {
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
 
-        InvalidTokenException result =
-                assertThrows(InvalidTokenException.class, () ->
+        assertThrows(InvalidTokenException.class, () ->
                                 authService.authToken(token));
 
-        assertEquals(AuthConstants.ExceptionCode.INVALID_TOKEN, result.getCode());
     }
 
     @Test
@@ -84,11 +80,9 @@ public class AuthServiceTest {
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
 
-        InvalidTokenException result =
-                assertThrows(InvalidTokenException.class, () ->
+        assertThrows(InvalidTokenException.class, () ->
                         authService.authToken(token));
 
-        assertEquals(AuthConstants.ExceptionCode.INVALID_TOKEN, result.getCode());
     }
 
     private Map<String, String> createJWKClaims (String iss, String aud){

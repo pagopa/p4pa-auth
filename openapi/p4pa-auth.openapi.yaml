@@ -1,0 +1,54 @@
+openapi: 3.0.1
+info:
+  title: p4pa-auth
+  description: Api and Models
+  version: 0.0.1
+servers:
+  - url: "http://localhost:8080"
+paths:
+  /auth:
+    get:
+      tags:
+        - auth
+      operationId: authToken
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthErrorDTO'
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthErrorDTO'
+components:
+  schemas:
+    AuthErrorDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - AUTH_TOKEN_EXPIRED_DATE
+            - AUTH_GENERIC_ERROR
+            - AUTH_INVALID_TOKEN
+            - AUTH_INVALID_REQUEST
+        message:
+          type: string
+security:
+  - apiKeyHeader: []
+  - apiKeyQuery: []

@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.utils;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import it.gov.pagopa.payhub.auth.exception.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.exception.TokenExpiredException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

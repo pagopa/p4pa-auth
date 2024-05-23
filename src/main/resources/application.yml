@@ -1,15 +1,15 @@
 spring:
     application:
-        name: "${name}"
-        version: "${version}"
+        name: ${artifactId}
+        version: ${version}
     jmx.enabled: true
 
 
-auth:
+jwt:
     token:
-        issuer: "\${AUTH_TOKEN_ISS:https://dev.selfcare.pagopa.it}"
-        audience: "\${AUTH_TOKEN_AUD:dev.piattaformaunitaria.pagopa.it}"
-        jwk: "\${AUTH_TOKEN_JWK:https://dev.selfcare.pagopa.it}"
+        issuer: "\${JWT_TOKEN_ISS:https://dev.selfcare.pagopa.it}"
+        audience: "\${JWT_TOKEN_AUD:dev.piattaformaunitaria.pagopa.it}"
+        jwk: "\${JWT_TOKEN_JWK:https://dev.selfcare.pagopa.it}"
 
 
 management:
