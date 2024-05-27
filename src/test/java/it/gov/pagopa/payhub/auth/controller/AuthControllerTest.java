@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthControllerImpl.class)
@@ -35,8 +35,13 @@ class AuthControllerTest {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                get("/auth")
-                        .param("token", "token")
+                post("/payhub/auth/token")
+                        .param("client_id", "piattaforma-unitaria")
+                        .param("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange")
+                        .param("subject_token", "token")
+                        .param("subject_issuer", "issuer")
+                        .param("subject_token_type", "urn:ietf:params:oauth:token-type:id_token")
+                        .param("scope", "openid")
         ).andExpect(status().is2xxSuccessful()).andReturn();
 
         Assertions.assertNotNull(result);
@@ -47,11 +52,11 @@ class AuthControllerTest {
         doNothing().when(authServiceMock).authToken("token");
 
         MvcResult result = mockMvc.perform(
-                get("/auth")
+                post("/payhub/auth/token")
         ).andExpect(status().isBadRequest()).andReturn();
 
         AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 AuthErrorDTO.class);
-        assertEquals(AuthErrorDTO.CodeEnum.INVALID_REQUEST, actual.getCode());
+        assertEquals(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, actual.getError());
     }
 }
