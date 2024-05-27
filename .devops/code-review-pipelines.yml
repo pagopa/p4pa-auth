@@ -1,7 +1,7 @@
 pr:
-  - develop
-  - uat
-  - main
+  branches:
+    include:
+      - '*'
 
 pool:
   vmImage: ubuntu-22.04
