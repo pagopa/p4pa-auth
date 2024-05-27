@@ -54,6 +54,14 @@ paths:
           required: true
           schema:
             enum: [
+              "urn:ietf:params:oauth:token-type:id_token"
+            ]
+            type: string
+        - name: scope
+          in: query
+          required: true
+          schema:
+            enum: [
               "openid"
             ]
             type: string
@@ -139,6 +147,8 @@ components:
       properties:
         access_token:
           type: string
+          enum:
+            - AUTH_GENERIC_ERROR
         token_type:
           type: string
           default: bearer
