@@ -15,7 +15,6 @@ public class AuthControllerImpl implements AuthApi {
         this.authService = authService;
     }
 
-    @Override
     public ResponseEntity<Void> authToken(String token) {
         authService.authToken(token);
         return new ResponseEntity<>(HttpStatus.OK);
