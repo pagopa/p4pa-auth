@@ -32,7 +32,7 @@ class AuthControllerTest {
 
     @Test
     void givenExpectedAuthTokenThenOk() throws Exception {
-        doNothing().when(authServiceMock).authToken("token");
+        doNothing().when(authServiceMock).postToken("token");
 
         MvcResult result = mockMvc.perform(
                 post("/payhub/auth/token")
@@ -49,7 +49,7 @@ class AuthControllerTest {
 
     @Test
     void givenRequestWithoutAuthTokenThenBadRequest() throws Exception {
-        doNothing().when(authServiceMock).authToken("token");
+        doNothing().when(authServiceMock).postToken("token");
 
         MvcResult result = mockMvc.perform(
                 post("/payhub/auth/token")

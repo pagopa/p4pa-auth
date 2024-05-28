@@ -18,7 +18,7 @@ public class AuthControllerImpl implements AuthApi {
 
     @Override
     public ResponseEntity<AccessToken> postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
-        authService.authToken(subjectToken);
+        authService.postToken(subjectToken);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -55,7 +55,7 @@ public class AuthServiceTest {
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
 
-        authService.authToken(token);
+        authService.postToken(token);
         Mockito.verify(jwtValidator, times(1)).validate(token, wireMockUrl);
     }
 
@@ -68,7 +68,7 @@ public class AuthServiceTest {
         when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                                authService.authToken(token));
+                                authService.postToken(token));
 
     }
 
@@ -81,7 +81,7 @@ public class AuthServiceTest {
         when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                        authService.authToken(token));
+                        authService.postToken(token));
 
     }
 
