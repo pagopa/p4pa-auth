@@ -97,6 +97,18 @@ class ValidateExternalTokenServiceTest {
     }
 
     @Test
+    void givenInvalidSubjectTypeThenInvalidTokenException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(InvalidTokenException.class, () ->
+                validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, "UNEXPECTED_SUBJECT_TOKEN_TYPE", ValidateExternalTokenService.ALLOWED_SCOPE));
+    }
+
+    @Test
     void givenInvalidScopeThenInvalidExchangeRequestException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
         Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
