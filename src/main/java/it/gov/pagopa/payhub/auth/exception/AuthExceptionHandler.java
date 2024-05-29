@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.exception;
 
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
+import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -19,20 +18,36 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthExceptionHandler {
 
-    @ExceptionHandler(InvalidTokenException.class)
+    @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public AuthErrorDTO handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request){
+    public AuthErrorDTO handleInvalidGrantError(RuntimeException ex, HttpServletRequest request){
         String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
 
         return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_GRANT, message);
     }
 
-    @ExceptionHandler(TokenExpiredException.class)
+    @ExceptionHandler(InvalidExchangeClientException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public AuthErrorDTO handleTokenExpiredException(TokenExpiredException ex, HttpServletRequest request){
+    public AuthErrorDTO handleInvalidClientError(RuntimeException ex, HttpServletRequest request){
         String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
 
-        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_GRANT, message);
+        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_CLIENT, message);
+    }
+
+    @ExceptionHandler({InvalidExchangeRequestException.class, InvalidTokenIssuerException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public AuthErrorDTO handleInvalidRequestError(RuntimeException ex, HttpServletRequest request){
+        String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
+
+        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, message);
+    }
+
+    @ExceptionHandler({InvalidGrantTypeException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public AuthErrorDTO handleUnsupportedGrantType(RuntimeException ex, HttpServletRequest request){
+        String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
+
+        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE, message);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
