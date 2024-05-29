@@ -33,11 +33,13 @@ class ValidateExternalTokenService {
         this.jwtValidator = jwtValidator;
     }
 
-    public void validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+    public Map<String, String> validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
         validateClient(clientId);
         validateProtocolConfiguration(grantType, subjectTokenType, scope);
         validateSubjectTokenIssuer(subjectIssuer);
-        validateSubjectToken(subjectToken);
+        Map<String, String> claims = validateSubjectToken(subjectToken);
+        log.info("SubjectToken authorized");
+        return claims;
     }
 
     private void validateClient(String clientId) {
@@ -64,13 +66,14 @@ class ValidateExternalTokenService {
         }
     }
 
-    private void validateSubjectToken(String subjectToken) {
-        Map<String, String> data = jwtValidator.validate(subjectToken, urlJwkProvider);
-        if (!allowedAudience.equals(data.get(Claims.AUDIENCE))){
+    private Map<String, String> validateSubjectToken(String subjectToken) {
+        Map<String, String> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
+        if (!allowedAudience.equals(claims.get(Claims.AUDIENCE))){
             throw new InvalidTokenException("Invalid audience: " + allowedAudience);
         }
-        if (!allowedIssuer.equals(data.get(Claims.ISSUER))){
+        if (!allowedIssuer.equals(claims.get(Claims.ISSUER))){
             throw new InvalidTokenException("Invalid issuer: " + allowedIssuer);
         }
+        return claims;
     }
 }

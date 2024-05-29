@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.service.AuthService;
+import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +39,7 @@ class AuthControllerTest {
                 invokeAndVerify(null, HttpStatus.OK, null);
 
         Assertions.assertNotNull(result);
+        Assertions.assertEquals("{\"accessToken\":\"token\",\"tokenType\":\"bearer\",\"expiresIn\":0}", result.getResponse().getContentAsString());
     }
 
     @Test
@@ -92,7 +93,7 @@ class AuthControllerTest {
 
         (exception != null
                 ? doThrow(exception)
-                : doNothing())
+                : doReturn(new AccessToken("token", "bearer", 0)))
                 .when(authServiceMock).postToken(clientId,grantType,subjectToken,subjectIssuer,subjectTokenType,scope);
 
         MvcResult result = mockMvc.perform(
