@@ -31,12 +31,17 @@ class ExchangeTokenServiceTest {
     @Test
     void givenValidTokenWhenPostTokenThenSuccess(){
         // Given
-        String token = "TOKEN";
+        String clientId="CLIENT_ID";
+        String grantType="GRANT_TYPE";
+        String subjectToken="SUBJECT_TOKEN";
+        String subjectIssuer="SUBJECT_ISSUER";
+        String subjectTokenType="SUBJECT_TOKEN_TYPE";
+        String scope="SCOPE";
 
         // When
-        service.postToken(token);
+        service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
-        Mockito.verify(validateTokenServiceMock).validate(token);
+        Mockito.verify(validateTokenServiceMock).validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
     }
 }

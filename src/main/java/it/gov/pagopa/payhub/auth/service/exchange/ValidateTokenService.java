@@ -27,8 +27,8 @@ class ValidateTokenService {
         this.jwtValidator = jwtValidator;
     }
 
-    public void validate(String token) {
-        Map<String, String> data = jwtValidator.validate(token, urlJwkProvider);
+    public void validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+        Map<String, String> data = jwtValidator.validate(subjectToken, urlJwkProvider);
         if (!(data.get(Claims.AUDIENCE).equals(audience) && data.get(Claims.ISSUER).equals(issuer))){
             throw new InvalidTokenException("Invalid audience or issuer in the token");
         }

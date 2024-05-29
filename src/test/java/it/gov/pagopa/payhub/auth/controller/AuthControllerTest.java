@@ -32,16 +32,23 @@ class AuthControllerTest {
 
     @Test
     void givenExpectedAuthTokenThenOk() throws Exception {
-        doNothing().when(authServiceMock).postToken("token");
+        String clientId="CLIENT_ID";
+        String grantType="GRANT_TYPE";
+        String subjectToken="SUBJECT_TOKEN";
+        String subjectIssuer="SUBJECT_ISSUER";
+        String subjectTokenType="SUBJECT_TOKEN_TYPE";
+        String scope="SCOPE";
+
+        doNothing().when(authServiceMock).postToken(clientId,grantType,subjectToken,subjectIssuer,subjectTokenType,scope);
 
         MvcResult result = mockMvc.perform(
                 post("/payhub/auth/token")
-                        .param("client_id", "piattaforma-unitaria")
-                        .param("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange")
-                        .param("subject_token", "token")
-                        .param("subject_issuer", "issuer")
-                        .param("subject_token_type", "urn:ietf:params:oauth:token-type:id_token")
-                        .param("scope", "openid")
+                        .param("client_id", clientId)
+                        .param("grant_type", grantType)
+                        .param("subject_token", subjectToken)
+                        .param("subject_issuer", subjectIssuer)
+                        .param("subject_token_type", subjectTokenType)
+                        .param("scope", scope)
         ).andExpect(status().is2xxSuccessful()).andReturn();
 
         Assertions.assertNotNull(result);
@@ -49,8 +56,6 @@ class AuthControllerTest {
 
     @Test
     void givenRequestWithoutAuthTokenThenBadRequest() throws Exception {
-        doNothing().when(authServiceMock).postToken("token");
-
         MvcResult result = mockMvc.perform(
                 post("/payhub/auth/token")
         ).andExpect(status().isBadRequest()).andReturn();
