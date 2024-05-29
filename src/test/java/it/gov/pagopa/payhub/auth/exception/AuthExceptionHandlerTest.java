@@ -55,8 +55,8 @@ class AuthExceptionHandlerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_INVALID_TOKEN"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_grant"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
 
     }
 
@@ -69,8 +69,8 @@ class AuthExceptionHandlerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_TOKEN_EXPIRED_DATE"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_grant"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
 
     }
 
@@ -81,8 +81,8 @@ class AuthExceptionHandlerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_INVALID_REQUEST"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request parameter 'data' for method parameter type String is not present"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request parameter 'data' for method parameter type String is not present"));
 
     }
 }

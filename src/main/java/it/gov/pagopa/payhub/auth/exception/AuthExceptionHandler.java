@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static it.gov.pagopa.payhub.model.generated.AuthErrorDTO.CodeEnum.*;
 
 @RestControllerAdvice
 @Slf4j
@@ -25,7 +24,7 @@ public class AuthExceptionHandler {
     public AuthErrorDTO handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request){
         String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
 
-        return new AuthErrorDTO(INVALID_TOKEN, message);
+        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_GRANT, message);
     }
 
     @ExceptionHandler(TokenExpiredException.class)
@@ -33,7 +32,7 @@ public class AuthExceptionHandler {
     public AuthErrorDTO handleTokenExpiredException(TokenExpiredException ex, HttpServletRequest request){
         String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
 
-        return new AuthErrorDTO(TOKEN_EXPIRED_DATE, message);
+        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_GRANT, message);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -46,7 +45,7 @@ public class AuthExceptionHandler {
         log.info("A MissingServletRequestParameterException occurred handling request {}: HttpStatus 400 - {}",
                 AuthExceptionHandler.getRequestDetails(request), message);
         log.debug("Something went wrong handling request", ex);
-        return new AuthErrorDTO(INVALID_REQUEST, message);
+        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, message);
     }
 
     private static String logAndReturnUnauthorizedExceptionMessage(RuntimeException ex, HttpServletRequest request) {

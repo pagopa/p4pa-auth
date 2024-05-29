@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.service.AuthService;
 import it.gov.pagopa.payhub.controller.generated.AuthApi;
+import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +17,8 @@ public class AuthControllerImpl implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<Void> authToken(String token) {
-        authService.authToken(token);
+    public ResponseEntity<AccessToken> postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+        authService.authToken(subjectToken);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

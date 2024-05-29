@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "it.gov.pagopa.payhub"
-version = "0.0.1"
+version = "0.1.0"
 description = "p4pa-auth"
 
 java {
@@ -126,6 +126,9 @@ openApiGenerate {
 			"requestMappingMode" to "api_interface",
 			"useSpringBoot3" to "true",
 			"interfaceOnly" to "true",
-			"useTags" to "true"
+			"useTags" to "true",
+			"generateConstructorWithAllArgs" to "false",
+			"generatedConstructorWithRequiredArgs" to "false",
+			"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor @lombok.RequiredArgsConstructor"
 	))
 }
