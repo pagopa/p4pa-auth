@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
+import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,10 +41,14 @@ class AuthServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
+        AccessToken expectedResult = new AccessToken();
+        Mockito.when(exchangeTokenServiceMock.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
+                .thenReturn(expectedResult);
+
         // When
-        service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
-        Mockito.verify(exchangeTokenServiceMock).postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        Assertions.assertSame(expectedResult, result);
     }
 }

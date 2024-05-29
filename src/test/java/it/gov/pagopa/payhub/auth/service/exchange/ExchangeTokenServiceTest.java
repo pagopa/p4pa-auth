@@ -8,23 +8,28 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
+
 @ExtendWith(MockitoExtension.class)
 class ExchangeTokenServiceTest {
 
     @Mock
     private ValidateExternalTokenService validateExternalTokenServiceMock;
+    @Mock
+    private AccessTokenBuilderService accessTokenBuilderServiceMock;
 
     private ExchangeTokenService service;
 
     @BeforeEach
     void init(){
-        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock);
+        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock, accessTokenBuilderServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                validateExternalTokenServiceMock
+                validateExternalTokenServiceMock,
+                accessTokenBuilderServiceMock
         );
     }
 
@@ -38,10 +43,14 @@ class ExchangeTokenServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
+        HashMap<String, String> claims = new HashMap<>();
+        Mockito.when(validateExternalTokenServiceMock.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
+                .thenReturn(claims);
+
         // When
         service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
-        Mockito.verify(validateExternalTokenServiceMock).validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        Mockito.verify(accessTokenBuilderServiceMock).build(Mockito.same(claims));
     }
 }
