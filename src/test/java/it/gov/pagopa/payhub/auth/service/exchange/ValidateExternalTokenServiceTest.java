@@ -22,13 +22,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-class ValidateTokenServiceTest {
+class ValidateExternalTokenServiceTest {
 
     public static final Date EXPIRES_AT = new Date(System.currentTimeMillis() + 3600000);
     private static final String ALLOWED_AUDIENCE = "AUD";
     private static final String ALLOWED_SUBECJECT_ISSUER = "ISS";
 
-    private ValidateTokenService validateTokenService;
+    private ValidateExternalTokenService validateExternalTokenService;
     private WireMockServer wireMockServer;
     private JWTValidatorUtils utils;
 
@@ -40,7 +40,7 @@ class ValidateTokenServiceTest {
         wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
         wireMockServer.start();
         utils = new JWTValidatorUtils(wireMockServer);
-        validateTokenService = new ValidateTokenService(ALLOWED_AUDIENCE, ALLOWED_SUBECJECT_ISSUER, utils.getUrlJwkProvider(), jwtValidator);
+        validateExternalTokenService = new ValidateExternalTokenService(ALLOWED_AUDIENCE, ALLOWED_SUBECJECT_ISSUER, utils.getUrlJwkProvider(), jwtValidator);
     }
 
     @AfterEach
@@ -56,7 +56,7 @@ class ValidateTokenServiceTest {
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
-        validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE);
+        validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE);
         Mockito.verify(jwtValidator, times(1)).validate(subjectToken, wireMockUrl);
     }
 
@@ -69,7 +69,7 @@ class ValidateTokenServiceTest {
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidExchangeClientException.class, () ->
-                validateTokenService.validate("UNEXPECTED_CLIENT_ID", ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+                validateExternalTokenService.validate("UNEXPECTED_CLIENT_ID", ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
     }
 
     @Test
@@ -81,7 +81,7 @@ class ValidateTokenServiceTest {
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidGrantTypeException.class, () ->
-                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, "UNEXPECTED_GRANT_TYPE", subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+                validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, "UNEXPECTED_GRANT_TYPE", subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
     }
 
     @Test
@@ -93,7 +93,7 @@ class ValidateTokenServiceTest {
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenIssuerException.class, () ->
-                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, "UNEXPECTED_SUBECJECT_ISSUER", ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+                validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, "UNEXPECTED_SUBECJECT_ISSUER", ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
     }
 
     @Test
@@ -105,7 +105,7 @@ class ValidateTokenServiceTest {
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidExchangeRequestException.class, () ->
-                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, "UNEXPECTED_SCOPE"));
+                validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, "UNEXPECTED_SCOPE"));
     }
 
     @Test
@@ -117,7 +117,7 @@ class ValidateTokenServiceTest {
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+                validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
 
     }
 
@@ -130,7 +130,7 @@ class ValidateTokenServiceTest {
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+                validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
 
     }
 

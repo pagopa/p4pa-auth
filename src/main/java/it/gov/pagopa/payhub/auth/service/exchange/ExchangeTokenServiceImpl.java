@@ -7,16 +7,16 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ExchangeTokenServiceImpl implements ExchangeTokenService{
 
-    private final ValidateTokenService validateTokenService;
+    private final ValidateExternalTokenService validateExternalTokenService;
 
-    public ExchangeTokenServiceImpl(ValidateTokenService validateTokenService) {
-        this.validateTokenService = validateTokenService;
+    public ExchangeTokenServiceImpl(ValidateExternalTokenService validateExternalTokenService) {
+        this.validateExternalTokenService = validateExternalTokenService;
     }
 
     @Override
     public void postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
         log.info("Client {} requested to exchange a {} token provided by {} asking for grant type {} and scope {}",
                 clientId, subjectTokenType, subjectIssuer, grantType, scope);
-        validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        validateExternalTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
     }
 }

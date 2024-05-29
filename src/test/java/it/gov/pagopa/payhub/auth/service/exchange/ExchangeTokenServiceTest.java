@@ -12,19 +12,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ExchangeTokenServiceTest {
 
     @Mock
-    private ValidateTokenService validateTokenServiceMock;
+    private ValidateExternalTokenService validateExternalTokenServiceMock;
 
     private ExchangeTokenService service;
 
     @BeforeEach
     void init(){
-        service = new ExchangeTokenServiceImpl(validateTokenServiceMock);
+        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                validateTokenServiceMock
+                validateExternalTokenServiceMock
         );
     }
 
@@ -42,6 +42,6 @@ class ExchangeTokenServiceTest {
         service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
-        Mockito.verify(validateTokenServiceMock).validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        Mockito.verify(validateExternalTokenServiceMock).validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
     }
 }

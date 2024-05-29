@@ -6,10 +6,10 @@ spring:
 
 
 jwt:
-    token:
-        issuer: "\${JWT_TOKEN_ISS:https://dev.selfcare.pagopa.it}"
-        audience: "\${JWT_TOKEN_AUD:dev.piattaformaunitaria.pagopa.it}"
-        jwk: "\${JWT_TOKEN_JWK:https://dev.selfcare.pagopa.it}"
+    audience: "\${JWT_TOKEN_AUDIENCE:application-audience}"
+    external-token:
+        base-url: "\${JWT_EXTERNAL_TOKEN_BASE_URL:https://auth.server.com}"
+        issuer: "\${JWT_EXTERNAL_TOKEN_ISS:externalauthentication-server-issuer}"
 
 
 management:
