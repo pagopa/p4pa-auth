@@ -54,14 +54,6 @@ paths:
           required: true
           schema:
             enum: [
-              "urn:ietf:params:oauth:token-type:id_token"
-            ]
-            type: string
-        - name: scope
-          in: query
-          required: true
-          schema:
-            enum: [
               "openid"
             ]
             type: string

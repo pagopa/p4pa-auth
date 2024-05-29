@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.auth.service;
+package it.gov.pagopa.payhub.auth.service.exchange;
 
-import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,27 +9,27 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class ExchangeTokenServiceTest {
 
     @Mock
-    private ExchangeTokenService exchangeTokenServiceMock;
+    private ValidateTokenService validateTokenServiceMock;
 
-    private AuthService service;
+    private ExchangeTokenService service;
 
     @BeforeEach
     void init(){
-        service = new AuthServiceImpl(exchangeTokenServiceMock);
+        service = new ExchangeTokenServiceImpl(validateTokenServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                exchangeTokenServiceMock
+                validateTokenServiceMock
         );
     }
 
     @Test
-    void whenPostTokenThenCallExchangeService(){
+    void givenValidTokenWhenPostTokenThenSuccess(){
         // Given
         String token = "TOKEN";
 
@@ -38,6 +37,6 @@ class AuthServiceTest {
         service.postToken(token);
 
         // Then
-        Mockito.verify(exchangeTokenServiceMock).postToken(token);
+        Mockito.verify(validateTokenServiceMock).validate(token);
     }
 }
