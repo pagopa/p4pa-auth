@@ -12,7 +12,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
     }
 
     @Override
-    public void postToken(String token) {
-        validateTokenService.validate(token);
+    public void postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+        validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
     }
 }

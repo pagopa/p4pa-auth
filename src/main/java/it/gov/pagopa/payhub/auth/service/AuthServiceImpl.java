@@ -14,7 +14,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public void postToken(String token) {
-        exchangeTokenService.postToken(token);
+    public void postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+        exchangeTokenService.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
     }
 }

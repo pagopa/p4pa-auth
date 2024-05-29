@@ -49,39 +49,55 @@ class ValidateTokenServiceTest {
     }
     @Test
     void authTokenOk() throws Exception {
-        String token = utils.generateJWK(EXPIRES_AT);
+        String clientId = "CLIENT_ID";
+        String grantType = "GRANT_TYPE";
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        String subjectIssuer = "SUBJECT_ISSUER";
+        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
+        String scope = "SCOPE";
+
         Map<String, String> claimsMap = createJWKClaims(ISS, AUD);
 
         String wireMockUrl = utils.getUrlJwkProvider();
-        when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
-        validateTokenService.validate(token);
-        Mockito.verify(jwtValidator, times(1)).validate(token, wireMockUrl);
+        validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        Mockito.verify(jwtValidator, times(1)).validate(subjectToken, wireMockUrl);
     }
 
     @Test
     void authTokenWrongIss() throws Exception {
-        String token = utils.generateJWK(EXPIRES_AT);
+        String clientId = "CLIENT_ID";
+        String grantType = "GRANT_TYPE";
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        String subjectIssuer = "SUBJECT_ISSUER";
+        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
+        String scope = "SCOPE";
         Map<String, String> claimsMap = createJWKClaims("ISS_FAKE", AUD);
 
         String wireMockUrl = utils.getUrlJwkProvider();
-        when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                                validateTokenService.validate(token));
+                                validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope));
 
     }
 
     @Test
     void authTokenWrongAud() throws Exception {
-        String token = utils.generateJWK(EXPIRES_AT);
+        String clientId = "CLIENT_ID";
+        String grantType = "GRANT_TYPE";
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        String subjectIssuer = "SUBJECT_ISSUER";
+        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
+        String scope = "SCOPE";
         Map<String, String> claimsMap = createJWKClaims(ISS, "AUD_FAKE");
 
         String wireMockUrl = utils.getUrlJwkProvider();
-        when(jwtValidator.validate(token, wireMockUrl)).thenReturn(claimsMap);
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                        validateTokenService.validate(token));
+                        validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope));
 
     }
 
