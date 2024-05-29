@@ -1,38 +1,20 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import io.jsonwebtoken.Claims;
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.utils.JWTValidator;
+import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Slf4j
 @Service
 public class AuthServiceImpl implements AuthService{
-    private final String audience;
-    private final String issuer;
-    private final String urlJwkProvider;
-    private final JWTValidator jwtValidator;
+    private final ExchangeTokenService exchangeTokenService;
 
-    public AuthServiceImpl(@Value("${jwt.token.audience:}")String audience,
-                           @Value("${jwt.token.issuer:}")String issuer,
-                           @Value("${jwt.token.jwk:}")String urlJwkProvider,
-                           JWTValidator jwtValidator) {
-        this.audience = audience;
-        this.issuer = issuer;
-        this.urlJwkProvider = urlJwkProvider;
-        this.jwtValidator = jwtValidator;
+    public AuthServiceImpl(ExchangeTokenService exchangeTokenService) {
+        this.exchangeTokenService = exchangeTokenService;
     }
 
     @Override
-    public void authToken(String token) {
-        Map<String, String> data = jwtValidator.validate(token, urlJwkProvider);
-        if (!(data.get(Claims.AUDIENCE).equals(audience) && data.get(Claims.ISSUER).equals(issuer))){
-            throw new InvalidTokenException("Invalid audience or issuer in the token");
-        }
-        log.info("Token validated successfully");
+    public void postToken(String token) {
+        exchangeTokenService.postToken(token);
     }
 }
