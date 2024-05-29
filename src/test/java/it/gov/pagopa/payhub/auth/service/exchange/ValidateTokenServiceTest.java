@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 class ValidateTokenServiceTest {
 
     public static final Date EXPIRES_AT = new Date(System.currentTimeMillis() + 3600000);
-    private static final String AUD = "AUD";
-    private static final String ISS = "ISS";
+    private static final String ALLOWED_AUDIENCE = "AUD";
+    private static final String ALLOWED_SUBECJECT_ISSUER = "ISS";
 
     private ValidateTokenService validateTokenService;
     private WireMockServer wireMockServer;
@@ -40,64 +40,97 @@ class ValidateTokenServiceTest {
         wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
         wireMockServer.start();
         utils = new JWTValidatorUtils(wireMockServer);
-        validateTokenService = new ValidateTokenService(AUD, ISS, utils.getUrlJwkProvider(), jwtValidator);
+        validateTokenService = new ValidateTokenService(ALLOWED_AUDIENCE, ALLOWED_SUBECJECT_ISSUER, utils.getUrlJwkProvider(), jwtValidator);
     }
 
     @AfterEach
     void clean(){
         wireMockServer.stop();
     }
-    @Test
-    void authTokenOk() throws Exception {
-        String clientId = "CLIENT_ID";
-        String grantType = "GRANT_TYPE";
-        String subjectToken = utils.generateJWK(EXPIRES_AT);
-        String subjectIssuer = "SUBJECT_ISSUER";
-        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
-        String scope = "SCOPE";
 
-        Map<String, String> claimsMap = createJWKClaims(ISS, AUD);
+    @Test
+    void givenValidRequestThenOk() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
-        validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE);
         Mockito.verify(jwtValidator, times(1)).validate(subjectToken, wireMockUrl);
     }
 
     @Test
-    void authTokenWrongIss() throws Exception {
-        String clientId = "CLIENT_ID";
-        String grantType = "GRANT_TYPE";
+    void givenInvalidClientThenInvalidExchangeClientException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        String subjectIssuer = "SUBJECT_ISSUER";
-        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
-        String scope = "SCOPE";
-        Map<String, String> claimsMap = createJWKClaims("ISS_FAKE", AUD);
+        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(InvalidExchangeClientException.class, () ->
+                validateTokenService.validate("UNEXPECTED_CLIENT_ID", ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+    }
+
+    @Test
+    void givenInvalidGrantTypeException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(InvalidGrantTypeException.class, () ->
+                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, "UNEXPECTED_GRANT_TYPE", subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+    }
+
+    @Test
+    void givenInvalidSubjectTokenIssuerThenInvalidTokenIssuerException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(InvalidTokenIssuerException.class, () ->
+                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, "UNEXPECTED_SUBECJECT_ISSUER", ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
+    }
+
+    @Test
+    void givenInvalidScopeThenInvalidExchangeRequestException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(InvalidExchangeRequestException.class, () ->
+                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, "UNEXPECTED_SCOPE"));
+    }
+
+    @Test
+    void givenInvalidIssuerClaimThenInvalidTokenException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, String> claimsMap = createJWKClaims("ISS_FAKE", ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                                validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope));
+                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
 
     }
 
     @Test
-    void authTokenWrongAud() throws Exception {
-        String clientId = "CLIENT_ID";
-        String grantType = "GRANT_TYPE";
+    void givenInvalidAudienceClaimThenInvalidTokenException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        String subjectIssuer = "SUBJECT_ISSUER";
-        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
-        String scope = "SCOPE";
-        Map<String, String> claimsMap = createJWKClaims(ISS, "AUD_FAKE");
+        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, "AUD_FAKE");
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
         assertThrows(InvalidTokenException.class, () ->
-                        validateTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope));
+                validateTokenService.validate(ValidateTokenService.ALLOWED_CLIENT_ID, ValidateTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, ValidateTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateTokenService.ALLOWED_SCOPE));
 
     }
 
