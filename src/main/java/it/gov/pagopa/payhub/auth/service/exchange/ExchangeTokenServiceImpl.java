@@ -23,6 +23,6 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
         log.info("Client {} requested to exchange a {} token provided by {} asking for grant type {} and scope {}",
                 clientId, subjectTokenType, subjectIssuer, grantType, scope);
         Map<String, String> claims = validateExternalTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
-        return accessTokenBuilderService.build(claims);
+        return accessTokenBuilderService.build();
     }
 }
