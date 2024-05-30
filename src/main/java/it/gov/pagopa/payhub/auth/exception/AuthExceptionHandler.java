@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -19,35 +20,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AuthExceptionHandler {
 
     @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class})
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public AuthErrorDTO handleInvalidGrantError(RuntimeException ex, HttpServletRequest request){
-        String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
-
-        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_GRANT, message);
+    public ResponseEntity<AuthErrorDTO> handleInvalidGrantError(RuntimeException ex, HttpServletRequest request){
+        return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
     }
 
     @ExceptionHandler(InvalidExchangeClientException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public AuthErrorDTO handleInvalidClientError(RuntimeException ex, HttpServletRequest request){
-        String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
-
-        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_CLIENT, message);
+    public ResponseEntity<AuthErrorDTO> handleInvalidClientError(RuntimeException ex, HttpServletRequest request){
+        return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_CLIENT);
     }
 
     @ExceptionHandler({InvalidExchangeRequestException.class, InvalidTokenIssuerException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public AuthErrorDTO handleInvalidRequestError(RuntimeException ex, HttpServletRequest request){
-        String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
-
-        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, message);
+    public ResponseEntity<AuthErrorDTO> handleInvalidRequestError(RuntimeException ex, HttpServletRequest request){
+        return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
     }
 
     @ExceptionHandler({InvalidGrantTypeException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public AuthErrorDTO handleUnsupportedGrantType(RuntimeException ex, HttpServletRequest request){
-        String message = logAndReturnUnauthorizedExceptionMessage(ex, request);
-
-        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE, message);
+    public ResponseEntity<AuthErrorDTO> handleUnsupportedGrantType(RuntimeException ex, HttpServletRequest request){
+        return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -63,12 +52,17 @@ public class AuthExceptionHandler {
         return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, message);
     }
 
-    private static String logAndReturnUnauthorizedExceptionMessage(RuntimeException ex, HttpServletRequest request) {
+    private static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
         String message = ex.getMessage();
-        log.info("A {} occurred handling request {}: HttpStatus 401 - {}",
+        log.info("A {} occurred handling request {}: HttpStatus {} - {}",
                 ex.getClass(),
-                getRequestDetails(request), message);
-        return message;
+                getRequestDetails(request),
+                httpStatus.value(),
+                message);
+
+        return ResponseEntity
+                .status(httpStatus)
+                .body(new AuthErrorDTO(errorEnum, message));
     }
 
     private static String getRequestDetails(HttpServletRequest request) {
