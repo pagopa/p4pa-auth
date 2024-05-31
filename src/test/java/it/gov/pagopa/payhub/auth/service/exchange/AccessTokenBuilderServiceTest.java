@@ -1,11 +1,18 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import it.gov.pagopa.payhub.model.generated.AccessToken;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Base64;
+import java.util.regex.Pattern;
+
 public class AccessTokenBuilderServiceTest {
 
-    private AccessTokenBuilderService accessTokenBuilderService;
+    public static final int EXPIRE_IN = 3600;
 
     private final static String PRIVATE_KEY= """
             -----BEGIN RSA PRIVATE KEY-----
@@ -49,14 +56,28 @@ public class AccessTokenBuilderServiceTest {
             -----END PUBLIC KEY-----
             """;
 
+    private AccessTokenBuilderService accessTokenBuilderService;
+
     @BeforeEach
     void init(){
-        accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", 3600,PRIVATE_KEY, PUBLIC_KEY);
+        accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY);
     }
 
     @Test
     void test(){
-        // TODO assertions
-        System.out.println(accessTokenBuilderService.build());
+        // When
+        AccessToken result = accessTokenBuilderService.build();
+
+        // Then
+        Assertions.assertEquals("bearer", result.getTokenType());
+        Assertions.assertEquals(EXPIRE_IN, result.getExpiresIn());
+
+        DecodedJWT decodedAccessToken = JWT.decode(result.getAccessToken());
+        String decodedHeader = new String(Base64.getDecoder().decode(decodedAccessToken.getHeader()));
+        String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
+
+        Assertions.assertEquals("{\"alg\":\"RS512\",\"typ\":\"JWT\"}", decodedHeader);
+        Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
+        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
     }
 }
