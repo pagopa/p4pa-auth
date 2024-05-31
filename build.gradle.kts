@@ -37,6 +37,7 @@ val nimbusJoseJwtVersion = "9.38-rc5"
 val jjwtVersion = "0.12.5"
 val wiremockVersion = "3.5.4"
 val findbugsVersion = "3.0.2"
+val bouncycastleVersion = "1.78.1"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -56,6 +57,7 @@ dependencies {
 	implementation("com.auth0:jwks-rsa:$jwksRsaVersion")
 	implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
 	implementation("io.jsonwebtoken:jjwt:$jjwtVersion")
+	implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")

@@ -51,6 +51,6 @@ class ExchangeTokenServiceTest {
         service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
-        Mockito.verify(accessTokenBuilderServiceMock).build(Mockito.same(claims));
+        Mockito.verify(accessTokenBuilderServiceMock).build();
     }
 }
