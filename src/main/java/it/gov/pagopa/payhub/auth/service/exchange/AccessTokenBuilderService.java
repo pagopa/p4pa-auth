@@ -26,7 +26,7 @@ public class AccessTokenBuilderService {
 
     public AccessTokenBuilderService(
             @Value("${jwt.audience}") String allowedAudience,
-            @Value("${jwt.expire-in") int expireIn,
+            @Value("${jwt.access-token.expire-in}") int expireIn,
             @Value("${jwt.access-token.private-key}") String privateKey,
             @Value("${jwt.access-token.public-key}") String publicKey
             ) {
