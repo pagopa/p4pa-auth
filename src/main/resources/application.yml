@@ -3,6 +3,14 @@ spring:
         name: ${artifactId}
         version: ${version}
     jmx.enabled: true
+    cache:
+        type: redis
+    data:
+        redis:
+            host: "\${REDIS_HOST:localhost}"
+            port: "\${REDIS_PORT:6380}"
+            password: "\${REDIS_PASSWORD:}"
+            ssl.enabled: "\${REDIS_SSL_ENABLED:true}"
 
 
 jwt:

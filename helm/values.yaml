@@ -59,14 +59,20 @@ microservice-chart:
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
     APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
+
     ENABLE_AUDIT_APPENDER: "TRUE"
 
+    REDIS_PORT: "6380"
+    REDIS_SSL_ENABLED: "true"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
 
     JWT_TOKEN_PRIVATE_KEY: jwt-private-key
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
+
+    REDIS_HOST: cache-standalone-host
+    REDIS_PASSWORD: cache-password
 
   # nodeSelector: {}
 

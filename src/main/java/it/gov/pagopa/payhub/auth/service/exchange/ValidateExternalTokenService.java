@@ -14,7 +14,7 @@ import java.util.Map;
 class ValidateExternalTokenService {
     public static final String ALLOWED_CLIENT_ID = "piattaforma-unitaria";
     public static final String ALLOWED_GRANT_TYPE="urn:ietf:params:oauth:grant-type:token-exchange";
-    public static final String ALLOWED_SUBJECT_TOKEN_TYPE="urn:ietf:params:oauth:token-type:id_token";
+    public static final String ALLOWED_SUBJECT_TOKEN_TYPE="urn:ietf:params:oauth:token-type:jwt";
     public static final String ALLOWED_SCOPE="openid";
 
     private final String allowedAudience;

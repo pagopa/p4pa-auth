@@ -1,6 +1,9 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import it.gov.pagopa.payhub.auth.service.TokenStoreService;
+import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,19 +20,22 @@ class ExchangeTokenServiceTest {
     private ValidateExternalTokenService validateExternalTokenServiceMock;
     @Mock
     private AccessTokenBuilderService accessTokenBuilderServiceMock;
+    @Mock
+    private TokenStoreService tokenStoreServiceMock;
 
     private ExchangeTokenService service;
 
     @BeforeEach
     void init(){
-        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock, accessTokenBuilderServiceMock);
+        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock, accessTokenBuilderServiceMock, tokenStoreServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
                 validateExternalTokenServiceMock,
-                accessTokenBuilderServiceMock
+                accessTokenBuilderServiceMock,
+                tokenStoreServiceMock
         );
     }
 
@@ -43,14 +49,19 @@ class ExchangeTokenServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
-        HashMap<String, String> claims = new HashMap<>();
+        HashMap<String, String> expectedClaims = new HashMap<>();
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
-                .thenReturn(claims);
+                .thenReturn(expectedClaims);
+
+        AccessToken expectedAccessToken = new AccessToken();
+        Mockito.when(accessTokenBuilderServiceMock.build())
+                .thenReturn(expectedAccessToken);
 
         // When
-        service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
-        Mockito.verify(accessTokenBuilderServiceMock).build();
+        Assertions.assertSame(expectedAccessToken, result);
+        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken), Mockito.same(expectedClaims));
     }
 }
