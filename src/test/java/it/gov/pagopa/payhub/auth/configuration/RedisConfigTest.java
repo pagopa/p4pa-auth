@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,6 +9,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 
 class RedisConfigTest {
 
+    private final static ObjectMapper objectMapper = new ObjectMapper();
     private final static RedisConfig redisConfig = new RedisConfig();
 
     @Test
@@ -16,7 +18,7 @@ class RedisConfigTest {
         int expirationSeconds = 10;
 
         // When
-        RedisCacheManagerBuilderCustomizer result = redisConfig.redisCacheManagerBuilderCustomizer(expirationSeconds);
+        RedisCacheManagerBuilderCustomizer result = redisConfig.redisCacheManagerBuilderCustomizer(objectMapper, expirationSeconds);
 
         // Then
         Assertions.assertNotNull(result);
