@@ -163,7 +163,28 @@ components:
         issuer:
           type: string
         organization:
+          $ref: components/schemas/UserOrganizationRoles
+    UserOrganizationRoles:
+      type: object
+      required:
+        - id
+        - name
+        - fiscalCode
+        - ipaCode
+        - roles
+      properties:
+        id:
           type: string
+        name:
+          type: string
+        fiscalCode:
+          type: string
+        ipaCode:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
     AuthErrorDTO:
       type: object
       required:

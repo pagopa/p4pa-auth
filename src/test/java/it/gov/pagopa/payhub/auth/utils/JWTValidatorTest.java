@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.utils;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
@@ -42,7 +43,7 @@ class JWTValidatorTest {
 
         String urlJwkProvider = utils.getUrlJwkProvider();
 
-        Map<String, String> claimsMap = jwtValidator.validate(token, urlJwkProvider);
+        Map<String, Claim> claimsMap = jwtValidator.validate(token, urlJwkProvider);
 
         assertNotNull(claimsMap);
     }

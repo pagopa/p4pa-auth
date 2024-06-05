@@ -1,26 +1,25 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.configuration.RedisConfig;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 @CacheConfig(cacheNames = RedisConfig.CACHE_NAME_ACCESS_TOKEN)
 class TokenStoreServiceImpl implements  TokenStoreService{
     @Override
     @CachePut
-    public Map<String, String> save(String accessToken, Map<String, String> idTokenClaims) {
+    public UserInfo save(String accessToken, UserInfo idTokenClaims) {
         return idTokenClaims;
     }
 
     @Override
     @Cacheable
-    public Map<String, String> load(String accessToken) {
+    public UserInfo load(String accessToken) {
         return null;
     }
 

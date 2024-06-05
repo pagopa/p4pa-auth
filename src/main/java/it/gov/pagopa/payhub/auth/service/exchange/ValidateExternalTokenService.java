@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import com.auth0.jwt.interfaces.Claim;
 import io.jsonwebtoken.Claims;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-class ValidateExternalTokenService {
+public class ValidateExternalTokenService {
     public static final String ALLOWED_CLIENT_ID = "piattaforma-unitaria";
     public static final String ALLOWED_GRANT_TYPE="urn:ietf:params:oauth:grant-type:token-exchange";
     public static final String ALLOWED_SUBJECT_TOKEN_TYPE="urn:ietf:params:oauth:token-type:jwt";
@@ -33,11 +34,11 @@ class ValidateExternalTokenService {
         this.jwtValidator = jwtValidator;
     }
 
-    public Map<String, String> validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+    public Map<String, Claim> validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
         validateClient(clientId);
         validateProtocolConfiguration(grantType, subjectTokenType, scope);
         validateSubjectTokenIssuer(subjectIssuer);
-        Map<String, String> claims = validateSubjectToken(subjectToken);
+        Map<String, Claim> claims = validateSubjectToken(subjectToken);
         log.info("SubjectToken authorized");
         return claims;
     }
@@ -66,12 +67,12 @@ class ValidateExternalTokenService {
         }
     }
 
-    private Map<String, String> validateSubjectToken(String subjectToken) {
-        Map<String, String> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
-        if (!allowedAudience.equals(claims.get(Claims.AUDIENCE))){
+    private Map<String, Claim> validateSubjectToken(String subjectToken) {
+        Map<String, Claim> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
+        if (!allowedAudience.equals(claims.get(Claims.AUDIENCE).asString())){
             throw new InvalidTokenException("Invalid audience: " + allowedAudience);
         }
-        if (!allowedIssuer.equals(claims.get(Claims.ISSUER))){
+        if (!allowedIssuer.equals(claims.get(Claims.ISSUER).asString())){
             throw new InvalidTokenException("Invalid issuer: " + allowedIssuer);
         }
         return claims;

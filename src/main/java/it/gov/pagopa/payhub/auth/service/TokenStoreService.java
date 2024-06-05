@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import java.util.Map;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 
 public interface TokenStoreService {
-    Map<String, String> save(String accessToken, Map<String, String> idTokenClaims);
-    Map<String, String> load(String accessToken);
+    UserInfo save(String accessToken, UserInfo userInfo);
+    UserInfo load(String accessToken);
     void delete(String accessToken);
 }
