@@ -1,5 +1,8 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
@@ -12,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -51,7 +54,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenValidRequestThenOk() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -63,7 +66,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenInvalidClientThenInvalidExchangeClientException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -75,7 +78,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenInvalidGrantTypeException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -87,7 +90,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenInvalidSubjectTokenIssuerThenInvalidTokenIssuerException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -99,7 +102,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenInvalidSubjectTypeThenInvalidTokenException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -111,7 +114,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenInvalidScopeThenInvalidExchangeRequestException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -123,7 +126,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenInvalidIssuerClaimThenInvalidTokenException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims("ISS_FAKE", ALLOWED_AUDIENCE);
+        Map<String, Claim> claimsMap = createJWKClaims("ISS_FAKE", ALLOWED_AUDIENCE);
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -136,7 +139,7 @@ class ValidateExternalTokenServiceTest {
     @Test
     void givenInvalidAudienceClaimThenInvalidTokenException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
-        Map<String, String> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, "AUD_FAKE");
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, "AUD_FAKE");
 
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
@@ -146,12 +149,12 @@ class ValidateExternalTokenServiceTest {
 
     }
 
-    private Map<String, String> createJWKClaims (String iss, String aud){
-        Map<String, String> claims = new HashMap<>();
-        claims.put("iss", iss);
-        claims.put("aud", aud);
-        claims.put("exp", "1715267318");
-        claims.put("jti", "my-key-id");
-        return claims;
+    private Map<String, Claim> createJWKClaims (String iss, String aud){
+        return JWT.decode(JWT.create()
+                .withIssuer(iss)
+                .withAudience(aud)
+                .withExpiresAt(Instant.ofEpochSecond(1715267318))
+                .withJWTId("my-key-id")
+                .sign(Algorithm.none())).getClaims();
     }
 }

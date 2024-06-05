@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,12 +24,14 @@ class ExchangeTokenServiceTest {
     private AccessTokenBuilderService accessTokenBuilderServiceMock;
     @Mock
     private TokenStoreService tokenStoreServiceMock;
+    @Mock
+    private IDTokenClaims2UserInfoMapper idTokenClaimsMapperMock;
 
     private ExchangeTokenService service;
 
     @BeforeEach
     void init(){
-        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock, accessTokenBuilderServiceMock, tokenStoreServiceMock);
+        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock, accessTokenBuilderServiceMock, tokenStoreServiceMock, idTokenClaimsMapperMock);
     }
 
     @AfterEach
@@ -35,7 +39,8 @@ class ExchangeTokenServiceTest {
         Mockito.verifyNoMoreInteractions(
                 validateExternalTokenServiceMock,
                 accessTokenBuilderServiceMock,
-                tokenStoreServiceMock
+                tokenStoreServiceMock,
+                idTokenClaimsMapperMock
         );
     }
 
@@ -49,7 +54,7 @@ class ExchangeTokenServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
-        HashMap<String, String> expectedClaims = new HashMap<>();
+        HashMap<String, Claim> expectedClaims = new HashMap<>();
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedClaims);
 
@@ -57,11 +62,15 @@ class ExchangeTokenServiceTest {
         Mockito.when(accessTokenBuilderServiceMock.build())
                 .thenReturn(expectedAccessToken);
 
+        UserInfo userInfo = new UserInfo();
+        Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
+                .thenReturn(userInfo);
+
         // When
         AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
-        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(expectedClaims));
+        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(userInfo));
     }
 }

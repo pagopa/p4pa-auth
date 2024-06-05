@@ -1,10 +1,8 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 class TokenStoreServiceTest {
 
@@ -13,14 +11,14 @@ class TokenStoreServiceTest {
     @Test
     void givenClaimsWhenSaveThenReturnThem(){
         // Given
-        HashMap<String, String> idTokenClaims = new HashMap<>();
+        UserInfo userInfo = new UserInfo();
         String accessToken = "AccessToken";
 
         // When
-        Map<String, String> result = service.save(accessToken, idTokenClaims);
+        UserInfo result = service.save(accessToken, userInfo);
 
         // Then
-        Assertions.assertSame(idTokenClaims, result);
+        Assertions.assertSame(userInfo, result);
     }
 
     @Test
@@ -29,7 +27,7 @@ class TokenStoreServiceTest {
         String accessToken = "AccessToken";
 
         // When
-        Map<String, String> result = service.load(accessToken);
+        UserInfo result = service.load(accessToken);
 
         // Then
         Assertions.assertNull(result);
