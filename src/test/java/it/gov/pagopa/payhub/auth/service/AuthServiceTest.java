@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
+import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,18 +18,21 @@ class AuthServiceTest {
 
     @Mock
     private ExchangeTokenService exchangeTokenServiceMock;
+    @Mock
+    private UserService userServiceMock;
 
     private AuthService service;
 
     @BeforeEach
     void init(){
-        service = new AuthServiceImpl(exchangeTokenServiceMock);
+        service = new AuthServiceImpl(exchangeTokenServiceMock, userServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                exchangeTokenServiceMock
+                exchangeTokenServiceMock,
+                userServiceMock
         );
     }
 
@@ -47,6 +52,21 @@ class AuthServiceTest {
 
         // When
         AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenGetUserInfoThenCallUserService(){
+        // Given
+        String accessToken = "accessToken";
+        UserInfo expectedResult = new UserInfo();
+        Mockito.when(userServiceMock.getUserInfo(accessToken))
+                .thenReturn(expectedResult);
+
+        // When
+        UserInfo result = service.getUserInfo(accessToken);
 
         // Then
         Assertions.assertSame(expectedResult, result);
