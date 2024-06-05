@@ -1,0 +1,101 @@
+{
+	"info": {
+		"_postman_id": "d9907fbe-b8fd-4a6c-93e8-26a33634e4ce",
+		"name": "p4pa-auth - E2E",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15747968",
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-d9907fbe-b8fd-4a6c-93e8-26a33634e4ce?action=share&source=collection_link&creator=15747968"
+	},
+	"item": [
+		{
+			"name": "postToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - postToken - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(3600);\r",
+							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "piattaforma-unitaria"
+						},
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange"
+						},
+						{
+							"key": "subject_token",
+							"value": "{{tokenExchange_subjectToken}}"
+						},
+						{
+							"key": "subject_issuer",
+							"value": "{{tokenExchange_issuer}}"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:jwt"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
