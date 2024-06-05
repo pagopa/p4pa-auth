@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 @CacheConfig(cacheNames = RedisConfig.CACHE_NAME_ACCESS_TOKEN)
 class TokenStoreServiceImpl implements  TokenStoreService{
     @Override
-    @CachePut
+    @CachePut(key = "#accessToken")
     public UserInfo save(String accessToken, UserInfo idTokenClaims) {
         return idTokenClaims;
     }
 
     @Override
-    @Cacheable
+    @Cacheable(unless="#result == null")
     public UserInfo load(String accessToken) {
         return null;
     }
