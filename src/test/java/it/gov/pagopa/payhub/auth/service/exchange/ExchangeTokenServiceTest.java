@@ -53,7 +53,7 @@ class ExchangeTokenServiceTest {
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedClaims);
 
-        AccessToken expectedAccessToken = new AccessToken();
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
         Mockito.when(accessTokenBuilderServiceMock.build())
                 .thenReturn(expectedAccessToken);
 
@@ -62,6 +62,6 @@ class ExchangeTokenServiceTest {
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
-        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken), Mockito.same(expectedClaims));
+        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(expectedClaims));
     }
 }

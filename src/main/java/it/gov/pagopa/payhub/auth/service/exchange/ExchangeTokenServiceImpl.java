@@ -27,7 +27,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
                 clientId, subjectTokenType, subjectIssuer, grantType, scope);
         Map<String, String> claims = validateExternalTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
         AccessToken accessToken = accessTokenBuilderService.build();
-        tokenStoreService.save(accessToken, claims);
+        tokenStoreService.save(accessToken.getAccessToken(), claims);
         return accessToken;
     }
 }

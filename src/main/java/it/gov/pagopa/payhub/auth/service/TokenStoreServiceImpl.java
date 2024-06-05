@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.configuration.RedisConfig;
-import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -15,19 +14,19 @@ import java.util.Map;
 class TokenStoreServiceImpl implements  TokenStoreService{
     @Override
     @CachePut
-    public Map<String, String> save(AccessToken accessToken, Map<String, String> idTokenClaims) {
+    public Map<String, String> save(String accessToken, Map<String, String> idTokenClaims) {
         return idTokenClaims;
     }
 
     @Override
     @Cacheable
-    public Map<String, String> load(AccessToken accessToken) {
+    public Map<String, String> load(String accessToken) {
         return null;
     }
 
     @Override
     @CacheEvict
-    public void delete(AccessToken accessToken) {
+    public void delete(String accessToken) {
         //Do Nothing
     }
 }
