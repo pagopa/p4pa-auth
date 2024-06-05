@@ -74,6 +74,66 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "getUserInfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getUserInfo - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getUserInfo - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"userId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"name\").to.eq(\"demo\")\r",
+							"    pm.expect(jsonResponse).have.property(\"familyName\").to.eq(\"demo\")\r",
+							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
+							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
+							"\r",
+							"    pm.expect(jsonResponse.organization).have.property(\"id\")\r",
+							"    pm.expect(jsonResponse.organization).have.property(\"name\").to.eq(\"Ente P4PA intermediato 1\")\r",
+							"    pm.expect(jsonResponse.organization).have.property(\"fiscalCode\").to.eq(\"99999999990\")\r",
+							"    pm.expect(jsonResponse.organization).have.property(\"ipaCode\").to.eq(\"SELC_99999999990\")\r",
+							"    pm.expect(jsonResponse.organization.roles).have.property(\"length\").to.eq(1)\r",
+							"    pm.expect(jsonResponse.organization.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/payhub/auth/userinfo",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
