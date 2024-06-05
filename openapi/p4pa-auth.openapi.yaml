@@ -86,10 +86,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserInfo'
-        '400':
-          description: Invalid request
         '401':
-          description: Authentication failed
+          description: Unauthorized
         '500':
           description: Server ERROR
           content:

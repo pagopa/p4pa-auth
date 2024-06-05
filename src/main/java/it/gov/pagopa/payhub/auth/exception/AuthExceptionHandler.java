@@ -39,6 +39,11 @@ public class AuthExceptionHandler {
         return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE);
     }
 
+    @ExceptionHandler({InvalidAccessTokenException.class})
+    public ResponseEntity<Void> handleInvalidAccessTokenException(InvalidAccessTokenException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public AuthErrorDTO handleMissingServletRequestParameterException(
