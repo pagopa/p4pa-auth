@@ -38,6 +38,12 @@ public class AuthControllerImpl implements AuthApi {
         }
     }
 
+    @Override
+    public ResponseEntity<Void> logout(String clientId, String token) {
+        authService.logout(clientId, token);
+        return ResponseEntity.ok(null);
+    }
+
     private static String getAuthorizationHeader() {
         return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader(HttpHeaders.AUTHORIZATION);
     }

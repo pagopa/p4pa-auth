@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
+import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
@@ -12,10 +13,12 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService{
     private final ExchangeTokenService exchangeTokenService;
     private final UserService userService;
+    private final LogoutService logoutService;
 
-    public AuthServiceImpl(ExchangeTokenService exchangeTokenService, UserService userService) {
+    public AuthServiceImpl(ExchangeTokenService exchangeTokenService, UserService userService, LogoutService logoutService) {
         this.exchangeTokenService = exchangeTokenService;
         this.userService = userService;
+        this.logoutService = logoutService;
     }
 
     @Override
@@ -26,5 +29,10 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public UserInfo getUserInfo(String accessToken) {
         return userService.getUserInfo(accessToken);
+    }
+
+    @Override
+    public void logout(String clientId, String token) {
+        logoutService.logout(clientId, token);
     }
 }
