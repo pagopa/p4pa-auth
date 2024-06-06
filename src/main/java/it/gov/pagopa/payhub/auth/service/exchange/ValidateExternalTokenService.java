@@ -43,7 +43,7 @@ public class ValidateExternalTokenService {
         return claims;
     }
 
-    private void validateClient(String clientId) {
+    public void validateClient(String clientId) {
         if (!ALLOWED_CLIENT_ID.equals(clientId)){
             throw new InvalidExchangeClientException("Invalid clientId " + clientId);
         }

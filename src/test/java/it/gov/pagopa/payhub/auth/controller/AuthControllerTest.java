@@ -165,16 +165,30 @@ class AuthControllerTest {
     }
 
     @Test
-    void givenCompleteRequestWhenLogoutThenOk() throws Exception {
+    void givenInvalidClientIdWhenLogoutThenBadRequest() throws Exception {
+        mockMvc.perform(
+                post("/payhub/auth/revoke")
+                        .param("token", "token")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void givenCompleteRequestWhenLogoutThenInvalidClientError() throws Exception {
         String clientId = "CLIENTID";
         String token = "TOKEN";
 
-        mockMvc.perform(
+        Mockito.doThrow(new InvalidExchangeClientException(""))
+                .when(authServiceMock).logout(clientId, token);
+
+        MvcResult result = mockMvc.perform(
                 post("/payhub/auth/revoke")
                         .param("client_id", clientId)
                         .param("token", token)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isUnauthorized()).andReturn();
 
-        Mockito.verify(authServiceMock).logout(clientId, token);
+        AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                AuthErrorDTO.class);
+        assertEquals(AuthErrorDTO.ErrorEnum.INVALID_CLIENT, actual.getError());
+        assertEquals("", actual.getErrorDescription());
     }
 }
