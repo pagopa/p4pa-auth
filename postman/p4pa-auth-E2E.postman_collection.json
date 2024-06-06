@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "d9907fbe-b8fd-4a6c-93e8-26a33634e4ce",
-		"name": "p4pa-auth - E2E",
+		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15747968",
 		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-d9907fbe-b8fd-4a6c-93e8-26a33634e4ce?action=share&source=collection_link&creator=15747968"
@@ -101,6 +101,95 @@
 							"    pm.expect(jsonResponse.organization).have.property(\"ipaCode\").to.eq(\"SELC_99999999990\")\r",
 							"    pm.expect(jsonResponse.organization.roles).have.property(\"length\").to.eq(1)\r",
 							"    pm.expect(jsonResponse.organization.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/payhub/auth/userinfo",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getUserInfo - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/payhub/auth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"revoke"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "piattaforma-unitaria"
+						},
+						{
+							"key": "token",
+							"value": "{{accessToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUserInfo NoSession",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getUserInfo - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
 							"});"
 						],
 						"type": "text/javascript",
