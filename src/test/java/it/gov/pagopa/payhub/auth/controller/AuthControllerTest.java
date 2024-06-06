@@ -155,4 +155,26 @@ class AuthControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void givenNoClientIdWhenLogoutThenBadRequest() throws Exception {
+        mockMvc.perform(
+                post("/payhub/auth/revoke")
+                        .param("token", "token")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void givenCompleteRequestWhenLogoutThenOk() throws Exception {
+        String clientId = "CLIENTID";
+        String token = "TOKEN";
+
+        mockMvc.perform(
+                post("/payhub/auth/revoke")
+                        .param("client_id", clientId)
+                        .param("token", token)
+        ).andExpect(status().isOk());
+
+        Mockito.verify(authServiceMock).logout(clientId, token);
+    }
 }

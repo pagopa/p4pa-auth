@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
+import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
@@ -20,19 +21,22 @@ class AuthServiceTest {
     private ExchangeTokenService exchangeTokenServiceMock;
     @Mock
     private UserService userServiceMock;
+    @Mock
+    private LogoutService logoutServiceMock;
 
     private AuthService service;
 
     @BeforeEach
     void init(){
-        service = new AuthServiceImpl(exchangeTokenServiceMock, userServiceMock);
+        service = new AuthServiceImpl(exchangeTokenServiceMock, userServiceMock, logoutServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
                 exchangeTokenServiceMock,
-                userServiceMock
+                userServiceMock,
+                logoutServiceMock
         );
     }
 
@@ -70,5 +74,18 @@ class AuthServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenLogoutThenCallLogout(){
+        // Given
+        String clientId = "clientId";
+        String accessToken = "accessToken";
+
+        // When
+        service.logout(clientId, accessToken);
+
+        // Then
+        Mockito.verify(logoutServiceMock).logout(clientId, accessToken);
     }
 }
