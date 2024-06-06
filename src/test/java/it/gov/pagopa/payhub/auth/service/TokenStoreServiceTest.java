@@ -22,7 +22,7 @@ class TokenStoreServiceTest {
     }
 
     @Test
-    void givenAccessTokenWhenSaveThenNull(){
+    void givenAccessTokenWhenLoadThenNull(){
         // Given
         String accessToken = "AccessToken";
 
