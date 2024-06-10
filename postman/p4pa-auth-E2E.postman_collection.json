@@ -188,7 +188,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Auth - getUserInfo - Responses with 200\", function () {\r",
+							"pm.test(\"Auth - getUserInfo - Responses with 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
 							"});"
 						],
