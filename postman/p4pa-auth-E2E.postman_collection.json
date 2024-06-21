@@ -36,9 +36,9 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
-						"{{baseUrl}}"
+						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
 						"payhub",
@@ -122,9 +122,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/payhub/auth/userinfo",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo",
 					"host": [
-						"{{baseUrl}}"
+						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
 						"payhub",
@@ -158,9 +158,9 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/payhub/auth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
 					"host": [
-						"{{baseUrl}}"
+						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
 						"payhub",
@@ -211,9 +211,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/payhub/auth/userinfo",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo",
 					"host": [
-						"{{baseUrl}}"
+						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
 						"payhub",
