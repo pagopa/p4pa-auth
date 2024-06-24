@@ -17,13 +17,15 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
     @Override
     public UserInfo apply(Map<String, Claim> claims) {
         try {
+            UserOrganizationRoles organizationRoles = buildUserOrganizationRoles(claims);
             return UserInfo.builder()
                     .issuer(claims.get(Claims.ISSUER).asString())
                     .userId(claims.get("uid").asString())
                     .name(claims.get("name").asString())
                     .familyName(claims.get("family_name").asString())
                     .fiscalCode(claims.get("fiscal_number").asString())
-                    .organization(buildUserOrganizationRoles(claims))
+                    .organizationAccess(organizationRoles.getIpaCode())
+                    .organizations(List.of(organizationRoles))
                     .build();
         } catch (Exception e){
             throw new InvalidTokenException("Unexpected IDToken structure", e);
