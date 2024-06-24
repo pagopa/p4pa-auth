@@ -76,6 +76,7 @@ microservice-chart:
 
     REDIS_HOST: cache-standalone-host
     REDIS_PASSWORD: cache-password
+    MONGODB_URI: mongodb-connection-string
 
   # nodeSelector: {}
 
