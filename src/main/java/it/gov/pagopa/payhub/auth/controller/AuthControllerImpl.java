@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AuthService;
-import it.gov.pagopa.payhub.controller.generated.AuthApi;
+import it.gov.pagopa.payhub.controller.generated.AuthnApi;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +14,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
-public class AuthControllerImpl implements AuthApi {
+public class AuthControllerImpl implements AuthnApi {
 
     private final AuthService authService;
 
