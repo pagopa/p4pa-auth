@@ -19,6 +19,7 @@ public class MongoConfig {
     public static class MongoDbCustomProperties {
         ConnectionPoolSettings connectionPool;
 
+        @Setter
         static class ConnectionPoolSettings {
             int maxSize;
             int minSize;
