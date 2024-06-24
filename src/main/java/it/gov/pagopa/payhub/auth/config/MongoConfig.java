@@ -17,7 +17,7 @@ public class MongoConfig {
     @ConfigurationProperties(prefix = "spring.data.mongodb.config")
     @Setter
     public static class MongoDbCustomProperties {
-        private ConnectionPoolSettings connectionPool;
+        ConnectionPoolSettings connectionPool;
 
         static class ConnectionPoolSettings {
             int maxSize;
