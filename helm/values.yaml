@@ -65,6 +65,9 @@ microservice-chart:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
 
+    JWT_TOKEN_EXPIRATION_SECONDS: "14400" # 4 HOURS
+    ENABLE_ACCESS_ORGANIZATION_MODE: "true"
+
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
 

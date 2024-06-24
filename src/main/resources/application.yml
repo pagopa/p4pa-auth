@@ -36,3 +36,9 @@ management:
             exposure.include: "*"
         web:
             exposure.include: info, health
+
+app:
+    # If true, it will expect the presence of the access organization inside the ID Token.
+    # Thus it will register te relation between the operator and the relation with the provided roles.
+    # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
+    enable-access-organization-mode: "\${ENABLE_ACCESS_ORGANIZATION_MODE:true}"
