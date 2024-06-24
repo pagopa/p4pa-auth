@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.auth.configuration.RedisConfig;
+import it.gov.pagopa.payhub.auth.config.RedisConfig;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;

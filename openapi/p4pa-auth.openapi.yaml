@@ -68,6 +68,8 @@ paths:
           description: Invalid request
         '401':
           description: Authentication failed
+        '429':
+          description: Too Many Requests
         '500':
           description: Server ERROR
           content:
@@ -88,6 +90,8 @@ paths:
                 $ref: '#/components/schemas/UserInfo'
         '401':
           description: Unauthorized
+        '429':
+          description: Too Many Requests
         '500':
           description: Server ERROR
           content:

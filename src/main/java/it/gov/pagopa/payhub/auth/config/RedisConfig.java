@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.configuration;
+package it.gov.pagopa.payhub.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.model.generated.UserInfo;

@@ -57,7 +57,7 @@ public class AuthExceptionHandler {
         return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, message);
     }
 
-    private static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
+    static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
         String message = ex.getMessage();
         log.info("A {} occurred handling request {}: HttpStatus {} - {}",
                 ex.getClass(),
@@ -70,7 +70,7 @@ public class AuthExceptionHandler {
                 .body(new AuthErrorDTO(errorEnum, message));
     }
 
-    private static String getRequestDetails(HttpServletRequest request) {
+    static String getRequestDetails(HttpServletRequest request) {
         return "%s %s".formatted(request.getMethod(), request.getRequestURI());
     }
 
