@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.User;
+import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,17 +26,17 @@ class UsersRepositoryExtImplTest {
     private UsersRepositoryExt repository;
 
     @BeforeEach
-    void init(){
+    void init() {
         repository = new UsersRepositoryExtImpl(mongoTemplateMock);
     }
 
     @AfterEach
-    void verifyNotMoreInvocation(){
+    void verifyNotMoreInvocation() {
         Mockito.verifyNoMoreInteractions(mongoTemplateMock);
     }
 
     @Test
-    void whenRegisterUserThenReturnStoredUser(){
+    void whenRegisterUserThenReturnStoredUser() {
         // Given
         User user = User.builder()
                 .iamIssuer("IAMISSUER")
@@ -46,11 +47,19 @@ class UsersRepositoryExtImplTest {
 
         Mockito.when(mongoTemplateMock.findAndModify(
                 Mockito.eq(Query.query(Criteria.where(User.Fields.mappedExternalUserId).is(user.getMappedExternalUserId()))),
-                Mockito.eq(new Update()
-                        .setOnInsert(User.Fields.userCode, user.getUserCode())
-                        .setOnInsert(User.Fields.iamIssuer, user.getIamIssuer())
-                        .setOnInsert(User.Fields.tosAccepted, false)
-                        .set(User.Fields.lastLogin, LocalDateTime.now())),
+                Mockito.argThat(u -> {
+                    LocalDateTime lastLogin = u.getUpdateObject().get("$set", Document.class).get(User.Fields.lastLogin, LocalDateTime.class);
+                    Assertions.assertNotNull(lastLogin);
+                    Assertions.assertFalse(lastLogin.isAfter(LocalDateTime.now()));
+                    Assertions.assertTrue(lastLogin.isAfter(LocalDateTime.now().minusMinutes(1)));
+
+                    return u.equals(new Update()
+                            .setOnInsert(User.Fields.userCode, user.getUserCode())
+                            .setOnInsert(User.Fields.iamIssuer, user.getIamIssuer())
+                            .setOnInsert(User.Fields.tosAccepted, false)
+                            .set(User.Fields.lastLogin, lastLogin)
+                    );
+                }),
                 Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),
                 Mockito.eq(User.class)
         )).thenReturn(storedUser);
