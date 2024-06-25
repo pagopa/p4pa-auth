@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,19 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
     private final AccessTokenBuilderService accessTokenBuilderService;
     private final TokenStoreService tokenStoreService;
     private final IDTokenClaims2UserInfoMapper idTokenClaimsMapper;
+    private final IamUserRegistrationService iamUserRegistrationService;
 
-    public ExchangeTokenServiceImpl(ValidateExternalTokenService validateExternalTokenService, AccessTokenBuilderService accessTokenBuilderService, TokenStoreService tokenStoreService, IDTokenClaims2UserInfoMapper idTokenClaimsMapper) {
+    public ExchangeTokenServiceImpl(
+            ValidateExternalTokenService validateExternalTokenService,
+            AccessTokenBuilderService accessTokenBuilderService,
+            TokenStoreService tokenStoreService,
+            IDTokenClaims2UserInfoMapper idTokenClaimsMapper,
+            IamUserRegistrationService iamUserRegistrationService) {
         this.validateExternalTokenService = validateExternalTokenService;
         this.accessTokenBuilderService = accessTokenBuilderService;
         this.tokenStoreService = tokenStoreService;
         this.idTokenClaimsMapper = idTokenClaimsMapper;
+        this.iamUserRegistrationService = iamUserRegistrationService;
     }
 
     @Override
@@ -30,7 +38,9 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
                 clientId, subjectTokenType, subjectIssuer, grantType, scope);
         Map<String, Claim> claims = validateExternalTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
         AccessToken accessToken = accessTokenBuilderService.build();
-        tokenStoreService.save(accessToken.getAccessToken(), idTokenClaimsMapper.apply(claims));
+        UserInfo user = idTokenClaimsMapper.apply(claims);
+        iamUserRegistrationService.registerUser(user);
+        tokenStoreService.save(accessToken.getAccessToken(), user);
         return accessToken;
     }
 }

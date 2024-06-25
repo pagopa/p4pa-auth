@@ -26,12 +26,19 @@ class ExchangeTokenServiceTest {
     private TokenStoreService tokenStoreServiceMock;
     @Mock
     private IDTokenClaims2UserInfoMapper idTokenClaimsMapperMock;
+    @Mock
+    private IamUserRegistrationService iamUserRegistrationServiceMock;
 
     private ExchangeTokenService service;
 
     @BeforeEach
     void init(){
-        service = new ExchangeTokenServiceImpl(validateExternalTokenServiceMock, accessTokenBuilderServiceMock, tokenStoreServiceMock, idTokenClaimsMapperMock);
+        service = new ExchangeTokenServiceImpl(
+                validateExternalTokenServiceMock,
+                accessTokenBuilderServiceMock,
+                tokenStoreServiceMock,
+                idTokenClaimsMapperMock,
+                iamUserRegistrationServiceMock);
     }
 
     @AfterEach
@@ -40,7 +47,8 @@ class ExchangeTokenServiceTest {
                 validateExternalTokenServiceMock,
                 accessTokenBuilderServiceMock,
                 tokenStoreServiceMock,
-                idTokenClaimsMapperMock
+                idTokenClaimsMapperMock,
+                iamUserRegistrationServiceMock
         );
     }
 
@@ -72,5 +80,6 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(userInfo));
+        Mockito.verify(iamUserRegistrationServiceMock).registerUser(Mockito.same(userInfo));
     }
 }
