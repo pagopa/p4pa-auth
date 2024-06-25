@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 import java.util.Set;
 
 @Data
-@Document
+@Document("operators")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
