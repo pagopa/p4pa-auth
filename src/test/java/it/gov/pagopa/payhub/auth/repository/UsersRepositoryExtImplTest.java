@@ -14,6 +14,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
+import java.time.LocalDateTime;
+
 @ExtendWith(MockitoExtension.class)
 class UsersRepositoryExtImplTest {
 
@@ -48,7 +50,7 @@ class UsersRepositoryExtImplTest {
                         .setOnInsert(User.Fields.userCode, user.getUserCode())
                         .setOnInsert(User.Fields.iamIssuer, user.getIamIssuer())
                         .setOnInsert(User.Fields.tosAccepted, false)
-                        .currentTimestamp(User.Fields.lastLogin)),
+                        .set(User.Fields.lastLogin, LocalDateTime.now())),
                 Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),
                 Mockito.eq(User.class)
         )).thenReturn(storedUser);

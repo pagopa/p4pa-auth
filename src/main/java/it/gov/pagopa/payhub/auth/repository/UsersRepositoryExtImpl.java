@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
+import java.time.LocalDateTime;
+
 public class UsersRepositoryExtImpl implements UsersRepositoryExt{
 
     private final MongoTemplate mongoTemplate;
@@ -23,7 +25,7 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
                         .setOnInsert(User.Fields.userCode, user.getUserCode())
                         .setOnInsert(User.Fields.iamIssuer, user.getIamIssuer())
                         .setOnInsert(User.Fields.tosAccepted, false)
-                        .currentTimestamp(User.Fields.lastLogin),
+                        .set(User.Fields.lastLogin, LocalDateTime.now()),
                 FindAndModifyOptions.options()
                         .returnNew(true)
                         .upsert(true),
