@@ -2,9 +2,11 @@ package it.gov.pagopa.payhub.auth.service.user.registration;
 
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserRegistrationService {
 
     private final ExternalUserIdObfuscatorService externalUserIdObfuscatorService;
@@ -19,6 +21,7 @@ public class UserRegistrationService {
 
     public User registerUser(String externalUserId, String fiscalCode, String iamIssuer){
         User user = buildUser(externalUserId, fiscalCode, iamIssuer);
+        log.info("Registering user having mappedExternalUserId {}", user.getMappedExternalUserId());
         return usersRepository.registerUser(user);
     }
 

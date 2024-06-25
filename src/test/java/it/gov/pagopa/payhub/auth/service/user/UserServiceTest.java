@@ -1,8 +1,10 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
+import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
+import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
@@ -14,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Set;
+
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -21,19 +25,22 @@ class UserServiceTest {
     private TokenStoreService tokenStoreServiceMock;
     @Mock
     private UserRegistrationService userRegistrationServiceMock;
+    @Mock
+    private OperatorRegistrationService operatorRegistrationServiceMock;
 
     private UserService service;
 
     @BeforeEach
     void init() {
-        service = new UserServiceImpl(tokenStoreServiceMock, userRegistrationServiceMock);
+        service = new UserServiceImpl(tokenStoreServiceMock, userRegistrationServiceMock, operatorRegistrationServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
                 tokenStoreServiceMock,
-                userRegistrationServiceMock);
+                userRegistrationServiceMock,
+                operatorRegistrationServiceMock);
     }
 
     @Test
@@ -78,5 +85,23 @@ class UserServiceTest {
 
         // Then
         Assertions.assertSame(storedUser, result);
+    }
+
+    @Test
+    void whenRegisterOperatorThenReturnStoredOperator() {
+        // Given
+        String userId = "USERID";
+        String organizationIpaCode = "ORGANIZATIONIPACODE";
+        Set<String> roles = Set.of("ROLE");
+        Operator storedOperator = new Operator();
+
+        Mockito.when(operatorRegistrationServiceMock.registerOperator(userId, organizationIpaCode, roles))
+                .thenReturn(storedOperator);
+
+        // When
+        Operator result = service.registerOperator(userId, organizationIpaCode, roles);
+
+        // Then
+        Assertions.assertSame(storedOperator, result);
     }
 }
