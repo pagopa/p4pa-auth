@@ -2,10 +2,10 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import io.jsonwebtoken.Claims;
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
-import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @Service
-public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>, UserInfo> {
+public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>, IamUserInfoDTO> {
 
     private final boolean organizationAccessMode;
 
@@ -25,29 +25,22 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
     }
 
     @Override
-    public UserInfo apply(Map<String, Claim> claims) {
+    public IamUserInfoDTO apply(Map<String, Claim> claims) {
         try {
-            UserInfo userInfo = UserInfo.builder()
+            return IamUserInfoDTO.builder()
                     .issuer(claims.get(Claims.ISSUER).asString())
                     .userId(claims.get("uid").asString())
                     .name(claims.get("name").asString())
                     .familyName(claims.get("family_name").asString())
                     .fiscalCode(claims.get("fiscal_number").asString())
+                    .organizationAccess(buildUserOrganizationRoles(claims))
                     .build();
-
-            UserOrganizationRoles organizationRoles = buildUserOrganizationRoles(claims);
-            if(organizationRoles!=null){
-                userInfo.setOrganizationAccess(organizationRoles.getIpaCode());
-                userInfo.setOrganizations(List.of(organizationRoles));
-            }
-
-            return userInfo;
         } catch (Exception e){
             throw new InvalidTokenException("Unexpected IDToken structure", e);
         }
     }
 
-    private UserOrganizationRoles buildUserOrganizationRoles(Map<String, Claim> claims) {
+    private IamUserOrganizationRolesDTO buildUserOrganizationRoles(Map<String, Claim> claims) {
         Claim organization = claims.get("organization");
         if(organization==null){
             if(organizationAccessMode){
@@ -60,11 +53,8 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
         Map<String, Object> organizationClaim = organization.asMap();
 
         List<String> roles = readUserOrganizationRoles(organizationClaim);
-        return UserOrganizationRoles.builder()
-                .id((String)organizationClaim.get("id"))
-                .name((String)organizationClaim.get("name"))
-                .fiscalCode((String)organizationClaim.get("fiscal_code"))
-                .ipaCode((String)organizationClaim.get("ipaCode"))
+        return IamUserOrganizationRolesDTO.builder()
+                .organizationIpaCode((String)organizationClaim.get("ipaCode"))
                 .roles(roles)
                 .build();
     }

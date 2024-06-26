@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
-import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class IamUserRegistrationServiceTest {
     void givenNoOrganizationAccessModeWhenRegisterUserThenOk() {
         // Given
         init(false);
-        Pair<UserInfo, User> userInfoUserPair = configureUserServiceMock();
+        Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
         // When
         service.registerUser(userInfoUserPair.getFirst());
@@ -51,8 +51,8 @@ class IamUserRegistrationServiceTest {
     void givenNoOrganizationAccessModeAndNoOrganizationDataWhenRegisterUserThenThrowInvalidOrganizationAccessDataException() {
         // Given
         init(false);
-        Pair<UserInfo, User> userInfoUserPair = configureUserServiceMock();
-        userInfoUserPair.getFirst().setOrganizations(List.of(UserOrganizationRoles.builder().ipaCode("ORG2").build()));
+        Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
+        userInfoUserPair.getFirst().setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
 
         // When
         service.registerUser(userInfoUserPair.getFirst());
@@ -65,7 +65,7 @@ class IamUserRegistrationServiceTest {
     void givenValidOrganizationAccessModeWhenRegisterUserThenOk() {
         // Given
         init(true);
-        Pair<UserInfo, User> userInfoUserPair = configureUserServiceMock();
+        Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
         // When
         service.registerUser(userInfoUserPair.getFirst());
@@ -79,19 +79,19 @@ class IamUserRegistrationServiceTest {
     void givenInvalidOrganizationAccessModeWhenRegisterUserThenThrowInvalidOrganizationAccessDataException() {
         // Given
         init(true);
-        Pair<UserInfo, User> userInfoUserPair = configureUserServiceMock();
-        UserInfo userInfo = userInfoUserPair.getFirst();
-        userInfo.setOrganizations(List.of(UserOrganizationRoles.builder().ipaCode("ORG2").build()));
+        Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
+        IamUserInfoDTO userInfo = userInfoUserPair.getFirst();
+        userInfo.setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
 
         // When
         InvalidOrganizationAccessDataException exception = Assertions.assertThrows(InvalidOrganizationAccessDataException.class, () -> service.registerUser(userInfo));
 
         // Then
         verifyRegisterUserInvocation(userInfo);
-        Assertions.assertEquals("No roles configured for organizationAccess ORG; organizations: [UserOrganizationRoles(id=null, name=null, fiscalCode=null, ipaCode=ORG2, roles=null)]", exception.getMessage());
+        Assertions.assertEquals("No roles configured for organizationAccess IamUserOrganizationRolesDTO(organizationIpaCode=ORG2, roles=null)", exception.getMessage());
     }
 
-    private void verifyRegisterUserInvocation(UserInfo userInfo) {
+    private void verifyRegisterUserInvocation(IamUserInfoDTO userInfo) {
         Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer());
     }
 
@@ -99,16 +99,15 @@ class IamUserRegistrationServiceTest {
         Mockito.verify(userServiceMock).registerOperator(user.getUserId(), organizationIpaCode, roles);
     }
 
-    private Pair<UserInfo, User> configureUserServiceMock() {
-        UserInfo userInfo = UserInfo.builder()
+    private Pair<IamUserInfoDTO, User> configureUserServiceMock() {
+        IamUserInfoDTO userInfo = IamUserInfoDTO.builder()
                 .userId("EXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .issuer("IAMISSUER")
-                .organizationAccess("ORG")
-                .organizations(List.of(UserOrganizationRoles.builder()
-                        .ipaCode("ORG")
+                .organizationAccess(IamUserOrganizationRolesDTO.builder()
+                        .organizationIpaCode("ORG")
                         .roles(List.of("ROLE"))
-                        .build()))
+                        .build())
                 .build();
 
         User registeredUser = User.builder()

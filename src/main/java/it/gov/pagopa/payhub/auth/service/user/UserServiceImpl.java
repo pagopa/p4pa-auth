@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
@@ -17,11 +18,13 @@ public class UserServiceImpl implements UserService{
     private final TokenStoreService tokenStoreService;
     private final UserRegistrationService userRegistrationService;
     private final OperatorRegistrationService operatorRegistrationService;
+    private final IamUserInfoDTO2UserInfoMapper userInfoMapper;
 
-    public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService) {
+    public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService, IamUserInfoDTO2UserInfoMapper userInfoMapper) {
         this.tokenStoreService = tokenStoreService;
         this.userRegistrationService = userRegistrationService;
         this.operatorRegistrationService = operatorRegistrationService;
+        this.userInfoMapper = userInfoMapper;
     }
 
     @Override
@@ -36,11 +39,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserInfo getUserInfo(String accessToken) {
-        UserInfo userInfo = tokenStoreService.load(accessToken);
+        IamUserInfoDTO userInfo = tokenStoreService.load(accessToken);
         if(userInfo==null){
             throw new InvalidAccessTokenException("AccessToken not found");
         } else {
-            return userInfo;
+            return userInfoMapper.apply(userInfo);
         }
     }
 }

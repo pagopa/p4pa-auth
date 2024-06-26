@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
@@ -27,12 +28,14 @@ class UserServiceTest {
     private UserRegistrationService userRegistrationServiceMock;
     @Mock
     private OperatorRegistrationService operatorRegistrationServiceMock;
+    @Mock
+    private IamUserInfoDTO2UserInfoMapper userInfoMapperMock;
 
     private UserService service;
 
     @BeforeEach
     void init() {
-        service = new UserServiceImpl(tokenStoreServiceMock, userRegistrationServiceMock, operatorRegistrationServiceMock);
+        service = new UserServiceImpl(tokenStoreServiceMock, userRegistrationServiceMock, operatorRegistrationServiceMock, userInfoMapperMock);
     }
 
     @AfterEach
@@ -40,7 +43,8 @@ class UserServiceTest {
         Mockito.verifyNoMoreInteractions(
                 tokenStoreServiceMock,
                 userRegistrationServiceMock,
-                operatorRegistrationServiceMock);
+                operatorRegistrationServiceMock,
+                userInfoMapperMock);
     }
 
     @Test
@@ -59,8 +63,10 @@ class UserServiceTest {
         // Given
         String accessToken = "accessToken";
 
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
         UserInfo expectedUserInfo = new UserInfo();
-        Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(expectedUserInfo);
+        Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(iamUserInfo);
+        Mockito.when(userInfoMapperMock.apply(iamUserInfo)).thenReturn(expectedUserInfo);
 
         // When
         UserInfo result = service.getUserInfo(accessToken);
