@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -11,11 +11,11 @@ class TokenStoreServiceTest {
     @Test
     void givenClaimsWhenSaveThenReturnThem(){
         // Given
-        UserInfo userInfo = new UserInfo();
+        IamUserInfoDTO userInfo = new IamUserInfoDTO();
         String accessToken = "AccessToken";
 
         // When
-        UserInfo result = service.save(accessToken, userInfo);
+        IamUserInfoDTO result = service.save(accessToken, userInfo);
 
         // Then
         Assertions.assertSame(userInfo, result);
@@ -27,7 +27,7 @@ class TokenStoreServiceTest {
         String accessToken = "AccessToken";
 
         // When
-        UserInfo result = service.load(accessToken);
+        IamUserInfoDTO result = service.load(accessToken);
 
         // Then
         Assertions.assertNull(result);

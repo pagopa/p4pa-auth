@@ -177,19 +177,13 @@ components:
     UserOrganizationRoles:
       type: object
       required:
-        - id
-        - name
-        - fiscalCode
-        - ipaCode
+        - operatorId
+        - organizationIpaCode
         - roles
       properties:
-        id:
+        operatorId:
           type: string
-        name:
-          type: string
-        fiscalCode:
-          type: string
-        ipaCode:
+        organizationIpaCode:
           type: string
         roles:
           type: array

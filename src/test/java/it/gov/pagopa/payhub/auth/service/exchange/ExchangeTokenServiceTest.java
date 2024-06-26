@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +70,7 @@ class ExchangeTokenServiceTest {
         Mockito.when(accessTokenBuilderServiceMock.build())
                 .thenReturn(expectedAccessToken);
 
-        UserInfo userInfo = new UserInfo();
+        IamUserInfoDTO userInfo = new IamUserInfoDTO();
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
                 .thenReturn(userInfo);
 
