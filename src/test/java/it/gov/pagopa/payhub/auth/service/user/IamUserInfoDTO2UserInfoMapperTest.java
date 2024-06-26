@@ -45,6 +45,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
     void givenNotUserWhenApplyThenUserNotFoundException(){
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .userId("EXTERNALUSERID")
                 .innerUserId("INNERUSERID")
                 .build();
 
@@ -58,6 +59,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
     void givenCompleteDataWhenApplyThenOk(){
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .userId("EXTERNALUSERID")
                 .innerUserId("INNERUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
@@ -70,6 +72,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         User user = User.builder()
                 .userId(iamUserInfo.getInnerUserId())
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .build();
 
         List<Operator> organizationRoles = List.of(Operator.builder()
@@ -85,6 +88,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
     void givenNotOperatorsWhenApplyThenOk(){
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .userId("EXTERNALUSERID")
                 .innerUserId("INNERUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
@@ -97,6 +101,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         User user = User.builder()
                 .userId(iamUserInfo.getInnerUserId())
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .build();
 
         testApplyOk(iamUserInfo, user, Collections.emptyList());
@@ -106,6 +111,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
     void givenNoOrganizationAccessWhenApplyThenOk(){
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .userId("EXTERNALUSERID")
                 .innerUserId("INNERUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
@@ -115,6 +121,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         User user = User.builder()
                 .userId(iamUserInfo.getInnerUserId())
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .build();
 
         List<Operator> organizationRoles = List.of(Operator.builder()
@@ -137,6 +144,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(
                 UserInfo.builder()
                         .userId(user.getUserId())
+                        .mappedExternalUserId(user.getMappedExternalUserId())
                         .fiscalCode(iamUserInfo.getFiscalCode())
                         .familyName(iamUserInfo.getFamilyName())
                         .name(iamUserInfo.getName())

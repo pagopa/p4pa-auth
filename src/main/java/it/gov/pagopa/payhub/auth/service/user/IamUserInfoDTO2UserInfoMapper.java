@@ -31,6 +31,7 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
         List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
         UserInfo userInfo = UserInfo.builder()
                 .userId(user.getUserId())
+                .mappedExternalUserId(user.getMappedExternalUserId())
                 .fiscalCode(iamUserInfoDTO.getFiscalCode())
                 .familyName(iamUserInfoDTO.getFamilyName())
                 .name(iamUserInfoDTO.getName())
