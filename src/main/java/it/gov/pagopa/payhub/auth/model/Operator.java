@@ -5,9 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -18,10 +19,11 @@ import java.util.Set;
 @FieldNameConstants
 public class Operator {
 
-    @MongoId
+    @Id
     private String operatorId;
     private String userId;
-    private Set<String> roles;
+    @Builder.Default
+    private Set<String> roles = new HashSet<>();
     private String organizationIpaCode;
 
 }

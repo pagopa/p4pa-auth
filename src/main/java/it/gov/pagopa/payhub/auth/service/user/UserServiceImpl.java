@@ -8,11 +8,13 @@ import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     private final TokenStoreService tokenStoreService;
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserInfo getUserInfo(String accessToken) {
+        log.info("Retrieving user info");
         IamUserInfoDTO userInfo = tokenStoreService.load(accessToken);
         if(userInfo==null){
             throw new InvalidAccessTokenException("AccessToken not found");

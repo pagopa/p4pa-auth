@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -27,7 +27,7 @@ public class RedisConfig {
         return builder -> builder
                 .withCacheConfiguration(CACHE_NAME_ACCESS_TOKEN,
                         RedisCacheConfiguration.defaultCacheConfig()
-                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<>(objectMapper, UserInfo.class)))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<>(objectMapper, IamUserInfoDTO.class)))
                                 .entryTtl(Duration.ofSeconds(accessTokenExpirationSeconds))
                                 .disableCachingNullValues()
                 );

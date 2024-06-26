@@ -39,6 +39,7 @@ class AuthControllerTest {
     @MockBean
     private AuthService authServiceMock;
 
+//region desc=postToken tests
     @Test
     void givenExpectedAuthTokenWhenPostTokenThenOk() throws Exception {
         MvcResult result =
@@ -123,7 +124,9 @@ class AuthControllerTest {
 
         return result;
     }
+//endregion
 
+//region desc=getUserInfo tests
     @Test
     void givenRequestWithoutAuthorizationWhenGetUserInfoThenUnauthorized() throws Exception {
         mockMvc.perform(
@@ -146,7 +149,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void givenRequestWitInvalidAuthorizationWhenGetUserInfoThenUnauthorized() throws Exception {
+    void givenRequestWithInvalidAuthorizationWhenGetUserInfoThenUnauthorized() throws Exception {
         Mockito.when(authServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new InvalidAccessTokenException(""));
 
@@ -156,6 +159,19 @@ class AuthControllerTest {
         ).andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void givenRequestWithUserNotFoundWhenGetUserInfoThenUnauthorized() throws Exception {
+        Mockito.when(authServiceMock.getUserInfo("accessToken"))
+                .thenThrow(new UserNotFoundException(""));
+
+        mockMvc.perform(
+                get("/payhub/auth/userinfo")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+        ).andExpect(status().isUnauthorized());
+    }
+//endregion
+
+//region desc=logout tests
     @Test
     void givenNoClientIdWhenLogoutThenBadRequest() throws Exception {
         mockMvc.perform(
@@ -191,4 +207,5 @@ class AuthControllerTest {
         assertEquals(AuthErrorDTO.ErrorEnum.INVALID_CLIENT, actual.getError());
         assertEquals("", actual.getErrorDescription());
     }
+//end region
 }

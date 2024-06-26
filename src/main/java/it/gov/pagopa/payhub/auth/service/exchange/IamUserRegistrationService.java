@@ -26,7 +26,7 @@ public class IamUserRegistrationService {
         this.userService = userService;
     }
 
-    void registerUser(IamUserInfoDTO userInfo) {
+    User registerUser(IamUserInfoDTO userInfo) {
         User user = userService.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer());
 
         if (organizationAccessMode) {
@@ -36,5 +36,7 @@ public class IamUserRegistrationService {
 
             userService.registerOperator(user.getUserId(), userInfo.getOrganizationAccess().getOrganizationIpaCode(), new HashSet<>(userInfo.getOrganizationAccess().getRoles()));
         }
+
+        return user;
     }
 }

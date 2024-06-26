@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
@@ -70,16 +71,20 @@ class ExchangeTokenServiceTest {
         Mockito.when(accessTokenBuilderServiceMock.build())
                 .thenReturn(expectedAccessToken);
 
-        IamUserInfoDTO userInfo = new IamUserInfoDTO();
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
-                .thenReturn(userInfo);
+                .thenReturn(iamUserInfo);
+
+        User registeredUser = User.builder().userId("INNERUSERID").build();
+        Mockito.when(iamUserRegistrationServiceMock.registerUser(Mockito.same(iamUserInfo)))
+                .thenReturn(registeredUser);
 
         // When
         AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
-        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(userInfo));
-        Mockito.verify(iamUserRegistrationServiceMock).registerUser(Mockito.same(userInfo));
+        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+        Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
     }
 }

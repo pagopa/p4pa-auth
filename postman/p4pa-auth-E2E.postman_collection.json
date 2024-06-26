@@ -8,7 +8,7 @@
 	},
 	"item": [
 		{
-			"name": "postToken",
+			"name": "postToken org1",
 			"event": [
 				{
 					"listen": "test",
@@ -76,6 +76,142 @@
 			"response": []
 		},
 		{
+			"name": "postToken org2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - postToken - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "piattaforma-unitaria"
+						},
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange"
+						},
+						{
+							"key": "subject_token",
+							"value": "{{tokenExchange_subjectToken_2}}"
+						},
+						{
+							"key": "subject_issuer",
+							"value": "{{tokenExchange_issuer}}"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:jwt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postToken org3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - postToken - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "piattaforma-unitaria"
+						},
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange"
+						},
+						{
+							"key": "subject_token",
+							"value": "{{tokenExchange_subjectToken_3}}"
+						},
+						{
+							"key": "subject_issuer",
+							"value": "{{tokenExchange_issuer}}"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:jwt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "getUserInfo",
 			"event": [
 				{
@@ -96,13 +232,25 @@
 							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"SELC_99999999990\")\r",
 							"\r",
-							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.eq(1)\r",
-							"    pm.expect(jsonResponse.organizations[0]).have.property(\"id\")\r",
-							"    pm.expect(jsonResponse.organizations[0]).have.property(\"name\").to.eq(\"Ente P4PA intermediato 1\")\r",
-							"    pm.expect(jsonResponse.organizations[0]).have.property(\"fiscalCode\").to.eq(\"99999999990\")\r",
-							"    pm.expect(jsonResponse.organizations[0]).have.property(\"ipaCode\").to.eq(\"SELC_99999999990\")\r",
-							"    pm.expect(jsonResponse.organizations[0].roles).have.property(\"length\").to.eq(1)\r",
-							"    pm.expect(jsonResponse.organizations[0].roles[0]).to.eq(\"ROLE_ADMIN\")\r",
+							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(3)\r",
+							"    \r",
+							"    var recognizedOrganizations = 0\r",
+							"    const registeredOrganizations=[\r",
+							"        \"SELC_99999999990\",\r",
+							"        \"SELC_00000000018\",\r",
+							"        \"SELC_99999999982\"\r",
+							"    ]\r",
+							"    jsonResponse.organizations.forEach(org => {\r",
+							"        pm.expect(org).have.property(\"operatorId\")\r",
+							"        if(registeredOrganizations.includes(org.organizationIpaCode)){\r",
+							"            pm.expect(org.roles).have.property(\"length\").to.eq(1)\r",
+							"            pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
+							"            recognizedOrganizations++\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(recognizedOrganizations).to.eq(3)\r",
+							"\r",
 							"});"
 						],
 						"type": "text/javascript",
