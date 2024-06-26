@@ -18,5 +18,7 @@ public class IamUserInfoDTO {
   private String issuer;
   private IamUserOrganizationRolesDTO organizationAccess;
 
+  // field calculated upon registration
+  private String innerUserId;
 }
 

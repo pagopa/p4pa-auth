@@ -68,11 +68,12 @@ class IamUserRegistrationServiceTest {
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
         // When
-        service.registerUser(userInfoUserPair.getFirst());
+        User result = service.registerUser(userInfoUserPair.getFirst());
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
         verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", Set.of("ROLE"));
+        Assertions.assertSame(userInfoUserPair.getSecond(), result);
     }
 
     @Test

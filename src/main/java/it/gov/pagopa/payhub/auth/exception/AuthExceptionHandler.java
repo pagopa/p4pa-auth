@@ -39,9 +39,11 @@ public class AuthExceptionHandler {
         return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE);
     }
 
-    @ExceptionHandler({InvalidAccessTokenException.class})
-    public ResponseEntity<Void> handleInvalidAccessTokenException(InvalidAccessTokenException ex, HttpServletRequest request){
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @ExceptionHandler({InvalidAccessTokenException.class, UserNotFoundException.class})
+    public ResponseEntity<Void> handleUnauthorizedNoBodyExceptions(RuntimeException ex, HttpServletRequest request){
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        logException(ex, request, httpStatus);
+        return ResponseEntity.status(httpStatus).build();
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -58,16 +60,21 @@ public class AuthExceptionHandler {
     }
 
     static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
+        String message = logException(ex, request, httpStatus);
+
+        return ResponseEntity
+                .status(httpStatus)
+                .body(new AuthErrorDTO(errorEnum, message));
+    }
+
+    private static String logException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus) {
         String message = ex.getMessage();
         log.info("A {} occurred handling request {}: HttpStatus {} - {}",
                 ex.getClass(),
                 getRequestDetails(request),
                 httpStatus.value(),
                 message);
-
-        return ResponseEntity
-                .status(httpStatus)
-                .body(new AuthErrorDTO(errorEnum, message));
+        return message;
     }
 
     static String getRequestDetails(HttpServletRequest request) {
