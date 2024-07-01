@@ -55,7 +55,7 @@ dependencies {
 
 	// Postgres
 	runtimeOnly("org.postgresql:postgresql")
-	implementation("com.zaxxer:HikariCP:$findbugsVersion")
+	implementation("com.zaxxer:HikariCP:$hikariCPVersion")
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
