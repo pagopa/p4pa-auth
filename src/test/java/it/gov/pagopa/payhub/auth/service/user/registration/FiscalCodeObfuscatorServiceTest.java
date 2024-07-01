@@ -14,14 +14,26 @@ class FiscalCodeObfuscatorServiceTest {
     }
     
     @Test
-    void whenObfuscateThenOk(){
+    void givenShortStringWhenObfuscateThenOk(){
         //Given
-        String fiscalCode = "FISCALCODE";
+        String fiscalCode = "A";
 
         // When
         String result = service.obfuscate(fiscalCode);
 
         // Then
-        Assertions.assertSame(fiscalCode, result);
+        Assertions.assertEquals(fiscalCode, result);
+    }
+
+    @Test
+    void givenCompleteCfWhenObfuscateThenOk(){
+        //Given
+        String fiscalCode = "AAAAAA00A00A000A";
+
+        // When
+        String result = service.obfuscate(fiscalCode);
+
+        // Then
+        Assertions.assertEquals("AXAAXA0XA00XXXXX", result);
     }
 }
