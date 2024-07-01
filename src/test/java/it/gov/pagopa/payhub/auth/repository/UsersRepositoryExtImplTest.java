@@ -42,6 +42,10 @@ class UsersRepositoryExtImplTest {
                 .iamIssuer("IAMISSUER")
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .userCode("USERCODE")
+                .firstName("FIRSTNAME")
+                .lastName("LASTNAME")
+                .fiscalCode("FISCALCODE")
+                .email("EMAIL")
                 .build();
         User storedUser = new User();
 
@@ -54,10 +58,14 @@ class UsersRepositoryExtImplTest {
                     Assertions.assertTrue(lastLogin.isAfter(LocalDateTime.now().minusMinutes(1)));
 
                     return u.equals(new Update()
-                            .setOnInsert(User.Fields.userCode, user.getUserCode())
-                            .setOnInsert(User.Fields.iamIssuer, user.getIamIssuer())
+                            .set(User.Fields.userCode, user.getUserCode())
+                            .set(User.Fields.iamIssuer, user.getIamIssuer())
                             .setOnInsert(User.Fields.tosAccepted, false)
                             .set(User.Fields.lastLogin, lastLogin)
+                            .set(User.Fields.firstName, user.getFirstName())
+                            .set(User.Fields.lastName, user.getLastName())
+                            .set(User.Fields.email, user.getEmail())
+                            .set(User.Fields.fiscalCode, user.getFiscalCode())
                     );
                 }),
                 Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),

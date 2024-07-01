@@ -22,10 +22,15 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
         return mongoTemplate.findAndModify(
                 Query.query(Criteria.where(User.Fields.mappedExternalUserId).is(user.getMappedExternalUserId())),
                 new Update()
-                        .setOnInsert(User.Fields.userCode, user.getUserCode())
-                        .setOnInsert(User.Fields.iamIssuer, user.getIamIssuer())
+                        .set(User.Fields.userCode, user.getUserCode())
+                        .set(User.Fields.iamIssuer, user.getIamIssuer())
                         .setOnInsert(User.Fields.tosAccepted, false)
-                        .set(User.Fields.lastLogin, LocalDateTime.now()),
+                        .set(User.Fields.lastLogin, LocalDateTime.now())
+
+                        .set(User.Fields.fiscalCode, user.getFiscalCode())
+                        .set(User.Fields.firstName, user.getFirstName())
+                        .set(User.Fields.lastName, user.getLastName())
+                        .set(User.Fields.email, user.getEmail()),
                 FindAndModifyOptions.options()
                         .returnNew(true)
                         .upsert(true),

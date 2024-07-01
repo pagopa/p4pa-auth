@@ -9,8 +9,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 
 class RedisConfigTest {
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
-    private final static RedisConfig redisConfig = new RedisConfig();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final RedisConfig redisConfig = new RedisConfig();
 
     @Test
     void testCustomizer(){

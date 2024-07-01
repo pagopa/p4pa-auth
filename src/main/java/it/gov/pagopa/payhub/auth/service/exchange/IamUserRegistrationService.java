@@ -27,7 +27,7 @@ public class IamUserRegistrationService {
     }
 
     User registerUser(IamUserInfoDTO userInfo) {
-        User user = userService.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer());
+        User user = userService.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName(), userInfo.getEmail());
 
         if (organizationAccessMode) {
             if (CollectionUtils.isEmpty(userInfo.getOrganizationAccess().getRoles())) {

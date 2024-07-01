@@ -14,7 +14,7 @@ public class AccessTokenBuilderServiceTest {
 
     public static final int EXPIRE_IN = 3600;
 
-    private final static String PRIVATE_KEY= """
+    private static final String PRIVATE_KEY= """
             -----BEGIN RSA PRIVATE KEY-----
             MIIEogIBAAKCAQEA2ovm/rd3g69dq9PisinQ6mWy8ZttT8D+GKXCsHZycsGnN7b7
             4TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2reOk/rD7ZHbpfQvHK8MYfgIVdtTxY
@@ -44,7 +44,7 @@ public class AccessTokenBuilderServiceTest {
             -----END RSA PRIVATE KEY-----
             """;
 
-    private final static String PUBLIC_KEY= """
+    private static final String PUBLIC_KEY= """
             -----BEGIN PUBLIC KEY-----
             MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ
             6mWy8ZttT8D+GKXCsHZycsGnN7b74TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2r

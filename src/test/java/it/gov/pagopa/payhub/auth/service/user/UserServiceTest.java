@@ -81,13 +81,16 @@ class UserServiceTest {
         String externalUserId = "EXTERNALUSERID";
         String fiscalCode = "FISCALCODE";
         String iamIssuer = "IAMISSUER";
+        String name = "NAME";
+        String familyName = "FAMILYNAME";
+        String email = "EMAIL";
         User storedUser = new User();
 
-        Mockito.when(userRegistrationServiceMock.registerUser(externalUserId, fiscalCode, iamIssuer))
+        Mockito.when(userRegistrationServiceMock.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName, email))
                 .thenReturn(storedUser);
 
         // When
-        User result = service.registerUser(externalUserId, fiscalCode, iamIssuer);
+        User result = service.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName, email);
 
         // Then
         Assertions.assertSame(storedUser, result);
