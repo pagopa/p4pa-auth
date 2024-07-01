@@ -19,17 +19,23 @@ public class UserRegistrationService {
         this.usersRepository = usersRepository;
     }
 
-    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer){
-        User user = buildUser(externalUserId, fiscalCode, iamIssuer);
+    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email){
+        User user = buildUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName, email);
         log.info("Registering user having mappedExternalUserId {}", user.getMappedExternalUserId());
         return usersRepository.registerUser(user);
     }
 
-    private User buildUser(String externalUserId, String fiscalCode, String iamIssuer){
+    private User buildUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email){
         return User.builder()
                 .iamIssuer(iamIssuer)
                 .mappedExternalUserId(externalUserIdObfuscatorService.obfuscate(externalUserId))
                 .userCode(fiscalCodeObfuscatorService.obfuscate(fiscalCode))
+
+                .fiscalCode(fiscalCode)
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+
                 .build();
     }
 }

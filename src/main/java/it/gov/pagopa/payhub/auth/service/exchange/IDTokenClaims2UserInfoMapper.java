@@ -32,6 +32,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
                     .userId(claims.get("uid").asString())
                     .name(claims.get("name").asString())
                     .familyName(claims.get("family_name").asString())
+                    .email(claims.get("email").asString())
                     .fiscalCode(claims.get("fiscal_number").asString())
                     .organizationAccess(buildUserOrganizationRoles(claims))
                     .build();

@@ -47,11 +47,18 @@ class UserRegistrationServiceTest {
         String fiscalCode = "FISCALCODE";
         String obfuscatedFiscalCode = "OBFUSCATEDFISCALCODE";
         String iamIssuer = "IAMISSUER";
+        String name = "NAME";
+        String familyName = "FAMILYNAME";
+        String email = "EMAIL";
 
         User user = User.builder()
                 .mappedExternalUserId(obfuscatedExternalUserId)
                 .userCode(obfuscatedFiscalCode)
                 .iamIssuer(iamIssuer)
+                .fiscalCode(fiscalCode)
+                .firstName(name)
+                .lastName(familyName)
+                .email(email)
                 .build();
         User storedUser = new User();
 
@@ -60,7 +67,7 @@ class UserRegistrationServiceTest {
         Mockito.when(usersRepositoryMock.registerUser(user)).thenReturn(storedUser);
 
         // When
-        User result = service.registerUser(externalUserId, fiscalCode, iamIssuer);
+        User result = service.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName, email);
 
         // Then
         Assertions.assertSame(storedUser, result);

@@ -93,7 +93,7 @@ class IamUserRegistrationServiceTest {
     }
 
     private void verifyRegisterUserInvocation(IamUserInfoDTO userInfo) {
-        Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer());
+        Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName(), userInfo.getEmail());
     }
 
     private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, Set<String> roles) {
@@ -104,6 +104,9 @@ class IamUserRegistrationServiceTest {
         IamUserInfoDTO userInfo = IamUserInfoDTO.builder()
                 .userId("EXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
+                .name("NAME")
+                .familyName("FAMILYNAME")
+                .email("EMAIL")
                 .issuer("IAMISSUER")
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
@@ -114,7 +117,7 @@ class IamUserRegistrationServiceTest {
         User registeredUser = User.builder()
                 .userId("INTERNALID")
                 .build();
-        Mockito.when(userServiceMock.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer()))
+        Mockito.when(userServiceMock.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName(), userInfo.getEmail()))
                 .thenReturn(registeredUser);
 
         return Pair.of(userInfo, registeredUser);

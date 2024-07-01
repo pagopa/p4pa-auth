@@ -26,4 +26,10 @@ public class User {
     private LocalDateTime lastLogin;
     private boolean tosAccepted;
 
+//region PII temporarily stored
+    private String fiscalCode;
+    private String firstName;
+    private String lastName;
+    private String email;
+//endregion
 }
