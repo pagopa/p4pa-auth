@@ -5,7 +5,7 @@ plugins {
 	jacoco
 	id("org.sonarqube") version "5.0.0.4638"
 	id("com.github.ben-manes.versions") version "0.51.0"
-	id ("org.openapi.generator") version "7.5.0"
+	id("org.openapi.generator") version "7.5.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -38,6 +38,7 @@ val jjwtVersion = "0.12.5"
 val wiremockVersion = "3.5.4"
 val findbugsVersion = "3.0.2"
 val bouncycastleVersion = "1.78.1"
+val hikariCPVersion = "5.1.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -45,11 +46,16 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion")
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
 	implementation("com.google.code.findbugs:jsr305:$findbugsVersion")
+
+	// Postgres
+	runtimeOnly("org.postgresql:postgresql")
+	implementation("com.zaxxer:HikariCP:$findbugsVersion")
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")

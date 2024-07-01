@@ -6,6 +6,11 @@ spring:
     cache:
         type: redis
     data:
+        mypay:
+            jdbc-url: "jdbc:postgresql://\${MYPAY_DB_HOST}:5432/mypay"
+            username: "\${MYPAY_DB_USER}"
+            password: "\${MYPAY_DB_PASSWORD}"
+            driverClassName: "org.postgresql.Driver"
         redis:
             host: "\${REDIS_HOST:localhost}"
             port: "\${REDIS_PORT:6380}"
