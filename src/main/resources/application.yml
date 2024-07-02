@@ -11,6 +11,11 @@ spring:
             username: "\${MYPAY_DB_USER}"
             password: "\${MYPAY_DB_PASSWORD}"
             driverClassName: "org.postgresql.Driver"
+        mypivot:
+            jdbc-url: "jdbc:postgresql://\${MYPAY_DB_HOST}:5432/mypivot"
+            username: "\${MYPAY_DB_USER}"
+            password: "\${MYPAY_DB_PASSWORD}"
+            driverClassName: "org.postgresql.Driver"
         redis:
             host: "\${REDIS_HOST:localhost}"
             port: "\${REDIS_PORT:6380}"
@@ -28,7 +33,6 @@ spring:
                     maxConnectionLifeTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_LIFE_MS:0}"
                     maxConnectionIdleTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_IDLE_MS:120000}"
                     maxConnecting: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTING:2}"
-
 
 jwt:
     audience: "\${JWT_TOKEN_AUDIENCE:application-audience}"

@@ -52,9 +52,6 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
 	implementation("com.google.code.findbugs:jsr305:$findbugsVersion")
-
-	// Postgres
-	runtimeOnly("org.postgresql:postgresql")
 	implementation("com.zaxxer:HikariCP:$hikariCPVersion")
 
 	// Security fixes
@@ -66,6 +63,9 @@ dependencies {
 	implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
 	implementation("io.jsonwebtoken:jjwt:$jjwtVersion")
 	implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
+
+	// PostgreSQL
+	runtimeOnly("org.postgresql:postgresql")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
