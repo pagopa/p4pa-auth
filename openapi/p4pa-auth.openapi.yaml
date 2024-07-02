@@ -244,7 +244,7 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/Operator'
+            $ref: '#/components/schemas/OperatorDTO'
           description: "The list of organization operators"
         pageNo:
           type: integer
@@ -262,7 +262,7 @@ components:
           type: integer
           format: int32
           description: "Number of total pages"
-    Operator:
+    OperatorDTO:
       type: object
       required:
         - userId
@@ -273,15 +273,13 @@ components:
         - organizationIpaCode
       properties:
         userId:
-          type: integer
-          format: int32
+          type: string
         mappedExternalUserId:
           type: string
         userCode:
           type: string
         operatorId:
-          type: integer
-          format: int32
+          type: string
         roles:
           type: array
           items:
@@ -290,9 +288,9 @@ components:
           type: string
         fiscalCode:
           type: string
-        name:
+        firstName:
           type: string
-        familyName:
+        lastName:
           type: string
         email:
           type: string

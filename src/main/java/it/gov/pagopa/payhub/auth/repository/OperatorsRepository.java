@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OperatorsRepository extends OperatorsRepositoryExt, MongoRepository<Operator, String> {
     List<Operator> findAllByUserId(String userId);
+    List<Operator> findAllByOrganizationIpaCode(String organizationIpaCode);
 }
