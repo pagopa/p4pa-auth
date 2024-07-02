@@ -78,6 +78,10 @@ microservice-chart:
     REDIS_PASSWORD: cache-password
     MONGODB_URI: mongodb-connection-string
 
+    MYPAY_DB_HOST: db-host
+    MYPAY_DB_USER: db-mypay-login-username
+    MYPAY_DB_PASSWORD: db-mypay-login-password
+
   # nodeSelector: {}
 
   # tolerations: []
