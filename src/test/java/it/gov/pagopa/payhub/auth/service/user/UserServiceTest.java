@@ -7,6 +7,8 @@ import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
+import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,12 +34,14 @@ class UserServiceTest {
     private OperatorRegistrationService operatorRegistrationServiceMock;
     @Mock
     private IamUserInfoDTO2UserInfoMapper userInfoMapperMock;
+    @Mock
+    private OrganizationOperatorRetrieverService organizationOperatorRetrieverServiceMock;
 
     private UserService service;
 
     @BeforeEach
     void init() {
-        service = new UserServiceImpl(tokenStoreServiceMock, userRegistrationServiceMock, operatorRegistrationServiceMock, userInfoMapperMock);
+        service = new UserServiceImpl(tokenStoreServiceMock, userRegistrationServiceMock, operatorRegistrationServiceMock, userInfoMapperMock, organizationOperatorRetrieverServiceMock);
     }
 
     @AfterEach
@@ -44,7 +50,8 @@ class UserServiceTest {
                 tokenStoreServiceMock,
                 userRegistrationServiceMock,
                 operatorRegistrationServiceMock,
-                userInfoMapperMock);
+                userInfoMapperMock,
+                organizationOperatorRetrieverServiceMock);
     }
 
     @Test
@@ -112,5 +119,20 @@ class UserServiceTest {
 
         // Then
         Assertions.assertSame(storedOperator, result);
+    }
+
+    @Test
+    void whenRetrieveOrganizationOperatorsThenReturnOperatorList(){
+        // Given
+        String organizationIpaCode = "IPACODE";
+
+        List<OperatorDTO> expectedOperators = Collections.emptyList();
+        Mockito.when(organizationOperatorRetrieverServiceMock.retrieveOrganizationOperators(organizationIpaCode)).thenReturn(expectedOperators);
+
+        // When
+        List<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode);
+
+        // Then
+        Assertions.assertSame(expectedOperators, result);
     }
 }
