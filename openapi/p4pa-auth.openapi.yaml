@@ -126,6 +126,46 @@ paths:
           description: Invalid request
         '401':
           description: Invalid client_id
+  /am/operators/{organizationIpaCode}:
+    get:
+      tags:
+        - authz
+      operationId: getOrganizationOperators
+      parameters:
+        - name: organizationIpaCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: "The number of the page"
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: "Number of items"
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorsPage'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '412':
+          description: ToS acceptance missing
+        '429':
+          description: Too Many Requests
 security:
   - BearerAuth: []
 components:
@@ -192,6 +232,70 @@ components:
           type: array
           items:
             type: string
+    OperatorsPage:
+      type: object
+      required:
+        - content
+        - pageNo
+        - pageSize
+        - totalElements
+        - totalPages
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+          description: "The list of organization operators"
+        pageNo:
+          type: integer
+          format: int32
+          description: "Number of page"
+        pageSize:
+          type: integer
+          format: int32
+          description: "Number of elements in the page"
+        totalElements:
+          type: integer
+          format: int32
+          description: "Number of total elements"
+        totalPages:
+          type: integer
+          format: int32
+          description: "Number of total pages"
+    Operator:
+      type: object
+      required:
+        - userId
+        - mappedExternalUserId
+        - userCode
+        - operatorId
+        - roles
+        - organizationIpaCode
+      properties:
+        userId:
+          type: integer
+          format: int32
+        mappedExternalUserId:
+          type: string
+        userCode:
+          type: string
+        operatorId:
+          type: integer
+          format: int32
+        roles:
+          type: array
+          items:
+            type: string
+        organizationIpaCode:
+          type: string
+        fiscalCode:
+          type: string
+        name:
+          type: string
+        familyName:
+          type: string
+        email:
+          type: string
     AuthErrorDTO:
       type: object
       required:
