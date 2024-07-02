@@ -82,6 +82,10 @@ microservice-chart:
     MYPAY_DB_USER: db-mypay-login-username
     MYPAY_DB_PASSWORD: db-mypay-login-password
 
+    MYPIVOT_DB_HOST: db-host
+    MYPIVOT_DB_USER: db-mypay-login-username
+    MYPIVOT_DB_PASSWORD: db-mypay-login-password
+
   # nodeSelector: {}
 
   # tolerations: []

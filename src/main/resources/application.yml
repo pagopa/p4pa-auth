@@ -12,9 +12,9 @@ spring:
             password: "\${MYPAY_DB_PASSWORD}"
             driverClassName: "org.postgresql.Driver"
         mypivot:
-            jdbc-url: "jdbc:postgresql://\${MYPAY_DB_HOST}:5432/mypivot"
-            username: "\${MYPAY_DB_USER}"
-            password: "\${MYPAY_DB_PASSWORD}"
+            jdbc-url: "jdbc:postgresql://\${MYPIVOT_DB_HOST}:5432/mypivot"
+            username: "\${MYPIVOT_DB_USER}"
+            password: "\${MYPIVOT_DB_PASSWORD}"
             driverClassName: "org.postgresql.Driver"
         redis:
             host: "\${REDIS_HOST:localhost}"
