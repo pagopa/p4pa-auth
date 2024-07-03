@@ -39,13 +39,6 @@ public class AuthExceptionHandler {
         return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE);
     }
 
-    @ExceptionHandler({InvalidAccessTokenException.class, UserNotFoundException.class})
-    public ResponseEntity<Void> handleUnauthorizedNoBodyExceptions(RuntimeException ex, HttpServletRequest request){
-        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-        logException(ex, request, httpStatus);
-        return ResponseEntity.status(httpStatus).build();
-    }
-
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public AuthErrorDTO handleMissingServletRequestParameterException(

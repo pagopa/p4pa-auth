@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,6 +21,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
@@ -138,6 +141,27 @@ class AuthnControllerTest {
 
     @Test
     void givenRequestWitAuthorizationWhenGetUserInfoThenOk() throws Exception {
+        UserInfo expectedUser = UserInfo.builder()
+                .userId("USERID")
+                .organizationAccess("IPA_CODE")
+                .organizations(List.of(UserOrganizationRoles.builder()
+                                .organizationIpaCode("IPA_CODE")
+                                .roles(List.of("ROLE"))
+                        .build()))
+                .build();
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+                .thenReturn(expectedUser);
+
+        mockMvc.perform(
+                        get("/payhub/auth/userinfo")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                ).andExpect(status().isOk())
+                .andExpect(content().json("{\"userId\":\"USERID\"}"));
+    }
+
+    @Test
+    void givenRequestWitAuthorizationAndNotOrganizationAccessWhenGetUserInfoThenOk() throws Exception {
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
