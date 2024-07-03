@@ -3,6 +3,8 @@ package it.gov.pagopa.payhub.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
+import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
+import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
@@ -28,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthnControllerImpl.class)
-@Import({AuthExceptionHandler.class})
+@Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
 class AuthnControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -128,10 +130,10 @@ class AuthnControllerTest {
 
 //region desc=getUserInfo tests
     @Test
-    void givenRequestWithoutAuthorizationWhenGetUserInfoThenUnauthorized() throws Exception {
+    void givenRequestWithoutAuthorizationWhenGetUserInfoThenForbidden() throws Exception {
         mockMvc.perform(
                 get("/payhub/auth/userinfo")
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 
     @Test
@@ -149,25 +151,25 @@ class AuthnControllerTest {
     }
 
     @Test
-    void givenRequestWithInvalidAuthorizationWhenGetUserInfoThenUnauthorized() throws Exception {
+    void givenRequestWithInvalidAuthorizationWhenGetUserInfoThenForbidden() throws Exception {
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new InvalidAccessTokenException(""));
 
         mockMvc.perform(
                 get("/payhub/auth/userinfo")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 
     @Test
-    void givenRequestWithUserNotFoundWhenGetUserInfoThenUnauthorized() throws Exception {
+    void givenRequestWithUserNotFoundWhenGetUserInfoThenForbidden() throws Exception {
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(
                 get("/payhub/auth/userinfo")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 //endregion
 
