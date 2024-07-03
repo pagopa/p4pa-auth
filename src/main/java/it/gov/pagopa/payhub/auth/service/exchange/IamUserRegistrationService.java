@@ -34,7 +34,8 @@ public class IamUserRegistrationService {
                 throw new InvalidOrganizationAccessDataException("No roles configured for organizationAccess " + userInfo.getOrganizationAccess());
             }
 
-            userService.registerOperator(user.getUserId(), userInfo.getOrganizationAccess().getOrganizationIpaCode(), new HashSet<>(userInfo.getOrganizationAccess().getRoles()));
+            userService.registerOperator(user.getUserId(), userInfo.getOrganizationAccess().getOrganizationIpaCode(),
+                new HashSet<>(userInfo.getOrganizationAccess().getRoles()), user.getMappedExternalUserId(), user.getEmail());
         }
 
         return user;

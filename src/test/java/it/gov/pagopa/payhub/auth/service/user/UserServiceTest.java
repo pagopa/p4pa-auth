@@ -111,14 +111,16 @@ class UserServiceTest {
         // Given
         String userId = "USERID";
         String organizationIpaCode = "ORGANIZATIONIPACODE";
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        String email = "EMAIL";
         Set<String> roles = Set.of("ROLE");
         Operator storedOperator = new Operator();
 
-        Mockito.when(operatorRegistrationServiceMock.registerOperator(userId, organizationIpaCode, roles))
+        Mockito.when(operatorRegistrationServiceMock.registerOperator(userId, organizationIpaCode, roles, mappedExternalUserId, email))
                 .thenReturn(storedOperator);
 
         // When
-        Operator result = service.registerOperator(userId, organizationIpaCode, roles);
+        Operator result = service.registerOperator(userId, organizationIpaCode, roles, mappedExternalUserId, email);
 
         // Then
         Assertions.assertSame(storedOperator, result);

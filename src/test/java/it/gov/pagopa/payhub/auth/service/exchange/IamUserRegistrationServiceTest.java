@@ -97,7 +97,7 @@ class IamUserRegistrationServiceTest {
     }
 
     private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, Set<String> roles) {
-        Mockito.verify(userServiceMock).registerOperator(user.getUserId(), organizationIpaCode, roles);
+        Mockito.verify(userServiceMock).registerOperator(user.getUserId(), organizationIpaCode, roles, user.getMappedExternalUserId(), user.getEmail());
     }
 
     private Pair<IamUserInfoDTO, User> configureUserServiceMock() {

@@ -2,15 +2,11 @@ package it.gov.pagopa.payhub.auth.mypay.config;
 
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import jakarta.persistence.EntityManagerFactory;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
-import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
