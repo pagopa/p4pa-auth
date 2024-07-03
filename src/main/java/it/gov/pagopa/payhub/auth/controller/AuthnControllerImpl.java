@@ -1,17 +1,13 @@
 package it.gov.pagopa.payhub.auth.controller;
 
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.controller.generated.AuthnApi;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
 public class AuthnControllerImpl implements AuthnApi {
@@ -30,21 +26,12 @@ public class AuthnControllerImpl implements AuthnApi {
 
     @Override
     public ResponseEntity<UserInfo> getUserInfo() {
-        String authorization = getAuthorizationHeader();
-        if(StringUtils.hasText(authorization)){
-            return ResponseEntity.ok(authnService.getUserInfo(authorization.replace("Bearer ", "")));
-        } else {
-            throw new InvalidAccessTokenException("Missing authorization header");
-        }
+        return ResponseEntity.ok((UserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     }
 
     @Override
     public ResponseEntity<Void> logout(String clientId, String token) {
         authnService.logout(clientId, token);
         return ResponseEntity.ok(null);
-    }
-
-    private static String getAuthorizationHeader() {
-        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader(HttpHeaders.AUTHORIZATION);
     }
 }
