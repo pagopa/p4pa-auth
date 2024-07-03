@@ -6,9 +6,11 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,9 +28,10 @@ public class OrganizationOperatorRetrieverService {
         this.operatorDTOMapper = operatorDTOMapper;
     }
 
-    public List<OperatorDTO> retrieveOrganizationOperators(String organizationIpaCode) {
-        List<Operator> operators = operatorsRepository.findAllByOrganizationIpaCode(organizationIpaCode);
-        return operators.stream()
+    public Page<OperatorDTO> retrieveOrganizationOperators(String organizationIpaCode, Pageable pageable) {
+        Page<Operator> operators = operatorsRepository.findAllByOrganizationIpaCode(organizationIpaCode, pageable);
+        return new PageImpl<>(
+                operators.stream()
                 .map(op -> {
                     Optional<User> user = usersRepository.findById(op.getUserId());
                     if(user.isEmpty()){
@@ -39,6 +42,8 @@ public class OrganizationOperatorRetrieverService {
                     }
                 })
                 .filter(Objects::nonNull)
-                .toList();
+                .toList(),
+                pageable,
+                operators.getTotalElements());
     }
 }
