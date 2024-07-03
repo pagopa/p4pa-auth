@@ -11,9 +11,10 @@ import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetri
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -56,8 +57,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<OperatorDTO> retrieveOrganizationOperators(String organizationIpaCode) {
+    public Page<OperatorDTO> retrieveOrganizationOperators(String organizationIpaCode, Pageable pageable) {
         log.info("Retrieving organization {} operators", organizationIpaCode);
-        return organizationOperatorRetrieverService.retrieveOrganizationOperators(organizationIpaCode);
+        return organizationOperatorRetrieverService.retrieveOrganizationOperators(organizationIpaCode, pageable);
     }
 }

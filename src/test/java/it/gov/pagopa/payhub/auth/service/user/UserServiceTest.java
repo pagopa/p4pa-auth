@@ -18,9 +18,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
@@ -125,12 +128,13 @@ class UserServiceTest {
     void whenRetrieveOrganizationOperatorsThenReturnOperatorList(){
         // Given
         String organizationIpaCode = "IPACODE";
+        Pageable pageRequest = PageRequest.of(0,1);
 
-        List<OperatorDTO> expectedOperators = Collections.emptyList();
-        Mockito.when(organizationOperatorRetrieverServiceMock.retrieveOrganizationOperators(organizationIpaCode)).thenReturn(expectedOperators);
+        Page<OperatorDTO> expectedOperators = new PageImpl<>(Collections.emptyList());
+        Mockito.when(organizationOperatorRetrieverServiceMock.retrieveOrganizationOperators(organizationIpaCode, pageRequest)).thenReturn(expectedOperators);
 
         // When
-        List<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode);
+        Page<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode, pageRequest);
 
         // Then
         Assertions.assertSame(expectedOperators, result);

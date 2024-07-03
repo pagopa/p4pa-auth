@@ -13,6 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,46 +51,49 @@ class OrganizationOperatorRetrieverServiceTest {
     void givenNoOperatorsWhenRetrieveOrganizationOperatorsThenEmptyList() {
         // Given
         String organizationIpaCode = "IPACODE";
+        Pageable pageRequest = PageRequest.of(0,1);
 
-        Mockito.when(operatorsRepositoryMock.findAllByOrganizationIpaCode(organizationIpaCode)).thenReturn(Collections.emptyList());
+        Mockito.when(operatorsRepositoryMock.findAllByOrganizationIpaCode(organizationIpaCode, pageRequest)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
         // When
-        List<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode);
+        Page<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode, pageRequest);
 
         // Then
-        Assertions.assertEquals(Collections.emptyList(), result);
+        Assertions.assertEquals(new PageImpl<>(Collections.emptyList(), pageRequest, 0), result);
     }
 
     @Test
     void givenNoUsersWhenRetrieveOrganizationOperatorsThenEmptyList() {
         // Given
         String organizationIpaCode = "IPACODE";
+        Pageable pageRequest = PageRequest.of(0,1);
 
-        Mockito.when(operatorsRepositoryMock.findAllByOrganizationIpaCode(organizationIpaCode)).thenReturn(List.of(Operator.builder().userId("USERID").build()));
+        Mockito.when(operatorsRepositoryMock.findAllByOrganizationIpaCode(organizationIpaCode, pageRequest)).thenReturn(new PageImpl<>(List.of(Operator.builder().userId("USERID").build())));
         Mockito.when(usersRepositoryMock.findById("USERID")).thenReturn(Optional.empty());
 
         // When
-        List<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode);
+        Page<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode, pageRequest);
 
         // Then
-        Assertions.assertEquals(Collections.emptyList(), result);
+        Assertions.assertEquals(new PageImpl<>(Collections.emptyList(), pageRequest, 1), result);
     }
 
     @Test
     void givenOperatorsAndUsersWhenRetrieveOrganizationOperatorsThenEmptyList() {
         // Given
         String organizationIpaCode = "IPACODE";
+        Pageable pageRequest = PageRequest.of(0,1);
 
         Operator op1 = Operator.builder().userId("USERID1").build();
         Operator op2 = Operator.builder().userId("USERID2").build();
         Operator op3 = Operator.builder().userId("USERID3").build();
         Operator op4 = Operator.builder().userId("USERID4").build();
-        Mockito.when(operatorsRepositoryMock.findAllByOrganizationIpaCode(organizationIpaCode)).thenReturn(List.of(
+        Mockito.when(operatorsRepositoryMock.findAllByOrganizationIpaCode(organizationIpaCode, pageRequest)).thenReturn(new PageImpl<>(List.of(
                 op1,
                 op2,
                 op3,
                 op4
-        ));
+        )));
 
         User us1 = User.builder().userId("USERID1").build();
         User us3 = User.builder().userId("USERID3").build();
@@ -101,11 +108,11 @@ class OrganizationOperatorRetrieverServiceTest {
         Mockito.when(operatorDTOMapperMock.apply(us3, op3)).thenReturn(expectedOpDto1);
 
         // When
-        List<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode);
+        Page<OperatorDTO> result = service.retrieveOrganizationOperators(organizationIpaCode, pageRequest);
 
         // Then
         Assertions.assertEquals(
-                List.of(expectedOpDto1, expectedOpDto3),
+                new PageImpl<>(List.of(expectedOpDto1, expectedOpDto3), pageRequest, 4),
                 result);
     }
 }
