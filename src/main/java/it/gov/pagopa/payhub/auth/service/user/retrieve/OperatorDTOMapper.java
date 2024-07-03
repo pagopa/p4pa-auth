@@ -3,10 +3,12 @@ package it.gov.pagopa.payhub.auth.service.user.retrieve;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 
+@Service
 public class OperatorDTOMapper implements BiFunction<User, Operator, OperatorDTO> {
     @Override
     public OperatorDTO apply(User user, Operator operator) {
