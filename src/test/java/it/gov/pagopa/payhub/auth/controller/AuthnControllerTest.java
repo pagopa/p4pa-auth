@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
-import it.gov.pagopa.payhub.auth.service.AuthService;
+import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
@@ -27,9 +27,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AuthControllerImpl.class)
+@WebMvcTest(AuthnControllerImpl.class)
 @Import({AuthExceptionHandler.class})
-class AuthControllerTest {
+class AuthnControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -37,7 +37,7 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private AuthService authServiceMock;
+    private AuthnService authnServiceMock;
 
 //region desc=postToken tests
     @Test
@@ -101,7 +101,7 @@ class AuthControllerTest {
         (exception != null
                 ? doThrow(exception)
                 : doReturn(new AccessToken("token", "bearer", 0)))
-                .when(authServiceMock).postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+                .when(authnServiceMock).postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         MvcResult result = mockMvc.perform(
                 post("/payhub/auth/token")
@@ -138,7 +138,7 @@ class AuthControllerTest {
     void givenRequestWitAuthorizationWhenGetUserInfoThenOk() throws Exception {
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 
-        Mockito.when(authServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
 
         mockMvc.perform(
@@ -150,7 +150,7 @@ class AuthControllerTest {
 
     @Test
     void givenRequestWithInvalidAuthorizationWhenGetUserInfoThenUnauthorized() throws Exception {
-        Mockito.when(authServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new InvalidAccessTokenException(""));
 
         mockMvc.perform(
@@ -161,7 +161,7 @@ class AuthControllerTest {
 
     @Test
     void givenRequestWithUserNotFoundWhenGetUserInfoThenUnauthorized() throws Exception {
-        Mockito.when(authServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(
@@ -194,7 +194,7 @@ class AuthControllerTest {
         String token = "TOKEN";
 
         Mockito.doThrow(new InvalidExchangeClientException(""))
-                .when(authServiceMock).logout(clientId, token);
+                .when(authnServiceMock).logout(clientId, token);
 
         MvcResult result = mockMvc.perform(
                 post("/payhub/auth/revoke")

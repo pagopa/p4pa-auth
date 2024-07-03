@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
-import it.gov.pagopa.payhub.auth.service.AuthService;
+import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.controller.generated.AuthnApi;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
@@ -14,17 +14,17 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
-public class AuthControllerImpl implements AuthnApi {
+public class AuthnControllerImpl implements AuthnApi {
 
-    private final AuthService authService;
+    private final AuthnService authnService;
 
-    public AuthControllerImpl(AuthService authService) {
-        this.authService = authService;
+    public AuthnControllerImpl(AuthnService authnService) {
+        this.authnService = authnService;
     }
 
     @Override
     public ResponseEntity<AccessToken> postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
-        AccessToken accessToken = authService.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        AccessToken accessToken = authnService.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }
 
@@ -32,7 +32,7 @@ public class AuthControllerImpl implements AuthnApi {
     public ResponseEntity<UserInfo> getUserInfo() {
         String authorization = getAuthorizationHeader();
         if(StringUtils.hasText(authorization)){
-            return ResponseEntity.ok(authService.getUserInfo(authorization.replace("Bearer ", "")));
+            return ResponseEntity.ok(authnService.getUserInfo(authorization.replace("Bearer ", "")));
         } else {
             throw new InvalidAccessTokenException("Missing authorization header");
         }
@@ -40,7 +40,7 @@ public class AuthControllerImpl implements AuthnApi {
 
     @Override
     public ResponseEntity<Void> logout(String clientId, String token) {
-        authService.logout(clientId, token);
+        authnService.logout(clientId, token);
         return ResponseEntity.ok(null);
     }
 

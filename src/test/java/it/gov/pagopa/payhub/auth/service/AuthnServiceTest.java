@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class AuthnServiceTest {
 
     @Mock
     private ExchangeTokenService exchangeTokenServiceMock;
@@ -24,11 +24,11 @@ class AuthServiceTest {
     @Mock
     private LogoutService logoutServiceMock;
 
-    private AuthService service;
+    private AuthnService service;
 
     @BeforeEach
     void init(){
-        service = new AuthServiceImpl(exchangeTokenServiceMock, userServiceMock, logoutServiceMock);
+        service = new AuthnServiceImpl(exchangeTokenServiceMock, userServiceMock, logoutServiceMock);
     }
 
     @AfterEach

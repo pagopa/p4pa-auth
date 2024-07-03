@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class AuthServiceImpl implements AuthService{
+public class AuthnServiceImpl implements AuthnService {
     private final ExchangeTokenService exchangeTokenService;
     private final UserService userService;
     private final LogoutService logoutService;
 
-    public AuthServiceImpl(ExchangeTokenService exchangeTokenService, UserService userService, LogoutService logoutService) {
+    public AuthnServiceImpl(ExchangeTokenService exchangeTokenService, UserService userService, LogoutService logoutService) {
         this.exchangeTokenService = exchangeTokenService;
         this.userService = userService;
         this.logoutService = logoutService;
