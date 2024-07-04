@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.mypay.model;
+package it.gov.pagopa.payhub.auth.mypivot.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,20 +15,23 @@ import lombok.experimental.FieldNameConstants;
 
 @Data
 @Entity
-@Table(name = "mygov_operatore")
+@Table(name = "mygov_utente")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldNameConstants
-public class MyPayOperator {
+public class MyPivotUser {
 
   @Id
-  @SequenceGenerator(name = "myPayOperatorSeq", sequenceName = "mygov_operatore_mygov_operatore_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "myPayOperatorSeq")
-  private Long mygovOperatoreId;
-  private String ruolo;
+  @SequenceGenerator(name = "myPivotUserSeq", sequenceName = "mygov_utente_mygov_utente_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "myPivotUserSeq")
+  private Long mygovUtenteId;
+  private int version;
   private String codFedUserId;
-  private String codIpaEnte;
+  private String codCodiceFiscaleUtente;
   private String deEmailAddress;
-
+  private String deFirstname;
+  private String deLastname;
+  private Date dtUltimoLogin;
+  private char emailSourceType;
 }
