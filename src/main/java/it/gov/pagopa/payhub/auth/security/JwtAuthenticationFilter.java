@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.security;
 
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import jakarta.servlet.FilterChain;
@@ -49,6 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+        } catch (InvalidAccessTokenException e){
+            log.info("An invalid accessToken has been provided: " + e.getMessage());
         } catch (Exception e){
             log.error("Something gone wrong while retrieving UserInfo", e);
         }
