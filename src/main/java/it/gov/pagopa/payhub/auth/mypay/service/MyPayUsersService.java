@@ -21,13 +21,6 @@ public class MyPayUsersService {
       myPayUser.setDeEmailAddress(email);
       myPayUser.setDeFirstname(firstName);
       myPayUser.setDeLastname(lastName);
-      //myPayUser.setIndirizzo("via pluto");
-      //myPayUser.setCivico("9");
-      //myPayUser.setCap("CAP");
-      //myPayUser.setComuneId((long)1);
-      //myPayUser.setProvinciaId((long) 1);
-      //myPayUser.setNazioneId((long) 1);
-      //myPayUser.setDeEmailAddressNew("yy@yy");
       return myPayUsersRepository.save(myPayUser);
     }else {
       return myPayUsersRepository.save(MyPayUser.builder()
