@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyPayOperatorsService {
 
-  @Autowired
-  private MyPayOperatorsRepository myPayOperatorsRepository;
+  private final MyPayOperatorsRepository myPayOperatorsRepository;
+
+  public MyPayOperatorsService(MyPayOperatorsRepository myPayOperatorsRepository){
+    this.myPayOperatorsRepository = myPayOperatorsRepository;
+  }
 
   public void registerMyPayOperator(String mappedExternalUserId,String email, String organizationIpaCode,
       Set<String> roles) {

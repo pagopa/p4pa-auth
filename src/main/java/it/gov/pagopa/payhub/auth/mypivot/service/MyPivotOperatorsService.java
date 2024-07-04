@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyPivotOperatorsService {
 
-  @Autowired
-  private MyPivotOperatorsRepository myPivotOperatorsRepository;
+  private final MyPivotOperatorsRepository myPivotOperatorsRepository;
+
+  public MyPivotOperatorsService(MyPivotOperatorsRepository myPivotOperatorsRepository) {
+    this.myPivotOperatorsRepository = myPivotOperatorsRepository;
+  }
 
   public void registerMyPivotOperator(String mappedExternalUserId, String organizationIpaCode, Set<String> roles) {
     Optional<MyPivotOperator> existingMyPivotOperator = Optional.ofNullable(

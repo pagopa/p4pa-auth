@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyPivotUsersService {
 
-  @Autowired
-  private MyPivotUsersRepository myPivotUsersRepository;
+  private final MyPivotUsersRepository myPivotUsersRepository;
+
+  public MyPivotUsersService(MyPivotUsersRepository myPivotUsersRepository){
+    this.myPivotUsersRepository = myPivotUsersRepository;
+  }
 
   public MyPivotUser registerMyPivotUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
     Optional<MyPivotUser> existedUser = Optional.ofNullable(myPivotUsersRepository.findByCodFedUserId(externalUserId));
