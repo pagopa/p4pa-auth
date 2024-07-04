@@ -30,8 +30,6 @@ public class OperatorRegistrationService {
                 userId, organizationIpaCode, roles);
 
         myPayOperatorsService.registerMyPayOperator(mappedExternalUserId, email, organizationIpaCode, roles);
-        log.info("Operator with mappedExternalUserId {}, organization {} and roles {} is saved on MyPay ",
-            mappedExternalUserId,organizationIpaCode, roles);
 
         myPivotOperatorsService.registerMyPivotOperator(mappedExternalUserId, organizationIpaCode, roles);
         log.info("Operator with mappedExternalUserId {}, organization {} and roles {} is registered on MyPivot",

@@ -29,14 +29,15 @@ public class UserRegistrationService {
     }
 
     public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email){
-        myPayUsersService.registerMyPayUser(externalUserId, fiscalCode, firstName, lastName, email);
-        log.info("Registering user on MyPay having mappedExternalUserId {}", externalUserId);
-
-        myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, email);
-        log.info("Registering user on MyPivot having mappedExternalUserId {}", externalUserId);
-
         User user = buildUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName, email);
         log.info("Registering user having mappedExternalUserId {}", user.getMappedExternalUserId());
+
+        myPayUsersService.registerMyPayUser(user.getMappedExternalUserId(), fiscalCode, firstName, lastName, email);
+        log.info("Registering user on MyPay having mappedExternalUserId {}", externalUserId);
+
+        myPivotUsersService.registerMyPivotUser(user.getMappedExternalUserId(), fiscalCode, firstName, lastName, email);
+        log.info("Registering user on MyPivot having mappedExternalUserId {}", externalUserId);
+
         return usersRepository.registerUser(user);
     }
 
