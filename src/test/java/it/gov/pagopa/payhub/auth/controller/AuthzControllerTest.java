@@ -1,13 +1,17 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
+import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
+import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
+import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -25,8 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthzControllerImpl.class)
-@Import({AuthExceptionHandler.class})
-@AutoConfigureMockMvc(addFilters = false)
+@Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
 class AuthzControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -37,11 +40,19 @@ class AuthzControllerTest {
     @MockBean
     private AuthnService authnServiceMock;
 
-//region desc=getOrganizationOperators tests
+    //region desc=getOrganizationOperators tests
     @Test
-    void whenGetOrganizationOperatorsThenOk() throws Exception {
+    void givenAuthorizedUserwhenGetOrganizationOperatorsThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
         Pageable pageRequest = PageRequest.of(4, 1);
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+                .thenReturn(UserInfo.builder()
+                        .organizations(List.of(UserOrganizationRoles.builder()
+                                .organizationIpaCode(organizationIpaCode)
+                                .roles(List.of(Constants.ROLE_ADMIN))
+                                .build()))
+                        .build());
 
         Page<OperatorDTO> expectedResult = new PageImpl<>(
                 List.of(OperatorDTO.builder()
@@ -61,6 +72,26 @@ class AuthzControllerTest {
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isOk())
                 .andExpect(content().json("{\"content\":[{\"userId\":\"USER1\"}],\"pageNo\":4,\"pageSize\":1,\"totalElements\":1,\"totalPages\":100}"));
+    }
+
+    @Test
+    void givenUnauthorizedUserwhenGetOrganizationOperatorsThenOk() throws Exception {
+        String organizationIpaCode = "IPACODE";
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+                .thenReturn(UserInfo.builder()
+                        .organizations(List.of(UserOrganizationRoles.builder()
+                                .organizationIpaCode("ORG2")
+                                .roles(List.of(Constants.ROLE_ADMIN))
+                                .build()))
+                        .build());
+
+        mockMvc.perform(
+                        get("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
+                                .param("page", "4")
+                                .param("size", "1")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                ).andExpect(status().isUnauthorized());
     }
 //end region
 }
