@@ -303,6 +303,7 @@ components:
           type: string
           enum:
             - AUTH_GENERIC_ERROR
+            - AUTH_USER_UNAUTHORIZED
             - invalid_request
             - invalid_client
             - invalid_scope

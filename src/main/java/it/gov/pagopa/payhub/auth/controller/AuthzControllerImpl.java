@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.auth.controller;
 
+import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
+import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.OperatorsPage;
@@ -20,6 +22,9 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<OperatorsPage> getOrganizationOperators(String organizationIpaCode, Integer page, Integer size) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to retrieve the organization operator list");
+        }
         Page<OperatorDTO> organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, PageRequest.of(page, size));
         return ResponseEntity.ok(OperatorsPage.builder()
                 .content(organizationOperators.getContent())

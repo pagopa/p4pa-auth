@@ -52,6 +52,11 @@ public class AuthExceptionHandler {
         return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, message);
     }
 
+    @ExceptionHandler({UserUnauthorizedException.class})
+    public ResponseEntity<AuthErrorDTO> handleUserUnauthorizedException(RuntimeException ex, HttpServletRequest request){
+        return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.AUTH_USER_UNAUTHORIZED);
+    }
+
     static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
         String message = logException(ex, request, httpStatus);
 
