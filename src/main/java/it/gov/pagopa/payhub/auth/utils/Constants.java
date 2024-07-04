@@ -11,6 +11,8 @@ public class Constants {
 
     public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
 
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     // Multiple datasource introduce an issue that we need to explicity CamelCaseToUnderscore properties
     // to each EntityManagerFactory
     public static Map<String, Object> jpaProperties() {
