@@ -12,7 +12,7 @@ public class MyPivotUsersService {
   @Autowired
   private MyPivotUsersRepository myPivotUsersRepository;
 
-  public void registerMyPivotUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
+  public MyPivotUser registerMyPivotUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
     Optional<MyPivotUser> existedUser = Optional.ofNullable(myPivotUsersRepository.findByCodFedUserId(externalUserId));
     if(existedUser.isPresent()){
       MyPivotUser myPivotUser = existedUser.get();
@@ -26,9 +26,9 @@ public class MyPivotUsersService {
       //myPayUser.setProvinciaId((long) 1);
       //myPayUser.setNazioneId((long) 1);
       //myPayUser.setDeEmailAddressNew("yy@yy");
-      myPivotUsersRepository.save(myPivotUser);
+      return myPivotUsersRepository.save(myPivotUser);
     }else {
-      myPivotUsersRepository.save(MyPivotUser.builder()
+      return myPivotUsersRepository.save(MyPivotUser.builder()
           .version(0)
           .codFedUserId(externalUserId)
           .codCodiceFiscaleUtente(fiscalCode)

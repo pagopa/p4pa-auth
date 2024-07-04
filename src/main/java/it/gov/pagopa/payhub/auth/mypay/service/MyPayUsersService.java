@@ -12,7 +12,7 @@ public class MyPayUsersService {
   @Autowired
   private MyPayUsersRepository myPayUsersRepository;
 
-  public void registerMyPayUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
+  public MyPayUser registerMyPayUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
     Optional<MyPayUser> existedUser = Optional.ofNullable(myPayUsersRepository.findByCodFedUserId(externalUserId));
     if(existedUser.isPresent()){
       MyPayUser myPayUser = existedUser.get();
@@ -26,9 +26,9 @@ public class MyPayUsersService {
       //myPayUser.setProvinciaId((long) 1);
       //myPayUser.setNazioneId((long) 1);
       //myPayUser.setDeEmailAddressNew("yy@yy");
-      myPayUsersRepository.save(myPayUser);
+      return myPayUsersRepository.save(myPayUser);
     }else {
-      myPayUsersRepository.save(MyPayUser.builder()
+      return myPayUsersRepository.save(MyPayUser.builder()
           .version(0)
           .codFedUserId(externalUserId)
           .codCodiceFiscaleUtente(fiscalCode)

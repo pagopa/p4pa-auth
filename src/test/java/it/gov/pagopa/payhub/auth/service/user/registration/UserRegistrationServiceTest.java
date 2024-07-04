@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.auth.service.user.registration;
 
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.mypay.model.MyPayUser;
 import it.gov.pagopa.payhub.auth.mypay.service.MyPayUsersService;
+import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotUser;
 import it.gov.pagopa.payhub.auth.mypivot.service.MyPivotUsersService;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -23,9 +25,9 @@ class UserRegistrationServiceTest {
     @Mock
     private UsersRepository usersRepositoryMock;
     @Mock
-    private MyPayUsersService myPayUsersService;
+    private MyPayUsersService myPayUsersServiceMock;
     @Mock
-    private MyPivotUsersService myPivotUsersService;
+    private MyPivotUsersService myPivotUsersServiceMock;
 
     private UserRegistrationService service;
 
@@ -35,8 +37,8 @@ class UserRegistrationServiceTest {
                 externalUserIdObfuscatorServiceMock,
                 fiscalCodeObfuscatorServiceMock,
                 usersRepositoryMock,
-                myPayUsersService,
-                myPivotUsersService);
+                myPayUsersServiceMock,
+                myPivotUsersServiceMock);
     }
 
     @AfterEach
@@ -59,6 +61,9 @@ class UserRegistrationServiceTest {
         String familyName = "FAMILYNAME";
         String email = "EMAIL";
 
+        MyPayUser storedMyPayUser = new MyPayUser();
+        MyPivotUser storedMyPivotUser = new MyPivotUser();
+
         User user = User.builder()
                 .mappedExternalUserId(obfuscatedExternalUserId)
                 .userCode(obfuscatedFiscalCode)
@@ -73,6 +78,9 @@ class UserRegistrationServiceTest {
         Mockito.when(externalUserIdObfuscatorServiceMock.obfuscate(externalUserId)).thenReturn(obfuscatedExternalUserId);
         Mockito.when(fiscalCodeObfuscatorServiceMock.obfuscate(fiscalCode)).thenReturn(obfuscatedFiscalCode);
         Mockito.when(usersRepositoryMock.registerUser(user)).thenReturn(storedUser);
+        Mockito.when(myPayUsersServiceMock.registerMyPayUser(externalUserId, fiscalCode, name, familyName, email)).thenReturn(storedMyPayUser);
+        Mockito.when(myPivotUsersServiceMock.registerMyPivotUser(externalUserId, fiscalCode, name, familyName, email)).thenReturn(storedMyPivotUser);
+
 
         // When
         User result = service.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName, email);
