@@ -12,7 +12,6 @@ import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -78,7 +77,6 @@ class AuthzControllerTest {
     @Test
     void givenUnauthorizedUserwhenGetOrganizationOperatorsThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
-        Pageable pageRequest = PageRequest.of(4, 1);
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(UserInfo.builder()
