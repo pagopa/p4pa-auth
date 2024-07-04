@@ -7,6 +7,7 @@ import com.mongodb.WriteError;
 import org.bson.BsonDocument;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.doThrow;
         AuthExceptionHandlerTest.TestController.class})
 @ContextConfiguration(classes = {MongoTooManyRequestsExceptionHandler.class,
         AuthExceptionHandlerTest.TestController.class})
+@AutoConfigureMockMvc(addFilters = false)
 class MongoTooManyRequestsExceptionHandlerTest {
     @Autowired
     private MockMvc mockMvc;

@@ -1,12 +1,13 @@
 package it.gov.pagopa.payhub.auth.controller;
 
-import it.gov.pagopa.payhub.auth.config.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
+import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -24,13 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthzControllerImpl.class)
-@Import({AuthExceptionHandler.class, JsonConfig.class})
+@Import({AuthExceptionHandler.class})
+@AutoConfigureMockMvc(addFilters = false)
 class AuthzControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private AuthzService authzServiceMock;
+
+    @MockBean
+    private AuthnService authnServiceMock;
 
 //region desc=getOrganizationOperators tests
     @Test
