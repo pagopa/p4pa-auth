@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.mypay.service;
 import it.gov.pagopa.payhub.auth.mypay.model.MyPayUser;
 import it.gov.pagopa.payhub.auth.mypay.repository.MyPayUsersRepository;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

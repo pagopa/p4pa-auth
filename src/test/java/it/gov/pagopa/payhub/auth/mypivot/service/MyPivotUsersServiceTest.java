@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-public class MyPivotUsersServiceTest {
+class MyPivotUsersServiceTest {
 
   @Mock
   private MyPivotUsersRepository myPivotUsersRepositoryMock;
@@ -22,7 +22,7 @@ public class MyPivotUsersServiceTest {
   private MyPivotUsersService myPivotUsersService;
 
   @Test
-  public void testRegisterMyPivotUser_ExistingUser_UpdatesDetails() {
+  void testRegisterMyPivotUser_ExistingUser_UpdatesDetails() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
     String fiscalCode = "FISCALCODE";
@@ -53,7 +53,7 @@ public class MyPivotUsersServiceTest {
   }
 
   @Test
-  public void testRegisterMyPivotUser_NewUser_CreatesEntry() {
+  void testRegisterMyPivotUser_NewUser_CreatesEntry() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
     String fiscalCode = "FISCALCODE";

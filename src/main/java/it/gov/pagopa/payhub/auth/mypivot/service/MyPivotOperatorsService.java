@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotOperator;
 import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotOperatorsRepository;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

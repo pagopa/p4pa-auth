@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class MyPayOperatorsServiceTest {
+class MyPayOperatorsServiceTest {
 
   @Mock
   private MyPayOperatorsRepository myPayOperatorsRepositoryMock;
@@ -23,7 +23,7 @@ public class MyPayOperatorsServiceTest {
   private MyPayOperatorsService myPayOperatorsService;
 
   @Test
-  public void testRegisterMyPivotOperator_ExistingOperator_UpdatesRole() {
+  void testRegisterMyPivotOperator_ExistingOperator_UpdatesRole() {
     // Arrange
     String mappedExternalUserId = "USERID";
     String organizationIpaCode = "IPACODE";
@@ -48,7 +48,7 @@ public class MyPayOperatorsServiceTest {
   }
 
   @Test
-  public void testRegisterMyPivotOperator_NewOperator_CreatesNewEntry() {
+  void testRegisterMyPivotOperator_NewOperator_CreatesNewEntry() {
     // Arrange
     String mappedExternalUserId = "USERID";
     String organizationIpaCode = "IPACODE";
