@@ -21,7 +21,7 @@ public class MyPivotUsersService {
       myPivotUser.setDeFirstname(firstName);
       myPivotUser.setDeLastname(lastName);
       myPivotUsersRepository.save(myPivotUser);
-    }, () -> {
+    }, () ->
       myPivotUsersRepository.save(MyPivotUser.builder()
           .version(0)
           .codFedUserId(externalUserId)
@@ -29,7 +29,6 @@ public class MyPivotUsersService {
           .deEmailAddress(email)
           .deFirstname(firstName)
           .deLastname(lastName)
-          .build());
-    });
+          .build()));
   }
 }

@@ -61,9 +61,6 @@ class UserRegistrationServiceTest {
         String familyName = "FAMILYNAME";
         String email = "EMAIL";
 
-        MyPayUser storedMyPayUser = new MyPayUser();
-        MyPivotUser storedMyPivotUser = new MyPivotUser();
-
         User user = User.builder()
                 .mappedExternalUserId(obfuscatedExternalUserId)
                 .userCode(obfuscatedFiscalCode)

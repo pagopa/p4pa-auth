@@ -21,15 +21,13 @@ public class MyPayUsersService {
         myPayUser.setDeFirstname(firstName);
         myPayUser.setDeLastname(lastName);
         myPayUsersRepository.save(myPayUser);
-    }, () -> {
-       myPayUsersRepository.save(MyPayUser.builder()
+    }, () -> myPayUsersRepository.save(MyPayUser.builder()
           .version(0)
           .codFedUserId(externalUserId)
           .codCodiceFiscaleUtente(fiscalCode)
           .deEmailAddress(email)
           .deFirstname(firstName)
           .deLastname(lastName)
-          .build());
-    });
+          .build()));
   }
 }

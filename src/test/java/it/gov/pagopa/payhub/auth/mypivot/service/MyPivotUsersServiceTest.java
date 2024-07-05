@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotUser;
 import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotUsersRepository;
 import java.util.Optional;
-import javax.swing.text.html.Option;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
