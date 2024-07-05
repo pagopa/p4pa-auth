@@ -14,16 +14,15 @@ public class MyPivotUsersService {
     this.myPivotUsersRepository = myPivotUsersRepository;
   }
 
-  public MyPivotUser registerMyPivotUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
+  public void registerMyPivotUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
     Optional<MyPivotUser> existedUser = myPivotUsersRepository.findByCodFedUserId(externalUserId);
-    if(existedUser.isPresent()){
-      MyPivotUser myPivotUser = existedUser.get();
+    existedUser.ifPresentOrElse(myPivotUser -> {
       myPivotUser.setDeEmailAddress(email);
       myPivotUser.setDeFirstname(firstName);
       myPivotUser.setDeLastname(lastName);
-      return myPivotUsersRepository.save(myPivotUser);
-    }else {
-      return myPivotUsersRepository.save(MyPivotUser.builder()
+      myPivotUsersRepository.save(myPivotUser);
+    }, () -> {
+      myPivotUsersRepository.save(MyPivotUser.builder()
           .version(0)
           .codFedUserId(externalUserId)
           .codCodiceFiscaleUtente(fiscalCode)
@@ -31,6 +30,6 @@ public class MyPivotUsersService {
           .deFirstname(firstName)
           .deLastname(lastName)
           .build());
-    }
+    });
   }
 }

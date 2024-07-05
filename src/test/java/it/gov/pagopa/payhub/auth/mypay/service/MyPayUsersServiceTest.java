@@ -22,7 +22,7 @@ class MyPayUsersServiceTest {
   private MyPayUsersService myPayUsersService;
 
   @Test
-  void testRegisterMyPayUser_ExistingUser_UpdatesDetails() {
+  void whenUpdateUserThenCheckNewValues() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
     String fiscalCode = "FISCALCODE";
@@ -53,16 +53,17 @@ class MyPayUsersServiceTest {
   }
 
   @Test
-  void testRegisterMyPayUser_NewUser_CreatesEntry() {
+  void whenRegisterMyPayUserThenVerifyNewUser() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
     String fiscalCode = "FISCALCODE";
     String firstName = "FIRSTNAME";
     String lastName = "LASTNAME";
     String email = "EMAIL";
+    Optional<MyPayUser> existedMyPayUser = Optional.empty();
 
     // Mock behavior (no existing user)
-    when(myPayUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(null);
+    when(myPayUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existedMyPayUser);
 
     // Act
     myPayUsersService.registerMyPayUser(externalUserId, fiscalCode, firstName, lastName, email);

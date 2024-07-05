@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotUser;
 import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotUsersRepository;
 import java.util.Optional;
+import javax.swing.text.html.Option;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +23,7 @@ class MyPivotUsersServiceTest {
   private MyPivotUsersService myPivotUsersService;
 
   @Test
-  void testRegisterMyPivotUser_ExistingUser_UpdatesDetails() {
+  void whenUpdateUserThenCheckNewValues() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
     String fiscalCode = "FISCALCODE";
@@ -53,16 +54,17 @@ class MyPivotUsersServiceTest {
   }
 
   @Test
-  void testRegisterMyPivotUser_NewUser_CreatesEntry() {
+  void whenRegisterMyPivotUserThenVerifyNewUser() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
     String fiscalCode = "FISCALCODE";
     String firstName = "FIRSTNAME";
     String lastName = "LASTNAME";
     String email = "EMAIL";
+    Optional<MyPivotUser> existedMyPivotUser = Optional.empty();
 
     // Mock behavior (no existing user)
-    when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(null);
+    when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existedMyPivotUser);
 
     // Act
     myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, email);

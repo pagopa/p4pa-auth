@@ -78,9 +78,6 @@ class UserRegistrationServiceTest {
         Mockito.when(externalUserIdObfuscatorServiceMock.obfuscate(externalUserId)).thenReturn(obfuscatedExternalUserId);
         Mockito.when(fiscalCodeObfuscatorServiceMock.obfuscate(fiscalCode)).thenReturn(obfuscatedFiscalCode);
         Mockito.when(usersRepositoryMock.registerUser(user)).thenReturn(storedUser);
-        Mockito.when(myPayUsersServiceMock.registerMyPayUser(externalUserId, fiscalCode, name, familyName, email)).thenReturn(storedMyPayUser);
-        Mockito.when(myPivotUsersServiceMock.registerMyPivotUser(externalUserId, fiscalCode, name, familyName, email)).thenReturn(storedMyPivotUser);
-
 
         // When
         User result = service.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName, email);

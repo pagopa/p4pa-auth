@@ -14,16 +14,15 @@ public class MyPayUsersService {
     this.myPayUsersRepository = myPayUsersRepository;
   }
 
-  public MyPayUser registerMyPayUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
-    Optional<MyPayUser> existedUser = myPayUsersRepository.findByCodFedUserId(externalUserId);
-    if(existedUser.isPresent()){
-      MyPayUser myPayUser = existedUser.get();
-      myPayUser.setDeEmailAddress(email);
-      myPayUser.setDeFirstname(firstName);
-      myPayUser.setDeLastname(lastName);
-      return myPayUsersRepository.save(myPayUser);
-    }else {
-      return myPayUsersRepository.save(MyPayUser.builder()
+  public void registerMyPayUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
+      Optional<MyPayUser> existedUser = myPayUsersRepository.findByCodFedUserId(externalUserId);
+      existedUser.ifPresentOrElse(myPayUser -> {
+        myPayUser.setDeEmailAddress(email);
+        myPayUser.setDeFirstname(firstName);
+        myPayUser.setDeLastname(lastName);
+        myPayUsersRepository.save(myPayUser);
+    }, () -> {
+       myPayUsersRepository.save(MyPayUser.builder()
           .version(0)
           .codFedUserId(externalUserId)
           .codCodiceFiscaleUtente(fiscalCode)
@@ -31,7 +30,6 @@ public class MyPayUsersService {
           .deFirstname(firstName)
           .deLastname(lastName)
           .build());
-    }
-
+    });
   }
 }
