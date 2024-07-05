@@ -15,7 +15,7 @@ public class MyPayUsersService {
   }
 
   public MyPayUser registerMyPayUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
-    Optional<MyPayUser> existedUser = Optional.ofNullable(myPayUsersRepository.findByCodFedUserId(externalUserId));
+    Optional<MyPayUser> existedUser = myPayUsersRepository.findByCodFedUserId(externalUserId);
     if(existedUser.isPresent()){
       MyPayUser myPayUser = existedUser.get();
       myPayUser.setDeEmailAddress(email);

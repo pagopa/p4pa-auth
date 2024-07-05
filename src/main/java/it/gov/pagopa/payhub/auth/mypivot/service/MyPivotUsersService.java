@@ -15,7 +15,7 @@ public class MyPivotUsersService {
   }
 
   public MyPivotUser registerMyPivotUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
-    Optional<MyPivotUser> existedUser = Optional.ofNullable(myPivotUsersRepository.findByCodFedUserId(externalUserId));
+    Optional<MyPivotUser> existedUser = myPivotUsersRepository.findByCodFedUserId(externalUserId);
     if(existedUser.isPresent()){
       MyPivotUser myPivotUser = existedUser.get();
       myPivotUser.setDeEmailAddress(email);

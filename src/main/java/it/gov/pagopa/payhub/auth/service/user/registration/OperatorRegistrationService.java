@@ -28,13 +28,8 @@ public class OperatorRegistrationService {
     public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String mappedExternalUserId, String email){
         log.info("Registering relationship between userId {} and organization {} setting roles {}",
                 userId, organizationIpaCode, roles);
-
         myPayOperatorsService.registerMyPayOperator(mappedExternalUserId, email, organizationIpaCode, roles);
-
         myPivotOperatorsService.registerMyPivotOperator(mappedExternalUserId, organizationIpaCode, roles);
-        log.info("Operator with mappedExternalUserId {}, organization {} and roles {} is registered on MyPivot",
-            mappedExternalUserId,organizationIpaCode, roles);
-
         return operatorsRepository.registerOperator(userId, organizationIpaCode, roles);
     }
 

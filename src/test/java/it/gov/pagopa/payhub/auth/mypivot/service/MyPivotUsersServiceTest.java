@@ -42,7 +42,7 @@ class MyPivotUsersServiceTest {
             .build());
 
     // Mock behavior
-    when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser.get());
+    when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser);
 
     // Act
     myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, newEmail);

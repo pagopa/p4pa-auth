@@ -42,7 +42,7 @@ class MyPayUsersServiceTest {
             .build());
 
     // Mock behavior
-    when(myPayUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser.get());
+    when(myPayUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser);
 
     // Act
     myPayUsersService.registerMyPayUser(externalUserId, fiscalCode, firstName, lastName, newEmail);

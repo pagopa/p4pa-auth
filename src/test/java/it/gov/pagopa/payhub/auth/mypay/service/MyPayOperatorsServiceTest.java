@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.auth.mypay.service;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 import it.gov.pagopa.payhub.auth.mypay.model.MyPayOperator;
 import it.gov.pagopa.payhub.auth.mypay.repository.MyPayOperatorsRepository;
+import it.gov.pagopa.payhub.auth.utils.Constants;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -23,40 +23,44 @@ class MyPayOperatorsServiceTest {
   private MyPayOperatorsService myPayOperatorsService;
 
   @Test
-  void testRegisterMyPivotOperator_ExistingOperator_UpdatesRole() {
+  void whenUpdateRoleWithOperThenCheckBlankRole() {
     // Arrange
+    Long operatorId = (long) 1;
     String mappedExternalUserId = "USERID";
     String organizationIpaCode = "IPACODE";
     String email = "EMAIL";
-    Set<String> roles = Set.of("ROLE_ADMIN");
-    Optional<MyPayOperator> existingOperator = Optional.of(
-        MyPayOperator.builder()
-            .codFedUserId(mappedExternalUserId)
-            .codIpaEnte(organizationIpaCode)
-            .build());
+    Set<String> roles = Set.of("ROLE_OPER");
+
+    MyPayOperator existingOperator = MyPayOperator.builder()
+        .mygovOperatoreId(operatorId)
+        .codFedUserId(mappedExternalUserId)
+        .codIpaEnte(organizationIpaCode)
+        .ruolo("ROLE_ADMIN")
+        .build();
 
     // Mock behavior
     when(myPayOperatorsRepositoryMock.findByCodFedUserIdAndCodIpaEnte(mappedExternalUserId, organizationIpaCode))
-        .thenReturn(existingOperator.get());
+        .thenReturn(Optional.of(existingOperator));
 
     // Act
     myPayOperatorsService.registerMyPayOperator(mappedExternalUserId, email, organizationIpaCode, roles);
 
     // Assert
-    verify(myPayOperatorsRepositoryMock).save(existingOperator.get());
-    assertEquals("ROLE_ADMIN", existingOperator.get().getRuolo());
+    verify(myPayOperatorsRepositoryMock).save(existingOperator);
+    assertNull(existingOperator.getRuolo());
   }
 
   @Test
-  void testRegisterMyPivotOperator_NewOperator_CreatesNewEntry() {
+  void whenRegisterMyPayOperatorThenVerifyNewOperator() {
     // Arrange
-    String mappedExternalUserId = "USERID";
+    String mappedExternalUserId = "USERNID";
     String organizationIpaCode = "IPACODE";
-    String email = "EMAIL";
     Set<String> roles = Set.of("ROLE_ADMIN");
+    String email = "EMAIL";
+    Optional<MyPayOperator> newOperator = Optional.empty();
 
     // Mock behavior (no existing operator)
-    when(myPayOperatorsRepositoryMock.findByCodFedUserIdAndCodIpaEnte(mappedExternalUserId, organizationIpaCode)).thenReturn(null);
+    when(myPayOperatorsRepositoryMock.findByCodFedUserIdAndCodIpaEnte(mappedExternalUserId, organizationIpaCode)).thenReturn(newOperator);
 
     // Act
     myPayOperatorsService.registerMyPayOperator(mappedExternalUserId, email, organizationIpaCode, roles);
@@ -64,7 +68,7 @@ class MyPayOperatorsServiceTest {
     // Assert
     MyPayOperator expectedOperator = MyPayOperator.builder()
         .codFedUserId(mappedExternalUserId)
-        .ruolo(roles.stream().findFirst().orElse(null)) // Handle potential empty role set
+        .ruolo(roles.contains(Constants.ROLE_ADMIN)? Constants.ROLE_ADMIN : null)
         .codIpaEnte(organizationIpaCode)
         .deEmailAddress(email)
         .build();
