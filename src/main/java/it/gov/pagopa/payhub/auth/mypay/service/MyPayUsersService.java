@@ -14,8 +14,8 @@ public class MyPayUsersService {
     this.myPayUsersRepository = myPayUsersRepository;
   }
 
-  public void registerMyPayUser(String externalUserId, String fiscalCode, String firstName, String lastName, String email) {
-      Optional<MyPayUser> existedUser = myPayUsersRepository.findByCodFedUserId(externalUserId);
+  public void registerMyPayUser(String mappedExternalUserId, String fiscalCode, String firstName, String lastName, String email) {
+      Optional<MyPayUser> existedUser = myPayUsersRepository.findByCodFedUserId(mappedExternalUserId);
       existedUser.ifPresentOrElse(myPayUser -> {
         myPayUser.setDeEmailAddress(email);
         myPayUser.setDeFirstname(firstName);
@@ -23,7 +23,7 @@ public class MyPayUsersService {
         myPayUsersRepository.save(myPayUser);
     }, () -> myPayUsersRepository.save(MyPayUser.builder()
           .version(0)
-          .codFedUserId(externalUserId)
+          .codFedUserId(mappedExternalUserId)
           .codCodiceFiscaleUtente(fiscalCode)
           .deEmailAddress(email)
           .deFirstname(firstName)

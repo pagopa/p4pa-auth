@@ -20,8 +20,12 @@ public class MyPayOperatorsService {
 
   public void registerMyPayOperator(String mappedExternalUserId,String email, String organizationIpaCode,
       Set<String> roles) {
+    boolean checkAdminRole = roles.contains(Constants.ROLE_ADMIN);
+    boolean checkOperRole = roles.contains(Constants.ROLE_OPER);
+    String role = checkAdminRole? Constants.ROLE_ADMIN : null;
+
     //exit if doesn't exist either roles
-    if(!roles.contains(Constants.ROLE_ADMIN) && !roles.contains(Constants.ROLE_OPER)) {
+    if(!checkAdminRole && !checkOperRole) {
       log.info("Operator with mappedExternalUserId {} doesn't contain any admitted roles for MyPay", mappedExternalUserId);
       return;
     }
@@ -29,14 +33,14 @@ public class MyPayOperatorsService {
     Optional<MyPayOperator> existingMyPayOperator = myPayOperatorsRepository.findByCodFedUserIdAndCodIpaEnte(mappedExternalUserId, organizationIpaCode);
     //if exist update else insert
     existingMyPayOperator.ifPresentOrElse(operator -> {
-      operator.setRuolo(roles.contains(Constants.ROLE_ADMIN)? Constants.ROLE_ADMIN : null);
+      operator.setRuolo(role);
       operator.setDeEmailAddress(email);
       myPayOperatorsRepository.save(operator);
       log.info("Operator with mappedExternalUserId {}, organization {} and roles {} is updated on MyPay ",
           mappedExternalUserId,organizationIpaCode, roles);
     }, () -> {
       myPayOperatorsRepository.save(MyPayOperator.builder()
-        .ruolo(roles.contains(Constants.ROLE_ADMIN)? Constants.ROLE_ADMIN : null)
+        .ruolo(role)
         .codFedUserId(mappedExternalUserId)
         .codIpaEnte(organizationIpaCode)
         .deEmailAddress(email)
