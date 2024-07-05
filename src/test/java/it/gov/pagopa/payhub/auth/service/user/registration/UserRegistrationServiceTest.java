@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.auth.service.user.registration;
 
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.mypay.service.MyPayUsersService;
+import it.gov.pagopa.payhub.auth.mypivot.service.MyPivotUsersService;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -20,6 +22,10 @@ class UserRegistrationServiceTest {
     private FiscalCodeObfuscatorService fiscalCodeObfuscatorServiceMock;
     @Mock
     private UsersRepository usersRepositoryMock;
+    @Mock
+    private MyPayUsersService myPayUsersServiceMock;
+    @Mock
+    private MyPivotUsersService myPivotUsersServiceMock;
 
     private UserRegistrationService service;
 
@@ -28,7 +34,9 @@ class UserRegistrationServiceTest {
         service = new UserRegistrationService(
                 externalUserIdObfuscatorServiceMock,
                 fiscalCodeObfuscatorServiceMock,
-                usersRepositoryMock);
+                usersRepositoryMock,
+                myPayUsersServiceMock,
+                myPivotUsersServiceMock);
     }
 
     @AfterEach
