@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.user.registration;
 
 import it.gov.pagopa.payhub.auth.model.User;
-import it.gov.pagopa.payhub.auth.mypay.model.MyPayUser;
 import it.gov.pagopa.payhub.auth.mypay.service.MyPayUsersService;
-import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotUser;
 import it.gov.pagopa.payhub.auth.mypivot.service.MyPivotUsersService;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import org.junit.jupiter.api.AfterEach;
