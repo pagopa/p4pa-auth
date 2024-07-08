@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.mypivot.service;
 
 import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotUser;
 import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotUsersRepository;
+import java.util.Date;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class MyPivotUsersService {
       myPivotUser.setDeEmailAddress(email);
       myPivotUser.setDeFirstname(firstName);
       myPivotUser.setDeLastname(lastName);
+      myPivotUser.setDtUltimoLogin(new Date());
       myPivotUsersRepository.save(myPivotUser);
     }, () ->
       myPivotUsersRepository.save(MyPivotUser.builder()
@@ -29,6 +31,8 @@ public class MyPivotUsersService {
           .deEmailAddress(email)
           .deFirstname(firstName)
           .deLastname(lastName)
+          .emailSourceType('A')
+          .dtUltimoLogin(new Date())
           .build()));
   }
 }
