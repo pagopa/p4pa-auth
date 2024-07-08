@@ -69,16 +69,6 @@ class MyPivotUsersServiceTest {
     // Act
     myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, email);
 
-    Optional<MyPivotUser> newUser = Optional.of(
-        MyPivotUser.builder()
-            .codFedUserId(externalUserId)
-            .codCodiceFiscaleUtente(fiscalCode)
-            .version(0)
-            .deFirstname(firstName)
-            .deLastname(lastName)
-            .deEmailAddress(email)
-            .build());
-
     //ArgumentMatcher to verify just userId due to lastLogin can be different
     ArgumentMatcher<MyPivotUser> userMatcher = new ArgumentMatcher<MyPivotUser>() {
       @Override
