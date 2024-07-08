@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotUsersRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -78,7 +79,15 @@ class MyPivotUsersServiceTest {
             .deEmailAddress(email)
             .build());
 
+    //ArgumentMatcher to verify just userId due to lastLogin can be different
+    ArgumentMatcher<MyPivotUser> userMatcher = new ArgumentMatcher<MyPivotUser>() {
+      @Override
+      public boolean matches(MyPivotUser user) {
+        return user.getCodFedUserId().equals(externalUserId);
+      }
+    };
+
     // Assert
-    verify(myPivotUsersRepositoryMock).save(newUser.get());
+    verify(myPivotUsersRepositoryMock).save(argThat(userMatcher));
   }
 }
