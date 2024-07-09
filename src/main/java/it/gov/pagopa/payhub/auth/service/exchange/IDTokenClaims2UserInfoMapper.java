@@ -46,15 +46,17 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
         }
     }
 
-    public IamUserInfoDTO buildIamUserTestInfo(String mappedExternalUserId) {
+    public IamUserInfoDTO buildIamUserTestInfo(String mappedExternalUserId, String subjectIssuer) {
         User userInfo = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
                 .orElseThrow(() -> new UserNotFoundException("User with this mappedExternalUserId not found"));
         return IamUserInfoDTO.builder()
                 .userId(mappedExternalUserId)
+                .innerUserId(userInfo.getUserId())
                 .name(userInfo.getFirstName())
                 .familyName(userInfo.getLastName())
                 .email(userInfo.getEmail())
                 .fiscalCode(userInfo.getUserCode())
+                .issuer(subjectIssuer)
                 .build();
     }
 

@@ -40,7 +40,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
                 clientId, subjectTokenType, subjectIssuer, grantType, scope);
         if(SUBJECT_TOKEN_TYPE_TEST.equals(subjectTokenType)){
             AccessToken accessToken = accessTokenBuilderService.build();
-            IamUserInfoDTO iamUser = idTokenClaimsMapper.buildIamUserTestInfo(subjectToken);
+            IamUserInfoDTO iamUser = idTokenClaimsMapper.buildIamUserTestInfo(subjectToken, subjectIssuer);
             tokenStoreService.save(accessToken.getAccessToken(), iamUser);
             return accessToken;
         }
