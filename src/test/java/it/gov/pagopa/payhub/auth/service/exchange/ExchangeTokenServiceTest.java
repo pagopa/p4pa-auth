@@ -29,6 +29,8 @@ class ExchangeTokenServiceTest {
     private IDTokenClaims2UserInfoMapper idTokenClaimsMapperMock;
     @Mock
     private IamUserRegistrationService iamUserRegistrationServiceMock;
+    @Mock
+    private FakeUserInfoService fakeUserInfoServiceMock;
 
     private ExchangeTokenService service;
 
@@ -39,7 +41,8 @@ class ExchangeTokenServiceTest {
                 accessTokenBuilderServiceMock,
                 tokenStoreServiceMock,
                 idTokenClaimsMapperMock,
-                iamUserRegistrationServiceMock);
+                iamUserRegistrationServiceMock, 
+                fakeUserInfoServiceMock);
     }
 
     @AfterEach
@@ -86,5 +89,32 @@ class ExchangeTokenServiceTest {
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
+    }
+
+    @Test
+    void givenValidTokenFakeWhenPostTokenThenSuccess() {
+        // Given
+        String clientId = "CLIENT_ID";
+        String grantType = "GRANT_TYPE";
+        String subjectToken = "SUBJECT_TOKEN";
+        String subjectIssuer = "SUBJECT_ISSUER";
+        String subjectTokenType = "FAKE-AUTH";
+        String scope = "SCOPE";
+
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
+        Mockito.when(accessTokenBuilderServiceMock.build())
+                .thenReturn(expectedAccessToken);
+
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        Mockito.when(fakeUserInfoServiceMock.buildIamUserInfoFake(subjectToken, subjectIssuer))
+                .thenReturn(iamUserInfo);
+
+        // When
+        AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+
+        // Then
+        Assertions.assertSame(expectedAccessToken, result);
+        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+        Mockito.verifyNoInteractions(validateExternalTokenServiceMock, idTokenClaimsMapperMock, iamUserRegistrationServiceMock);
     }
 }
