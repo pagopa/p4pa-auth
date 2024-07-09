@@ -19,7 +19,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
     private final TokenStoreService tokenStoreService;
     private final IDTokenClaims2UserInfoMapper idTokenClaimsMapper;
     private final IamUserRegistrationService iamUserRegistrationService;
-    public static final String SUBJECT_TOKEN_TYPE_TEST="urn:ietf:params:oauth:token-type:jwt-test";
+    public static final String SUBJECT_TOKEN_TYPE_TEST="token-type-test";
 
     public ExchangeTokenServiceImpl(
             ValidateExternalTokenService validateExternalTokenService,
