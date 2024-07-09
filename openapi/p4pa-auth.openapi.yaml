@@ -46,7 +46,8 @@ paths:
           required: true
           schema:
             enum: [
-              "urn:ietf:params:oauth:token-type:jwt"
+              "urn:ietf:params:oauth:token-type:jwt",
+              "urn:ietf:params:oauth:token-type:jwt-test"
             ]
             type: string
         - name: scope

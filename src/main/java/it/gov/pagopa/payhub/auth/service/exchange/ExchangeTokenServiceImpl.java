@@ -19,6 +19,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
     private final TokenStoreService tokenStoreService;
     private final IDTokenClaims2UserInfoMapper idTokenClaimsMapper;
     private final IamUserRegistrationService iamUserRegistrationService;
+    public static final String SUBJECT_TOKEN_TYPE_TEST="urn:ietf:params:oauth:token-type:jwt-test";
 
     public ExchangeTokenServiceImpl(
             ValidateExternalTokenService validateExternalTokenService,
@@ -37,6 +38,12 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
     public AccessToken postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
         log.info("Client {} requested to exchange a {} token provided by {} asking for grant type {} and scope {}",
                 clientId, subjectTokenType, subjectIssuer, grantType, scope);
+        if(SUBJECT_TOKEN_TYPE_TEST.equals(subjectTokenType)){
+            AccessToken accessToken = accessTokenBuilderService.build();
+            IamUserInfoDTO iamUser = idTokenClaimsMapper.buildIamUserTestInfo(subjectToken);
+            tokenStoreService.save(accessToken.getAccessToken(), iamUser);
+            return accessToken;
+        }
         Map<String, Claim> claims = validateExternalTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
         AccessToken accessToken = accessTokenBuilderService.build();
         IamUserInfoDTO iamUser = idTokenClaimsMapper.apply(claims);

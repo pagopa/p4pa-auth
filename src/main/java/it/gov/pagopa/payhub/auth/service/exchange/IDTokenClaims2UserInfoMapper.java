@@ -6,6 +6,9 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
+import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,12 @@ import java.util.function.Function;
 public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>, IamUserInfoDTO> {
 
     private final boolean organizationAccessMode;
+    private final UsersRepository usersRepository;
 
     public IDTokenClaims2UserInfoMapper(
-            @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode) {
+            @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode, UsersRepository usersRepository) {
         this.organizationAccessMode = organizationAccessMode;
+        this.usersRepository = usersRepository;
     }
 
     @Override
@@ -40,6 +45,19 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
             throw new InvalidTokenException("Unexpected IDToken structure", e);
         }
     }
+
+    public IamUserInfoDTO buildIamUserTestInfo(String mappedExternalUserId) {
+        User userInfo = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
+                .orElseThrow(() -> new UserNotFoundException("User with this mappedExternalUserId not found"));
+        return IamUserInfoDTO.builder()
+                .userId(mappedExternalUserId)
+                .name(userInfo.getFirstName())
+                .familyName(userInfo.getLastName())
+                .email(userInfo.getEmail())
+                .fiscalCode(userInfo.getUserCode())
+                .build();
+    }
+
 
     private IamUserOrganizationRolesDTO buildUserOrganizationRoles(Map<String, Claim> claims) {
         Claim organization = claims.get("organization");
