@@ -5,7 +5,6 @@ import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,10 +17,9 @@ import java.util.Map;
 class IDTokenClaims2UserInfoMapperTest {
 
     private IDTokenClaims2UserInfoMapper mapper;
-    private UsersRepository usersRepository;
 
     void init(boolean isOrganizationAccessMode){
-        mapper = new IDTokenClaims2UserInfoMapper(isOrganizationAccessMode, usersRepository);
+        mapper = new IDTokenClaims2UserInfoMapper(isOrganizationAccessMode);
     }
 
     @ParameterizedTest

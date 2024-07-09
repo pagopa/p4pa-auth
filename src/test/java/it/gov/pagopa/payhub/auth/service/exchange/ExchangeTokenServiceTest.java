@@ -29,6 +29,8 @@ class ExchangeTokenServiceTest {
     private IDTokenClaims2UserInfoMapper idTokenClaimsMapperMock;
     @Mock
     private IamUserRegistrationService iamUserRegistrationServiceMock;
+    @Mock
+    private FakeUserInfoService fakeUserInfoServiceMock;
 
     private ExchangeTokenService service;
 
@@ -39,7 +41,8 @@ class ExchangeTokenServiceTest {
                 accessTokenBuilderServiceMock,
                 tokenStoreServiceMock,
                 idTokenClaimsMapperMock,
-                iamUserRegistrationServiceMock);
+                iamUserRegistrationServiceMock, 
+                fakeUserInfoServiceMock);
     }
 
     @AfterEach
