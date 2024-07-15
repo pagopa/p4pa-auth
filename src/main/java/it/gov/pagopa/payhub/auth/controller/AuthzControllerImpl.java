@@ -1,15 +1,11 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
-import it.gov.pagopa.payhub.auth.model.Operator;
-import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
-import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.OperatorsPage;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +39,7 @@ public class AuthzControllerImpl implements AuthzApi {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to delete operator " + operatorId);
         }
-        authzService.deleteOrganizationOperator(operatorId, organizationIpaCode);
+        authzService.deleteOrganizationOperator(organizationIpaCode, operatorId);
         return ResponseEntity.ok(null);
     }
 }

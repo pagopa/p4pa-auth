@@ -33,8 +33,8 @@ public class AuthzServiceImpl implements AuthzService {
 
     @Override
     public void deleteOrganizationOperator(String organizationIpaCode, String operatorId) {
-        myPayOperatorsRepository.deleteOrganizationOperator(operatorId, organizationIpaCode);
-        myPivotOperatorsRepository.deleteOrganizationOperator(operatorId, organizationIpaCode);
-        operatorsRepository.deleteByOperatorIdAndOrganizationIpaCode(operatorId, organizationIpaCode);
+        myPayOperatorsRepository.deleteOrganizationOperator(organizationIpaCode, operatorId);
+        myPivotOperatorsRepository.deleteOrganizationOperator(organizationIpaCode, operatorId);
+        operatorsRepository.deleteByOperatorIdAndOrganizationIpaCode(organizationIpaCode, operatorId);
     }
 }
