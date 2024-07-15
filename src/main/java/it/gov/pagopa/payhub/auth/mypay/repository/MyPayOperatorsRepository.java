@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository("myPayOperatorsRepository")
 public interface MyPayOperatorsRepository extends JpaRepository <MyPayOperator, Long> {
   Optional<MyPayOperator> findByCodFedUserIdAndCodIpaEnte(String codFedUserId, String codIpaEnte);
+  void deleteOrganizationOperator(String operatorId, String organizationIpaCode);
 }

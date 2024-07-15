@@ -12,4 +12,5 @@ public interface OperatorsRepository extends OperatorsRepositoryExt, MongoReposi
     List<Operator> findAllByUserId(String userId);
     Optional<Operator> findByOperatorIdAndOrganizationIpaCode(String OperatorId, String organizationIpaCode);
     Page<Operator> findAllByOrganizationIpaCode(String organizationIpaCode, Pageable pageable);
+    void deleteByOperatorIdAndOrganizationIpaCode(String OperatorId, String organizationIpaCode);
 }

@@ -1,5 +1,8 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.mypay.repository.MyPayOperatorsRepository;
+import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotOperatorsRepository;
+import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -23,11 +26,20 @@ class AuthzServiceTest {
     @Mock
     private UserService userServiceMock;
 
+    @Mock
+    private OperatorsRepository operatorsRepository;
+
+    @Mock
+    private MyPayOperatorsRepository myPayOperatorsRepository;
+
+    @Mock
+    private MyPivotOperatorsRepository myPivotOperatorsRepository;
+
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock);
+        service = new AuthzServiceImpl(userServiceMock, operatorsRepository, myPayOperatorsRepository, myPivotOperatorsRepository);
     }
 
     @AfterEach
@@ -52,6 +64,19 @@ class AuthzServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenDeleteOrganizationOperationThenVerifyDelete() {
+        String organizationIpaCode = "IPACODE";
+        String operatorId = "OPERATORID";
+
+        //When
+        service.deleteOrganizationOperator(organizationIpaCode, operatorId);
+        //Then
+        Mockito.verify(operatorsRepository).deleteByOperatorIdAndOrganizationIpaCode(operatorId,organizationIpaCode);
+        Mockito.verify(myPayOperatorsRepository).deleteOrganizationOperator(operatorId, organizationIpaCode);
+        Mockito.verify(myPivotOperatorsRepository).deleteOrganizationOperator(operatorId, organizationIpaCode);
     }
 
 }

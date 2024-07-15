@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.auth.controller;
 
-import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.model.Operator;
-import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
@@ -21,12 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthzControllerImpl implements AuthzApi {
 
     private final AuthzService authzService;
-    private final OperatorsRepository operatorsRepository;
-    private final UsersRepository userRepository;
-    public AuthzControllerImpl(AuthzService authzService, OperatorsRepository operatorsRepository, UsersRepository usersRepository) {
+    public AuthzControllerImpl(AuthzService authzService) {
         this.authzService = authzService;
-        this.operatorsRepository = operatorsRepository;
-        this.userRepository = usersRepository;
     }
 
     @Override
@@ -49,14 +43,7 @@ public class AuthzControllerImpl implements AuthzApi {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to delete operator " + operatorId);
         }
-        Optional<Operator> operator = operatorsRepository.findByOperatorIdAndOrganizationIpaCode(operatorId, organizationIpaCode);
-        operator.ifPresent(operatorFound -> {
-            Optional<User> user = userRepository.findByUserId(operatorFound.getUserId());
-            if(user.isPresent())
-                throw new UserNotFoundException("Can't delete operator with operatorId "+operatorId+" and organizationIpaCode "+organizationIpaCode+" because exists linked user");
-            operatorsRepository.delete(operatorFound);
-        });
-
+        authzService.deleteOrganizationOperator(operatorId, organizationIpaCode);
         return ResponseEntity.ok(null);
     }
 }
