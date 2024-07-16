@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -23,11 +24,14 @@ class AuthzServiceTest {
     @Mock
     private UserService userServiceMock;
 
+    @Mock
+    private OperatorsRepository operatorsRepository;
+
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock);
+        service = new AuthzServiceImpl(userServiceMock, operatorsRepository);
     }
 
     @AfterEach
@@ -52,6 +56,17 @@ class AuthzServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenDeleteOrganizationOperatorThenVerifyDelete() {
+        String organizationIpaCode = "IPACODE";
+        String operatorId = "OPERATORID";
+
+        //When
+        service.deleteOrganizationOperator(organizationIpaCode, operatorId);
+        //Then
+        Mockito.verify(operatorsRepository).deleteByOrganizationIpaCodeAndOperatorId(organizationIpaCode,operatorId);
     }
 
 }

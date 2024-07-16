@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthzControllerImpl implements AuthzApi {
 
     private final AuthzService authzService;
-
     public AuthzControllerImpl(AuthzService authzService) {
         this.authzService = authzService;
     }
@@ -33,5 +32,14 @@ public class AuthzControllerImpl implements AuthzApi {
                 .totalElements(organizationOperators.getNumberOfElements())
                 .totalPages(organizationOperators.getTotalPages())
                 .build());
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteOrganizationOperator(String organizationIpaCode, String operatorId) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to delete operator " + operatorId);
+        }
+        authzService.deleteOrganizationOperator(organizationIpaCode, operatorId);
+        return ResponseEntity.ok(null);
     }
 }
