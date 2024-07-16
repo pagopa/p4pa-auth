@@ -59,7 +59,7 @@ class AuthzServiceTest {
     }
 
     @Test
-    void whenDeleteOrganizationOperationThenVerifyDelete() {
+    void whenDeleteOrganizationOperatorThenVerifyDelete() {
         String organizationIpaCode = "IPACODE";
         String operatorId = "OPERATORID";
 
