@@ -75,8 +75,8 @@ class AuthzServiceTest {
         service.deleteOrganizationOperator(organizationIpaCode, operatorId);
         //Then
         Mockito.verify(operatorsRepository).deleteByOperatorIdAndOrganizationIpaCode(organizationIpaCode,operatorId);
-        Mockito.verify(myPayOperatorsRepository).deleteOrganizationOperator(organizationIpaCode, operatorId);
-        Mockito.verify(myPivotOperatorsRepository).deleteOrganizationOperator(organizationIpaCode, operatorId);
+        Mockito.verify(myPayOperatorsRepository).deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
+        Mockito.verify(myPivotOperatorsRepository).deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
     }
 
 }

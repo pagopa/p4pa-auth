@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotOperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,10 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
+    @Transactional
     public void deleteOrganizationOperator(String organizationIpaCode, String operatorId) {
-        myPayOperatorsRepository.deleteOrganizationOperator(organizationIpaCode, operatorId);
-        myPivotOperatorsRepository.deleteOrganizationOperator(organizationIpaCode, operatorId);
+        myPayOperatorsRepository.deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
+        myPivotOperatorsRepository.deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
         operatorsRepository.deleteByOperatorIdAndOrganizationIpaCode(organizationIpaCode, operatorId);
     }
 }
