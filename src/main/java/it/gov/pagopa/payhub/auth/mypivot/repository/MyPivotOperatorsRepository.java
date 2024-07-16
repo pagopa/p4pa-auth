@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository("myPivotOperatorsRepository")
 public interface MyPivotOperatorsRepository extends JpaRepository<MyPivotOperator, Long> {
   Optional<MyPivotOperator> findByCodFedUserIdAndCodIpaEnte(String codFedUserId, String codIpaEnte);
-  void deleteByCodIpaEnteAndCodFedUserId(String codIpaEnte, String codFedUserId);
 }

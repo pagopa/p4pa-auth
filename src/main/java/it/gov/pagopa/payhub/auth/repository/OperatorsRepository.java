@@ -10,5 +10,5 @@ import java.util.List;
 public interface OperatorsRepository extends OperatorsRepositoryExt, MongoRepository<Operator, String> {
     List<Operator> findAllByUserId(String userId);
     Page<Operator> findAllByOrganizationIpaCode(String organizationIpaCode, Pageable pageable);
-    void deleteByOperatorIdAndOrganizationIpaCode( String organizationIpaCode, String operatorId);
+    void deleteByOrganizationIpaCodeAndOperatorId( String organizationIpaCode, String operatorId);
 }

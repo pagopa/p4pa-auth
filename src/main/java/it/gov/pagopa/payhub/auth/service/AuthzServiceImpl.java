@@ -1,8 +1,5 @@
 package it.gov.pagopa.payhub.auth.service;
 
-
-import it.gov.pagopa.payhub.auth.mypay.repository.MyPayOperatorsRepository;
-import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotOperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
@@ -16,15 +13,10 @@ public class AuthzServiceImpl implements AuthzService {
 
     private final UserService userService;
     private final OperatorsRepository operatorsRepository;
-    private final MyPayOperatorsRepository myPayOperatorsRepository;
-    private final MyPivotOperatorsRepository myPivotOperatorsRepository;
 
-    public AuthzServiceImpl(UserService userService, OperatorsRepository operatorsRepository, MyPayOperatorsRepository myPayOperatorsRepository,
-        MyPivotOperatorsRepository myPivotOperatorsRepository) {
+    public AuthzServiceImpl(UserService userService, OperatorsRepository operatorsRepository) {
         this.userService = userService;
         this.operatorsRepository = operatorsRepository;
-        this.myPayOperatorsRepository = myPayOperatorsRepository;
-        this.myPivotOperatorsRepository = myPivotOperatorsRepository;
     }
 
     @Override
@@ -35,8 +27,6 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     @Transactional
     public void deleteOrganizationOperator(String organizationIpaCode, String operatorId) {
-        myPayOperatorsRepository.deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
-        myPivotOperatorsRepository.deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
-        operatorsRepository.deleteByOperatorIdAndOrganizationIpaCode(organizationIpaCode, operatorId);
+        operatorsRepository.deleteByOrganizationIpaCodeAndOperatorId(organizationIpaCode, operatorId);
     }
 }

@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.auth.mypay.repository.MyPayOperatorsRepository;
-import it.gov.pagopa.payhub.auth.mypivot.repository.MyPivotOperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
@@ -29,17 +27,11 @@ class AuthzServiceTest {
     @Mock
     private OperatorsRepository operatorsRepository;
 
-    @Mock
-    private MyPayOperatorsRepository myPayOperatorsRepository;
-
-    @Mock
-    private MyPivotOperatorsRepository myPivotOperatorsRepository;
-
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, operatorsRepository, myPayOperatorsRepository, myPivotOperatorsRepository);
+        service = new AuthzServiceImpl(userServiceMock, operatorsRepository);
     }
 
     @AfterEach
@@ -74,9 +66,7 @@ class AuthzServiceTest {
         //When
         service.deleteOrganizationOperator(organizationIpaCode, operatorId);
         //Then
-        Mockito.verify(operatorsRepository).deleteByOperatorIdAndOrganizationIpaCode(organizationIpaCode,operatorId);
-        Mockito.verify(myPayOperatorsRepository).deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
-        Mockito.verify(myPivotOperatorsRepository).deleteByCodIpaEnteAndCodFedUserId(organizationIpaCode, operatorId);
+        Mockito.verify(operatorsRepository).deleteByOrganizationIpaCodeAndOperatorId(organizationIpaCode,operatorId);
     }
 
 }
