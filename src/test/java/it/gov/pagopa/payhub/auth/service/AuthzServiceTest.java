@@ -61,12 +61,12 @@ class AuthzServiceTest {
     @Test
     void whenDeleteOrganizationOperatorThenVerifyDelete() {
         String organizationIpaCode = "IPACODE";
-        String operatorId = "OPERATORID";
+        String mappedExternalUserId = "OPERATORID";
 
         //When
-        service.deleteOrganizationOperator(organizationIpaCode, operatorId);
+        service.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
         //Then
-        Mockito.verify(operatorsRepository).deleteByOrganizationIpaCodeAndOperatorId(organizationIpaCode,operatorId);
+        Mockito.verify(operatorsRepository).deleteOrganizationOperator(organizationIpaCode,mappedExternalUserId);
     }
 
 }
