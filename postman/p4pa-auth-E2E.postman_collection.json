@@ -235,6 +235,8 @@
 							"\r",
 							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(3)\r",
 							"    \r",
+							"    pm.environment.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r",
+							"    pm.environment.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r",
 							"    var recognizedOrganizations = 0\r",
 							"    const registeredOrganizations=[\r",
 							"        \"IPA_TEST\",\r",
@@ -408,6 +410,62 @@
 						"am",
 						"operators",
 						"NOTEXISTENTIPDACODE"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteOrganizationOperator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - deleteOrganizationOperator - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"    pm.environment.get(\"mappedExternalUserId\")\r",
+							"    pm.environment.get(\"organizationIpaCode\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/{{organizationIpaCode}}/{{mappedExternalUserId}}",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"am",
+						"operators",
+						"{{organizationIpaCode}}",
+						"{{mappedExternalUserId}}"
 					]
 				}
 			},
