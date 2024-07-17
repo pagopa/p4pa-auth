@@ -26,7 +26,7 @@ public class AuthzServiceImpl implements AuthzService {
 
     @Override
     @Transactional
-    public void deleteOrganizationOperator(String organizationIpaCode, String operatorId) {
-        operatorsRepository.deleteByOrganizationIpaCodeAndOperatorId(organizationIpaCode, operatorId);
+    public void deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
+        operatorsRepository.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
     }
 }

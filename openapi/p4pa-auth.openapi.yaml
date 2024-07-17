@@ -166,7 +166,7 @@ paths:
           description: ToS acceptance missing
         '429':
           description: Too Many Requests
-  /am/operators/{organizationIpaCode}/{operatorId}:
+  /am/operators/{organizationIpaCode}/{mappedExternalUserId}:
     delete:
       tags:
         - authz
@@ -177,7 +177,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: operatorId
+        - name: mappedExternalUserId
           in: path
           required: true
           schema:
