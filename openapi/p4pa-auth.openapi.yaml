@@ -166,6 +166,37 @@ paths:
           description: ToS acceptance missing
         '429':
           description: Too Many Requests
+    post:
+      tags:
+        - authz
+      operationId: createOrganizationOperator
+      parameters:
+        - name: organizationIpaCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOperatorRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorDTO'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '429':
+          description: Too Many Requests
   /am/operators/{organizationIpaCode}/{mappedExternalUserId}:
     delete:
       tags:
@@ -323,6 +354,33 @@ components:
           type: string
         email:
           type: string
+    CreateOperatorRequest:
+      type: object
+      required:
+        - externalUserId
+        - firstName
+        - lastName
+        - fiscalCode
+        - roles
+        - organizationIpaCode
+        - email
+      properties:
+        externalUserId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        fiscalCode:
+          type: string
+        organizationIpaCode:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
     AuthErrorDTO:
       type: object
       required:

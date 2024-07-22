@@ -1,11 +1,16 @@
 package it.gov.pagopa.payhub.auth.controller;
 
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
+import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
+import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.OperatorsPage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthzControllerImpl implements AuthzApi {
 
     private final AuthzService authzService;
-    public AuthzControllerImpl(AuthzService authzService) {
+    private final boolean organizationAccessMode;
+
+    public AuthzControllerImpl(AuthzService authzService, UserService userService, OperatorDTOMapper operatorDTOMapper,
+        @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode) {
         this.authzService = authzService;
+        this.organizationAccessMode = organizationAccessMode;
     }
 
     @Override
@@ -32,6 +41,19 @@ public class AuthzControllerImpl implements AuthzApi {
                 .totalElements(organizationOperators.getNumberOfElements())
                 .totalPages(organizationOperators.getTotalPages())
                 .build());
+    }
+
+    @Override
+    public ResponseEntity<OperatorDTO> createOrganizationOperator(String organizationIpaCode,
+        CreateOperatorRequest createOperatorRequest) {
+        if(organizationAccessMode){
+            throw new InvalidOrganizationAccessDataException("No organizationAccess information");
+        }
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to create operator");
+        }
+        OperatorDTO operatorDTO = authzService.createOrganizationOperator(organizationIpaCode, createOperatorRequest);
+        return ResponseEntity.ok(operatorDTO);
     }
 
     @Override
