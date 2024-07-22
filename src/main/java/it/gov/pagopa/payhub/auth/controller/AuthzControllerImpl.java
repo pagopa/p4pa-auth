@@ -3,8 +3,6 @@ package it.gov.pagopa.payhub.auth.controller;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
-import it.gov.pagopa.payhub.auth.service.user.UserService;
-import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
@@ -22,7 +20,7 @@ public class AuthzControllerImpl implements AuthzApi {
     private final AuthzService authzService;
     private final boolean organizationAccessMode;
 
-    public AuthzControllerImpl(AuthzService authzService, UserService userService, OperatorDTOMapper operatorDTOMapper,
+    public AuthzControllerImpl(AuthzService authzService,
         @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode) {
         this.authzService = authzService;
         this.organizationAccessMode = organizationAccessMode;
