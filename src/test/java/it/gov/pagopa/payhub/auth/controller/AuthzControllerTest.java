@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.auth.controller;
 
+import com.nimbusds.jose.shaded.gson.Gson;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
+import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
@@ -20,11 +22,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -93,5 +97,29 @@ class AuthzControllerTest {
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isUnauthorized());
     }
-//end region
+    //end region
+    //region desc=createOrganizationOperator tests
+    @Test
+    void givenIsNotImplementedWhenCreateOrganizationOperatorThenOk() throws Exception {
+        String organizationIpaCode = "IPACODE";
+        CreateOperatorRequest request = new CreateOperatorRequest();
+        request.setExternalUserId("EXTERNALUSERID");
+        Gson gson = new Gson();
+        String body = gson.toJson(request);
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode("ORG2")
+                    .roles(List.of(Constants.ROLE_ADMIN))
+                    .build()))
+                .build());
+
+        mockMvc.perform(
+            post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+        ).andExpect(status().isNotImplemented());
+    }
+    //end region
 }
