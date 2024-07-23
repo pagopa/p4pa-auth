@@ -1,8 +1,13 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.model.Operator;
+import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
+import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
+import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,11 +32,14 @@ class AuthzServiceTest {
     @Mock
     private OperatorsRepository operatorsRepository;
 
+    @Mock
+    private OperatorDTOMapper operatorDTOMapper;
+
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, operatorsRepository);
+        service = new AuthzServiceImpl(userServiceMock, operatorsRepository, operatorDTOMapper);
     }
 
     @AfterEach
@@ -68,5 +76,33 @@ class AuthzServiceTest {
         //Then
         Mockito.verify(operatorsRepository).deleteOrganizationOperator(organizationIpaCode,mappedExternalUserId);
     }
+
+    @Test
+    void whenCreateOrganizationOperatorThenVerifyOperator() {
+        String organizationIpaCode = "organizationIpaCode";
+        CreateOperatorRequest createOperatorRequest = new CreateOperatorRequest();
+        createOperatorRequest.setExternalUserId("externalUserId");
+        createOperatorRequest.setFiscalCode("fiscalCode");
+        createOperatorRequest.setFirstName("firstName");
+        createOperatorRequest.setLastName("lastName");
+        createOperatorRequest.setEmail("email@example.com");
+        createOperatorRequest.setRoles(List.of("ROLE_ADMIN"));
+
+        User mockUser = new User();
+        Operator mockOperator = new Operator();
+        OperatorDTO expectedOperatorDTO = new OperatorDTO();
+
+        Mockito.when(userServiceMock.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
+            "MYPAY", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName(), createOperatorRequest.getEmail())).thenReturn(mockUser);
+        Mockito.when(userServiceMock.registerOperator(mockUser.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()),
+                    createOperatorRequest.getExternalUserId(), mockUser.getEmail())).thenReturn(mockOperator);
+        Mockito.when(operatorDTOMapper.apply(mockUser, mockOperator)).thenReturn(expectedOperatorDTO);
+
+        OperatorDTO actualOperatorDTO = service.createOrganizationOperator(organizationIpaCode, createOperatorRequest);
+
+        Assertions.assertEquals(expectedOperatorDTO, actualOperatorDTO);
+    }
+
+
 
 }
