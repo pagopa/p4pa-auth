@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.controller;
 
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
@@ -11,6 +10,7 @@ import it.gov.pagopa.payhub.model.generated.OperatorsPage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,7 +45,7 @@ public class AuthzControllerImpl implements AuthzApi {
     public ResponseEntity<OperatorDTO> createOrganizationOperator(String organizationIpaCode,
         CreateOperatorRequest createOperatorRequest) {
         if(organizationAccessMode){
-            throw new InvalidOrganizationAccessDataException("No organizationAccess information");
+            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to create operator");
