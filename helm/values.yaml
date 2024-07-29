@@ -86,6 +86,7 @@ microservice-chart:
     MYPIVOT_DB_USER: db-mypay-login-username
     MYPIVOT_DB_PASSWORD: db-mypay-login-password
 
+    DATA_CIPHER_P4PA_AUTH_HASH_KEY: p4pa-auth-hash-key
   # nodeSelector: {}
 
   # tolerations: []
