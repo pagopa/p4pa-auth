@@ -10,7 +10,7 @@ class DataCipherServiceTest {
   private final DataCipherService service = new DataCipherService("PEPPER");
 
   @Test
-  void testHash() {
+  void givenTextWhenHashThenOk() {
     // Given
     String plain = "PLAINTEXT";
 
