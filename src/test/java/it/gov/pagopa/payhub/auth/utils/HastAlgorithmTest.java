@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 class HashAlgorithmTest {
 
-  private final HashAlgorithm hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getDecoder().decode("PEPPER"));
+  private HashAlgorithm hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getDecoder().decode("PEPPER"));
 
   @Test
   void givenTextWhenHashThenOk() {
@@ -23,7 +23,7 @@ class HashAlgorithmTest {
   @Test
   void givenInvalidAlgorithmWhenHashThenNoSuchAlgorithmException() {
     //Given
-    HashAlgorithm hashAlgorithm = new HashAlgorithm("invalidAlgorithm", Base64.getDecoder().decode("PEPPER"));
+    hashAlgorithm = new HashAlgorithm("invalidAlgorithm", Base64.getDecoder().decode("PEPPER"));
     //Then
     Assertions.assertThrows(IllegalStateException.class, () -> hashAlgorithm.apply("TEXT"));
   }
