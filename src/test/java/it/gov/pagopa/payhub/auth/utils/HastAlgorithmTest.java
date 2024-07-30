@@ -9,7 +9,7 @@ class HashAlgorithmTest {
   private final HashAlgorithm hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getDecoder().decode("PEPPER"));
 
   @Test
-  void test() {
+  void givenTextWhenHashThenOk() {
     // Given
     String plain = "PLAINTEXT";
 
@@ -18,5 +18,13 @@ class HashAlgorithmTest {
 
     // Then
     Assertions.assertEquals("s+QUCtO7vYNzHCDrH03EVRGPZTyfIXwBKTRrgYWqwc4=", Base64.getEncoder().encodeToString(hash));
+  }
+
+  @Test
+  void givenInvalidAlgorithmWhenHashThenNoSuchAlgorithmException() {
+    //Given
+    HashAlgorithm hashAlgorithm = new HashAlgorithm("invalidAlgorithm", Base64.getDecoder().decode("PEPPER"));
+    //Then
+    Assertions.assertThrows(IllegalStateException.class, () -> hashAlgorithm.apply("TEXT"));
   }
 }

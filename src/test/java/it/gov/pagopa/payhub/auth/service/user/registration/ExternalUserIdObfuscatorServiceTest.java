@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ExternalUserIdObfuscatorServiceTest {
 
     @Mock
-    private DataCipherService dataCipherService = new DataCipherService("PEPPER");;
+    private DataCipherService dataCipherService = new DataCipherService("PEPPER");
 
     @InjectMocks
     private ExternalUserIdObfuscatorService service;
