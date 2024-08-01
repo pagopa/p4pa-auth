@@ -21,9 +21,10 @@ public class OperatorsRepositoryExtImpl implements OperatorsRepositoryExt{
     public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles) {
         return mongoTemplate.findAndModify(
                 Query.query(Criteria
-                        .where(Operator.Fields.userId).is(userId)
-                        .and(Operator.Fields.organizationIpaCode).is(organizationIpaCode)),
+                        .where(Operator.Fields.operatorId).is(userId+organizationIpaCode)),
                 new Update()
+                        .set(Operator.Fields.userId, userId)
+                        .set(Operator.Fields.organizationIpaCode, organizationIpaCode)
                         .set(Operator.Fields.roles, roles),
                 FindAndModifyOptions.options()
                         .returnNew(true)
