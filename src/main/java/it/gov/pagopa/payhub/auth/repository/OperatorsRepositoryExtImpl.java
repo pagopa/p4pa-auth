@@ -23,7 +23,8 @@ public class OperatorsRepositoryExtImpl implements OperatorsRepositoryExt{
                 Query.query(Criteria
                         .where(Operator.Fields.operatorId).is(userId+organizationIpaCode)),
                 new Update()
-                        .set(Operator.Fields.operatorId, userId+organizationIpaCode)
+                        .set(Operator.Fields.userId, userId)
+                        .set(Operator.Fields.organizationIpaCode, organizationIpaCode)
                         .set(Operator.Fields.roles, roles),
                 FindAndModifyOptions.options()
                         .returnNew(true)

@@ -46,7 +46,8 @@ class OperatorsRepositoryExtImplTest {
                 Mockito.eq(Query.query(Criteria
                         .where(Operator.Fields.operatorId).is(userId+organizationIpaCode))),
                 Mockito.eq(new Update()
-                        .set(Operator.Fields.operatorId, userId+organizationIpaCode)
+                        .set(Operator.Fields.userId, userId)
+                        .set(Operator.Fields.organizationIpaCode, organizationIpaCode)
                         .set(Operator.Fields.roles, roles)),
                 Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),
                 Mockito.eq(Operator.class)
