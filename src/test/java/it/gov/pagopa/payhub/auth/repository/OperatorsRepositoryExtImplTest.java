@@ -44,8 +44,7 @@ class OperatorsRepositoryExtImplTest {
 
         Mockito.when(mongoTemplateMock.findAndModify(
                 Mockito.eq(Query.query(Criteria
-                        .where(Operator.Fields.userId).is(userId)
-                        .and(Operator.Fields.organizationIpaCode).is(organizationIpaCode))),
+                        .where(Operator.Fields.operatorId).is(userId+organizationIpaCode))),
                 Mockito.eq(new Update()
                         .set(Operator.Fields.operatorId, userId+organizationIpaCode)
                         .set(Operator.Fields.roles, roles)),
