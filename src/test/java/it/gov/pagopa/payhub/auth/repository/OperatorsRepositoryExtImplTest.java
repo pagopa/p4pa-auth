@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.Operator;
+import it.gov.pagopa.payhub.auth.model.Operator.Fields;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +48,7 @@ class OperatorsRepositoryExtImplTest {
                         .where(Operator.Fields.userId).is(userId)
                         .and(Operator.Fields.organizationIpaCode).is(organizationIpaCode))),
                 Mockito.eq(new Update()
+                        .set(Fields.operatorId, userId+organizationIpaCode)
                         .set(Operator.Fields.roles, roles)),
                 Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),
                 Mockito.eq(Operator.class)

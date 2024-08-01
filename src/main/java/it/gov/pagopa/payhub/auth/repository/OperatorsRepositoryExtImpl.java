@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.Operator;
+import it.gov.pagopa.payhub.auth.model.Operator.Fields;
 import it.gov.pagopa.payhub.auth.model.User;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -24,6 +25,7 @@ public class OperatorsRepositoryExtImpl implements OperatorsRepositoryExt{
                         .where(Operator.Fields.userId).is(userId)
                         .and(Operator.Fields.organizationIpaCode).is(organizationIpaCode)),
                 new Update()
+                        .set(Operator.Fields.operatorId, userId+organizationIpaCode)
                         .set(Operator.Fields.roles, roles),
                 FindAndModifyOptions.options()
                         .returnNew(true)
