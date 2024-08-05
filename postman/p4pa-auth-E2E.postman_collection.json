@@ -364,6 +364,75 @@
 			"response": []
 		},
 		{
+			"name": "getOrganizationOperator",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"    pm.environment.get(\"mappedExternalUserId\")\r",
+							"    pm.environment.get(\"organizationIpaCode\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getOrganizationOperator - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getOrganizationOperators - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"userId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"operatorId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
+							"    pm.expect(jsonResponse).have.property(\"userCode\")\r",
+							"    pm.expect(jsonResponse).have.property(\"roles\")\r",
+							"    pm.expect(jsonResponse.roles).have.property(\"length\").to.gte(1)\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/{{organizationIpaCode}}/{{mappedExternalUserId}}",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"am",
+						"operators",
+						"{{organizationIpaCode}}",
+						"{{mappedExternalUserId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "getOrganizationOperatorsKO",
 			"event": [
 				{
