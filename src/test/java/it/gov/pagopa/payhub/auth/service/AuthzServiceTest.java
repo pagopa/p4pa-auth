@@ -3,11 +3,13 @@ package it.gov.pagopa.payhub.auth.service;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
+import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import java.util.HashSet;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,11 +37,14 @@ class AuthzServiceTest {
     @Mock
     private OperatorDTOMapper operatorDTOMapper;
 
+    @Mock
+    private UsersRepository usersRepository;
+
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, operatorsRepository, operatorDTOMapper);
+        service = new AuthzServiceImpl(userServiceMock, usersRepository, operatorsRepository, operatorDTOMapper);
     }
 
     @AfterEach
@@ -75,6 +80,28 @@ class AuthzServiceTest {
         service.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
         //Then
         Mockito.verify(operatorsRepository).deleteOrganizationOperator(organizationIpaCode,mappedExternalUserId);
+    }
+
+    @Test
+    void whenGetOrganizationOperatorThenGetOperatorDTO() {
+        //given
+        String organizationIpaCode = "IPACODE";
+        String mappedExternalUserId = "OPERATORID";
+
+        User user = new User();
+        Operator operator = new Operator();
+        OperatorDTO expectedOperatorDTO = new OperatorDTO();
+
+
+        Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId)).thenReturn(Optional.of(user));
+        Mockito.when(operatorsRepository.findById(mappedExternalUserId+organizationIpaCode)).thenReturn(Optional.of(operator));
+        Mockito.when(service.getOrganizationOperator(organizationIpaCode,mappedExternalUserId)).thenReturn(expectedOperatorDTO);
+
+        //when
+        OperatorDTO actualOperator = service.getOrganizationOperator(organizationIpaCode, mappedExternalUserId);
+
+        //Then
+        Assertions.assertSame(expectedOperatorDTO, actualOperator);
     }
 
     @Test
