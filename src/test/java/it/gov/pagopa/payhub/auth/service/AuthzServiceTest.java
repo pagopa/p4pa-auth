@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
@@ -102,6 +103,22 @@ class AuthzServiceTest {
 
         //Then
         Assertions.assertSame(expectedOperatorDTO, actualOperator);
+    }
+
+    @Test
+    void givenOperatorNotExistedWhenGetOrganizationOperatorThenException() {
+        String organizationIpaCode = "IPACODE";
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        User user = new User();
+
+        Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId)).thenReturn(Optional.of(user));
+        Mockito.when(operatorsRepository.findById(user.getUserId()+organizationIpaCode)).thenReturn(Optional.empty());
+
+        OperatorNotFoundException exception = Assertions.assertThrows(OperatorNotFoundException.class, () ->
+            service.getOrganizationOperator(organizationIpaCode, mappedExternalUserId));
+
+        Assertions.assertEquals("Operator with this userId "+ user.getUserId()+organizationIpaCode + "not found", exception.getMessage());
+
     }
 
     @Test
