@@ -94,7 +94,7 @@ class AuthzServiceTest {
 
 
         Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId)).thenReturn(Optional.of(user));
-        Mockito.when(operatorsRepository.findById(mappedExternalUserId+organizationIpaCode)).thenReturn(Optional.of(operator));
+        Mockito.when(operatorsRepository.findById(user.getUserId()+organizationIpaCode)).thenReturn(Optional.of(operator));
         Mockito.when(service.getOrganizationOperator(organizationIpaCode,mappedExternalUserId)).thenReturn(expectedOperatorDTO);
 
         //when
