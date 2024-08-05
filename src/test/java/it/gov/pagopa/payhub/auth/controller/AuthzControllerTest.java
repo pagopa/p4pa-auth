@@ -98,6 +98,34 @@ class AuthzControllerTest {
                 ).andExpect(status().isUnauthorized());
     }
     //end region
+    //region desc=getOrganizationOperator tests
+    @Test
+    void givenAuthorizedUserWhenGetOrganizationOperatorThenOk() throws Exception {
+        String organizationIpaCode = "IPACODE";
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode(organizationIpaCode)
+                    .roles(List.of(Constants.ROLE_ADMIN))
+                    .build()))
+                .build());
+
+        OperatorDTO expectedResult = OperatorDTO.builder()
+                .userId(mappedExternalUserId+organizationIpaCode)
+                .mappedExternalUserId(mappedExternalUserId)
+                .organizationIpaCode(organizationIpaCode)
+                .build();
+
+        Mockito.when(authzServiceMock.getOrganizationOperator(organizationIpaCode, mappedExternalUserId)).thenReturn(expectedResult);
+
+        mockMvc.perform(
+                get("/payhub/am/operators/{organizationIpaCode}/{mappedExternalUserId}", organizationIpaCode, mappedExternalUserId)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+            ).andExpect(status().isOk());
+    }
+    //end region
     //region desc=createOrganizationOperator tests
     @Test
     void givenIsNotImplementedWhenCreateOrganizationOperatorThenOk() throws Exception {
