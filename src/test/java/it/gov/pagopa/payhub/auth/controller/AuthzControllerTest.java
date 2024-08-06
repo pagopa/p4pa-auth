@@ -148,7 +148,7 @@ class AuthzControllerTest {
         mockMvc.perform(
             get("/payhub/am/operators/{organizationIpaCode}/{mappedExternalUserId}", organizationIpaCode, mappedExternalUserId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isInternalServerError())
+        ).andExpect(status().isNotFound())
             .andExpect(result -> Assertions.assertInstanceOf(OperatorNotFoundException.class,
                 result.getResolvedException()));
     }
