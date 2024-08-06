@@ -58,8 +58,8 @@ public class AuthExceptionHandler {
     }
 
     @ExceptionHandler(OperatorNotFoundException.class)
-    public ResponseEntity<String> handleOperatorNotFoundException(OperatorNotFoundException ex) {
-        log.info("A OperatorNotFoundException occurred handling request {}", ex.getMessage());
+    public ResponseEntity<String> handleOperatorNotFoundException(OperatorNotFoundException ex, HttpServletRequest request) {
+        logException(ex, request, HttpStatus.NOT_FOUND);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
