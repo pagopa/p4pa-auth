@@ -62,4 +62,9 @@ public class AuthzControllerImpl implements AuthzApi {
         authzService.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
         return ResponseEntity.ok(null);
     }
+
+    @Override
+    public ResponseEntity<OperatorDTO> getOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
+        return ResponseEntity.ok(authzService.getOrganizationOperator(organizationIpaCode, mappedExternalUserId));
+    }
 }
