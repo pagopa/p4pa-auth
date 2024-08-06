@@ -59,8 +59,9 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler(OperatorNotFoundException.class)
     public ResponseEntity<String> handleOperatorNotFoundException(OperatorNotFoundException ex, HttpServletRequest request) {
-        logException(ex, request, HttpStatus.NOT_FOUND);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        logException(ex, request, httpStatus);
+        return ResponseEntity.status(httpStatus).body(null);
     }
 
     static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
