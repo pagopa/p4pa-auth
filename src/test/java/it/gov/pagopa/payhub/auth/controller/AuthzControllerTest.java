@@ -12,7 +12,6 @@ import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,8 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
