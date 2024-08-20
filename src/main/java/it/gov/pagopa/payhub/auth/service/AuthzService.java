@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface AuthzService {
     Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, Pageable pageRequest);
+    Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode, Pageable pageRequest);
     OperatorDTO getOrganizationOperator(String organizationIpaCode, String mappedExternalUserId);
     void deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId);
     OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest);

@@ -137,6 +137,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: fiscalCode
+          in: query
+          description: "Fiscal Code"
+          schema:
+            type: string
         - name: page
           in: query
           description: "The number of the page"

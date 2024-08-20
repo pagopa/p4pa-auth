@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,11 +28,17 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
-    public ResponseEntity<OperatorsPage> getOrganizationOperators(String organizationIpaCode, Integer page, Integer size) {
+    public ResponseEntity<OperatorsPage> getOrganizationOperators(String organizationIpaCode, String fiscalCode, Integer page, Integer size) {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to retrieve the operator list for organization " + organizationIpaCode);
         }
-        Page<OperatorDTO> organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, PageRequest.of(page, size));
+        Page<OperatorDTO> organizationOperators;
+
+        if(StringUtils.hasLength(fiscalCode)){
+           organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, fiscalCode, PageRequest.of(page, size));
+        }
+        else
+            organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, PageRequest.of(page, size));
         return ResponseEntity.ok(OperatorsPage.builder()
                 .content(organizationOperators.getContent())
                 .pageNo(page)
