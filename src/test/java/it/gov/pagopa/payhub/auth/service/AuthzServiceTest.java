@@ -73,7 +73,7 @@ class AuthzServiceTest {
     }
 
     @Test
-    void whenGetOrganizationOperatorsWithParamsThenCallUserService(){
+    void whenGetOrganizationOperatorsWithParamsThenCallAutzhService(){
         // Given
         String organizationIpaCode = "IPACODE";
         String fiscalCode = "FISCALCODE";

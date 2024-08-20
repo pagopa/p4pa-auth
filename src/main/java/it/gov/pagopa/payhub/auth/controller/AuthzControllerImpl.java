@@ -32,8 +32,8 @@ public class AuthzControllerImpl implements AuthzApi {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to retrieve the operator list for organization " + organizationIpaCode);
         }
-        Page<OperatorDTO> organizationOperators;
 
+        Page<OperatorDTO> organizationOperators;
         if(StringUtils.hasLength(fiscalCode)){
            organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, fiscalCode, PageRequest.of(page, size));
         }

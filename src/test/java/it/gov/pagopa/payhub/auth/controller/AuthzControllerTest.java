@@ -81,6 +81,42 @@ class AuthzControllerTest {
     }
 
     @Test
+    void givenAuthorizedUserWhenGetOrganizationOperatorsWithQueryParamsThenOk() throws Exception {
+        String organizationIpaCode = "IPACODE";
+        Pageable pageRequest = PageRequest.of(4, 1);
+        String fiscalCode = "FISCALCODE";
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode(organizationIpaCode)
+                    .roles(List.of(Constants.ROLE_ADMIN))
+                    .build()))
+                .build());
+
+        Page<OperatorDTO> expectedResult = new PageImpl<>(
+            List.of(OperatorDTO.builder()
+                .userId("USER1")
+                .fiscalCode(fiscalCode)
+                .build()),
+            pageRequest,
+            100
+        );
+
+        Mockito.when(authzServiceMock.getOrganizationOperators(organizationIpaCode, fiscalCode, pageRequest))
+            .thenReturn(expectedResult);
+
+        mockMvc.perform(
+                get("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
+                    .param("fiscalCode", fiscalCode)
+                    .param("page", "4")
+                    .param("size", "1")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+            ).andExpect(status().isOk())
+            .andExpect(content().json("{\"content\":[{\"userId\":\"USER1\"}],\"pageNo\":4,\"pageSize\":1,\"totalElements\":1,\"totalPages\":100}"));
+    }
+
+    @Test
     void givenUnauthorizedUserwhenGetOrganizationOperatorsThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
 
