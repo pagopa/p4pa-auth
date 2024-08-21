@@ -1,0 +1,94 @@
+microservice-chart:
+  namespace: "payhub"
+  nameOverride: ""
+  fullnameOverride: ""
+
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 120
+    failureThreshold: 15
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 120
+    failureThreshold: 15
+    periodSeconds: 10
+
+  deployment:
+    create: true
+
+  service:
+    create: true
+    type: ClusterIP
+    port: 8080
+
+  ingress:
+    create: true
+    path: /p4paauth/(.*)
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
+
+  envConfig:
+    APPLICATIONINSIGHTS_ROLE_NAME: "p4paauth"
+    APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
+    APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
+    APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
+
+    ENABLE_AUDIT_APPENDER: "TRUE"
+
+    REDIS_PORT: "6380"
+    REDIS_SSL_ENABLED: "true"
+
+    JWT_TOKEN_EXPIRATION_SECONDS: "14400" # 4 HOURS
+    ACCESS_ORGANIZATION_MODE_ENABLED: "true"
+
+  envSecret:
+    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+
+    JWT_TOKEN_PRIVATE_KEY: jwt-private-key
+    JWT_TOKEN_PUBLIC_KEY: jwt-public-key
+
+    REDIS_HOST: cache-standalone-host
+    REDIS_PASSWORD: cache-password
+    MONGODB_URI: mongodb-connection-string
+
+    MYPAY_DB_HOST: db-host
+    MYPAY_DB_USER: db-mypay-login-username
+    MYPAY_DB_PASSWORD: db-mypay-login-password
+
+    MYPIVOT_DB_HOST: db-host
+    MYPIVOT_DB_USER: db-mypay-login-username
+    MYPIVOT_DB_PASSWORD: db-mypay-login-password
+
+    DATA_CIPHER_P4PA_AUTH_HASH_KEY: p4pa-auth-hash-key
+  # nodeSelector: {}
+
+  # tolerations: []
+
+  # affinity: {}

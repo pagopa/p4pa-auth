@@ -1,0 +1,435 @@
+openapi: 3.0.1
+info:
+  title: p4pa-auth
+  description: Api and Models
+  version: 0.0.1
+servers:
+  - url: "http://localhost:8080/payhub"
+paths:
+  /auth/token:
+    post:
+      tags:
+        - authn
+      operationId: postToken
+      security: []
+      parameters:
+        - name: client_id
+          in: query
+          required: true
+          schema:
+            enum: [
+              "piattaforma-unitaria"
+            ]
+            type: string
+        - name: grant_type
+          in: query
+          required: true
+          schema:
+            enum: [
+              "urn:ietf:params:oauth:grant-type:token-exchange"
+            ]
+            type: string
+        - name: subject_token
+          description: "ID Token"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: subject_issuer
+          description: "Issuer del subject_token"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: subject_token_type
+          in: query
+          required: true
+          schema:
+            enum: [
+              "urn:ietf:params:oauth:token-type:jwt"
+            ]
+            type: string
+        - name: scope
+          in: query
+          required: true
+          schema:
+            enum: [
+              "openid"
+            ]
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '400':
+          description: Invalid request
+        '401':
+          description: Authentication failed
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthErrorDTO'
+  /auth/userinfo:
+    get:
+      tags:
+        - authn
+      operationId: getUserInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '403':
+          description: Forbidden
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthErrorDTO'
+  /auth/revoke:
+    post:
+      tags:
+        - authn
+      operationId: logout
+      security: []
+      parameters:
+        - name: client_id
+          in: query
+          required: true
+          schema:
+            enum: [
+              "piattaforma-unitaria"
+            ]
+            type: string
+        - name: token
+          description: "Access Token"
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid request
+        '401':
+          description: Invalid client_id
+  /am/operators/{organizationIpaCode}:
+    get:
+      tags:
+        - authz
+      operationId: getOrganizationOperators
+      parameters:
+        - name: organizationIpaCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: "The number of the page"
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: "Number of items"
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorsPage'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '412':
+          description: ToS acceptance missing
+        '429':
+          description: Too Many Requests
+    post:
+      tags:
+        - authz
+      operationId: createOrganizationOperator
+      parameters:
+        - name: organizationIpaCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOperatorRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorDTO'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '429':
+          description: Too Many Requests
+  /am/operators/{organizationIpaCode}/{mappedExternalUserId}:
+    delete:
+      tags:
+        - authz
+      operationId: deleteOrganizationOperator
+      parameters:
+        - name: organizationIpaCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mappedExternalUserId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '412':
+          description: ToS acceptance missing
+        '429':
+          description: Too Many Requests
+    get:
+      tags:
+        - authz
+      operationId: getOrganizationOperator
+      parameters:
+        - name: organizationIpaCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mappedExternalUserId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorDTO'
+        '204':
+          description: OK
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '412':
+          description: ToS acceptance missing
+        '429':
+          description: Too Many Requests
+security:
+  - BearerAuth: []
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    AccessToken:
+      type: object
+      required:
+        - access_token
+        - token_type
+        - expires_in
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          default: Bearer
+        expires_in:
+          type: integer
+    UserInfo:
+      type: object
+      required:
+        - userId
+        - mappedExternalUserId
+        - fiscalCode
+        - familyName
+        - name
+        - issuer
+        - organizations
+      properties:
+        userId:
+          type: string
+        mappedExternalUserId:
+          type: string
+        fiscalCode:
+          type: string
+        familyName:
+          type: string
+        name:
+          type: string
+        issuer:
+          type: string
+        organizationAccess:
+          type: string
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserOrganizationRoles'
+    UserOrganizationRoles:
+      type: object
+      required:
+        - operatorId
+        - organizationIpaCode
+        - roles
+      properties:
+        operatorId:
+          type: string
+        organizationIpaCode:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    OperatorsPage:
+      type: object
+      required:
+        - content
+        - pageNo
+        - pageSize
+        - totalElements
+        - totalPages
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorDTO'
+          description: "The list of organization operators"
+        pageNo:
+          type: integer
+          format: int32
+          description: "Number of page"
+        pageSize:
+          type: integer
+          format: int32
+          description: "Number of elements in the page"
+        totalElements:
+          type: integer
+          format: int32
+          description: "Number of total elements"
+        totalPages:
+          type: integer
+          format: int32
+          description: "Number of total pages"
+    OperatorDTO:
+      type: object
+      required:
+        - userId
+        - mappedExternalUserId
+        - userCode
+        - operatorId
+        - roles
+        - organizationIpaCode
+      properties:
+        userId:
+          type: string
+        mappedExternalUserId:
+          type: string
+        userCode:
+          type: string
+        operatorId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        organizationIpaCode:
+          type: string
+        fiscalCode:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+    CreateOperatorRequest:
+      type: object
+      required:
+        - externalUserId
+        - firstName
+        - lastName
+        - fiscalCode
+        - roles
+        - organizationIpaCode
+        - email
+      properties:
+        externalUserId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        fiscalCode:
+          type: string
+        organizationIpaCode:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    AuthErrorDTO:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          enum:
+            - AUTH_GENERIC_ERROR
+            - AUTH_USER_UNAUTHORIZED
+            - invalid_request
+            - invalid_client
+            - invalid_scope
+            - invalid_grant
+            - unsupported_grant_type
+        error_description:
+          type: string
+          x-field-extra-annotation: "@com.fasterxml.jackson.annotation.JsonProperty(\"error_description\")"

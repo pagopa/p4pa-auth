@@ -1,0 +1,68 @@
+spring:
+    application:
+        name: ${artifactId}
+        version: ${version}
+    jmx.enabled: true
+    cache:
+        type: redis
+    data:
+        mypay:
+            jdbc-url: "jdbc:postgresql://\${MYPAY_DB_HOST}:5432/mypay"
+            username: "\${MYPAY_DB_USER}"
+            password: "\${MYPAY_DB_PASSWORD}"
+            driverClassName: "org.postgresql.Driver"
+        mypivot:
+            jdbc-url: "jdbc:postgresql://\${MYPIVOT_DB_HOST}:5432/mypivot"
+            username: "\${MYPIVOT_DB_USER}"
+            password: "\${MYPIVOT_DB_PASSWORD}"
+            driverClassName: "org.postgresql.Driver"
+        redis:
+            host: "\${REDIS_HOST:localhost}"
+            port: "\${REDIS_PORT:6380}"
+            password: "\${REDIS_PASSWORD:}"
+            ssl.enabled: "\${REDIS_SSL_ENABLED:true}"
+        mongodb:
+            uri: "\${MONGODB_URI:mongodb://localhost:27017}"
+            database: "\${MONGODB_DBNAME:payhub}"
+            # custom configured properties
+            config:
+                connectionPool:
+                    maxSize: "\${MONGODB_CONNECTIONPOOL_MAX_SIZE:100}"
+                    minSize: "\${MONGODB_CONNECTIONPOOL_MIN_SIZE:0}"
+                    maxWaitTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_WAIT_MS:120000}"
+                    maxConnectionLifeTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_LIFE_MS:0}"
+                    maxConnectionIdleTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_IDLE_MS:120000}"
+                    maxConnecting: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTING:2}"
+
+jwt:
+    audience: "\${JWT_TOKEN_AUDIENCE:application-audience}"
+    access-token:
+        expire-in: "\${JWT_TOKEN_EXPIRATION_SECONDS:3600}"
+        private-key: "\${JWT_TOKEN_PRIVATE_KEY:}"
+        public-key: "\${JWT_TOKEN_PUBLIC_KEY:}"
+    external-token:
+        base-url: "\${JWT_EXTERNAL_TOKEN_BASE_URL:https://auth.server.com}"
+        issuer: "\${JWT_EXTERNAL_TOKEN_ISS:externalauthentication-server-issuer}"
+
+
+management:
+    endpoint:
+        health:
+            probes.enabled: true
+            group:
+                readiness.include: "*"
+                liveness.include: livenessState,diskSpace,ping
+    endpoints:
+        jmx:
+            exposure.include: "*"
+        web:
+            exposure.include: info, health
+
+app:
+    # If true, it will expect the presence of the access organization inside the ID Token.
+    # Thus it will register te relation between the operator and the relation with the provided roles.
+    # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
+    enable-access-organization-mode: "\${ACCESS_ORGANIZATION_MODE_ENABLED:true}"
+
+data-chiper:
+    p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
