@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.Operator;
+import it.gov.pagopa.payhub.auth.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,5 +59,30 @@ class OperatorsRepositoryExtImplTest {
 
         // Then
         Assertions.assertSame(storedOperator, result);
+    }
+
+    @Test
+    void whenDeleteOrganizationOperatorThenOk() {
+        // Given
+        String organizationIpaCode = "ORG";
+        String mappedExternalUserId = "EXTERNALUSERID";
+        String userId = "USERID";
+
+        User user = new User();
+        user.setUserId(userId);
+
+        Mockito.when(mongoTemplateMock.findOne(
+            Query.query(Criteria.where(User.Fields.mappedExternalUserId).is(mappedExternalUserId)),
+            User.class)).thenReturn(user);
+
+        // When
+        repository.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
+
+        // Then
+        Mockito.verify(mongoTemplateMock).remove(
+            Query.query(Criteria
+                .where(Operator.Fields.organizationIpaCode).is(organizationIpaCode)
+                .and(Operator.Fields.userId).is(userId)),
+            Operator.class);
     }
 }
