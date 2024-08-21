@@ -78,6 +78,8 @@ class AuthzServiceTest {
         String organizationIpaCode = "IPACODE";
         String fiscalCode = "FISCALCODE";
         String userId = "USERID";
+        String firstName = "FIRSTNAME";
+        String lastName = "LASTNAME";
         Pageable pageRequest = PageRequest.of(0, 1);
 
         User user = new User();
@@ -95,12 +97,12 @@ class AuthzServiceTest {
 
         Page<User> userPage = new PageImpl<>(List.of(user), pageRequest, 1);
 
-        Mockito.when(usersRepository.findByFiscalCodeIgnoreCase(fiscalCode, pageRequest)).thenReturn(userPage);
+        Mockito.when(usersRepository.retrieveUsers(fiscalCode, firstName, lastName, pageRequest)).thenReturn(userPage);
         Mockito.when(operatorsRepository.findById(userId +organizationIpaCode)).thenReturn(Optional.of(operator));
         Mockito.when(operatorDTOMapper.apply(user, operator)).thenReturn(operatorDTO);
 
         // When
-        Page<OperatorDTO> result = service.getOrganizationOperators(organizationIpaCode, fiscalCode, pageRequest);
+        Page<OperatorDTO> result = service.getOrganizationOperators(organizationIpaCode, fiscalCode, firstName, lastName, pageRequest);
 
         // Then
         Assertions.assertEquals(1, result.getTotalElements());

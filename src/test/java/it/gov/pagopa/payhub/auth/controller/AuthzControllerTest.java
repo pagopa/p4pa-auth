@@ -85,6 +85,8 @@ class AuthzControllerTest {
         String organizationIpaCode = "IPACODE";
         Pageable pageRequest = PageRequest.of(4, 1);
         String fiscalCode = "FISCALCODE";
+        String firstName = "FIRSTNAME";
+        String lastName = "LASTNAME";
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
@@ -98,17 +100,22 @@ class AuthzControllerTest {
             List.of(OperatorDTO.builder()
                 .userId("USER1")
                 .fiscalCode(fiscalCode)
+                    .firstName(firstName)
+                    .lastName(lastName)
                 .build()),
             pageRequest,
             100
         );
 
-        Mockito.when(authzServiceMock.getOrganizationOperators(organizationIpaCode, fiscalCode, pageRequest))
+        Mockito.when(authzServiceMock.getOrganizationOperators(organizationIpaCode, fiscalCode,
+                firstName, lastName, pageRequest))
             .thenReturn(expectedResult);
 
         mockMvc.perform(
                 get("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
                     .param("fiscalCode", fiscalCode)
+                    .param("firstName", firstName)
+                    .param("lastName", lastName)
                     .param("page", "4")
                     .param("size", "1")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")

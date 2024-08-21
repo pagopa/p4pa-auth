@@ -142,6 +142,16 @@ paths:
           description: "Fiscal Code"
           schema:
             type: string
+        - name: firstName
+          in: query
+          description: "First Name"
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: "Last Name"
+          schema:
+            type: string
         - name: page
           in: query
           description: "The number of the page"

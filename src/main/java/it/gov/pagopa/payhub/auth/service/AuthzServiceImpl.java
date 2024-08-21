@@ -41,8 +41,9 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode, Pageable pageRequest) {
-        Page<User> users = usersRepository.findByFiscalCodeIgnoreCase(fiscalCode, pageRequest);
+    public Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode,
+        String firstName, String lastName, Pageable pageRequest) {
+        Page<User> users = usersRepository.retrieveUsers(fiscalCode, firstName, lastName, pageRequest);
        return new PageImpl<>(users.stream().map(user -> {
             Optional<Operator> operator = operatorsRepository.findById(user.getUserId()+organizationIpaCode);
          return operator.map(value -> operatorDTOMapper.apply(user, value)).orElse(null);

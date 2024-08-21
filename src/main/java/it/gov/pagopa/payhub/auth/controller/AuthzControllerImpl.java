@@ -28,14 +28,17 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
-    public ResponseEntity<OperatorsPage> getOrganizationOperators(String organizationIpaCode, String fiscalCode, Integer page, Integer size) {
+    public ResponseEntity<OperatorsPage> getOrganizationOperators(String organizationIpaCode, String fiscalCode, String firstName, String lastName, Integer page, Integer size) {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to retrieve the operator list for organization " + organizationIpaCode);
         }
 
         Page<OperatorDTO> organizationOperators;
-        if(StringUtils.hasLength(fiscalCode)){
-           organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, fiscalCode, PageRequest.of(page, size));
+        if(StringUtils.hasLength(fiscalCode)
+            || StringUtils.hasLength(firstName)
+            || StringUtils.hasLength(lastName)
+        ){
+           organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, fiscalCode, firstName, lastName, PageRequest.of(page, size));
         }
         else
             organizationOperators = authzService.getOrganizationOperators(organizationIpaCode, PageRequest.of(page, size));
