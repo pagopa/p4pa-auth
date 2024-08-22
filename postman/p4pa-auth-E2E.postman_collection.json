@@ -364,6 +364,95 @@
 			"response": []
 		},
 		{
+		"name": "getOrganizationOperatorsWithParams",
+		"event": [
+			{
+				"listen": "test",
+				"script": {
+					"exec": [
+						"pm.test(\"Auth - getOrganizationOperators - Responses with 200\", function () {\r",
+						"    pm.response.to.have.status(200);\r",
+						"});\r",
+						"\r",
+						"pm.test(\"Auth - getOrganizationOperators - Verify response body\", function () {\r",
+						"    let jsonResponse = pm.response.json();\r",
+						"\r",
+						"    pm.expect(jsonResponse).have.property(\"content\")\r",
+						"    pm.expect(jsonResponse.content).have.property(\"length\").to.gte(1)\r",
+						"    pm.expect(jsonResponse).have.property(\"pageNo\").to.eq(0)\r",
+						"    pm.expect(jsonResponse).have.property(\"pageSize\").to.eq(10)\r",
+						"    pm.expect(jsonResponse).have.property(\"totalElements\").to.gte(1)\r",
+						"    pm.expect(jsonResponse).have.property(\"totalPages\").to.gte(1)\r",
+						"\r",
+						"    var foundLoggedUser = false\r",
+						"\r",
+						"    jsonResponse.content.forEach(op => {\r",
+						"        pm.expect(op).have.property(\"userId\")\r",
+						"        pm.expect(op).have.property(\"operatorId\")\r",
+						"        pm.expect(op).have.property(\"mappedExternalUserId\")\r",
+						"        pm.expect(op).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
+						"        pm.expect(op).have.property(\"userCode\")\r",
+						"        pm.expect(op).have.property(\"roles\")\r",
+						"        pm.expect(op.roles).have.property(\"length\").to.gte(1)\r",
+						"\r",
+						"        if(op.userCode === \"DXEMXY1XL21XXXXX\") {\r",
+						"            foundLoggedUser=true\r",
+						"            pm.expect(op.roles.filter(r=>r === \"ROLE_ADMIN\").length).to.eq(1)\r",
+						"        }\r",
+						"    });\r",
+						"\r",
+						"    pm.expect(foundLoggedUser).to.true\r",
+						"\r",
+						"});"
+					],
+					"type": "text/javascript",
+					"packages": {}
+				}
+			}
+		],
+		"request": {
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{accessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"method": "GET",
+			"header": [],
+			"url": {
+				"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST?fiscalCode=DMEMPY15L21L736U&firstName=demo&lastName=demo",
+				"host": [
+					"{{p4paAuthBaseUrl}}"
+				],
+				"path": [
+					"payhub",
+					"am",
+					"operators",
+					"IPA_TEST"
+				],
+				"query": [
+					{
+						"key": "fiscalCode",
+						"value": "DMEMPY15L21L736U"
+					},
+					{
+						"key": "firstName",
+						"value": "demo"
+					},
+					{
+						"key": "lastName",
+						"value": "demo"
+					}
+				]
+			}
+		},
+		"response": []
+		},
+		{
 			"name": "getOrganizationOperator",
 			"event": [
 				{
