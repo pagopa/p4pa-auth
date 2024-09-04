@@ -18,6 +18,6 @@ class DataCipherServiceTest {
     byte[] hash = service.hash(plain);
 
     // Then
-    Assertions.assertEquals("s+QUCtO7vYNzHCDrH03EVRGPZTyfIXwBKTRrgYWqwc4=", Base64.getEncoder().encodeToString(hash));
+    Assertions.assertEquals("s-QUCtO7vYNzHCDrH03EVRGPZTyfIXwBKTRrgYWqwc4=", Base64.getUrlEncoder().encodeToString(hash));
   }
 }
