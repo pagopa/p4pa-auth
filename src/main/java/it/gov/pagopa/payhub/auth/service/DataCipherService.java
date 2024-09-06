@@ -11,7 +11,7 @@ public class DataCipherService {
   private final HashAlgorithm hashAlgorithm;
 
   public DataCipherService(@Value("${data-cipher.p4pa-auth-hash-key}") String hashPepper) {
-    hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getDecoder().decode(hashPepper));
+    hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getUrlDecoder().decode(hashPepper));
   }
 
   public byte[] hash(String value) {

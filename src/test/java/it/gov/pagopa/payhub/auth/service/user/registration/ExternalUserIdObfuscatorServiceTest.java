@@ -30,6 +30,6 @@ class ExternalUserIdObfuscatorServiceTest {
         String result = service.obfuscate(externalUserId);
 
         // Then
-        Assertions.assertEquals(Base64.getEncoder().encodeToString(hashExpected), result);
+        Assertions.assertEquals(Base64.getUrlEncoder().encodeToString(hashExpected), result);
     }
 }

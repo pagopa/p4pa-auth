@@ -73,6 +73,43 @@ class AuthzServiceTest {
     }
 
     @Test
+    void whenGetOrganizationOperatorsWithParamsThenCallAutzhService(){
+        // Given
+        String organizationIpaCode = "IPACODE";
+        String fiscalCode = "FISCALCODE";
+        String userId = "USERID";
+        String firstName = "FIRSTNAME";
+        String lastName = "LASTNAME";
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        User user = new User();
+        user.setFiscalCode(fiscalCode);
+        user.setUserId(userId);
+
+        Operator operator = new Operator();
+        operator.setOrganizationIpaCode(organizationIpaCode);
+        operator.setUserId(userId);
+        operator.setOperatorId(userId+organizationIpaCode);
+
+        OperatorDTO operatorDTO = new OperatorDTO();
+        operatorDTO.setOperatorId(operator.getOperatorId());
+        operatorDTO.setUserId(user.getUserId());
+
+        Page<User> userPage = new PageImpl<>(List.of(user), pageRequest, 1);
+
+        Mockito.when(usersRepository.retrieveUsers(fiscalCode, firstName, lastName, pageRequest)).thenReturn(userPage);
+        Mockito.when(operatorsRepository.findById(userId +organizationIpaCode)).thenReturn(Optional.of(operator));
+        Mockito.when(operatorDTOMapper.apply(user, operator)).thenReturn(operatorDTO);
+
+        // When
+        Page<OperatorDTO> result = service.getOrganizationOperators(organizationIpaCode, fiscalCode, firstName, lastName, pageRequest);
+
+        // Then
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals(operatorDTO, result.getContent().get(0));
+    }
+
+    @Test
     void whenDeleteOrganizationOperatorThenVerifyDelete() {
         String organizationIpaCode = "IPACODE";
         String mappedExternalUserId = "OPERATORID";

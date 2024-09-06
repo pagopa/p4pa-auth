@@ -12,7 +12,10 @@ import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,18 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, Pageable pageRequest) {
         return userService.retrieveOrganizationOperators(organizationIpaCode, pageRequest);
+    }
+
+    @Override
+    public Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode,
+        String firstName, String lastName, Pageable pageRequest) {
+        Page<User> users = usersRepository.retrieveUsers(fiscalCode, firstName, lastName, pageRequest);
+       return new PageImpl<>(users.stream().map(user -> {
+            Optional<Operator> operator = operatorsRepository.findById(user.getUserId()+organizationIpaCode);
+         return operator.map(value -> operatorDTOMapper.apply(user, value)).orElse(null);
+       }).filter(Objects::nonNull).toList(),
+           pageRequest,
+           users.getTotalElements());
     }
 
     @Override
