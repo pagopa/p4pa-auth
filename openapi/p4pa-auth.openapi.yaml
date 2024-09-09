@@ -305,6 +305,7 @@ components:
         - fiscalCode
         - familyName
         - name
+        - email
         - issuer
         - organizations
       properties:
@@ -317,6 +318,8 @@ components:
         familyName:
           type: string
         name:
+          type: string
+        email:
           type: string
         issuer:
           type: string
