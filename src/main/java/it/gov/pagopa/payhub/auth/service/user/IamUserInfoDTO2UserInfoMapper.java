@@ -35,6 +35,7 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
                 .fiscalCode(iamUserInfoDTO.getFiscalCode())
                 .familyName(iamUserInfoDTO.getFamilyName())
                 .name(iamUserInfoDTO.getName())
+                .email(iamUserInfoDTO.getEmail())
                 .issuer(iamUserInfoDTO.getIssuer())
                 .organizations(userRoles.stream()
                         .map(r -> UserOrganizationRoles.builder()
