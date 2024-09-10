@@ -8,8 +8,10 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
+import it.gov.pagopa.payhub.model.generated.UserDTO;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Objects;
@@ -26,13 +28,15 @@ public class AuthzServiceImpl implements AuthzService {
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
+    private final UserDTOMapper userDTOMapper;
 
     public AuthzServiceImpl(UserService userService, UsersRepository usersRepository,
-        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper) {
+        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper) {
         this.userService = userService;
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.operatorDTOMapper = operatorDTOMapper;
+        this.userDTOMapper = userDTOMapper;
     }
 
     @Override
@@ -74,5 +78,12 @@ public class AuthzServiceImpl implements AuthzService {
             "MYPAY", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName(), createOperatorRequest.getEmail());
         Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getExternalUserId(), user.getEmail());
         return operatorDTOMapper.apply(user,operator);
+    }
+
+    @Override
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = userService.registerUser(userDTO.getMappedExternalUserId(), userDTO.getFiscalCode(), "MYPAY"
+            , userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail());
+        return userDTOMapper.map(user);
     }
 }

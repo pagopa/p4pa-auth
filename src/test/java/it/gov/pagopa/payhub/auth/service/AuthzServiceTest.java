@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import java.util.HashSet;
@@ -41,11 +42,14 @@ class AuthzServiceTest {
     @Mock
     private UsersRepository usersRepository;
 
+    @Mock
+    private UserDTOMapper userDTOMapper;
+
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, usersRepository, operatorsRepository, operatorDTOMapper);
+        service = new AuthzServiceImpl(userServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper);
     }
 
     @AfterEach
@@ -183,6 +187,7 @@ class AuthzServiceTest {
 
         Assertions.assertEquals(expectedOperatorDTO, actualOperatorDTO);
     }
+
 
 
 
