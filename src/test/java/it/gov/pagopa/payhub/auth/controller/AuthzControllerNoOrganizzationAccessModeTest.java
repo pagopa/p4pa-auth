@@ -122,5 +122,26 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                 .content(body)
         ).andExpect(status().isOk());
     }
+
+    @Test
+    void givenUnauthorizedUserWhenCreateUserThenOk() throws Exception {
+        UserDTO request = new UserDTO();
+        request.setMappedExternalUserId("MAPPEDEXTERNALUSERID");
+        Gson gson = new Gson();
+        String body = gson.toJson(request);
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode("IPA_TEST_2")
+                    .roles(List.of(Constants.ROLE_OPER))
+                    .build()))
+                .build());
+        mockMvc.perform(
+            post("/payhub/am/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.valueOf((body)))
+        ).andExpect(status().isUnauthorized());
+    }
     //end region
 }

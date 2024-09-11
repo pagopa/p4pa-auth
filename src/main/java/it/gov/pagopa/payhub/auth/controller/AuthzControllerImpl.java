@@ -84,6 +84,9 @@ public class AuthzControllerImpl implements AuthzApi {
         if(organizationAccessMode){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
+        if(!SecurityUtils.hasAdminRole()){
+            throw new UserUnauthorizedException("User not allowed to create user");
+        }
         return ResponseEntity.ok(authzService.createUser(user));
     }
 }
