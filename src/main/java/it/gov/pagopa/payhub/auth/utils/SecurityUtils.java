@@ -29,7 +29,7 @@ public final class SecurityUtils {
     public static List<String> getPrincipalRoles(){
         return getPrincipal().getOrganizations().stream()
             .flatMap(o -> o.getRoles().stream())
-            .collect(Collectors.toList());
+            .toList();
     }
 
 
