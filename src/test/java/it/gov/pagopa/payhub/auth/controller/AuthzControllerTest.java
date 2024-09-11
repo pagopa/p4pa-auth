@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
+import it.gov.pagopa.payhub.model.generated.UserDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
@@ -215,6 +216,29 @@ class AuthzControllerTest {
 
         mockMvc.perform(
             post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+        ).andExpect(status().isNotImplemented());
+    }
+    //end region
+    //region createUser
+    @Test
+    void givenIsNotImplementedWhenCreateUserThenError() throws Exception {
+        UserDTO request = new UserDTO();
+        request.setExternalUserId("EXTERNALUSERID");
+        Gson gson = new Gson();
+        String body = gson.toJson(request);
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode("ORG2")
+                    .roles(List.of(Constants.ROLE_ADMIN))
+                    .build()))
+                .build());
+
+        mockMvc.perform(
+            post("/payhub/am/users")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)

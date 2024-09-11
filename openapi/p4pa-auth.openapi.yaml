@@ -126,6 +126,32 @@ paths:
           description: Invalid request
         '401':
           description: Invalid client_id
+  /am/users:
+    post:
+      tags:
+        - authz
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '429':
+          description: Too Many Requests
   /am/operators/{organizationIpaCode}:
     get:
       tags:
@@ -297,6 +323,25 @@ components:
           default: Bearer
         expires_in:
           type: integer
+    UserDTO:
+      type: object
+      required:
+        - externalUserId
+        - firstName
+        - lastName
+        - fiscalCode
+        - email
+      properties:
+        externalUserId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        fiscalCode:
+          type: string
+        email:
+          type: string
     UserInfo:
       type: object
       required:

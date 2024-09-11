@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.OperatorsPage;
+import it.gov.pagopa.payhub.model.generated.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,5 +77,16 @@ public class AuthzControllerImpl implements AuthzApi {
     @Override
     public ResponseEntity<OperatorDTO> getOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
         return ResponseEntity.ok(authzService.getOrganizationOperator(organizationIpaCode, mappedExternalUserId));
+    }
+
+    @Override
+    public ResponseEntity<UserDTO> createUser(UserDTO user) {
+        if(organizationAccessMode){
+            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        }
+        if(!SecurityUtils.hasAdminRole()){
+            throw new UserUnauthorizedException("User not allowed to create user");
+        }
+        return ResponseEntity.ok(authzService.createUser(user));
     }
 }
