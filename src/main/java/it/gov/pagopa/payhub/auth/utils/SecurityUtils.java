@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.utils;
 
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
-import java.util.stream.Collectors;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
