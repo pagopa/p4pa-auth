@@ -312,8 +312,7 @@
 							"pm.test(\"Auth - createOrganizationOperator - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
 							"\r",
-							"    pm.expect(jsonResponse).have.property(\"userId\")\r",
-							"    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"externalUserId\")\r",
 							"    pm.expect(jsonResponse).have.property(\"firstName\").to.eq(\"TIZIO\")\r",
 							"    pm.expect(jsonResponse).have.property(\"lastName\").to.eq(\"CAIO\")\r",
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"CAITZI80A01E506W\")\r",
@@ -340,7 +339,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"mappedExternalUserId\": \"TESTCREATEOPERATOR\",\r\n  \"firstName\": \"TIZIO\",\r\n  \"lastName\": \"CAIO\",\r\n  \"fiscalCode\": \"CAITZI80A01E506W\",\r\n  \"email\": \"updated@ee.it\"\r\n}",
+					"raw": "{\r\n  \"externalUserId\": \"TESTCREATEOPERATOR\",\r\n  \"firstName\": \"TIZIO\",\r\n  \"lastName\": \"CAIO\",\r\n  \"fiscalCode\": \"CAITZI80A01E506W\",\r\n  \"email\": \"updated@ee.it\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

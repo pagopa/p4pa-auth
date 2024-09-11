@@ -226,7 +226,7 @@ class AuthzControllerTest {
     @Test
     void givenIsNotImplementedWhenCreateUserThenError() throws Exception {
         UserDTO request = new UserDTO();
-        request.setMappedExternalUserId("MAPPEDEXTERNALUSERID");
+        request.setExternalUserId("EXTERNALUSERID");
         Gson gson = new Gson();
         String body = gson.toJson(request);
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))

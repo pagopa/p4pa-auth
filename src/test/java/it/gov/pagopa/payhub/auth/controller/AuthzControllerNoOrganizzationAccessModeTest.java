@@ -96,10 +96,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     @Test
     void givenAuthorizedUserWhenCreateUserThenOk() throws Exception {
         UserDTO user = new UserDTO();
-        user.setUserId("USERID");
-        user.setIamIssuer("IAMISSUER");
-        user.setMappedExternalUserId("MAPPEDEXTERNALUSERID");
-        user.setUserCode("USERCODE");
+        user.setExternalUserId("EXTERNALUSERID");
         user.setFiscalCode("FISCALCODE");
         user.setFirstName("FIRSTNAME");
         user.setLastName("LASTNAME");
@@ -126,7 +123,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     @Test
     void givenUnauthorizedUserWhenCreateUserThenOk() throws Exception {
         UserDTO request = new UserDTO();
-        request.setMappedExternalUserId("MAPPEDEXTERNALUSERID");
+        request.setExternalUserId("EXTERNALUSERID");
         Gson gson = new Gson();
         String body = gson.toJson(request);
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))

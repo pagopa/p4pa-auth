@@ -194,16 +194,13 @@ class AuthzServiceTest {
         // Given
         User mockUser = new User();
         UserDTO expectedUser = new UserDTO();
-        expectedUser.setUserId("USERID");
-        expectedUser.setIamIssuer("IAMISSUER");
-        expectedUser.setMappedExternalUserId("MAPPEDEXTERNALUSERID");
-        expectedUser.setUserCode("USERCODE");
+        expectedUser.setExternalUserId("ERNALUSERID");
         expectedUser.setFiscalCode("FISCALCODE");
         expectedUser.setFirstName("FIRSTNAME");
         expectedUser.setLastName("LASTNAME");
         expectedUser.setEmail("EMAIL");
 
-        Mockito.when(userServiceMock.registerUser(expectedUser.getMappedExternalUserId(), expectedUser.getFiscalCode(),
+        Mockito.when(userServiceMock.registerUser(expectedUser.getExternalUserId(), expectedUser.getFiscalCode(),
             "MYPAY", expectedUser.getFirstName(), expectedUser.getLastName(), expectedUser.getEmail())).thenReturn(mockUser);
         Mockito.when(userDTOMapper.map(mockUser)).thenReturn(expectedUser);
 

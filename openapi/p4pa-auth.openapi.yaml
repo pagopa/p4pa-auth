@@ -326,28 +326,19 @@ components:
     UserDTO:
       type: object
       required:
-        - userId
-        - iamIssuer
-        - mappedExternalUserId
-        - userCode
-        - fiscalCode
+        - externalUserId
         - firstName
         - lastName
+        - fiscalCode
         - email
       properties:
-        userId:
-          type: string
-        iamIssuer:
-          type: string
-        mappedExternalUserId:
-          type: string
-        userCode:
-          type: string
-        fiscalCode:
+        externalUserId:
           type: string
         firstName:
           type: string
         lastName:
+          type: string
+        fiscalCode:
           type: string
         email:
           type: string

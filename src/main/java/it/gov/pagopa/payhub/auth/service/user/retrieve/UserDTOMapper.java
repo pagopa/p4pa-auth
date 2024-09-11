@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 public class UserDTOMapper {
   public UserDTO map(User user) {
     return UserDTO.builder()
-        .userId(user.getUserId())
-        .iamIssuer(user.getIamIssuer())
-        .mappedExternalUserId(user.getMappedExternalUserId())
-        .userCode(user.getUserCode())
+        .externalUserId(user.getMappedExternalUserId())
         .fiscalCode(user.getFiscalCode())
         .firstName(user.getFirstName())
         .lastName(user.getLastName())

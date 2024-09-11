@@ -13,10 +13,7 @@ class UserDTOMapperTest {
   void givenUserDTOWhenMapThenGetUser() {
     // Given
     User user = User.builder()
-        .userId("USERID")
-        .iamIssuer("IAMISSUER")
-        .mappedExternalUserId("MAPPEDEXTERNALUSERID")
-        .userCode("USERCODE")
+        .mappedExternalUserId("EXTERNALUSERID")
         .fiscalCode("FISCALCODE")
         .firstName("FIRSTNAME")
         .lastName("LASTNAME")
@@ -29,10 +26,7 @@ class UserDTOMapperTest {
     // Then
     Assertions.assertEquals(
         UserDTO.builder()
-            .userId("USERID")
-            .iamIssuer("IAMISSUER")
-            .mappedExternalUserId("MAPPEDEXTERNALUSERID")
-            .userCode("USERCODE")
+            .externalUserId("EXTERNALUSERID")
             .fiscalCode("FISCALCODE")
             .firstName("FIRSTNAME")
             .lastName("LASTNAME")

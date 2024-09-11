@@ -29,6 +29,7 @@ public class AuthzServiceImpl implements AuthzService {
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
     private final UserDTOMapper userDTOMapper;
+    private static final String MYPAYIAMISSUERS = "MYPAY";
 
     public AuthzServiceImpl(UserService userService, UsersRepository usersRepository,
         OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper) {
@@ -75,14 +76,14 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest) {
         User user = userService.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
-            "MYPAY", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName(), createOperatorRequest.getEmail());
+            MYPAYIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName(), createOperatorRequest.getEmail());
         Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getExternalUserId(), user.getEmail());
         return operatorDTOMapper.apply(user,operator);
     }
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        User user = userService.registerUser(userDTO.getMappedExternalUserId(), userDTO.getFiscalCode(), "MYPAY"
+        User user = userService.registerUser(userDTO.getExternalUserId(), userDTO.getFiscalCode(), MYPAYIAMISSUERS
             , userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail());
         return userDTOMapper.map(user);
     }

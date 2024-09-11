@@ -24,14 +24,6 @@ public final class SecurityUtils {
                 .orElse(Collections.emptyList());
     }
 
-    /** It will return user's session roles on requested organization IPA code retrieving it from ThreadLocal */
-    public static List<String> getPrincipalRoles(){
-        return getPrincipal().getOrganizations().stream()
-            .flatMap(o -> o.getRoles().stream())
-            .toList();
-    }
-
-
     /** It will return true if the user's session has ROLE_ADMIN role on requested organization IPA code retrieving it from ThreadLocal */
     public static boolean isPrincipalAdmin(String organizationIpaCode){
         return getPrincipalRoles(organizationIpaCode).contains(Constants.ROLE_ADMIN);
@@ -39,6 +31,8 @@ public final class SecurityUtils {
 
     /** It will return true if the user has at least a ROLE_ADMIN on one of organization retrieving it from ThreadLocal */
     public static boolean hasAdminRole() {
-        return getPrincipalRoles().contains(Constants.ROLE_ADMIN);
+        return getPrincipal().getOrganizations().stream()
+            .flatMap(o -> o.getRoles().stream())
+            .anyMatch(Constants.ROLE_ADMIN::equals);
     }
 }
