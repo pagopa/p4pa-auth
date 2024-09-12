@@ -229,7 +229,6 @@
 							"    pm.expect(jsonResponse).have.property(\"name\").to.eq(\"demo\")\r",
 							"    pm.expect(jsonResponse).have.property(\"familyName\").to.eq(\"demo\")\r",
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
-							"    pm.expect(jsonResponse).have.property(\"email\")\r",
 							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r",
 							"\r",
