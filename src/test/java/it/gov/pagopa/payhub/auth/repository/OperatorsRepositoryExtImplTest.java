@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.Operator;
-import it.gov.pagopa.payhub.auth.model.Operator.Fields;
 import it.gov.pagopa.payhub.auth.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
