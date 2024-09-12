@@ -27,7 +27,6 @@ public class FakeUserInfoService {
                 .innerUserId(userInfo.getUserId())
                 .name("fake")
                 .familyName("user")
-                .email("email@email.it")
                 .fiscalCode(userInfo.getUserCode())
                 .issuer(subjectIssuer)
                 .build();

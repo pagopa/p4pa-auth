@@ -15,7 +15,6 @@ public class IamUserInfoDTO {
   private String fiscalCode;
   private String familyName;
   private String name;
-  private String email;
   private String issuer;
   private IamUserOrganizationRolesDTO organizationAccess;
 

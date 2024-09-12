@@ -32,7 +32,7 @@ class MyPayUsersServiceTest {
     String firstName = "FIRSTNAME";
     String lastName = "LASTNAME";
     String email = "EMAIL";
-    String newEmail = "NEWEMAIL";
+    String newLastName = "NEWLASTNAME";
     char emailSourceType = 'A';
     Date now = new Date();
 
@@ -53,11 +53,11 @@ class MyPayUsersServiceTest {
     when(myPayUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser);
 
     // Act
-    myPayUsersService.registerMyPayUser(externalUserId, fiscalCode, firstName, lastName, newEmail);
+    myPayUsersService.registerMyPayUser(externalUserId, fiscalCode, firstName, newLastName);
 
     // Assert
     verify(myPayUsersRepositoryMock).save(existingUser.get());
-    assertEquals(newEmail,existingUser.get().getDeEmailAddress());
+    assertEquals(newLastName,existingUser.get().getDeLastname());
   }
 
   @Test
@@ -67,7 +67,6 @@ class MyPayUsersServiceTest {
     String fiscalCode = "FISCALCODE";
     String firstName = "FIRSTNAME";
     String lastName = "LASTNAME";
-    String email = "EMAIL";
 
     Optional<MyPayUser> existedMyPayUser = Optional.empty();
 
@@ -75,7 +74,7 @@ class MyPayUsersServiceTest {
     Mockito.when(myPayUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existedMyPayUser);
 
     // Act
-    myPayUsersService.registerMyPayUser(externalUserId, fiscalCode, firstName, lastName, email);
+    myPayUsersService.registerMyPayUser(externalUserId, fiscalCode, firstName, lastName);
 
     //ArgumentMatcher to verify just userId due to lastLogin can be different
     ArgumentMatcher<MyPayUser> userMatcher = new ArgumentMatcher<MyPayUser>() {

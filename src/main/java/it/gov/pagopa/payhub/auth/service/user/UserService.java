@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Set;
 
 public interface UserService {
-    User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email);
+    User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName);
     Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String mappedExternalUserId, String email);
     UserInfo getUserInfo(String accessToken);
     Page<OperatorDTO> retrieveOrganizationOperators(String organizationIpaCode, Pageable pageable);

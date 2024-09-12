@@ -12,7 +12,6 @@ public class UserDTOMapper {
         .fiscalCode(user.getFiscalCode())
         .firstName(user.getFirstName())
         .lastName(user.getLastName())
-        .email(user.getEmail())
         .build();
   }
 }

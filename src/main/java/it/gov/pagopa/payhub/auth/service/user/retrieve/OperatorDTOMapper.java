@@ -22,7 +22,7 @@ public class OperatorDTOMapper implements BiFunction<User, Operator, OperatorDTO
                 .fiscalCode(user.getFiscalCode())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .email(user.getEmail())
+                .email(operator.getEmail())
                 .build();
     }
 }

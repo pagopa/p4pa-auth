@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.Operator;
+import it.gov.pagopa.payhub.auth.model.Operator.Fields;
 import it.gov.pagopa.payhub.auth.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -40,6 +41,7 @@ class OperatorsRepositoryExtImplTest {
         // Given
         String userId="USERID";
         String organizationIpaCode="ORGANIZATIONIPACODE";
+        String email = "EMAIL";
         Set<String> roles = Set.of("ROLE");
         Operator storedOperator = new Operator();
 
@@ -49,13 +51,14 @@ class OperatorsRepositoryExtImplTest {
                 Mockito.eq(new Update()
                         .set(Operator.Fields.userId, userId)
                         .set(Operator.Fields.organizationIpaCode, organizationIpaCode)
+                        .set(Operator.Fields.email, email)
                         .set(Operator.Fields.roles, roles)),
                 Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),
                 Mockito.eq(Operator.class)
         )).thenReturn(storedOperator);
 
         // When
-        Operator result = repository.registerOperator(userId, organizationIpaCode, roles);
+        Operator result = repository.registerOperator(userId, organizationIpaCode, email, roles);
 
         // Then
         Assertions.assertSame(storedOperator, result);

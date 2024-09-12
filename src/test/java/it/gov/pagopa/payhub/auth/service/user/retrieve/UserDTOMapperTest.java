@@ -17,7 +17,6 @@ class UserDTOMapperTest {
         .fiscalCode("FISCALCODE")
         .firstName("FIRSTNAME")
         .lastName("LASTNAME")
-        .email("EMAIL")
         .build();
 
     // When
@@ -30,7 +29,6 @@ class UserDTOMapperTest {
             .fiscalCode("FISCALCODE")
             .firstName("FIRSTNAME")
             .lastName("LASTNAME")
-            .email("EMAIL")
             .build(), result
     );
   }

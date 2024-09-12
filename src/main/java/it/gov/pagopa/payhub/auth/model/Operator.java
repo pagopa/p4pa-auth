@@ -25,5 +25,6 @@ public class Operator {
     @Builder.Default
     private Set<String> roles = new HashSet<>();
     private String organizationIpaCode;
+    private String email;
 
 }

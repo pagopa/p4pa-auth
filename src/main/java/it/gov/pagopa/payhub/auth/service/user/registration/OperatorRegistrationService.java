@@ -30,7 +30,7 @@ public class OperatorRegistrationService {
                 userId, organizationIpaCode, roles);
         myPayOperatorsService.registerMyPayOperator(mappedExternalUserId, email, organizationIpaCode, roles);
         myPivotOperatorsService.registerMyPivotOperator(mappedExternalUserId, organizationIpaCode, roles);
-        return operatorsRepository.registerOperator(userId, organizationIpaCode, roles);
+        return operatorsRepository.registerOperator(userId, organizationIpaCode, email, roles);
     }
 
 }

@@ -100,7 +100,6 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         user.setFiscalCode("FISCALCODE");
         user.setFirstName("FIRSTNAME");
         user.setLastName("LASTNAME");
-        user.setEmail("EMAIL");
         Gson gson = new Gson();
         String body = gson.toJson(user);
 

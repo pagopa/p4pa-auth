@@ -36,8 +36,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email) {
-        return userRegistrationService.registerUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName, email);
+    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName) {
+        return userRegistrationService.registerUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName);
     }
 
     @Override

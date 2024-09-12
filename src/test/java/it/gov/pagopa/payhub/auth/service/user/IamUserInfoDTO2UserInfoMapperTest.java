@@ -64,10 +64,10 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
-                .email("EMAIL")
                 .issuer("ISSUER")
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
+                        .email("EMAIL")
                         .build())
                 .build();
 
@@ -94,10 +94,10 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
-                .email("EMAIL")
                 .issuer("ISSUER")
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
+                        .email("EMAIL")
                         .build())
                 .build();
 
@@ -118,7 +118,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
-                .email("EMAIL")
                 .issuer("ISSUER")
                 .build();
 
@@ -131,6 +130,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .operatorId("OPERATORID")
                 .organizationIpaCode("ORG")
                 .roles(Set.of("ROLE"))
+                .email("EMAIL")
                 .build());
 
         testApplyOk(iamUserInfo, user, organizationRoles);
@@ -151,7 +151,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .fiscalCode(iamUserInfo.getFiscalCode())
                         .familyName(iamUserInfo.getFamilyName())
                         .name(iamUserInfo.getName())
-                        .email(iamUserInfo.getEmail())
                         .issuer(iamUserInfo.getIssuer())
                         .organizationAccess(iamUserInfo.getOrganizationAccess()!=null? iamUserInfo.getOrganizationAccess().getOrganizationIpaCode(): null)
                         .organizations(organizationRoles.stream()
@@ -159,6 +158,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                                         .operatorId(r.getOperatorId())
                                         .organizationIpaCode(r.getOrganizationIpaCode())
                                         .roles(new ArrayList<>(r.getRoles()))
+                                        .email(r.getEmail())
                                         .build())
                                 .toList())
                         .build(),
