@@ -246,6 +246,7 @@
 							"    jsonResponse.organizations.forEach(org => {\r",
 							"        pm.expect(org).have.property(\"operatorId\")\r",
 							"        if(registeredOrganizations.includes(org.organizationIpaCode)){\r",
+							"            pm.expect(org.roles).have.property(\"length\").to.eq(1)\r",
 							"            pm.expect(org).have.property(\"email\")\r",
 							"            pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
 							"            recognizedOrganizations++\r",
