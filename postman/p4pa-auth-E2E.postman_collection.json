@@ -246,7 +246,7 @@
 							"    jsonResponse.organizations.forEach(org => {\r",
 							"        pm.expect(org).have.property(\"operatorId\")\r",
 							"        if(registeredOrganizations.includes(org.organizationIpaCode)){\r",
-							"            pm.expect(org.roles).have.property(\"length\").to.eq(1)\r",
+							"            pm.expect(org).have.property(\"email\")\r",
 							"            pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
 							"            recognizedOrganizations++\r",
 							"        }\r",
@@ -483,6 +483,7 @@
 							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
 							"    pm.expect(jsonResponse).have.property(\"userCode\")\r",
 							"    pm.expect(jsonResponse).have.property(\"roles\")\r",
+							"    pm.expect(jsonResponse).have.property(\"email\")\r",
 							"    pm.expect(jsonResponse.roles).have.property(\"length\").to.gte(1)\r",
 							"\r",
 							"});"
