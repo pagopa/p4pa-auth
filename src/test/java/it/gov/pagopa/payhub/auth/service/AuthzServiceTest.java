@@ -179,9 +179,9 @@ class AuthzServiceTest {
         OperatorDTO expectedOperatorDTO = new OperatorDTO();
 
         Mockito.when(userServiceMock.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
-            "MYPAY", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName(), createOperatorRequest.getEmail())).thenReturn(mockUser);
+            "MYPAY", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName())).thenReturn(mockUser);
         Mockito.when(userServiceMock.registerOperator(mockUser.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()),
-                    createOperatorRequest.getExternalUserId(), mockUser.getEmail())).thenReturn(mockOperator);
+                    createOperatorRequest.getExternalUserId(), createOperatorRequest.getEmail())).thenReturn(mockOperator);
         Mockito.when(operatorDTOMapper.apply(mockUser, mockOperator)).thenReturn(expectedOperatorDTO);
 
         OperatorDTO actualOperatorDTO = service.createOrganizationOperator(organizationIpaCode, createOperatorRequest);
@@ -198,10 +198,9 @@ class AuthzServiceTest {
         expectedUser.setFiscalCode("FISCALCODE");
         expectedUser.setFirstName("FIRSTNAME");
         expectedUser.setLastName("LASTNAME");
-        expectedUser.setEmail("EMAIL");
 
         Mockito.when(userServiceMock.registerUser(expectedUser.getExternalUserId(), expectedUser.getFiscalCode(),
-            "MYPAY", expectedUser.getFirstName(), expectedUser.getLastName(), expectedUser.getEmail())).thenReturn(mockUser);
+            "MYPAY", expectedUser.getFirstName(), expectedUser.getLastName())).thenReturn(mockUser);
         Mockito.when(userDTOMapper.map(mockUser)).thenReturn(expectedUser);
 
         // When

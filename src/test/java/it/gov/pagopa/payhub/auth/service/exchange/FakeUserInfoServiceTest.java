@@ -43,7 +43,6 @@ class FakeUserInfoServiceTest {
                 .innerUserId("userid")
                 .name("fake")
                 .familyName("user")
-                .email("email@email.it")
                 .fiscalCode("usercode")
                 .issuer(subjectIssuer)
                 .build();

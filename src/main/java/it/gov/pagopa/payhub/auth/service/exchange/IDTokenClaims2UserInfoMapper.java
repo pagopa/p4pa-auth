@@ -32,7 +32,6 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
                     .userId(claims.get("uid").asString())
                     .name(claims.get("name").asString())
                     .familyName(claims.get("family_name").asString())
-                    .email(claims.get("email").asString())
                     .fiscalCode(claims.get("fiscal_number").asString())
                     .organizationAccess(buildUserOrganizationRoles(claims))
                     .build();
@@ -56,6 +55,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
         List<String> roles = readUserOrganizationRoles(organizationClaim);
         return IamUserOrganizationRolesDTO.builder()
                 .organizationIpaCode((String)organizationClaim.get("ipaCode"))
+                .email(claims.get("email").asString())
                 .roles(roles)
                 .build();
     }

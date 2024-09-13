@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2c7bad0b-4ca5-4c49-8988-160ed654582b",
+		"_postman_id": "c1508e85-2efa-460b-8f3a-ff7ee32007a0",
 		"name": "p4pa-auth-NoAccessModeOrganization",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "36568841"
@@ -229,7 +229,6 @@
 							"    pm.expect(jsonResponse).have.property(\"name\").to.eq(\"demo\")\r",
 							"    pm.expect(jsonResponse).have.property(\"familyName\").to.eq(\"demo\")\r",
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
-							"    pm.expect(jsonResponse).have.property(\"email\")\r",
 							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r",
 							"\r",
@@ -316,7 +315,6 @@
 							"    pm.expect(jsonResponse).have.property(\"firstName\").to.eq(\"TIZIO\")\r",
 							"    pm.expect(jsonResponse).have.property(\"lastName\").to.eq(\"CAIO\")\r",
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"CAITZI80A01E506W\")\r",
-							"    pm.expect(jsonResponse).have.property(\"email\").to.eq(\"updated@ee.it\")\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -339,7 +337,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"externalUserId\": \"TESTCREATEOPERATOR\",\r\n  \"firstName\": \"TIZIO\",\r\n  \"lastName\": \"CAIO\",\r\n  \"fiscalCode\": \"CAITZI80A01E506W\",\r\n  \"email\": \"updated@ee.it\"\r\n}",
+					"raw": "{\r\n  \"externalUserId\": \"TESTCREATEOPERATOR\",\r\n  \"firstName\": \"TIZIO\",\r\n  \"lastName\": \"CAIO\",\r\n  \"fiscalCode\": \"CAITZI80A01E506W\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -390,7 +388,7 @@
 							"    pm.expect(jsonResponse).have.property(\"lastName\").to.eq(\"CAIO\")\r",
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"CAITZI80A01E506W\")\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-							"    pm.expect(jsonResponse).have.property(\"email\").to.eq(\"updated@ee.it\")\r",
+							"    pm.expect(jsonResponse).have.property(\"email\")\r",
 							"    pm.expect(jsonResponse).have.property(\"roles\").to.include(\"ROLE_ADMIN\")\r",
 							"});"
 						],

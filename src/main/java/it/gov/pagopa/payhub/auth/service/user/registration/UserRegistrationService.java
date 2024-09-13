@@ -27,30 +27,27 @@ public class UserRegistrationService {
         this.myPivotUsersService = myPivotUsersService;
     }
 
-    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email){
-        User user = buildUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName, email);
+    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName){
+        User user = buildUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName);
         log.info("Registering user having mappedExternalUserId {}", user.getMappedExternalUserId());
 
-        myPayUsersService.registerMyPayUser(user.getMappedExternalUserId(), fiscalCode, firstName, lastName, email);
+        myPayUsersService.registerMyPayUser(user.getMappedExternalUserId(), fiscalCode, firstName, lastName);
         log.info("Registering user on MyPay having mappedExternalUserId {}", externalUserId);
 
-        myPivotUsersService.registerMyPivotUser(user.getMappedExternalUserId(), fiscalCode, firstName, lastName, email);
+        myPivotUsersService.registerMyPivotUser(user.getMappedExternalUserId(), fiscalCode, firstName, lastName);
         log.info("Registering user on MyPivot having mappedExternalUserId {}", externalUserId);
 
         return usersRepository.registerUser(user);
     }
 
-    private User buildUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email){
+    private User buildUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName){
         return User.builder()
                 .iamIssuer(iamIssuer)
                 .mappedExternalUserId(externalUserIdObfuscatorService.obfuscate(externalUserId))
                 .userCode(fiscalCodeObfuscatorService.obfuscate(fiscalCode))
-
                 .fiscalCode(fiscalCode)
                 .firstName(firstName)
                 .lastName(lastName)
-                .email(email)
-
                 .build();
     }
 }

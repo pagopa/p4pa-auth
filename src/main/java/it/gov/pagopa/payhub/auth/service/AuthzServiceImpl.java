@@ -76,15 +76,15 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest) {
         User user = userService.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
-            MYPAYIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName(), createOperatorRequest.getEmail());
-        Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getExternalUserId(), user.getEmail());
+            MYPAYIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName());
+        Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getExternalUserId(), createOperatorRequest.getEmail());
         return operatorDTOMapper.apply(user,operator);
     }
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User user = userService.registerUser(userDTO.getExternalUserId(), userDTO.getFiscalCode(), MYPAYIAMISSUERS
-            , userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail());
+            , userDTO.getFirstName(), userDTO.getLastName());
         return userDTOMapper.map(user);
     }
 }

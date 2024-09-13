@@ -33,8 +33,7 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
 
                         .set(User.Fields.fiscalCode, user.getFiscalCode())
                         .set(User.Fields.firstName, user.getFirstName())
-                        .set(User.Fields.lastName, user.getLastName())
-                        .set(User.Fields.email, user.getEmail()),
+                        .set(User.Fields.lastName, user.getLastName()),
                 FindAndModifyOptions.options()
                         .returnNew(true)
                         .upsert(true),

@@ -49,7 +49,7 @@ class OperatorRegistrationServiceTest {
         Set<String> roles = Set.of("ROLE");
         Operator storedOperator = new Operator();
 
-        Mockito.when(operatorsRepositoryMock.registerOperator(userId, organizationIpaCode, roles))
+        Mockito.when(operatorsRepositoryMock.registerOperator(userId, organizationIpaCode, email, roles))
                 .thenReturn(storedOperator);
 
         // When

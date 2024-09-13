@@ -29,8 +29,7 @@ class MyPivotUsersServiceTest {
     String fiscalCode = "FISCALCODE";
     String firstName = "FIRSTNAME";
     String lastName = "LASTNAME";
-    String email = "EMAIL";
-    String newEmail = "NEWEMAIL";
+    String newLastName = "NEWLASTNAME";
 
     Optional<MyPivotUser> existingUser = Optional.of(
         MyPivotUser.builder()
@@ -39,18 +38,17 @@ class MyPivotUsersServiceTest {
             .version(0)
             .deFirstname(firstName)
             .deLastname(lastName)
-            .deEmailAddress(email)
             .build());
 
     // Mock behavior
     when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser);
 
     // Act
-    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, newEmail);
+    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, newLastName);
 
     // Assert
     verify(myPivotUsersRepositoryMock).save(existingUser.get());
-    assertEquals(newEmail,existingUser.get().getDeEmailAddress());
+    assertEquals(newLastName,existingUser.get().getDeLastname());
   }
 
   @Test
@@ -60,14 +58,13 @@ class MyPivotUsersServiceTest {
     String fiscalCode = "FISCALCODE";
     String firstName = "FIRSTNAME";
     String lastName = "LASTNAME";
-    String email = "EMAIL";
     Optional<MyPivotUser> existedMyPivotUser = Optional.empty();
 
     // Mock behavior (no existing user)
     when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existedMyPivotUser);
 
     // Act
-    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, email);
+    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName);
 
     //ArgumentMatcher to verify just userId due to lastLogin can be different
     ArgumentMatcher<MyPivotUser> userMatcher = new ArgumentMatcher<MyPivotUser>() {
