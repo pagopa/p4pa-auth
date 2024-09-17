@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user.registration;
 
 import it.gov.pagopa.payhub.auth.model.Operator;
-import it.gov.pagopa.payhub.auth.mypivot.service.MyPivotOperatorsService;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -20,14 +19,11 @@ class OperatorRegistrationServiceTest {
     @Mock
     private OperatorsRepository operatorsRepositoryMock;
 
-    @Mock
-    private MyPivotOperatorsService myPivotOperatorsServiceMock;
-
     private OperatorRegistrationService service;
 
     @BeforeEach
     void init() {
-        service = new OperatorRegistrationService(operatorsRepositoryMock,myPivotOperatorsServiceMock);
+        service = new OperatorRegistrationService(operatorsRepositoryMock);
     }
 
     @AfterEach
