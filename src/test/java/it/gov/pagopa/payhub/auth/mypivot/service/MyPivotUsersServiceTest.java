@@ -35,7 +35,6 @@ class MyPivotUsersServiceTest {
         MyPivotUser.builder()
             .codFedUserId(externalUserId)
             .codCodiceFiscaleUtente(fiscalCode)
-            .version(0)
             .deFirstname(firstName)
             .deLastname(lastName)
             .build());

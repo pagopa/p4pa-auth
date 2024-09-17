@@ -24,12 +24,10 @@ public class MyPivotUsersService {
       myPivotUsersRepository.save(myPivotUser);
     }, () ->
       myPivotUsersRepository.save(MyPivotUser.builder()
-          .version(0)
           .codFedUserId(mappedExternalUserId)
           .codCodiceFiscaleUtente(fiscalCode)
           .deFirstname(firstName)
           .deLastname(lastName)
-          .emailSourceType('A')
           .dtUltimoLogin(new Date())
           .build()));
   }
