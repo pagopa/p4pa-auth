@@ -36,7 +36,6 @@ class OperatorRegistrationServiceTest {
         // Given
         String userId = "USERID";
         String organizationIpaCode = "ORGANIZATIONIPACODE";
-        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
         String email = "EMAIL";
         Set<String> roles = Set.of("ROLE");
         Operator storedOperator = new Operator();
@@ -45,7 +44,7 @@ class OperatorRegistrationServiceTest {
                 .thenReturn(storedOperator);
 
         // When
-        Operator result = service.registerOperator(userId, organizationIpaCode, roles, mappedExternalUserId, email);
+        Operator result = service.registerOperator(userId, organizationIpaCode, roles, email);
 
         // Then
         Assertions.assertSame(storedOperator, result);
