@@ -17,7 +17,7 @@ public class OperatorRegistrationService {
         this.operatorsRepository = operatorsRepository;
     }
 
-    public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String mappedExternalUserId, String email){
+    public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String email){
         log.info("Registering relationship between userId {} and organization {} setting roles {}",
                 userId, organizationIpaCode, roles);
         return operatorsRepository.registerOperator(userId, organizationIpaCode, email, roles);
