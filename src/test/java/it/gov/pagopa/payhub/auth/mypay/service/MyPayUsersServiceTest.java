@@ -33,19 +33,15 @@ class MyPayUsersServiceTest {
     String lastName = "LASTNAME";
     String email = "EMAIL";
     String newLastName = "NEWLASTNAME";
-    char emailSourceType = 'A';
     Date now = new Date();
 
     Optional<MyPayUser> existingUser = Optional.of(
         MyPayUser.builder()
             .codFedUserId(externalUserId)
             .codCodiceFiscaleUtente(fiscalCode)
-            .version(0)
             .deFirstname(firstName)
             .deLastname(lastName)
             .deEmailAddress(email)
-            .flgFedAuthorized(false)
-            .emailSourceType(emailSourceType)
             .dtUltimoLogin(now)
             .build());
 

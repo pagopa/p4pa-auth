@@ -26,10 +26,8 @@ public class MyPayUser {
   @SequenceGenerator(name = "myPayUserSeq", sequenceName = "mygov_utente_mygov_utente_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "myPayUserSeq")
   private Long mygovUtenteId;
-  private int version;
   private String codFedUserId;
   private String codCodiceFiscaleUtente;
-  private boolean flgFedAuthorized;
   private String deEmailAddress;
   private String deFirstname;
   private String deLastname;
@@ -42,7 +40,6 @@ public class MyPayUser {
   private Long provinciaId;
   private Long nazioneId;
   private Date dtSetAddress;
-  private char emailSourceType;
   private String deEmailAddressNew;
 
 }

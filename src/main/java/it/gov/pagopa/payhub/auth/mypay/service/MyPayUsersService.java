@@ -23,15 +23,12 @@ public class MyPayUsersService {
         myPayUser.setDtUltimoLogin(new Date());
         myPayUsersRepository.save(myPayUser);
     }, () -> myPayUsersRepository.save(MyPayUser.builder()
-          .version(0)
           .codFedUserId(mappedExternalUserId)
           .codCodiceFiscaleUtente(fiscalCode)
-          .flgFedAuthorized(false)
           .deFirstname(firstName)
           .deLastname(lastName)
           .deFedLegalEntity("fisica")
           .dtUltimoLogin(new Date())
-          .emailSourceType('A')
           .build()));
   }
 }
