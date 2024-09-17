@@ -180,8 +180,8 @@ class AuthzServiceTest {
 
         Mockito.when(userServiceMock.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
             "MYPAY", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName())).thenReturn(mockUser);
-        Mockito.when(userServiceMock.registerOperator(mockUser.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()),
-                    createOperatorRequest.getExternalUserId(), createOperatorRequest.getEmail())).thenReturn(mockOperator);
+        Mockito.when(userServiceMock.registerOperator(mockUser.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles())
+                    , createOperatorRequest.getEmail())).thenReturn(mockOperator);
         Mockito.when(operatorDTOMapper.apply(mockUser, mockOperator)).thenReturn(expectedOperatorDTO);
 
         OperatorDTO actualOperatorDTO = service.createOrganizationOperator(organizationIpaCode, createOperatorRequest);

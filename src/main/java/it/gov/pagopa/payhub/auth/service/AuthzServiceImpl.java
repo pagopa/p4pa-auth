@@ -77,7 +77,7 @@ public class AuthzServiceImpl implements AuthzService {
     public OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest) {
         User user = userService.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
             MYPAYIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName());
-        Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getExternalUserId(), createOperatorRequest.getEmail());
+        Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getEmail());
         return operatorDTOMapper.apply(user,operator);
     }
 

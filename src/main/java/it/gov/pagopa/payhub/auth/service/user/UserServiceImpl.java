@@ -41,8 +41,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String mappedExternalUserId, String email) {
-        return operatorRegistrationService.registerOperator(userId, organizationIpaCode, roles, mappedExternalUserId, email);
+    public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String email) {
+        return operatorRegistrationService.registerOperator(userId, organizationIpaCode, roles, email);
     }
 
     @Override
