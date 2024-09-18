@@ -34,7 +34,7 @@ public class UserRegistrationService {
         myPayUsersService.registerMyPayUser(user.getMappedExternalUserId());
         log.info("Registering user on MyPay having mappedExternalUserId {}", externalUserId);
 
-        myPivotUsersService.registerMyPivotUser(user.getMappedExternalUserId(), fiscalCode, firstName, lastName);
+        myPivotUsersService.registerMyPivotUser(user.getMappedExternalUserId());
         log.info("Registering user on MyPivot having mappedExternalUserId {}", externalUserId);
 
         return usersRepository.registerUser(user);
