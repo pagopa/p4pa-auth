@@ -14,7 +14,7 @@ public class MyPivotUsersService {
     this.myPivotUsersRepository = myPivotUsersRepository;
   }
 
-  public void registerMyPivotUser(String mappedExternalUserId, String fiscalCode, String firstName, String lastName) {
+  public void registerMyPivotUser(String mappedExternalUserId) {
     Optional<MyPivotUser> existedUser = myPivotUsersRepository.findByCodFedUserId(mappedExternalUserId);
     existedUser.ifPresentOrElse(myPivotUsersRepository::save, () ->
       myPivotUsersRepository.save(MyPivotUser.builder()

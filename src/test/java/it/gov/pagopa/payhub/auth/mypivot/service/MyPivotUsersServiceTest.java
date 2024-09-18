@@ -25,16 +25,13 @@ class MyPivotUsersServiceTest {
   void whenRegisterMyPivotUserThenVerifyNewUser() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
-    String fiscalCode = "FISCALCODE";
-    String firstName = "FIRSTNAME";
-    String lastName = "LASTNAME";
     Optional<MyPivotUser> existedMyPivotUser = Optional.empty();
 
     // Mock behavior (no existing user)
     when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existedMyPivotUser);
 
     // Act
-    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName);
+    myPivotUsersService.registerMyPivotUser(externalUserId);
 
     //ArgumentMatcher to verify just userId due to lastLogin can be different
     ArgumentMatcher<MyPivotUser> userMatcher = new ArgumentMatcher<MyPivotUser>() {
