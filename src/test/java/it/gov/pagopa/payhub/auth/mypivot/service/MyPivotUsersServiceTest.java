@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.mypivot.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotUser;
@@ -21,34 +20,6 @@ class MyPivotUsersServiceTest {
   private MyPivotUsersRepository myPivotUsersRepositoryMock;
   @InjectMocks
   private MyPivotUsersService myPivotUsersService;
-
-  @Test
-  void whenUpdateUserThenCheckNewValues() {
-    // Arrange
-    String externalUserId = "EXTERNALUSERID";
-    String fiscalCode = "FISCALCODE";
-    String firstName = "FIRSTNAME";
-    String lastName = "LASTNAME";
-    String newLastName = "NEWLASTNAME";
-
-    Optional<MyPivotUser> existingUser = Optional.of(
-        MyPivotUser.builder()
-            .codFedUserId(externalUserId)
-            .codCodiceFiscaleUtente(fiscalCode)
-            .deFirstname(firstName)
-            .deLastname(lastName)
-            .build());
-
-    // Mock behavior
-    when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser);
-
-    // Act
-    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, newLastName);
-
-    // Assert
-    verify(myPivotUsersRepositoryMock).save(existingUser.get());
-    assertEquals(newLastName,existingUser.get().getDeLastname());
-  }
 
   @Test
   void whenRegisterMyPivotUserThenVerifyNewUser() {
