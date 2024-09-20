@@ -50,7 +50,6 @@ class UsersRepositoryExtImplTest {
                 .firstName("FIRSTNAME")
                 .lastName("LASTNAME")
                 .fiscalCode("FISCALCODE")
-                .email("EMAIL")
                 .build();
         User storedUser = new User();
 
@@ -69,7 +68,6 @@ class UsersRepositoryExtImplTest {
                             .set(User.Fields.lastLogin, lastLogin)
                             .set(User.Fields.firstName, user.getFirstName())
                             .set(User.Fields.lastName, user.getLastName())
-                            .set(User.Fields.email, user.getEmail())
                             .set(User.Fields.fiscalCode, user.getFiscalCode())
                     );
                 }),

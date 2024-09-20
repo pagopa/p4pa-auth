@@ -11,6 +11,7 @@ import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
+import it.gov.pagopa.payhub.model.generated.UserDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import java.util.List;
@@ -38,7 +39,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     @MockBean
     private AuthnService authnServiceMock;
 
-
+// createOperator region
     @Test
     void givenUnauthorizedUserWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
@@ -90,4 +91,53 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                 .content(body)
         ).andExpect(status().isOk());
     }
+    // end region
+    //createUser region
+    @Test
+    void givenAuthorizedUserWhenCreateUserThenOk() throws Exception {
+        UserDTO user = new UserDTO();
+        user.setExternalUserId("EXTERNALUSERID");
+        user.setFiscalCode("FISCALCODE");
+        user.setFirstName("FIRSTNAME");
+        user.setLastName("LASTNAME");
+        Gson gson = new Gson();
+        String body = gson.toJson(user);
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode("IPA_TEST_2")
+                    .roles(List.of(Constants.ROLE_ADMIN))
+                    .build()))
+                .build());
+
+        mockMvc.perform(
+            post("/payhub/am/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void givenUnauthorizedUserWhenCreateUserThenOk() throws Exception {
+        UserDTO request = new UserDTO();
+        request.setExternalUserId("EXTERNALUSERID");
+        Gson gson = new Gson();
+        String body = gson.toJson(request);
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode("IPA_TEST_2")
+                    .roles(List.of(Constants.ROLE_OPER))
+                    .build()))
+                .build());
+        mockMvc.perform(
+            post("/payhub/am/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.valueOf((body)))
+        ).andExpect(status().isUnauthorized());
+    }
+    //end region
 }

@@ -41,6 +41,7 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
                                 .operatorId(r.getOperatorId())
                                 .organizationIpaCode(r.getOrganizationIpaCode())
                                 .roles(new ArrayList<>(r.getRoles()))
+                                .email(r.getEmail())
                                 .build())
                         .toList())
                 .build();

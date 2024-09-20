@@ -18,13 +18,14 @@ public class OperatorsRepositoryExtImpl implements OperatorsRepositoryExt{
     }
 
     @Override
-    public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles) {
+    public Operator registerOperator(String userId, String organizationIpaCode, String email, Set<String> roles) {
         return mongoTemplate.findAndModify(
                 Query.query(Criteria
                         .where(Operator.Fields.operatorId).is(userId+organizationIpaCode)),
                 new Update()
                         .set(Operator.Fields.userId, userId)
                         .set(Operator.Fields.organizationIpaCode, organizationIpaCode)
+                        .set(Operator.Fields.email, email)
                         .set(Operator.Fields.roles, roles),
                 FindAndModifyOptions.options()
                         .returnNew(true)

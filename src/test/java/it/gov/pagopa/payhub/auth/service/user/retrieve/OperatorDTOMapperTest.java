@@ -24,13 +24,13 @@ class OperatorDTOMapperTest {
                 .fiscalCode("FISCALCODE")
                 .firstName("FIRSTNAME")
                 .lastName("LASTNAME")
-                .email("EMAIL")
                 .build();
 
         Operator operator = Operator.builder()
                 .operatorId("OPERATORID")
                 .userId("USERID")
                 .roles(Set.of("ROLES"))
+                .email("EMAIL")
                 .organizationIpaCode("ORGANIZATIONIPACODE")
                 .build();
 

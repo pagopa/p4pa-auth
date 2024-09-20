@@ -93,14 +93,13 @@ class UserServiceTest {
         String iamIssuer = "IAMISSUER";
         String name = "NAME";
         String familyName = "FAMILYNAME";
-        String email = "EMAIL";
         User storedUser = new User();
 
-        Mockito.when(userRegistrationServiceMock.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName, email))
+        Mockito.when(userRegistrationServiceMock.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName))
                 .thenReturn(storedUser);
 
         // When
-        User result = service.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName, email);
+        User result = service.registerUser(externalUserId, fiscalCode, iamIssuer, name, familyName);
 
         // Then
         Assertions.assertSame(storedUser, result);
@@ -111,16 +110,15 @@ class UserServiceTest {
         // Given
         String userId = "USERID";
         String organizationIpaCode = "ORGANIZATIONIPACODE";
-        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
         String email = "EMAIL";
         Set<String> roles = Set.of("ROLE");
         Operator storedOperator = new Operator();
 
-        Mockito.when(operatorRegistrationServiceMock.registerOperator(userId, organizationIpaCode, roles, mappedExternalUserId, email))
+        Mockito.when(operatorRegistrationServiceMock.registerOperator(userId, organizationIpaCode, roles, email))
                 .thenReturn(storedOperator);
 
         // When
-        Operator result = service.registerOperator(userId, organizationIpaCode, roles, mappedExternalUserId, email);
+        Operator result = service.registerOperator(userId, organizationIpaCode, roles, email);
 
         // Then
         Assertions.assertSame(storedOperator, result);

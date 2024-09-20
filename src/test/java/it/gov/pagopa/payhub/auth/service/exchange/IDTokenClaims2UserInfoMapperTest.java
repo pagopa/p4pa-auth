@@ -39,11 +39,11 @@ class IDTokenClaims2UserInfoMapperTest {
                 .userId("e1d9c534-86a9-4039-80da-8aa7a33ac9e7")
                 .name("demo")
                 .familyName("demosurname")
-                .email("ee@ee.it")
                 .fiscalCode("DMEMPY15L21L736U")
                 .issuer("https://dev.selfcare.pagopa.it")
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("SELC_99999999990")
+                        .email("ee@ee.it")
                         .roles(List.of("ROLE_ADMIN"))
                         .build())
                 .build();
@@ -75,7 +75,6 @@ class IDTokenClaims2UserInfoMapperTest {
                 .name("demo")
                 .familyName("demosurname")
                 .fiscalCode("DMEMPY15L21L736U")
-                .email("ee@ee.it")
                 .issuer("https://dev.selfcare.pagopa.it")
                 .build();
         Map<String, Claim> claims = JWT.decode("eyJraWQiOiJqd3QtZXhjaGFuZ2VfZTA6OTQ6M2Q6NWI6YWY6ODY6YWU6YWM6YzM6ZGI6OWM6MzI6NTc6NWE6YTA6NDciLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0eXAiOiJJRCIsImZhbWlseV9uYW1lIjoiZGVtb3N1cm5hbWUiLCJmaXNjYWxfbnVtYmVyIjoiRE1FTVBZMTVMMjFMNzM2VSIsIm5hbWUiOiJkZW1vIiwic3BpZF9sZXZlbCI6Imh0dHBzOi8vd3d3LnNwaWQuZ292Lml0L1NwaWRMMiIsImZyb21fYWEiOmZhbHNlLCJzdWIiOiJlMWQ5YzUzNC04NmE5LTQwMzktODBkYS04YWE3YTMzYWM5ZTciLCJ1aWQiOiJlMWQ5YzUzNC04NmE5LTQwMzktODBkYS04YWE3YTMzYWM5ZTciLCJsZXZlbCI6IkwyIiwiaWF0IjoxNzE0OTgwNTY4LCJleHAiOjU3MTQ5ODE0NjgsImF1ZCI6ImRldi5waWF0dGFmb3JtYXVuaXRhcmlhLnBhZ29wYS5pdCIsImlzcyI6Imh0dHBzOi8vZGV2LnNlbGZjYXJlLnBhZ29wYS5pdCIsImp0aSI6IjkyYzQ3OWI1LTUxMTUtNGQzMS1iMDliLTVjZmFmNTQ1Mzc3NCIsImVtYWlsIjoiZWVAZWUuaXQiLCJkZXNpcmVkX2V4cCI6NTcxNTAxMjg5NH0.aJIhnNEOXNx8wDTSmAVv7NJio_J9muU2Jq9bY3AX0rL09LIvoGoxH1-u2-gdz_2LpxfZjluS0PUNKvAVgAbtK7o_vNPnThbCaQjVvtBPPBSWcjXSxbi7uJ9r89CMyu1CGim5tXz9cPB9vTBsdPElQ4xGnWGUBl8nYvUZ9oayYxDpPBdEjbHUEAvjjiaEHFjt5bmzYeyOnh4g_qe6m_j6JzsijRNXh87Ple4Awb72CPaf4gwTXIPQqoHIISSKfBYOIU_zl5mg5e-p3pTdsNNBR30vKViiolde4EIuY33IB5hSAjk5Pvw_5TD26sEI581Zra9ccaUsoPW2watGAFa6kg").getClaims();

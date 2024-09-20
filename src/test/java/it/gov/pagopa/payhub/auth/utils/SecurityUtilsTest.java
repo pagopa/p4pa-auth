@@ -79,6 +79,28 @@ class SecurityUtilsTest {
         Assertions.assertFalse(result2);
     }
 
+    @Test
+    void testHasAdminRole() {
+        // Given
+        UserInfo expectedUserInfo = UserInfo.builder()
+            .organizations(List.of(
+                UserOrganizationRoles.builder()
+                    .organizationIpaCode("ORG")
+                    .roles(List.of("ROLE_ADMIN"))
+                    .build(),
+                UserOrganizationRoles.builder()
+                    .organizationIpaCode("ORG2")
+                    .roles(List.of("ROLE2"))
+                    .build())
+            )
+            .build();
+        configureSecurityContext(expectedUserInfo);
+
+        // When
+        boolean result = SecurityUtils.hasAdminRole();
+        Assertions.assertTrue(result);
+    }
+
     private static void configureSecurityContext(UserInfo expectedUserInfo) {
         SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, null)));
     }

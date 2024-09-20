@@ -27,7 +27,7 @@ public class IamUserRegistrationService {
     }
 
     User registerUser(IamUserInfoDTO userInfo) {
-        User user = userService.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName(), userInfo.getEmail());
+        User user = userService.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName());
 
         if (organizationAccessMode) {
             if (CollectionUtils.isEmpty(userInfo.getOrganizationAccess().getRoles())) {
@@ -35,7 +35,7 @@ public class IamUserRegistrationService {
             }
 
             userService.registerOperator(user.getUserId(), userInfo.getOrganizationAccess().getOrganizationIpaCode(),
-                new HashSet<>(userInfo.getOrganizationAccess().getRoles()), user.getMappedExternalUserId(), user.getEmail());
+                new HashSet<>(userInfo.getOrganizationAccess().getRoles()), userInfo.getOrganizationAccess().getEmail());
         }
 
         return user;

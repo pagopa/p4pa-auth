@@ -67,6 +67,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .issuer("ISSUER")
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
+                        .email("EMAIL")
                         .build())
                 .build();
 
@@ -96,6 +97,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .issuer("ISSUER")
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
+                        .email("EMAIL")
                         .build())
                 .build();
 
@@ -128,6 +130,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .operatorId("OPERATORID")
                 .organizationIpaCode("ORG")
                 .roles(Set.of("ROLE"))
+                .email("EMAIL")
                 .build());
 
         testApplyOk(iamUserInfo, user, organizationRoles);
@@ -155,6 +158,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                                         .operatorId(r.getOperatorId())
                                         .organizationIpaCode(r.getOrganizationIpaCode())
                                         .roles(new ArrayList<>(r.getRoles()))
+                                        .email(r.getEmail())
                                         .build())
                                 .toList())
                         .build(),

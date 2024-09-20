@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.mypivot.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import it.gov.pagopa.payhub.auth.mypivot.model.MyPivotUser;
@@ -23,51 +22,16 @@ class MyPivotUsersServiceTest {
   private MyPivotUsersService myPivotUsersService;
 
   @Test
-  void whenUpdateUserThenCheckNewValues() {
-    // Arrange
-    String externalUserId = "EXTERNALUSERID";
-    String fiscalCode = "FISCALCODE";
-    String firstName = "FIRSTNAME";
-    String lastName = "LASTNAME";
-    String email = "EMAIL";
-    String newEmail = "NEWEMAIL";
-
-    Optional<MyPivotUser> existingUser = Optional.of(
-        MyPivotUser.builder()
-            .codFedUserId(externalUserId)
-            .codCodiceFiscaleUtente(fiscalCode)
-            .version(0)
-            .deFirstname(firstName)
-            .deLastname(lastName)
-            .deEmailAddress(email)
-            .build());
-
-    // Mock behavior
-    when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existingUser);
-
-    // Act
-    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, newEmail);
-
-    // Assert
-    verify(myPivotUsersRepositoryMock).save(existingUser.get());
-    assertEquals(newEmail,existingUser.get().getDeEmailAddress());
-  }
-
-  @Test
   void whenRegisterMyPivotUserThenVerifyNewUser() {
     // Arrange
     String externalUserId = "EXTERNALUSERID";
-    String fiscalCode = "FISCALCODE";
-    String firstName = "FIRSTNAME";
-    String lastName = "LASTNAME";
-    String email = "EMAIL";
     Optional<MyPivotUser> existedMyPivotUser = Optional.empty();
 
     // Mock behavior (no existing user)
     when(myPivotUsersRepositoryMock.findByCodFedUserId(externalUserId)).thenReturn(existedMyPivotUser);
 
     // Act
-    myPivotUsersService.registerMyPivotUser(externalUserId, fiscalCode, firstName, lastName, email);
+    myPivotUsersService.registerMyPivotUser(externalUserId);
 
     //ArgumentMatcher to verify just userId due to lastLogin can be different
     ArgumentMatcher<MyPivotUser> userMatcher = new ArgumentMatcher<MyPivotUser>() {

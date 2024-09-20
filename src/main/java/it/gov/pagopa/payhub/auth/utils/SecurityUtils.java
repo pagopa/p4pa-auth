@@ -28,4 +28,11 @@ public final class SecurityUtils {
     public static boolean isPrincipalAdmin(String organizationIpaCode){
         return getPrincipalRoles(organizationIpaCode).contains(Constants.ROLE_ADMIN);
     }
+
+    /** It will return true if the user has at least a ROLE_ADMIN on one of organization retrieving it from ThreadLocal */
+    public static boolean hasAdminRole() {
+        return getPrincipal().getOrganizations().stream()
+            .flatMap(o -> o.getRoles().stream())
+            .anyMatch(Constants.ROLE_ADMIN::equals);
+    }
 }

@@ -16,6 +16,7 @@ public class IamUserOrganizationRolesDTO {
 
   private String organizationIpaCode;
   private List<String> roles = new ArrayList<>();
+  private String email;
 
 }
 

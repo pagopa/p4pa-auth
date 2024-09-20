@@ -30,6 +30,5 @@ public class User {
     private String fiscalCode;
     private String firstName;
     private String lastName;
-    private String email;
 //endregion
 }

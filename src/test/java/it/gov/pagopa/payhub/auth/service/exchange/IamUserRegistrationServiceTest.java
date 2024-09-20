@@ -72,7 +72,7 @@ class IamUserRegistrationServiceTest {
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
-        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", Set.of("ROLE"));
+        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"));
         Assertions.assertSame(userInfoUserPair.getSecond(), result);
     }
 
@@ -89,15 +89,15 @@ class IamUserRegistrationServiceTest {
 
         // Then
         verifyRegisterUserInvocation(userInfo);
-        Assertions.assertEquals("No roles configured for organizationAccess IamUserOrganizationRolesDTO(organizationIpaCode=ORG2, roles=null)", exception.getMessage());
+        Assertions.assertEquals("No roles configured for organizationAccess IamUserOrganizationRolesDTO(organizationIpaCode=ORG2, roles=null, email=null)", exception.getMessage());
     }
 
     private void verifyRegisterUserInvocation(IamUserInfoDTO userInfo) {
-        Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName(), userInfo.getEmail());
+        Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName());
     }
 
-    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, Set<String> roles) {
-        Mockito.verify(userServiceMock).registerOperator(user.getUserId(), organizationIpaCode, roles, user.getMappedExternalUserId(), user.getEmail());
+    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, String email, Set<String> roles) {
+        Mockito.verify(userServiceMock).registerOperator(user.getUserId(), organizationIpaCode, roles, email);
     }
 
     private Pair<IamUserInfoDTO, User> configureUserServiceMock() {
@@ -106,18 +106,18 @@ class IamUserRegistrationServiceTest {
                 .fiscalCode("FISCALCODE")
                 .name("NAME")
                 .familyName("FAMILYNAME")
-                .email("EMAIL")
                 .issuer("IAMISSUER")
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
                         .roles(List.of("ROLE"))
+                        .email("EMAIL")
                         .build())
                 .build();
 
         User registeredUser = User.builder()
                 .userId("INTERNALID")
                 .build();
-        Mockito.when(userServiceMock.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName(), userInfo.getEmail()))
+        Mockito.when(userServiceMock.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName()))
                 .thenReturn(registeredUser);
 
         return Pair.of(userInfo, registeredUser);

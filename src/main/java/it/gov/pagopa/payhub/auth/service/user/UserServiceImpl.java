@@ -36,13 +36,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName, String email) {
-        return userRegistrationService.registerUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName, email);
+    public User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName) {
+        return userRegistrationService.registerUser(externalUserId, fiscalCode, iamIssuer, firstName, lastName);
     }
 
     @Override
-    public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String mappedExternalUserId, String email) {
-        return operatorRegistrationService.registerOperator(userId, organizationIpaCode, roles, mappedExternalUserId, email);
+    public Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String email) {
+        return operatorRegistrationService.registerOperator(userId, organizationIpaCode, roles, email);
     }
 
     @Override
