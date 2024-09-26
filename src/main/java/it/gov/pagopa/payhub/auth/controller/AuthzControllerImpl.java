@@ -55,6 +55,10 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<UserInfo> getUserInfoFromMappedExternaUserId(String mappedExternalUserId) {
+        if(!SecurityUtils.hasAdminRole()
+            && !mappedExternalUserId.equals(SecurityUtils.getPrincipal().getMappedExternalUserId())){
+            throw new UserUnauthorizedException("User not allowed to retrieve these information");
+        }
         return ResponseEntity.ok(authzService.getUserInfoFromMappedExternalUserId(mappedExternalUserId));
     }
 

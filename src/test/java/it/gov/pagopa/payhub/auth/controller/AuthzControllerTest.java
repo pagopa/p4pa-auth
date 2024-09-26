@@ -256,11 +256,10 @@ class AuthzControllerTest {
             .mappedExternalUserId(mappedExternalUserId)
             .organizations(List.of(UserOrganizationRoles.builder()
                 .organizationIpaCode("IPA_CODE")
-                .roles(List.of("ROLE"))
+                .roles(List.of("ROLE_OPER"))
                 .build()))
             .build();
 
-        //
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -279,6 +278,39 @@ class AuthzControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             ).andExpect(status().isOk())
             .andExpect(content().json("{\"userId\":\"USERID\"}"));
+    }
+
+    @Test
+    void givenRequestUnauthorizedWhenGetUserInfoThenException() throws Exception {
+        //Given
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        UserInfo expectedUser = UserInfo.builder()
+            .userId("USERID")
+            .organizationAccess("IPA_CODE")
+            .mappedExternalUserId(mappedExternalUserId)
+            .organizations(List.of(UserOrganizationRoles.builder()
+                .organizationIpaCode("IPA_CODE")
+                .roles(List.of("ROLE"))
+                .build()))
+            .build();
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode("ORG")
+                    .roles(List.of(Constants.ROLE_OPER))
+                    .build()))
+                .build());
+
+        //When
+        Mockito.when(authzServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId))
+            .thenReturn(expectedUser);
+
+        //Then
+        mockMvc.perform(
+                get("/payhub/auth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+            ).andExpect(status().isUnauthorized());
     }
     //end region
 }
