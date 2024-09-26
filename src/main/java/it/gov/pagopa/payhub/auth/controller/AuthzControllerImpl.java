@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.controller;
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
-import it.gov.pagopa.payhub.controller.generated.AuthnApi;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
