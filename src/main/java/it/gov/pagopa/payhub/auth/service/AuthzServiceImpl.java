@@ -7,13 +7,16 @@ import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.OperatorDTO;
 import it.gov.pagopa.payhub.model.generated.UserDTO;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -29,15 +32,18 @@ public class AuthzServiceImpl implements AuthzService {
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
     private final UserDTOMapper userDTOMapper;
+    private final Operator2UserInfoMapper operator2UserInfoMapper;
     private static final String MYPAYIAMISSUERS = "MYPAY";
 
     public AuthzServiceImpl(UserService userService, UsersRepository usersRepository,
-        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper) {
+        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper,
+        UserDTOMapper userDTOMapper, Operator2UserInfoMapper operator2UserInfoMapper) {
         this.userService = userService;
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.operatorDTOMapper = operatorDTOMapper;
         this.userDTOMapper = userDTOMapper;
+        this.operator2UserInfoMapper = operator2UserInfoMapper;
     }
 
     @Override
@@ -86,5 +92,13 @@ public class AuthzServiceImpl implements AuthzService {
         User user = userService.registerUser(userDTO.getExternalUserId(), userDTO.getFiscalCode(), MYPAYIAMISSUERS
             , userDTO.getFirstName(), userDTO.getLastName());
         return userDTOMapper.map(user);
+    }
+
+    @Override
+    public UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId) {
+        User user = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
+            .orElseThrow(() -> new UserNotFoundException("Cannot found user having mappedExternalId:"+ mappedExternalUserId));
+        List<Operator> operators = operatorsRepository.findAllByUserId(user.getUserId());
+        return operator2UserInfoMapper.apply(user, operators);
     }
 }
