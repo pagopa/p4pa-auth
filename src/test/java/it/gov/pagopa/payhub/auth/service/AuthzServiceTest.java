@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
+import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
@@ -9,10 +10,10 @@ import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
 import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.model.generated.*;
-
 import java.util.HashSet;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -54,11 +55,14 @@ class AuthzServiceTest {
     @Mock
     private ClientDTOMapper clientDTOMapper;
 
+    @Mock
+    private Operator2UserInfoMapper operator2UserInfoMapper;
+
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, clientDTOMapper);
+        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, operator2UserInfoMapper, clientDTOMapper);
     }
 
     @AfterEach
@@ -235,5 +239,41 @@ class AuthzServiceTest {
         ClientDTO actualClientDTO = service.registerClient(organizationIpaCode, createClientRequest);
 
         Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+    }
+
+    @Test
+    void whenGetUserInfoFromMappedExternalUserIdThenGetUserInfo() {
+        //Given
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        User userMock = new User();
+        userMock.setUserId("1");
+        List<Operator> operators = List.of(new Operator());
+        UserInfo expectedUserInfo = new UserInfo();
+
+        Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId))
+          .thenReturn(Optional.of(userMock));
+        Mockito.when(operatorsRepository.findAllByUserId(userMock.getUserId())).thenReturn(operators);
+        Mockito.when(operator2UserInfoMapper.apply(userMock, operators)).thenReturn(expectedUserInfo);
+
+        //When
+        UserInfo result = service.getUserInfoFromMappedExternalUserId(mappedExternalUserId);
+
+        //Then
+        Assertions.assertEquals(expectedUserInfo, result);
+    }
+
+    @Test
+    void whenGetUserInfoFromMappedExternalUserIdThenUserNotFound() {
+        //Given
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId))
+          .thenReturn(Optional.empty());
+
+        //When
+        Exception exception = Assertions.assertThrows(UserNotFoundException.class, () -> {
+            service.getUserInfoFromMappedExternalUserId(mappedExternalUserId);
+        });
+        //Then
+        Assertions.assertTrue(exception.getMessage().contains("Cannot found user having mappedExternalId:" + mappedExternalUserId));
     }
 }
