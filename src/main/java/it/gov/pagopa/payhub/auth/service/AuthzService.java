@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.UserDTO;
+import it.gov.pagopa.payhub.model.generated.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,4 +11,5 @@ public interface AuthzService {
     void deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId);
     OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest);
     UserDTO createUser(UserDTO user);
+    ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest);
 }

@@ -2,16 +2,17 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
+import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
+import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
+import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
-import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.UserDTO;
+import it.gov.pagopa.payhub.model.generated.*;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,19 +26,23 @@ import org.springframework.stereotype.Service;
 public class AuthzServiceImpl implements AuthzService {
 
     private final UserService userService;
+    private final ClientService clientService;
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
     private final UserDTOMapper userDTOMapper;
+    private final ClientDTOMapper clientDTOMapper;
     private static final String MYPAYIAMISSUERS = "MYPAY";
 
-    public AuthzServiceImpl(UserService userService, UsersRepository usersRepository,
-        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper) {
+    public AuthzServiceImpl(UserService userService, ClientService clientService, UsersRepository usersRepository,
+        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper, ClientDTOMapper clientDTOMapper) {
         this.userService = userService;
+        this.clientService = clientService;
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.operatorDTOMapper = operatorDTOMapper;
         this.userDTOMapper = userDTOMapper;
+        this.clientDTOMapper = clientDTOMapper;
     }
 
     @Override
@@ -86,5 +91,11 @@ public class AuthzServiceImpl implements AuthzService {
         User user = userService.registerUser(userDTO.getExternalUserId(), userDTO.getFiscalCode(), MYPAYIAMISSUERS
             , userDTO.getFirstName(), userDTO.getLastName());
         return userDTOMapper.map(user);
+    }
+
+    @Override
+    public ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
+        Client client = clientService.registerClient(createClientRequest.getClientId(), organizationIpaCode);
+        return clientDTOMapper.map(client);
     }
 }
