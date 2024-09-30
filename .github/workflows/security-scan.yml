@@ -9,8 +9,6 @@
 name: Container Scan
 
 on:
-  push:
-    branches: [ "develop", "uat", "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "develop", "uat", "main" ]
@@ -60,7 +58,6 @@ jobs:
         id: cve-threshold
         if: env.CVE_HIGH > 0 || env.CVE_CRITICAL > 0
         run: exit 1
-
   SendSlackNotification:
     needs: BuildAndScan
     uses: ./.github/workflows/send-notification.yml
