@@ -39,7 +39,7 @@ jobs:
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
-        uses: aquasecurity/trivy-action@cfa337a1088bbcee598ab93656c83fe6b9acb946 #v0.24.0
+        uses: aquasecurity/trivy-action@0.24.0 #v0.24.0
         with:
           image-ref: "localbuild/testimage:latest"
           format: 'sarif'
