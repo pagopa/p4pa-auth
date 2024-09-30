@@ -36,7 +36,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4.1.1
       - name: Build the Docker image
-        run: docker build . --file mypivot4-be/Dockerfile --tag localbuild/testimage:latest
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
         uses: aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8 #v0.24.0
