@@ -9,6 +9,8 @@
 name: Container Scan
 
 on:
+  push:
+    branches: [ "develop", "uat", "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "develop", "uat", "main" ]
@@ -37,7 +39,7 @@ jobs:
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
-        uses: aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8 -db-repository public.ecr.aws/aquasecurity/trivy-db:2 #v0.24.0
+        uses: aquasecurity/trivy-action@cfa337a1088bbcee598ab93656c83fe6b9acb946 #v0.24.0
         with:
           image-ref: "localbuild/testimage:latest"
           format: 'sarif'
