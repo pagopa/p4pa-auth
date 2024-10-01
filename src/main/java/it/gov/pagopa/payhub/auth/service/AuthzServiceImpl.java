@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientDTOMapper;
+import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
@@ -35,12 +35,12 @@ public class AuthzServiceImpl implements AuthzService {
     private final OperatorDTOMapper operatorDTOMapper;
     private final UserDTOMapper userDTOMapper;
     private final Operator2UserInfoMapper operator2UserInfoMapper;
-    private final ClientDTOMapper clientDTOMapper;
+    private final ClientMapper clientMapper;
     private static final String MYPAYIAMISSUERS = "MYPAY";
 
     public AuthzServiceImpl(UserService userService, ClientService clientService, UsersRepository usersRepository,
         OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper,
-        Operator2UserInfoMapper operator2UserInfoMapper, ClientDTOMapper clientDTOMapper) {
+        Operator2UserInfoMapper operator2UserInfoMapper, ClientMapper clientMapper) {
         this.userService = userService;
         this.clientService = clientService;
         this.usersRepository = usersRepository;
@@ -48,7 +48,7 @@ public class AuthzServiceImpl implements AuthzService {
         this.operatorDTOMapper = operatorDTOMapper;
         this.userDTOMapper = userDTOMapper;
         this.operator2UserInfoMapper = operator2UserInfoMapper;
-        this.clientDTOMapper = clientDTOMapper;
+        this.clientMapper = clientMapper;
     }
 
     @Override
@@ -110,6 +110,6 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
         Client client = clientService.registerClient(createClientRequest.getClientId(), organizationIpaCode);
-        return clientDTOMapper.map(client);
+        return clientMapper.mapToDTO(client);
     }
 }

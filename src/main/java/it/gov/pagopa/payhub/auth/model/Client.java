@@ -19,5 +19,5 @@ public class Client {
 	@Id
 	private String clientId;
 	private String organizationIpaCode;
-	private String clientSecret;
+	private byte[] clientSecret;
 }

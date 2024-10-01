@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user.registration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import java.util.Base64;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ExternalUserIdObfuscatorServiceTest {
 
     @Mock
-    private DataCipherService dataCipherService = new DataCipherService("PEPPER");
+    private DataCipherService dataCipherService = new DataCipherService("PSW","PEPPER", new ObjectMapper());
 
     @InjectMocks
     private ExternalUserIdObfuscatorService service;

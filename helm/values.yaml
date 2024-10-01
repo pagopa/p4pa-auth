@@ -87,6 +87,7 @@ microservice-chart:
     MYPIVOT_DB_PASSWORD: db-mypay-login-password
 
     DATA_CIPHER_P4PA_AUTH_HASH_KEY: p4pa-auth-hash-key
+    DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW: data-cipher.encrypt-psw
   # nodeSelector: {}
 
   # tolerations: []

@@ -99,9 +99,6 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<ClientDTO> registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
-        if(organizationAccessMode){
-            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-        }
         if(!SecurityUtils.hasAdminRole()){
             throw new UserUnauthorizedException("User not allowed to create client");
         }

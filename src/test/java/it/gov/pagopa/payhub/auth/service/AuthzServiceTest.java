@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientDTOMapper;
+import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
@@ -53,7 +53,7 @@ class AuthzServiceTest {
     private UserDTOMapper userDTOMapper;
 
     @Mock
-    private ClientDTOMapper clientDTOMapper;
+    private ClientMapper clientMapper;
 
     @Mock
     private Operator2UserInfoMapper operator2UserInfoMapper;
@@ -62,7 +62,7 @@ class AuthzServiceTest {
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, operator2UserInfoMapper, clientDTOMapper);
+        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, operator2UserInfoMapper, clientMapper);
     }
 
     @AfterEach
@@ -234,7 +234,7 @@ class AuthzServiceTest {
 
         Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientId(), organizationIpaCode)).thenReturn(mockClient);
 
-        Mockito.when(clientDTOMapper.map(mockClient)).thenReturn(expectedClientDTO);
+        Mockito.when(clientMapper.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
 
         ClientDTO actualClientDTO = service.registerClient(organizationIpaCode, createClientRequest);
 
