@@ -14,4 +14,5 @@ public interface AuthzService {
     UserDTO createUser(UserDTO user);
     UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId);
     ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest);
+    String getClientSecret(String organizationIpaCode, String clientId);
 }
