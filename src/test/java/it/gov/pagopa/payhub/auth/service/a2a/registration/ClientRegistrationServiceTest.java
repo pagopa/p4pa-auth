@@ -1,8 +1,7 @@
-package it.gov.pagopa.payhub.auth.service.client.registration;
+package it.gov.pagopa.payhub.auth.service.a2a.registration;
 
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
-import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
 import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

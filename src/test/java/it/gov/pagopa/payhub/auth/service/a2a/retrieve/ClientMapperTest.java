@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.auth.service.client.retrieve;
+package it.gov.pagopa.payhub.auth.service.a2a.retrieve;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
@@ -18,7 +17,7 @@ import java.util.UUID;
 class ClientMapperTest {
 
   @Mock
-  private DataCipherService dataCipherService = new DataCipherService("PSW","PEPPER", new ObjectMapper());
+  private DataCipherService dataCipherService;
 
   @InjectMocks
   private ClientMapper service;
@@ -28,7 +27,7 @@ class ClientMapperTest {
   @Test
   void givenClientWhenMapThenGetClientDTO() {
     // Given
-    var chiper = dataCipherService.encrypt(uuidForSecret);
+    byte[] chiper = dataCipherService.encrypt(uuidForSecret);
     Client client = Client.builder()
       .clientId("clientId")
       .organizationIpaCode("ipa_code")
@@ -51,8 +50,8 @@ class ClientMapperTest {
   @Test
   void givenClientDTOWhenMapThenGetClient() {
     // Given
-    var chiper = dataCipherService.encrypt(uuidForSecret);
-    var clientDTO = ClientDTO.builder()
+    byte[] chiper = dataCipherService.encrypt(uuidForSecret);
+    ClientDTO clientDTO = ClientDTO.builder()
       .clientId("clientId")
       .organizationIpaCode("ipa_code")
       .clientSecret(dataCipherService.decrypt(chiper))

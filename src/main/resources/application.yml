@@ -66,4 +66,4 @@ app:
 
 data-chiper:
     p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
-    data-cipher-encrypt-psw: "\${DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW}"
+    p4pa-auth-encrypt-psw: "\${DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW:PSW}"

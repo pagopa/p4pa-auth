@@ -53,16 +53,13 @@ class AuthzServiceTest {
     private UserDTOMapper userDTOMapper;
 
     @Mock
-    private ClientMapper clientMapper;
-
-    @Mock
     private Operator2UserInfoMapper operator2UserInfoMapper;
 
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, operator2UserInfoMapper, clientMapper);
+        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, operator2UserInfoMapper);
     }
 
     @AfterEach
@@ -229,12 +226,9 @@ class AuthzServiceTest {
         CreateClientRequest createClientRequest = new CreateClientRequest();
         createClientRequest.setClientId("clientId");
 
-        Client mockClient = new Client();
         ClientDTO expectedClientDTO = new ClientDTO();
 
-        Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientId(), organizationIpaCode)).thenReturn(mockClient);
-
-        Mockito.when(clientMapper.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
+        Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientId(), organizationIpaCode)).thenReturn(expectedClientDTO);
 
         ClientDTO actualClientDTO = service.registerClient(organizationIpaCode, createClientRequest);
 

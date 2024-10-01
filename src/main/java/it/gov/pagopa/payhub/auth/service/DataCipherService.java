@@ -16,8 +16,8 @@ public class DataCipherService {
   private final ObjectMapper objectMapper;
 
   public DataCipherService(
-    @Value("${data-cipher.encrypt-psw}") String encryptPsw,
-    @Value("${data-cipher.hash-pepper}") String hashPepper,
+    @Value("${p4pa-auth-encrypt-psw}") String encryptPsw,
+    @Value("${p4pa-auth-hash-pepper}") String hashPepper,
     ObjectMapper objectMapper
   ) {
     this.encryptPsw = encryptPsw;

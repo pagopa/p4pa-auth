@@ -22,11 +22,11 @@ public class ClientMapper {
 			.build();
 	}
 
-	public Client mapToModel(String clientId, String organizationIpaCode, String uuid) {
+	public Client mapToModel(String clientId, String organizationIpaCode, String clientSecret) {
 		return Client.builder()
 			.clientId(clientId)
 			.organizationIpaCode(organizationIpaCode)
-			.clientSecret(dataCipherService.encrypt(uuid))
+			.clientSecret(dataCipherService.encrypt(clientSecret))
 			.build();
 	}
 
