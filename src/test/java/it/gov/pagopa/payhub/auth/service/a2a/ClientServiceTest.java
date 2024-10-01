@@ -1,10 +1,11 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
 import it.gov.pagopa.payhub.auth.model.Client;
+import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
 import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
+import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientRetrieverService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
-import it.gov.pagopa.payhub.model.generated.CreateClientRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,19 +22,27 @@ public class ClientServiceTest {
 	private ClientRegistrationService clientRegistrationServiceMock;
 
 	@Mock
+	private ClientRetrieverService clientRetrieverServiceMock;
+
+	@Mock
+	private DataCipherService dataCipherServiceMock;
+
+	@Mock
 	private ClientMapper clientMapper;
 
 	private ClientService service;
 
 	@BeforeEach
 	void init(){
-		service = new ClientServiceImpl(clientRegistrationServiceMock, clientMapper);
+		service = new ClientServiceImpl(clientRegistrationServiceMock, clientRetrieverServiceMock, dataCipherServiceMock, clientMapper);
 	}
 
 	@AfterEach
 	void verifyNotMoreInteractions(){
 		Mockito.verifyNoMoreInteractions(
 			clientRegistrationServiceMock,
+			clientRetrieverServiceMock,
+			dataCipherServiceMock,
 			clientMapper
 		);
 	}
