@@ -148,7 +148,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     //end region
 
     @Test
-    void givenUnauthorizedUserWhenRegisterClientThenOk() throws Exception {
+    void givenUnauthorizedUserWhenRegisterClientThenUnauthorizedException() throws Exception {
         String organizationIpaCode = "IPACODE";
         CreateClientRequest request = new CreateClientRequest();
         request.setClientId("CLIENTID");
