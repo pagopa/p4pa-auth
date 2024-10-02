@@ -63,7 +63,7 @@ variables:
     postmanEnvFile: p4pa_DEV.postman_environment.json
 
 stages:
-  - stage: 'stage_build'
+  - stage: stage_build
     condition: eq(variables.canDeploy, true)
     displayName: 'Build and publish image to ${{ variables.environment }} registry'
     jobs:
@@ -115,7 +115,7 @@ stages:
                   $(SLACK_WEBHOOK_URL)
   - stage: stage_deploy
     displayName: 'Deploy to ${{ variables.environment }} K8S'
-    dependsOn: ['stage_build']
+    dependsOn: [ stage_build ]
     variables:
       appVersion: $[ stageDependencies.stage_build.job_build.outputs['getAppVersion.appVersion'] ]
     condition: and(succeeded(), eq(variables.canDeploy, true))
@@ -179,7 +179,7 @@ stages:
                         -H "Content-type: application/json" \
                         --data '{"text": "*Attention: There is an error in pipeline $(System.DefinitionName) in step _deploy_!*\nCheck the logs for more details $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId) to view the build results."}' \
                         $(SLACK_WEBHOOK_URL)
-  - stage: Test_e2e
+  - stage: stage_postman_test
     displayName: 'Test_e2e_on_${{ variables.environment }}'
     condition: or(eq(variables.environment, 'DEV'), eq(variables.environment, 'UAT'))
     jobs:
