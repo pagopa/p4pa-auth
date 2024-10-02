@@ -21,8 +21,8 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public ClientDTO registerClient(String clientId, String organizationIpaCode) {
-		Client client = clientRegistrationService.registerClient(clientId, organizationIpaCode);
+	public ClientDTO registerClient(String clientName, String organizationIpaCode) {
+		Client client = clientRegistrationService.registerClient(clientName, organizationIpaCode);
 		return clientMapper.mapToDTO(client);
 	}
 }

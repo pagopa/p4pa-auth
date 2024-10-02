@@ -222,16 +222,17 @@ class AuthzServiceTest {
 
     @Test
     void whenCreateClientThenVerifyClient() {
+        //Given
         String organizationIpaCode = "organizationIpaCode";
         CreateClientRequest createClientRequest = new CreateClientRequest();
-        createClientRequest.setClientId("clientId");
-
+        createClientRequest.setClientName("clientname");
         ClientDTO expectedClientDTO = new ClientDTO();
 
-        Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientId(), organizationIpaCode)).thenReturn(expectedClientDTO);
+        Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientName(), organizationIpaCode)).thenReturn(expectedClientDTO);
 
+        //When
         ClientDTO actualClientDTO = service.registerClient(organizationIpaCode, createClientRequest);
-
+        //Then
         Assertions.assertEquals(expectedClientDTO, actualClientDTO);
     }
 

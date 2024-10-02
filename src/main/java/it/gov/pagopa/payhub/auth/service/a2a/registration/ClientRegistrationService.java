@@ -20,9 +20,9 @@ public class ClientRegistrationService {
 		this.clientRepository = clientRepository;
 	}
 
-	public Client registerClient(String clientId, String organizationIpaCode) {
-		Client client = clientMapper.mapToModel(clientId, organizationIpaCode, UUID.randomUUID().toString());
-		log.info("Registering client having clientId {} and organizationIpaCode {}", clientId, organizationIpaCode);
+	public Client registerClient(String clientName, String organizationIpaCode) {
+		Client client = clientMapper.mapToModel(clientName, organizationIpaCode, UUID.randomUUID().toString());
+		log.info("Registering client having clientName {} and organizationIpaCode {}", clientName, organizationIpaCode);
 		return clientRepository.insert(client);
 	}
 }

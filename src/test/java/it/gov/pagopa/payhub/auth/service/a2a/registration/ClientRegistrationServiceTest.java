@@ -18,7 +18,7 @@ import java.util.UUID;
 class ClientRegistrationServiceTest {
 
     @Mock
-    private ClientMapper clientMapper;
+    private ClientMapper clientMapperMock;
     @Mock
     private ClientRepository clientRepositoryMock;
 
@@ -28,7 +28,7 @@ class ClientRegistrationServiceTest {
     @BeforeEach
     void init(){
         service = new ClientRegistrationService(
-          clientMapper,
+          clientMapperMock,
           clientRepositoryMock
         );
     }
@@ -36,7 +36,7 @@ class ClientRegistrationServiceTest {
     @AfterEach
     void verifyNotMoreInvocation(){
         Mockito.verifyNoMoreInteractions(
-          clientMapper,
+          clientMapperMock,
           clientRepositoryMock
         );
     }
@@ -45,16 +45,16 @@ class ClientRegistrationServiceTest {
     void whenRegisterClientThenReturnStoredClient(){
         // Given
         String organizationIpaCode = "organizationIpaCode";
-        String clientId = "clientId";
+        String clientName = "clientName";
         String uuidForClientSecret = UUID.randomUUID().toString();
 
-        Client client = clientMapper.mapToModel(clientId, organizationIpaCode, uuidForClientSecret);
+        Client client = clientMapperMock.mapToModel(clientName, organizationIpaCode, uuidForClientSecret);
         Client storedClient = new Client();
 
         Mockito.when(clientRepositoryMock.insert(client)).thenReturn(storedClient);
 
         // When
-        Client result = service.registerClient(clientId, organizationIpaCode);
+        Client result = service.registerClient(clientName, organizationIpaCode);
 
         // Then
         Assertions.assertSame(storedClient, result);

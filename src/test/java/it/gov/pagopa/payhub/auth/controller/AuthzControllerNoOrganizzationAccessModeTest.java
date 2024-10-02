@@ -151,7 +151,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     void givenUnauthorizedUserWhenRegisterClientThenUnauthorizedException() throws Exception {
         String organizationIpaCode = "IPACODE";
         CreateClientRequest request = new CreateClientRequest();
-        request.setClientId("CLIENTID");
+        request.setClientName("CLIENTNAME");
         Gson gson = new Gson();
         String body = gson.toJson(request);
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
@@ -171,12 +171,12 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
     @Test
     void givenAuthorizedUserWhenRegisterClientThenOk() throws Exception {
-        String uuidRandom = UUID.randomUUID().toString();
+        String uuidRandomForSecret = UUID.randomUUID().toString();
         Pattern UUID_REGEX =
           Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
         String organizationIpaCode = "IPA_TEST_2";
-        CreateClientRequest request = new CreateClientRequest();
-        request.setClientId("CLIENTID");
+        CreateClientRequest createClientRequest = new CreateClientRequest();
+        createClientRequest.setClientName("CLIENTNAME");
 
         UserInfo expectedUser = UserInfo.builder()
           .userId("USERID")
@@ -190,24 +190,25 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
           .thenReturn(expectedUser);
 
-        doReturn(new ClientDTO("CLIENTID", "IPA_TEST_2", uuidRandom))
-                .when(authzServiceMock).registerClient(organizationIpaCode, request);
+        doReturn(new ClientDTO(organizationIpaCode + createClientRequest.getClientName(), createClientRequest.getClientName(), organizationIpaCode, uuidRandomForSecret))
+                .when(authzServiceMock).registerClient(organizationIpaCode, createClientRequest);
 
         MvcResult result = mockMvc.perform(
             post("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
               .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
               .contentType(MediaType.APPLICATION_JSON)
-              .content(new Gson().toJson(request))
+              .content(new Gson().toJson(createClientRequest))
           ).andExpect(status().isOk())
           .andReturn();
 
         ClientDTO clientDTO = new Gson().fromJson(result.getResponse().getContentAsString(), ClientDTO.class);
 
         Assertions.assertNotNull(result);
-        assertEquals("CLIENTID", clientDTO.getClientId());
-        assertEquals("IPA_TEST_2", clientDTO.getOrganizationIpaCode());
+        assertEquals(organizationIpaCode + createClientRequest.getClientName(), clientDTO.getClientId());
+        assertEquals(createClientRequest.getClientName(), clientDTO.getClientName());
+        assertEquals(organizationIpaCode, clientDTO.getOrganizationIpaCode());
         assertTrue(UUID_REGEX.matcher(clientDTO.getClientSecret()).matches());
-        assertEquals(uuidRandom, clientDTO.getClientSecret());
+        assertEquals(uuidRandomForSecret, clientDTO.getClientSecret());
     }
 
 }
