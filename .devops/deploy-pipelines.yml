@@ -63,7 +63,7 @@ variables:
     postmanEnvFile: p4pa_DEV.postman_environment.json
 
 stages:
-  - stage: 'stage_build'
+  - stage: stage_build
     condition: eq(variables.canDeploy, true)
     displayName: 'Build and publish image to ${{ variables.environment }} registry'
     jobs:
@@ -103,10 +103,19 @@ stages:
               targetPath: '$(Build.Repository.LocalPath)/helm'
               artifact: 'helm'
               publishLocation: 'pipeline'
-
+          - task: 'Bash@3'
+            displayName: 'Send message on Slack'
+            condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
+            inputs:
+              targetType: 'inline'
+              script: >
+                curl -X POST \
+                  -H "Content-type: application/json" \
+                  --data '{"text": "*Attention: There is an error in pipeline $(System.DefinitionName) in step _build_!*\nCheck the logs for more details $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId) to view the build results."}' \
+                  $(SLACK_WEBHOOK_URL)
   - stage: stage_deploy
     displayName: 'Deploy to ${{ variables.environment }} K8S'
-    dependsOn: ['stage_build']
+    dependsOn: [ stage_build ]
     variables:
       appVersion: $[ stageDependencies.stage_build.job_build.outputs['getAppVersion.appVersion'] ]
     condition: and(succeeded(), eq(variables.canDeploy, true))
@@ -160,7 +169,17 @@ stages:
                     waitForExecution: true
                     arguments: --timeout 5m0s
                       --values buildMetadata.yaml
-  - stage: Test_e2e
+                - task: 'Bash@3'
+                  displayName: 'Send message on Slack'
+                  condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
+                  inputs:
+                    targetType: 'inline'
+                    script: >
+                      curl -X POST \
+                        -H "Content-type: application/json" \
+                        --data '{"text": "*Attention: There is an error in pipeline $(System.DefinitionName) in step _deploy_!*\nCheck the logs for more details $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId) to view the build results."}' \
+                        $(SLACK_WEBHOOK_URL)
+  - stage: stage_postman_test
     displayName: 'Test_e2e_on_${{ variables.environment }}'
     condition: or(eq(variables.environment, 'DEV'), eq(variables.environment, 'UAT'))
     jobs:
@@ -193,3 +212,13 @@ stages:
               testResultsFiles: '**/test-*.xml'
               searchFolder: '$(System.DefaultWorkingDirectory)/result/'
               testRunTitle: 'Publish Newman Test Results'
+          - task: 'Bash@3'
+            displayName: 'Send message on Slack'
+            condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
+            inputs:
+              targetType: 'inline'
+              script: >
+                curl -X POST \
+                  -H "Content-type: application/json" \
+                  --data '{"text": "*Attention: There is an error in pipeline $(System.DefinitionName) in step _postman test_!*\nCheck the logs for more details $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId) to view the build results."}' \
+                  $(SLACK_WEBHOOK_URL)
