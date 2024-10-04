@@ -20,7 +20,6 @@ jobs:
   Notify:
     name: Notify Slack
     runs-on: ubuntu-latest
-    environment: prod
     steps:
       - name: Send notification to Slack
         id: slack
@@ -40,7 +39,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": " `CRITICAL` : *${{ inputs.CVE_CRITICAL }}*\n\n`HIGH` : *${{ inputs.CVE_HIGH }}*\n\n`MEDIUM` : *${{ inputs.CVE_MEDIUM }}*\n\n<https://github.com/${{ github.repository }}/security/code-scanning |See details on GitHub>"
+                    "text": " `CRITICAL` : *${{ inputs.CVE_CRITICAL }}*\n\n`HIGH` : *${{ inputs.CVE_HIGH }}*\n\n`MEDIUM` : *${{ inputs.CVE_MEDIUM }}*\n\n<https://github.com/${{ github.repository }}/security/code-scanning${{ github.event.pull_request.number != '' && format('?query=pr:{0}', github.event.pull_request.number) || '' }} | See details on GitHub>"
                   }
                 }
               ]
