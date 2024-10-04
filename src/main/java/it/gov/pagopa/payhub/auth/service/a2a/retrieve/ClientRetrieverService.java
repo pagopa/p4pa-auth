@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.service.a2a.retreive;
+package it.gov.pagopa.payhub.auth.service.a2a.retrieve;
 
 import it.gov.pagopa.payhub.auth.exception.custom.ClientNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Client;

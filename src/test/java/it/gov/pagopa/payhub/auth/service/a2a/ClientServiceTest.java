@@ -4,8 +4,9 @@ import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientRetrieverService;
+import it.gov.pagopa.payhub.auth.service.a2a.retrieve.ClientRetrieverService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientServiceTest {
@@ -62,5 +65,21 @@ public class ClientServiceTest {
 		ClientDTO actualClientDTO = service.registerClient(clientName, organizationIpaCode);
 		// Then
 		Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+	}
+
+	@Test
+	void whenGetClientIdThenGetClientSecret() {
+		// Given
+		String organizationIpaCode = "organizationIpaCode";
+		String clientId = "clientId";
+		byte[] encryptedClientSecret = RandomUtils.nextBytes(16);
+		String clientSecretMock = UUID.randomUUID().toString();
+
+		Mockito.doReturn(encryptedClientSecret).when(clientRetrieverServiceMock).getClientSecret(organizationIpaCode, clientId);
+		Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(clientSecretMock);
+		//When
+		String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
+		// Then
+		Assertions.assertEquals(clientSecretMock, clientSecret);
 	}
 }
