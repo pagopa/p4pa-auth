@@ -290,6 +290,82 @@
 			"response": []
 		},
 		{
+			"name": "getUserInfoFromMappedExternalUserId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getUserInfo - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getUserInfo - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"userId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"name\").to.eq(\"demo\")\r",
+							"    pm.expect(jsonResponse).have.property(\"familyName\").to.eq(\"demo\")\r",
+							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
+							"\r",
+							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(2)\r",
+							"    \r",
+							"    pm.environment.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r",
+							"    pm.environment.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r",
+							"    var recognizedOrganizations = 0\r",
+							"    const registeredOrganizations=[\r",
+							"        \"IPA_TEST\",\r",
+							"        \"IPA_TEST_2\",\r",
+							"        \"DEMO\"\r",
+							"    ]\r",
+							"    jsonResponse.organizations.forEach(org => {\r",
+							"        pm.expect(org).have.property(\"operatorId\")\r",
+							"        if(registeredOrganizations.includes(org.organizationIpaCode)){\r",
+							"            pm.expect(org.roles).have.property(\"length\").to.eq(1)\r",
+							"            pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
+							"            recognizedOrganizations++\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(recognizedOrganizations).to.eq(2)\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo/EUqKiD1psLrGNuLxCGzriy-royPlBvuyeJMc0dxaxNs=",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"userinfo",
+						"EUqKiD1psLrGNuLxCGzriy-royPlBvuyeJMc0dxaxNs="
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "getOrganizationOperators",
 			"event": [
 				{

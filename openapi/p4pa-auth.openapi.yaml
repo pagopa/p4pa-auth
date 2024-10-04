@@ -98,6 +98,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
+  /auth/userinfo/{mappedExternalUserId}:
+    get:
+      tags:
+        - authz
+      operationId: getUserInfoFromMappedExternaUserId
+      parameters:
+        - name: mappedExternalUserId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '403':
+          description: Forbidden
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthErrorDTO'
   /auth/revoke:
     post:
       tags:
