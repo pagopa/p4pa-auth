@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.service.a2a.registration;
 
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
+import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class ClientRegistrationService {
 	}
 
 	public Client registerClient(String clientName, String organizationIpaCode) {
-		Client client = clientMapper.mapToModel(clientName, organizationIpaCode, UUID.randomUUID().toString());
+		Client client = clientMapper.mapToModel(organizationIpaCode + clientName, clientName, organizationIpaCode, UUID.randomUUID().toString());
 		log.info("Registering client having clientName {} and organizationIpaCode {}", clientName, organizationIpaCode);
 		return clientRepository.insert(client);
 	}

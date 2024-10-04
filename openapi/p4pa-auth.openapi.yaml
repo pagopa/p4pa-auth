@@ -415,8 +415,10 @@ components:
     ClientDTO:
       type: object
       required:
-        - client_Id
-        - client_Secret
+        - client_id
+        - client_name
+        - organizationIpaCode
+        - client_secret
       properties:
         client_id:
           type: string

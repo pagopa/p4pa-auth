@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.service.a2a.retreive;
+package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
@@ -28,9 +28,9 @@ public class ClientMapper {
 		return mapToDTO(client.getClientId(), client.getClientName(), client.getOrganizationIpaCode(), client.getClientSecret());
 	}
 
-	public Client mapToModel(String clientName, String organizationIpaCode, String clientSecret) {
+	public Client mapToModel(String clientId, String clientName, String organizationIpaCode, String clientSecret) {
 		return Client.builder()
-			.clientId(organizationIpaCode + clientName)
+			.clientId(clientId)
 			.clientName(clientName)
 			.organizationIpaCode(organizationIpaCode)
 			.clientSecret(dataCipherService.encrypt(clientSecret))
@@ -38,6 +38,6 @@ public class ClientMapper {
 	}
 
 	public Client mapToModel(ClientDTO clientDTO) {
-		return mapToModel(clientDTO.getClientName(), clientDTO.getOrganizationIpaCode(), clientDTO.getClientSecret());
+		return mapToModel(clientDTO.getClientId(), clientDTO.getClientName(), clientDTO.getOrganizationIpaCode(), clientDTO.getClientSecret());
 	}
 }

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.service.a2a;
 
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
+import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
