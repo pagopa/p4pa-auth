@@ -172,7 +172,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     @Test
     void givenAuthorizedUserWhenRegisterClientThenOk() throws Exception {
         String uuidRandomForSecret = UUID.randomUUID().toString();
-        String UUID_REGEX =
+        String uuidRegex =
           "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
         String organizationIpaCode = "IPA_TEST_2";
         CreateClientRequest createClientRequest = new CreateClientRequest();
@@ -207,7 +207,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         assertEquals(organizationIpaCode + createClientRequest.getClientName(), clientDTO.getClientId());
         assertEquals(createClientRequest.getClientName(), clientDTO.getClientName());
         assertEquals(organizationIpaCode, clientDTO.getOrganizationIpaCode());
-        assertTrue(Pattern.compile(UUID_REGEX).matcher(clientDTO.getClientSecret()).matches());
+        assertTrue(Pattern.compile(uuidRegex).matcher(clientDTO.getClientSecret()).matches());
         assertEquals(uuidRandomForSecret, clientDTO.getClientSecret());
     }
 
