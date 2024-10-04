@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.service.a2a.registration;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
+import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,10 +33,17 @@ class ClientRegistrationServiceTest {
         String clientId = organizationIpaCode + clientName;
         String uuidForClientSecret = UUID.randomUUID().toString();
 
-        Client client = clientMapperMock.mapToModel(clientId, clientName, organizationIpaCode, uuidForClientSecret);
+        ClientDTO clientDTO = ClientDTO.builder()
+          .clientId(clientId)
+          .clientName(clientName)
+          .organizationIpaCode(organizationIpaCode)
+          .clientSecret(uuidForClientSecret)
+          .build();
+
+        Client clientMapped = clientMapperMock.mapToModel(clientDTO);
         Client storedClient = new Client();
 
-        Mockito.when(clientRepositoryMock.insert(client)).thenReturn(storedClient);
+        Mockito.when(clientRepositoryMock.insert(clientMapped)).thenReturn(storedClient);
 
         // When
         Client result = service.registerClient(clientName, organizationIpaCode);
