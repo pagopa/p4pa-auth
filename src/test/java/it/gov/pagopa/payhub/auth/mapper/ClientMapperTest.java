@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +54,8 @@ class ClientMapperTest {
   @Test
   void WhenMapThenGetClientDTOMapped() {
     // Given
-    byte[] encryptedClientSecret = RandomUtils.nextBytes(16);
+    byte[] encryptedClientSecret = new byte[16];
+    new Random().nextBytes(encryptedClientSecret);
     String decryptedClientSecret = UUID.randomUUID().toString();
     String organizationIpaCode = "organizationIpaCode";
     String clientName = "clientName";

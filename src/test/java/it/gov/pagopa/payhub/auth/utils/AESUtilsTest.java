@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.auth.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class AESUtilsTest {
+class AESUtilsTest {
 	
 	@Test
 	void test() {
