@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class ClientServiceTest {
+class ClientServiceTest {
 
 	@Mock
 	private ClientRegistrationService clientRegistrationServiceMock;

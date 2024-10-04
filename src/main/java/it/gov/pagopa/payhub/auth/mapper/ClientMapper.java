@@ -14,30 +14,22 @@ public class ClientMapper {
 		this.dataCipherService = dataCipherService;
 	}
 
-
-	public ClientDTO mapToDTO(String clientId, String clientName, String organizationIpaCode, byte[] clientSecret) {
-		return ClientDTO.builder()
-			.clientId(clientId)
-			.clientName(clientName)
-			.organizationIpaCode(organizationIpaCode)
-			.clientSecret(dataCipherService.decrypt(clientSecret))
-			.build();
-	}
-
 	public ClientDTO mapToDTO(Client client) {
-		return mapToDTO(client.getClientId(), client.getClientName(), client.getOrganizationIpaCode(), client.getClientSecret());
-	}
-
-	public Client mapToModel(String clientId, String clientName, String organizationIpaCode, String clientSecret) {
-		return Client.builder()
-			.clientId(clientId)
-			.clientName(clientName)
-			.organizationIpaCode(organizationIpaCode)
-			.clientSecret(dataCipherService.encrypt(clientSecret))
+		return ClientDTO.builder()
+			.clientId(client.getClientId())
+			.clientName(client.getClientName())
+			.organizationIpaCode(client.getOrganizationIpaCode())
+			.clientSecret(dataCipherService.decrypt(client.getClientSecret()))
 			.build();
 	}
 
 	public Client mapToModel(ClientDTO clientDTO) {
-		return mapToModel(clientDTO.getClientId(), clientDTO.getClientName(), clientDTO.getOrganizationIpaCode(), clientDTO.getClientSecret());
+		return Client.builder()
+			.clientId(clientDTO.getClientId())
+			.clientName(clientDTO.getClientName())
+			.organizationIpaCode(clientDTO.getOrganizationIpaCode())
+			.clientSecret(dataCipherService.encrypt(clientDTO.getClientSecret()))
+			.build();
 	}
+
 }

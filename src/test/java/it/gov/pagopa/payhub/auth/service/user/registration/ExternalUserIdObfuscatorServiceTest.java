@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user.registration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
-import java.util.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Base64;
 
 @ExtendWith(MockitoExtension.class)
 class ExternalUserIdObfuscatorServiceTest {

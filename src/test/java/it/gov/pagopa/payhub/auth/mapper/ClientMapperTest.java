@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.mapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,29 +11,30 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Random;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class ClientMapperTest {
 
   @Mock
-  private DataCipherService dataCipherService;
+  private DataCipherService dataCipherServiceMock;
 
   private ClientMapper service;
 
   @BeforeEach
   void init(){
-    service = new ClientMapper(dataCipherService);
+    service = new ClientMapper(dataCipherServiceMock);
   }
 
   @Test
   void WhenMapThenGetClientMapped() {
     // Given
+    String plainClientSecret = UUID.randomUUID().toString();
     String organizationIpaCode = "organizationIpaCode";
     String clientName = "clientName";
     String clientId = organizationIpaCode + clientName;
-    byte[] encryptedClientSecretMock = Mockito.anyString().getBytes(StandardCharsets.UTF_8);
+    byte[] encryptedClientSecretMock = new byte[0];
 
     Client client = Client.builder()
       .clientId(clientId)
@@ -42,9 +42,17 @@ class ClientMapperTest {
       .organizationIpaCode(organizationIpaCode)
       .clientSecret(encryptedClientSecretMock)
       .build();
-    Mockito.when(dataCipherService.encrypt(UUID.randomUUID().toString())).thenReturn(encryptedClientSecretMock);
+
+    ClientDTO clientDTO = ClientDTO.builder()
+      .clientId(clientId)
+      .clientName(clientName)
+      .organizationIpaCode(organizationIpaCode)
+      .clientSecret(plainClientSecret)
+      .build();
+
+    Mockito.when(dataCipherServiceMock.encrypt(plainClientSecret)).thenReturn(encryptedClientSecretMock);
     // When
-    Client modelMapped = service.mapToModel(clientId, clientName, organizationIpaCode, Mockito.anyString());
+    Client modelMapped = service.mapToModel(clientDTO);
 
     // Then
     Assertions.assertEquals(client, modelMapped);
@@ -53,7 +61,8 @@ class ClientMapperTest {
   @Test
   void WhenMapThenGetClientDTOMapped() {
     // Given
-    byte[] encryptedClientSecret = RandomUtils.nextBytes(16);
+    byte[] encryptedClientSecret = new byte[16];
+    new Random().nextBytes(encryptedClientSecret);
     String decryptedClientSecret = UUID.randomUUID().toString();
     String organizationIpaCode = "organizationIpaCode";
     String clientName = "clientName";
@@ -66,10 +75,17 @@ class ClientMapperTest {
       .clientSecret(decryptedClientSecret)
       .build();
 
-    Mockito.when(dataCipherService.decrypt(encryptedClientSecret)).thenReturn(decryptedClientSecret);
+    Client client = Client.builder()
+      .clientId(clientId)
+      .clientName(clientName)
+      .organizationIpaCode(organizationIpaCode)
+      .clientSecret(encryptedClientSecret)
+      .build();
+
+    Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(decryptedClientSecret);
 
     // When
-    ClientDTO dtoMapped = service.mapToDTO(clientId, clientName, organizationIpaCode, encryptedClientSecret);
+    ClientDTO dtoMapped = service.mapToDTO(client);
     // Then
     Assertions.assertEquals(clientDTO, dtoMapped);
   }

@@ -15,6 +15,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
 public class AESUtils {
+	private AESUtils() {	}
 
 	private static final String ALGORITHM = "AES/GCM/NoPadding";
 	private static final String FACTORY_INSTANCE = "PBKDF2WithHmacSHA256";
