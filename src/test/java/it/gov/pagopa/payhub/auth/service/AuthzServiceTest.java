@@ -2,13 +2,11 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
-import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
@@ -222,16 +220,17 @@ class AuthzServiceTest {
 
     @Test
     void whenCreateClientThenVerifyClient() {
+        //Given
         String organizationIpaCode = "organizationIpaCode";
         CreateClientRequest createClientRequest = new CreateClientRequest();
-        createClientRequest.setClientId("clientId");
-
+        createClientRequest.setClientName("clientname");
         ClientDTO expectedClientDTO = new ClientDTO();
 
-        Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientId(), organizationIpaCode)).thenReturn(expectedClientDTO);
+        Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientName(), organizationIpaCode)).thenReturn(expectedClientDTO);
 
+        //When
         ClientDTO actualClientDTO = service.registerClient(organizationIpaCode, createClientRequest);
-
+        //Then
         Assertions.assertEquals(expectedClientDTO, actualClientDTO);
     }
 

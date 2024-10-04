@@ -449,9 +449,13 @@ components:
       type: object
       required:
         - client_id
-        - client_Secret
+        - client_name
+        - organizationIpaCode
+        - client_secret
       properties:
         client_id:
+          type: string
+        client_name:
           type: string
         organizationIpaCode:
           type: string
@@ -460,9 +464,9 @@ components:
     CreateClientRequest:
       type: object
       required:
-        - clientId
+        - client_name
       properties:
-        clientId:
+        clientName:
           type: string
     UserDTO:
       type: object

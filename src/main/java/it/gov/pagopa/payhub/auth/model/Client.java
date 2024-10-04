@@ -18,6 +18,7 @@ public class Client {
 
 	@Id
 	private String clientId;
+	private String clientName;
 	private String organizationIpaCode;
 	private byte[] clientSecret;
 }

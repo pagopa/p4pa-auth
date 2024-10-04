@@ -2,13 +2,11 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
-import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
@@ -107,7 +105,7 @@ public class AuthzServiceImpl implements AuthzService {
 
     @Override
     public ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
-        return clientService.registerClient(createClientRequest.getClientId(), organizationIpaCode);
+        return clientService.registerClient(createClientRequest.getClientName(), organizationIpaCode);
     }
 
     @Override

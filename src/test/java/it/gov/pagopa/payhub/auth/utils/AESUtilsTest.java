@@ -4,18 +4,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class AESUtilsTest {
-
+	
 	@Test
 	void test() {
 		// Given
-		String plain = "PLAINTEXT";
-		String psw = "PSW";
-
+		final String plainToEncrypt = "PLAINTEXT";
+		final String passwordTest = "PSW";
 		// When
-		byte[] cipher = AESUtils.encrypt(psw, plain);
-		String result = AESUtils.decrypt(psw, cipher);
+		byte[] cipher = AESUtils.encrypt(passwordTest, plainToEncrypt);
+		String result = AESUtils.decrypt(passwordTest, cipher);
 
 		// Then
-		Assertions.assertEquals(result, plain);
+		Assertions.assertEquals(result, plainToEncrypt);
 	}
 }

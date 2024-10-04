@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.auth.service.a2a;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
-import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientMapper;
+import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.service.a2a.retreive.ClientRetrieverService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -28,13 +28,13 @@ public class ClientServiceTest {
 	private DataCipherService dataCipherServiceMock;
 
 	@Mock
-	private ClientMapper clientMapper;
+	private ClientMapper clientMapperMock;
 
 	private ClientService service;
 
 	@BeforeEach
 	void init(){
-		service = new ClientServiceImpl(clientRegistrationServiceMock, clientRetrieverServiceMock, dataCipherServiceMock, clientMapper);
+		service = new ClientServiceImpl(clientRegistrationServiceMock, clientRetrieverServiceMock, dataCipherServiceMock, clientMapperMock);
 	}
 
 	@AfterEach
@@ -43,24 +43,24 @@ public class ClientServiceTest {
 			clientRegistrationServiceMock,
 			clientRetrieverServiceMock,
 			dataCipherServiceMock,
-			clientMapper
+			clientMapperMock
 		);
 	}
 
 	@Test
 	void whenCreateClientThenVerifyClient() {
+		// Given
 		String organizationIpaCode = "organizationIpaCode";
-		String clientId = "clientId";
+		String clientName = "clientName";
 
 		Client mockClient = new Client();
 		ClientDTO expectedClientDTO = new ClientDTO();
 
-		Mockito.when(clientRegistrationServiceMock.registerClient(clientId, organizationIpaCode)).thenReturn(mockClient);
-
-		Mockito.when(clientMapper.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
-
-		ClientDTO actualClientDTO = service.registerClient(clientId, organizationIpaCode);
-
+		Mockito.when(clientRegistrationServiceMock.registerClient(clientName, organizationIpaCode)).thenReturn(mockClient);
+		Mockito.when(clientMapperMock.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
+		// When
+		ClientDTO actualClientDTO = service.registerClient(clientName, organizationIpaCode);
+		// Then
 		Assertions.assertEquals(expectedClientDTO, actualClientDTO);
 	}
 }
