@@ -22,7 +22,7 @@ public class ClientRetrieverServiceTest {
 	private ClientRetrieverService service;
 
 	@Test
-	void whenGetClientIdThenReturnStoredClientSecret(){
+	void givenGetClientIdWhenReturnStoredClientSecretThenInvokeClientRetrieverService(){
 		// Given
 		String organizationIpaCode = "organizationIpaCode";
 		String clientName = "clientName";

@@ -272,7 +272,7 @@ class AuthzServiceTest {
     }
 
     @Test
-    void whenGetClientIdThenGetClientSecret() {
+    void givenClientIdWhenGetClientSecretThenInvokeClientService() {
         //Given
         String organizationIpaCode = "organizationIpaCode";
         String clientId = "clientId";
