@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
+import it.gov.pagopa.payhub.auth.service.exchange.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
 import it.gov.pagopa.payhub.model.generated.UserDTO;
@@ -38,6 +39,9 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
     @MockBean
     private AuthnService authnServiceMock;
+
+    @MockBean
+    private ValidateTokenService validateTokenServiceMock;
 
 // createOperator region
     @Test

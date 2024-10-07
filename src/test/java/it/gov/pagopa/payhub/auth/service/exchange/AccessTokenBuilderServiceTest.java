@@ -76,7 +76,7 @@ public class AccessTokenBuilderServiceTest {
         String decodedHeader = new String(Base64.getDecoder().decode(decodedAccessToken.getHeader()));
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
 
-        Assertions.assertEquals("{\"alg\":\"RS512\",\"typ\":\"JWT\"}", decodedHeader);
+        Assertions.assertEquals("{\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
     }
