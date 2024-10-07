@@ -44,20 +44,21 @@ class ValidateTokenServiceTest {
     DecodedJWT jwt = JWT.decode(validToken);
 
     Mockito.doNothing().when(jwtValidator).validateInternalToken(validToken, PUBLIC_KEY);
-    Mockito.doNothing().when(validateTokenService).validate(validToken);
+
+    validateTokenService.validate(validToken);
 
     Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken, PUBLIC_KEY));
-    Assertions.assertEquals(jwt.getHeaderClaim("typ").asString(), ValidateTokenService.ALLOWED_TYPE);
-    Mockito.verify(jwtValidator).validateInternalToken(validToken, PUBLIC_KEY);
+    Assertions.assertEquals(ValidateTokenService.ALLOWED_TYPE, jwt.getHeaderClaim("typ").asString());
+    Mockito.verify(validateTokenService).validate(validToken);
   }
 
   @Test
-  void validate_shouldThrowInvalidTokenException_whenTokenTypeIsInvalid() {
+  void givenInvalidJWTTypeThenInvalidTokenException() {
     String invalidToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJkZXYucGlhdHRhZm9ybWF1bml0YXJpYS5wYWdvcGEuaXQiLCJqdGkiOiI5NzZhYTYzMy0wMTVmLTQ3MDMtYWM3NC03NjE2YjJlN2JkNjQiLCJpYXQiOjE3MjgyOTkwOTksImV4cCI6MTcyODMxMzQ5OX0.NxbnCRBGcr0iftbagyPU-v3140loAQq4k0JaAg1fdTvI3qHBm4CS8za31s7OnRpNQ2ojlww9ApEAowzcjajnVJRo4L5D1W5M0RcVN_wSdBJrNcvPmN7PFKQn37xCbDkQ00I1d4ZLJVbP5hA2FFekJXu_w0NlUhSHsGPQoSYNOJr70fJUQ15K_asr6zi7J5XfbYSMNJBZWdVSCJoVfQDVRaWCq5H4zcBhfCbiOYtYeVDbYygFDWizHTiz9XwF-79aJcjp9VCTduyJ1ROJCBZfnUqZgN4BM75E5H-bmBEEbahqIT3eAY1lYAyv83s3Y5ys-5n6pFWgi6NuvP5vifl78w";
     // When
     Mockito.doNothing().when(jwtValidator).validateInternalToken(invalidToken, PUBLIC_KEY);
     Mockito.when(jwtMock.decodeJwt(invalidToken)).thenReturn(decodedJWT);
-    Mockito.doThrow(new InvalidTokenException("InvalidToken")).when(validateTokenService).validate(invalidToken);
+    Mockito.doThrow(new InvalidTokenException("Invalid Token")).when(validateTokenService).validate(invalidToken);
 
     // Then
     Assertions.assertThrows(InvalidTokenException.class, ()->validateTokenService.validate(invalidToken));
