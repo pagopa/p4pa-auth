@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.service.a2a.retrieve;
 
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,9 +11,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Random;
 
 @ExtendWith(MockitoExtension.class)
-public class ClientRetrieverServiceTest {
+class ClientRetrieverServiceTest {
 	@Mock
 	private ClientRepository clientRepositoryMock;
 
@@ -27,7 +27,8 @@ public class ClientRetrieverServiceTest {
 		String organizationIpaCode = "organizationIpaCode";
 		String clientName = "clientName";
 		String clientId = organizationIpaCode + clientName;
-		byte[] encryptedClientSecret = RandomUtils.nextBytes(16);
+		byte[] encryptedClientSecret = new byte[16];
+		new Random().nextBytes(encryptedClientSecret);
 		Client storedClient = new Client(clientId, clientName, organizationIpaCode, encryptedClientSecret);
 
 		Mockito.when(clientRepositoryMock.findById(clientId)).thenReturn(Optional.of(storedClient));
