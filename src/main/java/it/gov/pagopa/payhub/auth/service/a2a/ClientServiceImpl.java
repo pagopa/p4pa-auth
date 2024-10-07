@@ -9,6 +9,8 @@ import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class ClientServiceImpl implements ClientService {
@@ -38,6 +40,14 @@ public class ClientServiceImpl implements ClientService {
 	public String getClientSecret(String organizationIpaCode, String clientId) {
 		byte[] clientSecret = clientRetrieverService.getClientSecret(organizationIpaCode, clientId);
 		return dataCipherService.decrypt(clientSecret);
+	}
+
+	@Override
+	public List<ClientDTO> getClients(String organizationIpaCode) {
+		List<Client> clients = clientRetrieverService.getClients(organizationIpaCode);
+		return clients.stream()
+			.map(clientMapper::mapToDTO)
+			.toList();
 	}
 
 }

@@ -12,8 +12,9 @@ import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.model.generated.*;
-import java.util.HashSet;
-import java.util.Optional;
+
+import java.util.*;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,9 +27,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class AuthzServiceTest {
@@ -284,6 +282,20 @@ class AuthzServiceTest {
         String clientSecret = clientServiceMock.getClientSecret(organizationIpaCode, clientId);
         //Then
         Assertions.assertEquals(clientSecretMock, clientSecret);
+    }
+
+    @Test
+    void givenOrganizationIpaCodeWhenGetClientThenInvokeClientService() {
+        //Given
+        String organizationIpaCode = "organizationIpaCode";
+        List<ClientDTO> clientDTOsMock = new ArrayList<>();
+
+        Mockito.when(clientServiceMock.getClients(organizationIpaCode)).thenReturn(clientDTOsMock);
+
+        //When
+        List<ClientDTO> result = clientServiceMock.getClients(organizationIpaCode);
+        //Then
+        Assertions.assertEquals(clientDTOsMock, result);
     }
 
 }

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.reflect.TypeToken;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
@@ -21,6 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -28,6 +30,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -209,6 +212,83 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         assertEquals(organizationIpaCode, clientDTO.getOrganizationIpaCode());
         assertTrue(Pattern.compile(uuidRegex).matcher(clientDTO.getClientSecret()).matches());
         assertEquals(uuidRandomForSecret, clientDTO.getClientSecret());
+    }
+
+    @Test
+    void givenAuthorizedUserWhenGetClientSecretThenOk() throws Exception {
+        String uuidRandomForClientSecret = UUID.randomUUID().toString();
+        String organizationIpaCode = "IPA_TEST_2";
+        String clientId = "CLIENTID";
+
+        UserInfo expectedUser = UserInfo.builder()
+          .userId("USERID")
+          .organizationAccess(organizationIpaCode)
+          .organizations(List.of(UserOrganizationRoles.builder()
+            .organizationIpaCode(organizationIpaCode)
+            .roles(List.of(Constants.ROLE_ADMIN))
+            .build()))
+          .build();
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+          .thenReturn(expectedUser);
+
+        doReturn(uuidRandomForClientSecret)
+          .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);
+
+        MvcResult result = mockMvc.perform(
+            get("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+          ).andExpect(status().isOk())
+          .andReturn();
+
+        assertEquals(uuidRandomForClientSecret, result.getResponse().getContentAsString());
+    }
+
+    @Test
+    void givenAuthorizedUserWhenGetClientsThenOk() throws Exception {
+        String organizationIpaCode = "IPA_TEST_2";
+        String clientName1 = "SERVICE_001";
+        String clientName2 = "SERVICE_002";
+        UserInfo expectedUser = UserInfo.builder()
+          .userId("USERID")
+          .organizationAccess(organizationIpaCode)
+          .organizations(List.of(UserOrganizationRoles.builder()
+            .organizationIpaCode(organizationIpaCode)
+            .roles(List.of(Constants.ROLE_ADMIN))
+            .build()))
+          .build();
+
+
+        ClientDTO dto1 = ClientDTO.builder()
+          .organizationIpaCode(organizationIpaCode)
+          .clientName(clientName1)
+          .clientId(organizationIpaCode + clientName1)
+          .clientSecret(UUID.randomUUID().toString())
+          .build();
+        ClientDTO dto2 = ClientDTO.builder()
+          .organizationIpaCode(organizationIpaCode)
+          .clientName(clientName2)
+          .clientId(organizationIpaCode + clientName2)
+          .clientSecret(UUID.randomUUID().toString())
+          .build();
+        List<ClientDTO> clientDTOList = List.of(dto1, dto2);
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+          .thenReturn(expectedUser);
+
+        doReturn(clientDTOList)
+          .when(authzServiceMock).getClients(organizationIpaCode);
+
+        MvcResult result = mockMvc.perform(
+            get("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+          ).andExpect(status().isOk())
+          .andReturn();
+
+        List<ClientDTO> responseList = new Gson()
+          .fromJson(result.getResponse().getContentAsString(), new TypeToken<ArrayList<ClientDTO>>(){}.getType());
+
+        assertEquals(clientDTOList, responseList);
     }
 
 }

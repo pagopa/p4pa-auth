@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -51,7 +52,7 @@ class ClientServiceTest {
 	}
 
 	@Test
-	void whenRegisterClientThenIInvokeClientRegistrationService() {
+	void whenRegisterClientThenInvokeClientRegistrationService() {
 		// Given
 		String organizationIpaCode = "organizationIpaCode";
 		String clientName = "clientName";
@@ -83,4 +84,39 @@ class ClientServiceTest {
 		// Then
 		Assertions.assertEquals(clientSecretMock, clientSecret);
 	}
+
+	@Test
+	void givenOrganizationIpaCodeWhenGetClientsThenEmptyList() {
+		//Given
+		String organizationIpaCode = "IPA_TEST_2";
+		String clientName1 = "SERVICE_001";
+		String clientName2 = "SERVICE_002";
+		byte[] encryptedClientSecret = new byte[16];
+		new Random().nextBytes(encryptedClientSecret);
+
+		Client c1 = Client.builder()
+			.organizationIpaCode(organizationIpaCode)
+			.clientName(clientName1)
+			.clientId(organizationIpaCode + clientName1)
+			.clientSecret(encryptedClientSecret)
+			.build();
+		Client c2 = Client.builder()
+			.organizationIpaCode(organizationIpaCode)
+			.clientName(clientName2)
+			.clientId(organizationIpaCode + clientName2)
+			.clientSecret(encryptedClientSecret)
+			.build();
+
+		Mockito.doReturn(List.of(c1, c2)).when(clientRetrieverServiceMock).getClients(organizationIpaCode);
+		ClientDTO expectedDto1 = new ClientDTO();
+		ClientDTO expectedDto2 = new ClientDTO();
+		Mockito.when(clientMapperMock.mapToDTO(c1)).thenReturn(expectedDto1);
+		Mockito.when(clientMapperMock.mapToDTO(c2)).thenReturn(expectedDto2);
+
+		//When
+		List<ClientDTO> result = service.getClients(organizationIpaCode);
+		//Then
+		Assertions.assertEquals(List.of(expectedDto1, expectedDto2), result);
+	}
+
 }
