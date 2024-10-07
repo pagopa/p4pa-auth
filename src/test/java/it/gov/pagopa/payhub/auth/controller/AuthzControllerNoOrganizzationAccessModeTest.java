@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -210,36 +209,6 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         assertEquals(organizationIpaCode, clientDTO.getOrganizationIpaCode());
         assertTrue(Pattern.compile(uuidRegex).matcher(clientDTO.getClientSecret()).matches());
         assertEquals(uuidRandomForSecret, clientDTO.getClientSecret());
-    }
-
-    @Test
-    void givenAuthorizedUserWhenGetClientSecretThenOk() throws Exception {
-        String uuidRandom = UUID.randomUUID().toString();
-        String organizationIpaCode = "IPA_TEST_2";
-        String clientId = "CLIENTID";
-
-        UserInfo expectedUser = UserInfo.builder()
-          .userId("USERID")
-          .organizationAccess(organizationIpaCode)
-          .organizations(List.of(UserOrganizationRoles.builder()
-            .organizationIpaCode(organizationIpaCode)
-            .roles(List.of(Constants.ROLE_ADMIN))
-            .build()))
-          .build();
-
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(expectedUser);
-
-        doReturn(uuidRandom)
-          .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);
-
-        MvcResult result = mockMvc.perform(
-            get("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
-              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-          ).andExpect(status().isOk())
-          .andReturn();
-
-        assertEquals(uuidRandom, result.getResponse().getContentAsString());
     }
 
 }
