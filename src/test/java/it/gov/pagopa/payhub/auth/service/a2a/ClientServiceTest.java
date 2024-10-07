@@ -38,7 +38,7 @@ class ClientServiceTest {
 	}
 
 	@Test
-	void whenCreateClientThenVerifyClient() {
+	void whenRegisterClientThenIInvokeClientRegistrationService() {
 		// Given
 		String organizationIpaCode = "organizationIpaCode";
 		String clientName = "clientName";
