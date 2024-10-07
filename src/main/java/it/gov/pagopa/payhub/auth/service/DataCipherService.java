@@ -23,7 +23,7 @@ public class DataCipherService {
     this.encryptPsw = encryptPsw;
     this.objectMapper = objectMapper;
 
-    hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getDecoder().decode(hashPepper));
+    hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getUrlDecoder().decode(hashPepper));
   }
 
   public byte[] encrypt(String plainText){
