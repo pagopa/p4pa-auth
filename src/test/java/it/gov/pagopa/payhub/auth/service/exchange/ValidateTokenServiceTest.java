@@ -1,11 +1,16 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
+import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
 import org.junit.jupiter.api.Assertions;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -15,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 class ValidateTokenServiceTest {
-  @Mock
+
   private ValidateTokenService validateTokenService;
 
   @Mock
@@ -38,6 +43,11 @@ class ValidateTokenServiceTest {
             -----END PUBLIC KEY-----
             """;
 
+  @BeforeEach
+  void setup(){
+    validateTokenService = new ValidateTokenService(jwtValidator, PUBLIC_KEY);
+  }
+
   @Test
   void givenValidRequestThenOk() {
     String validToken = "eyJ0eXAiOiJhdCtKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJkZXYucGlhdHRhZm9ybWF1bml0YXJpYS5wYWdvcGEuaXQiLCJqdGkiOiI5NzZhYTYzMy0wMTVmLTQ3MDMtYWM3NC03NjE2YjJlN2JkNjQiLCJpYXQiOjE3MjgyOTkwOTksImV4cCI6MTcyODMxMzQ5OX0.l3gHHCdyPxq0AOUO3nFIzDzpp4kgwslS6U3K_KUaQ0VExSsxETGM7N7YiVVu3qXfaNy4H8Q7lvtb8bWThGNehh-SA1sX_U_nmTWhdtt0ULEdQ5sbg5_PH5VGuav-bthzqkeS1zv_TbAGl27HswOOCpdA3LhWzRs4KxA55EnKj0gCjxMHIEYuMxLhc400IKXC8dFk888dv_WZk1FgakdCYUbqOGCK_g7eVxa4N6oaFxJTZHaqviRQOs4YBMszwGhRAl34JBgrR1PYwx3Bsy6wcjEjshilqeOLjGIsUBojFoa8Vfw0oYDJ0OrfiG5EuiyABxqtKkS5b4Hs1qnU63wneg";
@@ -49,7 +59,7 @@ class ValidateTokenServiceTest {
 
     Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken, PUBLIC_KEY));
     Assertions.assertEquals(ValidateTokenService.ALLOWED_TYPE, jwt.getHeaderClaim("typ").asString());
-    Mockito.verify(validateTokenService).validate(validToken);
+
   }
 
   @Test
@@ -58,7 +68,6 @@ class ValidateTokenServiceTest {
     // When
     Mockito.doNothing().when(jwtValidator).validateInternalToken(invalidToken, PUBLIC_KEY);
     Mockito.when(jwtMock.decodeJwt(invalidToken)).thenReturn(decodedJWT);
-    Mockito.doThrow(new InvalidTokenException("Invalid Token")).when(validateTokenService).validate(invalidToken);
 
     // Then
     Assertions.assertThrows(InvalidTokenException.class, ()->validateTokenService.validate(invalidToken));
