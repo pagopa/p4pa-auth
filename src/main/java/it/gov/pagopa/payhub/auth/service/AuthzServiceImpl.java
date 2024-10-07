@@ -6,13 +6,12 @@ import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
+import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
-import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.UserDTO;
+import it.gov.pagopa.payhub.model.generated.*;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class AuthzServiceImpl implements AuthzService {
 
     private final UserService userService;
+    private final ClientService clientService;
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
@@ -35,10 +35,11 @@ public class AuthzServiceImpl implements AuthzService {
     private final Operator2UserInfoMapper operator2UserInfoMapper;
     private static final String MYPAYIAMISSUERS = "MYPAY";
 
-    public AuthzServiceImpl(UserService userService, UsersRepository usersRepository,
-        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper,
-        UserDTOMapper userDTOMapper, Operator2UserInfoMapper operator2UserInfoMapper) {
+    public AuthzServiceImpl(UserService userService, ClientService clientService, UsersRepository usersRepository,
+        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper,
+        Operator2UserInfoMapper operator2UserInfoMapper) {
         this.userService = userService;
+        this.clientService = clientService;
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.operatorDTOMapper = operatorDTOMapper;
@@ -100,5 +101,10 @@ public class AuthzServiceImpl implements AuthzService {
             .orElseThrow(() -> new UserNotFoundException("Cannot found user having mappedExternalId:"+ mappedExternalUserId));
         List<Operator> operators = operatorsRepository.findAllByUserId(user.getUserId());
         return operator2UserInfoMapper.apply(user, operators);
+    }
+
+    @Override
+    public ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
+        return clientService.registerClient(createClientRequest.getClientName(), organizationIpaCode);
     }
 }

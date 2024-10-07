@@ -4,10 +4,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
-import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.OperatorsPage;
-import it.gov.pagopa.payhub.model.generated.UserDTO;
+import it.gov.pagopa.payhub.model.generated.*;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -98,5 +95,13 @@ public class AuthzControllerImpl implements AuthzApi {
             throw new UserUnauthorizedException("User not allowed to create user");
         }
         return ResponseEntity.ok(authzService.createUser(user));
+    }
+
+    @Override
+    public ResponseEntity<ClientDTO> registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to create client");
+        }
+        return ResponseEntity.ok(authzService.registerClient(organizationIpaCode, createClientRequest));
     }
 }
