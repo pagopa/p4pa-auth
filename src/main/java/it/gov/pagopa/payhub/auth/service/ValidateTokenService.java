@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.service.exchange;
+package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;

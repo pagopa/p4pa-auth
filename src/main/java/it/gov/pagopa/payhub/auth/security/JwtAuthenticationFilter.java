@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.security;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
-import it.gov.pagopa.payhub.auth.service.exchange.ValidateTokenService;
+import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

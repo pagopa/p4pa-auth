@@ -7,6 +7,15 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
+import it.gov.pagopa.payhub.model.generated.AccessToken;
+import java.io.StringWriter;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.json.JSONObject;
 
 import java.security.KeyPair;
@@ -23,6 +32,7 @@ public class JWTValidatorUtils {
 
     private static final String AUD = "AUD";
     private static final String ISS = "ISS";
+    private static final String ACCESS_TOKEN_TYPE = "at+JWT";
 
     public JWTValidatorUtils(WireMockServer wireMockServer) {
         this.wireMockServer = wireMockServer;
@@ -68,5 +78,25 @@ public class JWTValidatorUtils {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         return keyPairGenerator.generateKeyPair();
+    }
+
+    public String generateInternalToken() throws Exception {
+        KeyPair keyPair = getKeyPair();
+        Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        Map<String, Object> headerClaims = new HashMap<>();
+        headerClaims.put("typ", ACCESS_TOKEN_TYPE);
+        String tokenType = "bearer";
+        return JWT.create()
+            .withHeader(headerClaims)
+            .withClaim("typ", tokenType)
+            .withIssuer(ISS)
+            .withJWTId("my-jwt-id")
+            .withIssuedAt(Instant.now())
+            .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
+            .sign(algorithm);
+    }
+
+    public static KeyPair getKeyPair() throws Exception {
+        return generateKeyPair();
     }
 }
