@@ -70,7 +70,9 @@ class JWTValidatorTest {
     void givenValidInternalJWTThenOk() throws Exception {
         KeyPair keyPair = JWTValidatorUtils.generateKeyPair();
         String validToken = utils.generateInternalToken(keyPair,new Date(System.currentTimeMillis() + 3600000));
-        Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken, JWTValidatorUtils.getPublicKey(keyPair)));
+        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
+
+        Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken, publicKey));
     }
 
     @Test
@@ -79,16 +81,18 @@ class JWTValidatorTest {
         String invalidToken = utils.generateInternalToken(otherKeyPair, new Date(System.currentTimeMillis() + 3600000));
 
         KeyPair keyPair = JWTValidatorUtils.generateKeyPair();
+        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
 
-        assertThrows(InvalidTokenException.class, () -> jwtValidator.validateInternalToken(invalidToken, JWTValidatorUtils.getPublicKey(keyPair)));
+        assertThrows(InvalidTokenException.class, () -> jwtValidator.validateInternalToken(invalidToken, publicKey));
     }
 
     @Test
     void givenTokenExpiredThenTokenExpiredException() throws Exception {
         KeyPair keyPair = JWTValidatorUtils.generateKeyPair();
         String invalidToken = utils.generateInternalToken(keyPair, new Date(System.currentTimeMillis() - 3600000));
+        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
 
-        assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken, JWTValidatorUtils.getPublicKey(keyPair)));
+        assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken, publicKey));
     }
 
 }

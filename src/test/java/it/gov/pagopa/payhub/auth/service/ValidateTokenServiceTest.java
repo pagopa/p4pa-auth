@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.service.exchange.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import org.junit.jupiter.api.Assertions;
 
@@ -55,7 +56,7 @@ class ValidateTokenServiceTest {
 
     Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken, PUBLIC_KEY));
     Assertions.assertDoesNotThrow(() -> validateTokenService.validate(validToken));
-    Assertions.assertEquals(ValidateTokenService.ALLOWED_TYPE, jwt.getHeaderClaim("typ").asString());
+    Assertions.assertEquals(AccessTokenBuilderService.ACCESS_TOKEN_TYPE, jwt.getHeaderClaim("typ").asString());
   }
 
   @Test
