@@ -21,7 +21,7 @@ class ClientRetrieverServiceTest {
 	private ClientRepository clientRepositoryMock;
 
 	@Mock
-	private DataCipherService dataCipherService;
+	private DataCipherService dataCipherServiceMock;
 
 	@InjectMocks
 	private ClientRetrieverService service;
@@ -38,7 +38,7 @@ class ClientRetrieverServiceTest {
 		String expectedClientSecretPlain = "expectedClientSecretPlain";
 
 		Mockito.when(clientRepositoryMock.findById(clientId)).thenReturn(Optional.of(storedClient));
-		Mockito.when(dataCipherService.decrypt(encryptedClientSecret)).thenReturn(expectedClientSecretPlain);
+		Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(expectedClientSecretPlain);
 
 		// When
 		String result = service.getClientSecret(organizationIpaCode, clientId);

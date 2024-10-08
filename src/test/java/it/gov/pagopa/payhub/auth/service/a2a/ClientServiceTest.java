@@ -72,12 +72,9 @@ class ClientServiceTest {
 		// Given
 		String organizationIpaCode = "organizationIpaCode";
 		String clientId = "clientId";
-		byte[] encryptedClientSecret = new byte[16];
-		new Random().nextBytes(encryptedClientSecret);
 		String clientSecretMock = UUID.randomUUID().toString();
 
-		Mockito.doReturn(encryptedClientSecret).when(clientRetrieverServiceMock).getClientSecret(organizationIpaCode, clientId);
-		Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(clientSecretMock);
+		Mockito.when(clientRetrieverServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
 		//When
 		String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
 		// Then
