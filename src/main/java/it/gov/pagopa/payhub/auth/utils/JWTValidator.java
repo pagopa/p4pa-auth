@@ -61,11 +61,12 @@ public class JWTValidator {
      * Validates JWT signature with publickey.
      *
      * @param token the JWT to validate
-     * @throws InvalidKeySpecException if cannot load public key
-     * @throws NoSuchAlgorithmException if cannot load public key with specified algorithm
-     * @throws IOException if cannot load public key
-     * @throws TokenExpiredException if the token has expired
+     * @param pubKey the public key (in PEM format) used to validate the token
+     * @throws IllegalStateException if the public key cannot be loaded due to
+     *         invalid format, missing algorithm, or I/O issues.
+     * @throws TokenExpiredException if the token has expired.
      * @throws InvalidTokenException if the token is invalid for any other reason
+     *         (e.g., signature verification failure).
      */
     public void validateInternalToken(String token, String pubKey) {
         RSAPublicKey rsaPublicKey = null;

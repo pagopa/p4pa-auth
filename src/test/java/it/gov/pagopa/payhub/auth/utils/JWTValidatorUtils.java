@@ -79,7 +79,7 @@ public class JWTValidatorUtils {
         return keyPairGenerator.generateKeyPair();
     }
 
-    public String generateInternalToken(KeyPair keyPair) throws Exception {
+    public String generateInternalToken(KeyPair keyPair, Date expiresAt) {
         Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -90,7 +90,7 @@ public class JWTValidatorUtils {
             .withIssuer(ISS)
             .withJWTId("my-jwt-id")
             .withIssuedAt(Instant.now())
-            .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
+            .withExpiresAt(expiresAt)
             .sign(algorithm);
     }
 
