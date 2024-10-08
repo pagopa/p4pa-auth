@@ -29,13 +29,13 @@ import java.util.Map;
 @Component
 public class JWTValidator {
 
-    private final JWTVerifier verifier;
+    private final JWTVerifier jwtVerifier;
 
     public JWTValidator(@Value("${jwt.access-token.public-key}") String publicKey)
         throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         RSAPublicKey rsaPublicKey = CertUtils.pemPub2PublicKey(publicKey);
         Algorithm algorithm = Algorithm.RSA512(rsaPublicKey);
-        verifier = JWT.require(algorithm).build();
+        jwtVerifier = JWT.require(algorithm).build();
     }
 
     /**
@@ -79,7 +79,7 @@ public class JWTValidator {
      */
     public void validateInternalToken(String token) {
         try{
-            verifier.verify(token);
+            jwtVerifier.verify(token);
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {

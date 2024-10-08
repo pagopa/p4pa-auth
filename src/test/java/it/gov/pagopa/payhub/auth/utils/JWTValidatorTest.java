@@ -84,7 +84,7 @@ class JWTValidatorTest {
     }
 
     @Test
-    void givenTokenExpiredThenTokenExpiredException() throws Exception {
+    void givenTokenExpiredThenTokenExpiredException() {
         String invalidToken = utils.generateInternalToken(keyPair, new Date(System.currentTimeMillis() - 3600000));
 
         assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken));
