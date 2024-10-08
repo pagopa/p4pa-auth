@@ -104,4 +104,11 @@ public class AuthzControllerImpl implements AuthzApi {
         }
         return ResponseEntity.ok(authzService.registerClient(organizationIpaCode, createClientRequest));
     }
-}
+
+    @Override
+    public ResponseEntity<String> getClientSecret(String organizationIpaCode, String clientId) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to create client");
+        }
+        return ResponseEntity.ok(authzService.getClientSecret(organizationIpaCode, clientId));
+    }}

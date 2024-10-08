@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class AuthzServiceTest {
@@ -269,4 +270,20 @@ class AuthzServiceTest {
         //Then
         Assertions.assertTrue(exception.getMessage().contains("Cannot found user having mappedExternalId:" + mappedExternalUserId));
     }
+
+    @Test
+    void givenClientIdWhenGetClientSecretThenInvokeClientService() {
+        //Given
+        String organizationIpaCode = "organizationIpaCode";
+        String clientId = "clientId";
+        String clientSecretMock = UUID.randomUUID().toString();
+
+        Mockito.when(clientServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
+
+        //When
+        String clientSecret = clientServiceMock.getClientSecret(organizationIpaCode, clientId);
+        //Then
+        Assertions.assertEquals(clientSecretMock, clientSecret);
+    }
+
 }

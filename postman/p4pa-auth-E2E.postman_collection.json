@@ -795,6 +795,130 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "getClientSecret",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getClientSecret - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getClientSecret - Verify response body\", function () {\r",
+							"    let responseString = pm.response.text();\r",
+							"\r",
+							"    pm.expect(responseString).to.be.a(\"string\");\r",
+							"    pm.expect(responseString).to.eql('randomClientSecret');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/{organizationIpaCode}/{clientId}",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"IPA_TEST",
+						"IPA_TESTCLIENT_NAME"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerClient",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.get(\"organizationIpaCode\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - registerClient - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - registerClient - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"firstName\").to.eq(\"IPA_TESTSERVICE001\")\r",
+							"    pm.expect(jsonResponse).have.property(\"clientName\").to.eq(\"SERVICE001\")\r",
+							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
+							"    pm.expect(jsonResponse).have.property(\"clientSecret\").to.include(\"randomClientSecret\")\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"clientId\" : \"clientId\",\r\n  \"clientName\" : \"clientName\",\r\n  \"clientSecret\" : \"clientSecret\",\r\n  \"organizationIpaCode\" : \"organizationIpaCode\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/{{organizationIpaCode}}",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"{{organizationIpaCode}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [

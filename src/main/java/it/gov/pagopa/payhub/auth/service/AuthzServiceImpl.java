@@ -107,4 +107,9 @@ public class AuthzServiceImpl implements AuthzService {
     public ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
         return clientService.registerClient(createClientRequest.getClientName(), organizationIpaCode);
     }
+
+    @Override
+    public String getClientSecret(String organizationIpaCode, String clientId) {
+        return clientService.getClientSecret(organizationIpaCode, clientId);
+    }
 }
