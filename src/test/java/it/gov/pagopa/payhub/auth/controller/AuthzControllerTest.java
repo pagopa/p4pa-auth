@@ -27,9 +27,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -313,4 +317,34 @@ class AuthzControllerTest {
             ).andExpect(status().isUnauthorized());
     }
     //end region
+
+    @Test
+    void givenAuthorizedUserWhenGetClientSecretThenOk() throws Exception {
+        String uuidRandomForClientSecret = UUID.randomUUID().toString();
+        String organizationIpaCode = "IPA_TEST_2";
+        String clientId = "CLIENTID";
+
+        UserInfo expectedUser = UserInfo.builder()
+          .userId("USERID")
+          .organizationAccess(organizationIpaCode)
+          .organizations(List.of(UserOrganizationRoles.builder()
+            .organizationIpaCode(organizationIpaCode)
+            .roles(List.of(Constants.ROLE_ADMIN))
+            .build()))
+          .build();
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+          .thenReturn(expectedUser);
+
+        doReturn(uuidRandomForClientSecret)
+          .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);
+
+        MvcResult result = mockMvc.perform(
+            get("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+          ).andExpect(status().isOk())
+          .andReturn();
+
+        assertEquals(uuidRandomForClientSecret, result.getResponse().getContentAsString());
+    }
 }

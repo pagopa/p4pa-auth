@@ -36,8 +36,7 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public String getClientSecret(String organizationIpaCode, String clientId) {
-		byte[] clientSecret = clientRetrieverService.getClientSecret(organizationIpaCode, clientId);
-		return dataCipherService.decrypt(clientSecret);
+		return clientRetrieverService.getClientSecret(organizationIpaCode, clientId);
 	}
 
 }
