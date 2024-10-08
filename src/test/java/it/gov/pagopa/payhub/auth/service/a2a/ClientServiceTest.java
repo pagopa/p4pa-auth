@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.service.a2a;
 
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
-import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
 import it.gov.pagopa.payhub.auth.service.a2a.retrieve.ClientRetrieverService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Random;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,16 +26,13 @@ class ClientServiceTest {
 	private ClientRetrieverService clientRetrieverServiceMock;
 
 	@Mock
-	private DataCipherService dataCipherServiceMock;
-
-	@Mock
 	private ClientMapper clientMapperMock;
 
 	private ClientService service;
 
 	@BeforeEach
 	void init(){
-		service = new ClientServiceImpl(clientRegistrationServiceMock, clientRetrieverServiceMock, dataCipherServiceMock, clientMapperMock);
+		service = new ClientServiceImpl(clientRegistrationServiceMock, clientRetrieverServiceMock, clientMapperMock);
 	}
 
 	@AfterEach
@@ -45,7 +40,6 @@ class ClientServiceTest {
 		Mockito.verifyNoMoreInteractions(
 			clientRegistrationServiceMock,
 			clientRetrieverServiceMock,
-			dataCipherServiceMock,
 			clientMapperMock
 		);
 	}
