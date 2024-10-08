@@ -15,6 +15,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;
@@ -27,6 +28,15 @@ import java.util.Map;
  */
 @Component
 public class JWTValidator {
+
+    private final JWTVerifier verifier;
+
+    public JWTValidator(@Value("${jwt.access-token.public-key}") String publicKey)
+        throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+        RSAPublicKey rsaPublicKey = CertUtils.pemPub2PublicKey(publicKey);
+        Algorithm algorithm = Algorithm.RSA512(rsaPublicKey);
+        verifier = JWT.require(algorithm).build();
+    }
 
     /**
      * Validates a JWT against a JWK provider URL.
@@ -61,22 +71,15 @@ public class JWTValidator {
      * Validates JWT signature with publickey.
      *
      * @param token the JWT to validate
-     * @param pubKey the public key (in PEM format) used to validate the token
      * @throws IllegalStateException if the public key cannot be loaded due to
      *         invalid format, missing algorithm, or I/O issues.
      * @throws TokenExpiredException if the token has expired.
      * @throws InvalidTokenException if the token is invalid for any other reason
      *         (e.g., signature verification failure).
      */
-    public void validateInternalToken(String token, String pubKey) {
-        RSAPublicKey rsaPublicKey = null;
+    public void validateInternalToken(String token) {
         try{
-            rsaPublicKey = CertUtils.pemPub2PublicKey(pubKey);
-            Algorithm algorithm = Algorithm.RSA512(rsaPublicKey);
-            JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(token);
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
-            throw new IllegalStateException("Cannot load public key", e);
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {

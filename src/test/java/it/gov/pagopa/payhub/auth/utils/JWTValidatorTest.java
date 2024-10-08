@@ -25,13 +25,16 @@ class JWTValidatorTest {
     private JWTValidator jwtValidator;
     private WireMockServer wireMockServer;
     private JWTValidatorUtils utils;
+    private KeyPair keyPair;
 
     @BeforeEach
-    void setup(){
+    void setup() throws Exception {
         wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
         wireMockServer.start();
         utils = new JWTValidatorUtils(wireMockServer);
-        jwtValidator = new JWTValidator();
+        keyPair = JWTValidatorUtils.generateKeyPair();
+        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
+        jwtValidator = new JWTValidator(publicKey);
     }
 
     @AfterEach
@@ -67,12 +70,9 @@ class JWTValidatorTest {
     }
 
     @Test
-    void givenValidInternalJWTThenOk() throws Exception {
-        KeyPair keyPair = JWTValidatorUtils.generateKeyPair();
+    void givenValidInternalJWTThenOk() {
         String validToken = utils.generateInternalToken(keyPair,new Date(System.currentTimeMillis() + 3600000));
-        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
-
-        Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken, publicKey));
+        Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken));
     }
 
     @Test
@@ -80,19 +80,14 @@ class JWTValidatorTest {
         KeyPair otherKeyPair = JWTValidatorUtils.generateKeyPair();
         String invalidToken = utils.generateInternalToken(otherKeyPair, new Date(System.currentTimeMillis() + 3600000));
 
-        KeyPair keyPair = JWTValidatorUtils.generateKeyPair();
-        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
-
-        assertThrows(InvalidTokenException.class, () -> jwtValidator.validateInternalToken(invalidToken, publicKey));
+        assertThrows(InvalidTokenException.class, () -> jwtValidator.validateInternalToken(invalidToken));
     }
 
     @Test
     void givenTokenExpiredThenTokenExpiredException() throws Exception {
-        KeyPair keyPair = JWTValidatorUtils.generateKeyPair();
         String invalidToken = utils.generateInternalToken(keyPair, new Date(System.currentTimeMillis() - 3600000));
-        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
 
-        assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken, publicKey));
+        assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken));
     }
 
 }

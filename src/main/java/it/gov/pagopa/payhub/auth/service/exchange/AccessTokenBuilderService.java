@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import java.util.HashMap;
