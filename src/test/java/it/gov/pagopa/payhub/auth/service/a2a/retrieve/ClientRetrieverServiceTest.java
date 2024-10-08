@@ -60,7 +60,7 @@ class ClientRetrieverServiceTest {
 		Mockito.when(clientRepositoryMock.findById(storedClient.getClientId())).thenReturn(Optional.empty());
 
 		// When, Then
-		Assertions.assertThrows(ClientNotFoundException.class, () -> dataCipherService.decrypt(encryptedClientSecret));
+		Assertions.assertThrows(ClientNotFoundException.class, () -> service.getClientSecret(organizationIpaCode, clientId));
 	}
 
 }
