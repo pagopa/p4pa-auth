@@ -7,15 +7,13 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import it.gov.pagopa.payhub.model.generated.AccessToken;
 import java.io.StringWriter;
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.json.JSONObject;
 
 import java.security.KeyPair;
@@ -33,6 +31,7 @@ public class JWTValidatorUtils {
     private static final String AUD = "AUD";
     private static final String ISS = "ISS";
     private static final String ACCESS_TOKEN_TYPE = "at+JWT";
+    private static final String PUBLIC_KEY= "-----BEGIN PUBLIC KEY----- MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsyutJMN8Rc4gOpnjYpKO SFUoBo7eOMGThwpDaFDoHAbihwsYwIG3f5sbT1hhseSA31nqRZwiOJO7Sf55cI1Q 1pA7hcUehYBb6M06kjV42D8dnOuJjR0oNgajgclkfTayvHy21BIYo34lzRvvCszW 0u1yLxGFP0PROnFdY3rgUpXus0/du0Of5gEazmclYw+qsrju8iZM7932ZbqPUy5V ulWrE/iI7DYQT9tnJEaI5qtSY8KbneVL/RH9FabM97gT5ntmS27bwOjEaFYEU4R5 DXyX8coB+giRmZ+nffi8kIqZrbptiLHXE/mg3VRdX7XFF6UNsDkobw3xMJcMErsi ewIDAQAB -----END PUBLIC KEY-----";
 
     public JWTValidatorUtils(WireMockServer wireMockServer) {
         this.wireMockServer = wireMockServer;
@@ -74,14 +73,13 @@ public class JWTValidatorUtils {
         return "http://localhost:" + wireMockServer.port() + "/jwks";
     }
 
-    private static KeyPair generateKeyPair() throws Exception {
+    public static KeyPair generateKeyPair() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         return keyPairGenerator.generateKeyPair();
     }
 
-    public String generateInternalToken() throws Exception {
-        KeyPair keyPair = getKeyPair();
+    public String generateInternalToken(KeyPair keyPair) throws Exception {
         Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -96,7 +94,13 @@ public class JWTValidatorUtils {
             .sign(algorithm);
     }
 
-    public static KeyPair getKeyPair() throws Exception {
-        return generateKeyPair();
+    public static String getPublicKey(KeyPair keyPair) throws Exception {
+        PublicKey publicKey = keyPair.getPublic();
+        StringWriter stringWriter = new StringWriter();
+        PemWriter pemWriter = new PemWriter(stringWriter);
+        pemWriter.writeObject(new PemObject("PUBLIC KEY", publicKey.getEncoded()));
+        pemWriter.flush();
+        pemWriter.close();
+        return stringWriter.toString();
     }
 }
