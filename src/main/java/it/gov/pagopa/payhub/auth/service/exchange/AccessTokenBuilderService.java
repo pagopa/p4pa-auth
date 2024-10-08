@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 @Service
 public class AccessTokenBuilderService {
-    private static final String ACCESS_TOKEN_TYPE = "at+JWT";
+    public static final String ACCESS_TOKEN_TYPE = "at+JWT";
     private final String allowedAudience;
     private final int expireIn;
 

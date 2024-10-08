@@ -31,7 +31,7 @@ public class JWTValidatorUtils {
     private static final String AUD = "AUD";
     private static final String ISS = "ISS";
     private static final String ACCESS_TOKEN_TYPE = "at+JWT";
-    
+
     public JWTValidatorUtils(WireMockServer wireMockServer) {
         this.wireMockServer = wireMockServer;
     }
