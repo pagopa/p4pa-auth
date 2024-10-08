@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.a2a.retrieve;
 
 import it.gov.pagopa.payhub.auth.exception.custom.ClientNotFoundException;
-import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
