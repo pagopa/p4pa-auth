@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.service.a2a;
 
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
-import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
 import it.gov.pagopa.payhub.auth.service.a2a.retrieve.ClientRetrieverService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
@@ -29,16 +28,13 @@ class ClientServiceTest {
 	private ClientRetrieverService clientRetrieverServiceMock;
 
 	@Mock
-	private DataCipherService dataCipherServiceMock;
-
-	@Mock
 	private ClientMapper clientMapperMock;
 
 	private ClientService service;
 
 	@BeforeEach
 	void init(){
-		service = new ClientServiceImpl(clientRegistrationServiceMock, clientRetrieverServiceMock, dataCipherServiceMock, clientMapperMock);
+		service = new ClientServiceImpl(clientRegistrationServiceMock, clientRetrieverServiceMock, clientMapperMock);
 	}
 
 	@AfterEach
@@ -46,13 +42,12 @@ class ClientServiceTest {
 		Mockito.verifyNoMoreInteractions(
 			clientRegistrationServiceMock,
 			clientRetrieverServiceMock,
-			dataCipherServiceMock,
 			clientMapperMock
 		);
 	}
 
 	@Test
-	void whenRegisterClientThenInvokeClientRegistrationService() {
+	void whenRegisterClientThenIInvokeClientRegistrationService() {
 		// Given
 		String organizationIpaCode = "organizationIpaCode";
 		String clientName = "clientName";
@@ -73,12 +68,9 @@ class ClientServiceTest {
 		// Given
 		String organizationIpaCode = "organizationIpaCode";
 		String clientId = "clientId";
-		byte[] encryptedClientSecret = new byte[16];
-		new Random().nextBytes(encryptedClientSecret);
 		String clientSecretMock = UUID.randomUUID().toString();
 
-		Mockito.doReturn(encryptedClientSecret).when(clientRetrieverServiceMock).getClientSecret(organizationIpaCode, clientId);
-		Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(clientSecretMock);
+		Mockito.when(clientRetrieverServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
 		//When
 		String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
 		// Then
