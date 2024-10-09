@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +19,7 @@ import java.util.UUID;
 
 @Service
 public class AccessTokenBuilderService {
-
+    public static final String ACCESS_TOKEN_TYPE = "at+JWT";
     private final String allowedAudience;
     private final int expireIn;
 
@@ -43,8 +45,11 @@ public class AccessTokenBuilderService {
 
     public AccessToken build(){
         Algorithm algorithm = Algorithm.RSA512(rsaPublicKey, rsaPrivateKey);
+        Map<String, Object> headerClaims = new HashMap<>();
+        headerClaims.put("typ", ACCESS_TOKEN_TYPE);
         String tokenType = "bearer";
         String token = JWT.create()
+                .withHeader(headerClaims)
                 .withClaim("typ", tokenType)
                 .withIssuer(allowedAudience)
                 .withJWTId(UUID.randomUUID().toString())

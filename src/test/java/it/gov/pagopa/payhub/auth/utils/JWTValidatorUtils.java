@@ -7,6 +7,13 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
+import java.io.StringWriter;
+import java.security.PublicKey;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.json.JSONObject;
 
 import java.security.KeyPair;
@@ -23,6 +30,7 @@ public class JWTValidatorUtils {
 
     private static final String AUD = "AUD";
     private static final String ISS = "ISS";
+    private static final String ACCESS_TOKEN_TYPE = "at+JWT";
 
     public JWTValidatorUtils(WireMockServer wireMockServer) {
         this.wireMockServer = wireMockServer;
@@ -64,9 +72,34 @@ public class JWTValidatorUtils {
         return "http://localhost:" + wireMockServer.port() + "/jwks";
     }
 
-    private static KeyPair generateKeyPair() throws Exception {
+    public static KeyPair generateKeyPair() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         return keyPairGenerator.generateKeyPair();
+    }
+
+    public String generateInternalToken(KeyPair keyPair, Date expiresAt) {
+        Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        Map<String, Object> headerClaims = new HashMap<>();
+        headerClaims.put("typ", ACCESS_TOKEN_TYPE);
+        String tokenType = "bearer";
+        return JWT.create()
+            .withHeader(headerClaims)
+            .withClaim("typ", tokenType)
+            .withIssuer(ISS)
+            .withJWTId("my-jwt-id")
+            .withIssuedAt(Instant.now())
+            .withExpiresAt(expiresAt)
+            .sign(algorithm);
+    }
+
+    public static String getPublicKey(KeyPair keyPair) throws Exception {
+        PublicKey publicKey = keyPair.getPublic();
+        StringWriter stringWriter = new StringWriter();
+        PemWriter pemWriter = new PemWriter(stringWriter);
+        pemWriter.writeObject(new PemObject("PUBLIC KEY", publicKey.getEncoded()));
+        pemWriter.flush();
+        pemWriter.close();
+        return stringWriter.toString();
     }
 }

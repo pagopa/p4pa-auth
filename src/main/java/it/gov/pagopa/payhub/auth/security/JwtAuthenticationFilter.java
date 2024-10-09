@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.security;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
+import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,9 +27,11 @@ import java.util.Collection;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthnService authnService;
+    private final ValidateTokenService validateTokenService;
 
-    public JwtAuthenticationFilter(AuthnService authnService) {
+    public JwtAuthenticationFilter(AuthnService authnService, ValidateTokenService validateTokenService) {
         this.authnService = authnService;
+        this.validateTokenService = validateTokenService;
     }
 
     @Override
@@ -36,8 +39,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (StringUtils.hasText(authorization)) {
-                UserInfo userInfo = authnService.getUserInfo(authorization.replace("Bearer ", ""));
-
+                String token = authorization.replace("Bearer ", "");
+                validateTokenService.validate(token);
+                UserInfo userInfo = authnService.getUserInfo(token);
                 Collection<? extends GrantedAuthority> authorities = null;
                 if (userInfo.getOrganizationAccess() != null) {
                     authorities = userInfo.getOrganizations().stream()
