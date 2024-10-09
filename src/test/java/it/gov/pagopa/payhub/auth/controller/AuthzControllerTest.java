@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.controller;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.reflect.TypeToken;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
-import it.gov.pagopa.payhub.auth.exception.custom.ClientNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
