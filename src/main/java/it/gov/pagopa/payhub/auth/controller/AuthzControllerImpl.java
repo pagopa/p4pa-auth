@@ -110,7 +110,7 @@ public class AuthzControllerImpl implements AuthzApi {
     @Override
     public ResponseEntity<String> getClientSecret(String organizationIpaCode, String clientId) {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
-            throw new UserUnauthorizedException("User not allowed to retrieve these information");
+            throw new UserUnauthorizedException("User not allowed to retrieve client secret");
         }
         return ResponseEntity.ok(authzService.getClientSecret(organizationIpaCode, clientId));
     }
@@ -118,7 +118,7 @@ public class AuthzControllerImpl implements AuthzApi {
     @Override
     public ResponseEntity<List<ClientDTO>> getClients(String organizationIpaCode) {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
-            throw new UserUnauthorizedException("User not allowed to retrieve these information");
+            throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
         }
         return ResponseEntity.ok(authzService.getClients(organizationIpaCode));
     }
