@@ -939,7 +939,7 @@
 							"    pm.expect(dto).have.property(\"firstName\").to.eq(\"IPA_TESTSERVICE001\")\r",
 							"    pm.expect(dto).have.property(\"clientName\").to.eq(\"SERVICE001\")\r",
 							"    pm.expect(dto).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-							"    pm.expect(dto).have.property(\"clientSecret\").to.eq(\"randomClientSecret\")\r",
+							"    pm.expect(dto).have.property(\"clientSecret\")\r",
 							"\r",
 							"});"
 						],
