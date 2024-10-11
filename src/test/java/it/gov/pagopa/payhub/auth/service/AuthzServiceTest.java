@@ -280,7 +280,7 @@ class AuthzServiceTest {
         Mockito.when(clientServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
 
         //When
-        String clientSecret = clientServiceMock.getClientSecret(organizationIpaCode, clientId);
+        String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
         //Then
         Assertions.assertEquals(clientSecretMock, clientSecret);
     }
@@ -294,7 +294,7 @@ class AuthzServiceTest {
         Mockito.when(clientServiceMock.getClients(organizationIpaCode)).thenReturn(clientDTOsMock);
 
         //When
-        List<ClientDTO> result = clientServiceMock.getClients(organizationIpaCode);
+        List<ClientDTO> result = service.getClients(organizationIpaCode);
         //Then
         Assertions.assertEquals(clientDTOsMock, result);
     }
