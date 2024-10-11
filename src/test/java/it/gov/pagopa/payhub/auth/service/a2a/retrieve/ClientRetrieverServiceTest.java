@@ -101,4 +101,5 @@ class ClientRetrieverServiceTest {
 		// Then
 		Assertions.assertEquals(List.of(expectedDto1, expectedDto2), result);
 	}
+	
 }
