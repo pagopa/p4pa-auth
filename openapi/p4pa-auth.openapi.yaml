@@ -468,6 +468,7 @@ components:
         - clientName
       properties:
         clientName:
+          pattern: '^[a-zA-Z0-9-_]*$'
           type: string
     UserDTO:
       type: object

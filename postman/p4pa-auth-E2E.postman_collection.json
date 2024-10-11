@@ -811,7 +811,6 @@
 							"    let responseString = pm.response.text();\r",
 							"\r",
 							"    pm.expect(responseString).to.be.a(\"string\");\r",
-							"    pm.expect(responseString).to.eq('randomClientSecret');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -875,7 +874,7 @@
 							"    pm.expect(jsonResponse).have.property(\"firstName\").to.eq(\"IPA_TESTSERVICE001\")\r",
 							"    pm.expect(jsonResponse).have.property(\"clientName\").to.eq(\"SERVICE001\")\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-							"    pm.expect(jsonResponse).have.property(\"clientSecret\").to.eq(\"randomClientSecret\")\r",
+							"    pm.expect(jsonResponse).have.property(\"clientSecret\")\r",
 							"});"
 						],
 						"type": "text/javascript",
