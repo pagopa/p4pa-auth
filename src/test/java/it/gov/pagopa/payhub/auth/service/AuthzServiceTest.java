@@ -286,7 +286,7 @@ class AuthzServiceTest {
     }
 
     @Test
-    void givenOrganizationIpaCodeWhenGetClientThenInvokeClientService() {
+    void givenOrganizationIpaCodeWhenGetClientsThenInvokeClientService() {
         //Given
         String organizationIpaCode = "organizationIpaCode";
         List<ClientDTO> clientDTOsMock = new ArrayList<>();
