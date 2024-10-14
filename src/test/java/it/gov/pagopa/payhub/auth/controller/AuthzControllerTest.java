@@ -383,24 +383,22 @@ class AuthzControllerTest {
             .build()))
           .build();
 
-        ClientDTO dto1 = ClientDTO.builder()
+        ClientNoSecretDTO dto1 = ClientNoSecretDTO.builder()
           .organizationIpaCode(organizationIpaCode)
           .clientName(clientName1)
           .clientId(organizationIpaCode + clientName1)
-          .clientSecret(UUID.randomUUID().toString())
           .build();
-        ClientDTO dto2 = ClientDTO.builder()
+        ClientNoSecretDTO dto2 = ClientNoSecretDTO.builder()
           .organizationIpaCode(organizationIpaCode)
           .clientName(clientName2)
           .clientId(organizationIpaCode + clientName2)
-          .clientSecret(UUID.randomUUID().toString())
           .build();
-        List<ClientDTO> clientDTOList = List.of(dto1, dto2);
+        List<ClientNoSecretDTO> expectedDTOList = List.of(dto1, dto2);
         //When
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
           .thenReturn(expectedUser);
 
-        doReturn(clientDTOList)
+        doReturn(expectedDTOList)
           .when(authzServiceMock).getClients(organizationIpaCode);
         //Then
         MvcResult result = mockMvc.perform(
@@ -409,10 +407,10 @@ class AuthzControllerTest {
           ).andExpect(status().isOk())
           .andReturn();
 
-        List<ClientDTO> responseList = new Gson()
-          .fromJson(result.getResponse().getContentAsString(), new TypeToken<ArrayList<ClientDTO>>(){}.getType());
+        List<ClientNoSecretDTO> responseList = new Gson()
+          .fromJson(result.getResponse().getContentAsString(), new TypeToken<ArrayList<ClientNoSecretDTO>>(){}.getType());
 
-        assertEquals(clientDTOList, responseList);
+        assertEquals(expectedDTOList, responseList);
     }
 
     @Test

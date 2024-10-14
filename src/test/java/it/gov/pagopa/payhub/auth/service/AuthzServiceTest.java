@@ -289,14 +289,14 @@ class AuthzServiceTest {
     void givenOrganizationIpaCodeWhenGetClientsThenInvokeClientService() {
         //Given
         String organizationIpaCode = "organizationIpaCode";
-        List<ClientDTO> clientDTOsMock = new ArrayList<>();
+        List<ClientNoSecretDTO> expectedDTOList = new ArrayList<>();
 
-        Mockito.when(clientServiceMock.getClients(organizationIpaCode)).thenReturn(clientDTOsMock);
+        Mockito.when(clientServiceMock.getClients(organizationIpaCode)).thenReturn(expectedDTOList);
 
         //When
-        List<ClientDTO> result = service.getClients(organizationIpaCode);
+        List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
         //Then
-        Assertions.assertEquals(clientDTOsMock, result);
+        Assertions.assertEquals(expectedDTOList, result);
     }
 
 }

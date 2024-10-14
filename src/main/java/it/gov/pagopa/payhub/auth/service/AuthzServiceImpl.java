@@ -114,7 +114,7 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public List<ClientDTO> getClients(String organizationIpaCode) {
+    public List<ClientNoSecretDTO> getClients(String organizationIpaCode) {
         return clientService.getClients(organizationIpaCode);
     }
 }

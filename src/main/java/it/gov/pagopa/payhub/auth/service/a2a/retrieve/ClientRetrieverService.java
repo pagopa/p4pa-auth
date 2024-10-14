@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
-import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +35,9 @@ public class ClientRetrieverService {
 			.orElseThrow(() -> new ClientNotFoundException("Cannot found client secret having clientId:"+ clientId +"for organizationIpaCode:"+organizationIpaCode));
 	}
 
-	public List<ClientDTO> getClients(String organizationIpaCode) {
+	public List<ClientNoSecretDTO> getClients(String organizationIpaCode) {
 		return clientRepository.findAllByOrganizationIpaCode(organizationIpaCode).stream()
-			.map(clientMapper::mapToDTO)
+			.map(clientMapper::mapToNoSecretDTO)
 			.toList();
 	}
 

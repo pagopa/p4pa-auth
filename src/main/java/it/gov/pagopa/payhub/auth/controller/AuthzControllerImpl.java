@@ -116,7 +116,7 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
-    public ResponseEntity<List<ClientDTO>> getClients(String organizationIpaCode) {
+    public ResponseEntity<List<ClientNoSecretDTO>> getClients(String organizationIpaCode) {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
         }

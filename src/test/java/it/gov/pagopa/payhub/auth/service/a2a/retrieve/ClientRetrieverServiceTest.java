@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
-import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 @ExtendWith(MockitoExtension.class)
 class ClientRetrieverServiceTest {
@@ -90,13 +92,13 @@ class ClientRetrieverServiceTest {
 			.build();
 
 		Mockito.doReturn(List.of(c1, c2)).when(clientRepositoryMock).findAllByOrganizationIpaCode(organizationIpaCode);
-		ClientDTO expectedDto1 = new ClientDTO();
-		ClientDTO expectedDto2 = new ClientDTO();
-		Mockito.when(clientMapperMock.mapToDTO(c1)).thenReturn(expectedDto1);
-		Mockito.when(clientMapperMock.mapToDTO(c2)).thenReturn(expectedDto2);
+		ClientNoSecretDTO expectedDto1 = new ClientNoSecretDTO();
+		ClientNoSecretDTO expectedDto2 = new ClientNoSecretDTO();
+		Mockito.when(clientMapperMock.mapToNoSecretDTO(c1)).thenReturn(expectedDto1);
+		Mockito.when(clientMapperMock.mapToNoSecretDTO(c2)).thenReturn(expectedDto2);
 
 		// When
-		List<ClientDTO> result = service.getClients(organizationIpaCode);
+		List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
 
 		// Then
 		Assertions.assertEquals(List.of(expectedDto1, expectedDto2), result);

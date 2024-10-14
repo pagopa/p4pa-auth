@@ -174,7 +174,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ClientDTO'
+                  $ref: '#/components/schemas/ClientNoSecretDTO'
         '400':
           description: Invalid request
         '401':
@@ -461,6 +461,19 @@ components:
         organizationIpaCode:
           type: string
         clientSecret:
+          type: string
+    ClientNoSecretDTO:
+      type: object
+      required:
+        - clientId
+        - clientName
+        - organizationIpaCode
+      properties:
+        clientId:
+          type: string
+        clientName:
+          type: string
+        organizationIpaCode:
           type: string
     CreateClientRequest:
       type: object

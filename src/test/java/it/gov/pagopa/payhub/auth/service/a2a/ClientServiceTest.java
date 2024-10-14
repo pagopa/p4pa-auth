@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
 import it.gov.pagopa.payhub.auth.service.a2a.retrieve.ClientRetrieverService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,29 +78,27 @@ class ClientServiceTest {
 	}
 
 	@Test
-	void givenOrganizationIpaCodeWhenGetClientsThenEmptyList() {
+	void givenOrganizationIpaCodeWhenGetClientsThenGetClientNoSecretDTOList() {
 		//Given
 		String organizationIpaCode = "IPA_TEST_2";
 		String clientName1 = "SERVICE_001";
 		String clientName2 = "SERVICE_002";
 
-		ClientDTO dto1 = ClientDTO.builder()
+		ClientNoSecretDTO dto1 = ClientNoSecretDTO.builder()
 			.organizationIpaCode(organizationIpaCode)
 			.clientName(clientName1)
 			.clientId(organizationIpaCode + clientName1)
-			.clientSecret(UUID.randomUUID().toString())
 			.build();
-		ClientDTO dto2 = ClientDTO.builder()
+		ClientNoSecretDTO dto2 = ClientNoSecretDTO.builder()
 			.organizationIpaCode(organizationIpaCode)
 			.clientName(clientName2)
 			.clientId(organizationIpaCode + clientName2)
-			.clientSecret(UUID.randomUUID().toString())
 			.build();
 
 		Mockito.doReturn(List.of(dto1, dto2)).when(clientRetrieverServiceMock).getClients(organizationIpaCode);
 
 		//When
-		List<ClientDTO> result = service.getClients(organizationIpaCode);
+		List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
 		//Then
 		Assertions.assertEquals(List.of(dto1, dto2), result);
 	}

@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.mapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +30,14 @@ public class ClientMapper {
 			.clientName(clientDTO.getClientName())
 			.organizationIpaCode(clientDTO.getOrganizationIpaCode())
 			.clientSecret(dataCipherService.encrypt(clientDTO.getClientSecret()))
+			.build();
+	}
+
+	public ClientNoSecretDTO mapToNoSecretDTO(Client client) {
+		return ClientNoSecretDTO.builder()
+			.clientId(client.getClientId())
+			.clientName(client.getClientName())
+			.organizationIpaCode(client.getOrganizationIpaCode())
 			.build();
 	}
 
