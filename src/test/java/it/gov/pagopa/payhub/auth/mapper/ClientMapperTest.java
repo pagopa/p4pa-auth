@@ -96,7 +96,6 @@ class ClientMapperTest {
     // Given
     byte[] encryptedClientSecret = new byte[16];
     new Random().nextBytes(encryptedClientSecret);
-    String decryptedClientSecret = UUID.randomUUID().toString();
     String organizationIpaCode = "organizationIpaCode";
     String clientName = "clientName";
     String clientId = organizationIpaCode + clientName;
@@ -113,8 +112,6 @@ class ClientMapperTest {
       .organizationIpaCode(organizationIpaCode)
       .clientSecret(encryptedClientSecret)
       .build();
-
-    Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(decryptedClientSecret);
 
     // When
     ClientNoSecretDTO dtoMapped = service.mapToNoSecretDTO(client);
