@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "d9907fbe-b8fd-4a6c-93e8-26a33634e4ce",
+		"_postman_id": "c7fcdcac-8bbb-446f-8ea3-a1c4fa4451c3",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "15747968",
-		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-d9907fbe-b8fd-4a6c-93e8-26a33634e4ce?action=share&source=collection_link&creator=15747968"
+		"_exporter_id": "36568841"
 	},
 	"item": [
 		{
@@ -328,7 +327,7 @@
 							"        }\r",
 							"    });\r",
 							"\r",
-							"    pm.expect(recognizedOrganizations).to.eq(2)\r",
+							"    pm.expect(recognizedOrganizations).to.eq(3)\r",
 							"\r",
 							"});"
 						],
@@ -441,93 +440,93 @@
 			"response": []
 		},
 		{
-		"name": "getOrganizationOperatorsWithParams",
-		"event": [
-			{
-				"listen": "test",
-				"script": {
-					"exec": [
-						"pm.test(\"Auth - getOrganizationOperators - Responses with 200\", function () {\r",
-						"    pm.response.to.have.status(200);\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Auth - getOrganizationOperators - Verify response body\", function () {\r",
-						"    let jsonResponse = pm.response.json();\r",
-						"\r",
-						"    pm.expect(jsonResponse).have.property(\"content\")\r",
-						"    pm.expect(jsonResponse.content).have.property(\"length\").to.gte(1)\r",
-						"    pm.expect(jsonResponse).have.property(\"pageNo\").to.eq(0)\r",
-						"    pm.expect(jsonResponse).have.property(\"pageSize\").to.eq(10)\r",
-						"    pm.expect(jsonResponse).have.property(\"totalElements\").to.gte(1)\r",
-						"    pm.expect(jsonResponse).have.property(\"totalPages\").to.gte(1)\r",
-						"\r",
-						"    var foundLoggedUser = false\r",
-						"\r",
-						"    jsonResponse.content.forEach(op => {\r",
-						"        pm.expect(op).have.property(\"userId\")\r",
-						"        pm.expect(op).have.property(\"operatorId\")\r",
-						"        pm.expect(op).have.property(\"mappedExternalUserId\")\r",
-						"        pm.expect(op).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-						"        pm.expect(op).have.property(\"userCode\")\r",
-						"        pm.expect(op).have.property(\"roles\")\r",
-						"        pm.expect(op.roles).have.property(\"length\").to.gte(1)\r",
-						"\r",
-						"        if(op.userCode === \"DXEMXY1XL21XXXXX\") {\r",
-						"            foundLoggedUser=true\r",
-						"            pm.expect(op.roles.filter(r=>r === \"ROLE_ADMIN\").length).to.eq(1)\r",
-						"        }\r",
-						"    });\r",
-						"\r",
-						"    pm.expect(foundLoggedUser).to.true\r",
-						"\r",
-						"});"
-					],
-					"type": "text/javascript",
-					"packages": {}
+			"name": "getOrganizationOperatorsWithParams",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getOrganizationOperators - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getOrganizationOperators - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"content\")\r",
+							"    pm.expect(jsonResponse.content).have.property(\"length\").to.gte(1)\r",
+							"    pm.expect(jsonResponse).have.property(\"pageNo\").to.eq(0)\r",
+							"    pm.expect(jsonResponse).have.property(\"pageSize\").to.eq(10)\r",
+							"    pm.expect(jsonResponse).have.property(\"totalElements\").to.gte(1)\r",
+							"    pm.expect(jsonResponse).have.property(\"totalPages\").to.gte(1)\r",
+							"\r",
+							"    var foundLoggedUser = false\r",
+							"\r",
+							"    jsonResponse.content.forEach(op => {\r",
+							"        pm.expect(op).have.property(\"userId\")\r",
+							"        pm.expect(op).have.property(\"operatorId\")\r",
+							"        pm.expect(op).have.property(\"mappedExternalUserId\")\r",
+							"        pm.expect(op).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
+							"        pm.expect(op).have.property(\"userCode\")\r",
+							"        pm.expect(op).have.property(\"roles\")\r",
+							"        pm.expect(op.roles).have.property(\"length\").to.gte(1)\r",
+							"\r",
+							"        if(op.userCode === \"DXEMXY1XL21XXXXX\") {\r",
+							"            foundLoggedUser=true\r",
+							"            pm.expect(op.roles.filter(r=>r === \"ROLE_ADMIN\").length).to.eq(1)\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(foundLoggedUser).to.true\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
 				}
-			}
-		],
-		"request": {
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "{{accessToken}}",
-						"type": "string"
-					}
-				]
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST?fiscalCode=DMEMPY15L21L736U&firstName=demo&lastName=demo",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"am",
+						"operators",
+						"IPA_TEST"
+					],
+					"query": [
+						{
+							"key": "fiscalCode",
+							"value": "DMEMPY15L21L736U"
+						},
+						{
+							"key": "firstName",
+							"value": "demo"
+						},
+						{
+							"key": "lastName",
+							"value": "demo"
+						}
+					]
+				}
 			},
-			"method": "GET",
-			"header": [],
-			"url": {
-				"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST?fiscalCode=DMEMPY15L21L736U&firstName=demo&lastName=demo",
-				"host": [
-					"{{p4paAuthBaseUrl}}"
-				],
-				"path": [
-					"payhub",
-					"am",
-					"operators",
-					"IPA_TEST"
-				],
-				"query": [
-					{
-						"key": "fiscalCode",
-						"value": "DMEMPY15L21L736U"
-					},
-					{
-						"key": "firstName",
-						"value": "demo"
-					},
-					{
-						"key": "lastName",
-						"value": "demo"
-					}
-				]
-			}
-		},
-		"response": []
+			"response": []
 		},
 		{
 			"name": "getOrganizationOperator",
@@ -584,7 +583,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/{{organizationIpaCode}}/{{mappedExternalUserId}}",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST/{{mappedExternalUserId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
@@ -592,7 +591,7 @@
 						"payhub",
 						"am",
 						"operators",
-						"{{organizationIpaCode}}",
+						"IPA_TEST",
 						"{{mappedExternalUserId}}"
 					]
 				}
@@ -797,6 +796,78 @@
 			"response": []
 		},
 		{
+			"name": "registerClient",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.get(\"organizationIpaCode\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - registerClient - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - registerClient - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"clientId\").to.eq(\"IPA_TESTtestClient\")\r",
+							"    pm.expect(jsonResponse).have.property(\"clientName\").to.eq(\"testClient\")\r",
+							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
+							"    pm.expect(jsonResponse).have.property(\"clientSecret\")\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"clientName\" : \"testClient\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"IPA_TEST"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "getClientSecret",
 			"event": [
 				{
@@ -832,7 +903,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/{organizationIpaCode}/{clientId}",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST/IPA_TESTtestClient",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
@@ -841,79 +912,7 @@
 						"auth",
 						"clients",
 						"IPA_TEST",
-						"IPA_TESTCLIENT_NAME"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "registerClient",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"pm.environment.get(\"organizationIpaCode\")"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Auth - registerClient - Responses with 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Auth - registerClient - Verify response body\", function () {\r",
-							"    let jsonResponse = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonResponse).have.property(\"firstName\").to.eq(\"IPA_TESTSERVICE001\")\r",
-							"    pm.expect(jsonResponse).have.property(\"clientName\").to.eq(\"SERVICE001\")\r",
-							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-							"    pm.expect(jsonResponse).have.property(\"clientSecret\")\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"clientName\" : \"clientName\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/{{organizationIpaCode}}",
-					"host": [
-						"{{p4paAuthBaseUrl}}"
-					],
-					"path": [
-						"payhub",
-						"auth",
-						"clients",
-						"{{organizationIpaCode}}"
+						"IPA_TESTtestClient"
 					]
 				}
 			},
@@ -935,12 +934,13 @@
 							"\r",
 							"    pm.expect(jsonResponse).to.be.an(\"array\").that.is.not.empty;\r",
 							"    jsonResponse.forEach(dto => {\r",
-							"    pm.expect(dto).have.property(\"firstName\").to.eq(\"IPA_TESTSERVICE001\")\r",
-							"    pm.expect(dto).have.property(\"clientName\").to.eq(\"SERVICE001\")\r",
-							"    pm.expect(dto).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-							"    pm.expect(dto).not.have.property(\"clientSecret\")\r",
-							"\r",
-							"});"
+							"        pm.expect(dto).to.have.property(\"clientId\").to.eql(\"IPA_TESTtestClient\");\r",
+							"        pm.expect(dto).to.have.property(\"clientName\").to.eql(\"testClient\");\r",
+							"        pm.expect(dto).to.have.property(\"organizationIpaCode\").to.eql(\"IPA_TEST\");\r",
+							"        pm.expect(dto).to.not.have.property(\"clientSecret\");\r",
+							"    });\r",
+							"});\r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -961,7 +961,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/{organizationIpaCode}",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
@@ -996,6 +996,12 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "accessToken",
+			"value": ""
 		}
 	]
 }
