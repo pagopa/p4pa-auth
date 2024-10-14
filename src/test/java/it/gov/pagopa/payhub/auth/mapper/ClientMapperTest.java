@@ -117,7 +117,7 @@ class ClientMapperTest {
     Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(decryptedClientSecret);
 
     // When
-    ClientDTO dtoMapped = service.mapToDTO(client);
+    ClientNoSecretDTO dtoMapped = service.mapToNoSecretDTO(client);
     // Then
     Assertions.assertEquals(clientDTO, dtoMapped);
   }
