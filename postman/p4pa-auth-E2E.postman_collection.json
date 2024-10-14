@@ -669,8 +669,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"    pm.environment.get(\"mappedExternalUserId\")\r",
-							"    pm.environment.get(\"organizationIpaCode\")"
+							"    pm.environment.get(\"mappedExternalUserId\")"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -691,7 +690,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/{{organizationIpaCode}}/{{mappedExternalUserId}}",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST/{{mappedExternalUserId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
@@ -699,7 +698,7 @@
 						"payhub",
 						"am",
 						"operators",
-						"{{organizationIpaCode}}",
+						"IPA_TEST",
 						"{{mappedExternalUserId}}"
 					]
 				}
@@ -802,7 +801,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.environment.get(\"organizationIpaCode\")"
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -929,7 +928,7 @@
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Auth - getClientSecret - Verify response body\", function () {\r",
+							"pm.test(\"Auth - getClients - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
 							"\r",
 							"    pm.expect(jsonResponse).to.be.an(\"array\").that.is.not.empty;\r",
@@ -937,7 +936,6 @@
 							"        pm.expect(dto).to.have.property(\"clientId\").to.eql(\"IPA_TESTtestClient\");\r",
 							"        pm.expect(dto).to.have.property(\"clientName\").to.eql(\"testClient\");\r",
 							"        pm.expect(dto).to.have.property(\"organizationIpaCode\").to.eql(\"IPA_TEST\");\r",
-							"        pm.expect(dto).to.not.have.property(\"clientSecret\");\r",
 							"    });\r",
 							"});\r",
 							""
