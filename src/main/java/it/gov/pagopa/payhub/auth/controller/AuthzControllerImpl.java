@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class AuthzControllerImpl implements AuthzApi {
 
@@ -108,7 +110,16 @@ public class AuthzControllerImpl implements AuthzApi {
     @Override
     public ResponseEntity<String> getClientSecret(String organizationIpaCode, String clientId) {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
-            throw new UserUnauthorizedException("User not allowed to create client");
+            throw new UserUnauthorizedException("User not allowed to retrieve client secret");
         }
         return ResponseEntity.ok(authzService.getClientSecret(organizationIpaCode, clientId));
-    }}
+    }
+
+    @Override
+    public ResponseEntity<List<ClientNoSecretDTO>> getClients(String organizationIpaCode) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
+        }
+        return ResponseEntity.ok(authzService.getClients(organizationIpaCode));
+    }
+}

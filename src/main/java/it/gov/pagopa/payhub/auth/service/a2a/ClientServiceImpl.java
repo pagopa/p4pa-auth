@@ -5,8 +5,11 @@ import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
 import it.gov.pagopa.payhub.auth.service.a2a.retrieve.ClientRetrieverService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -24,13 +27,21 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public ClientDTO registerClient(String clientName, String organizationIpaCode) {
+
 		Client client = clientRegistrationService.registerClient(clientName, organizationIpaCode);
 		return clientMapper.mapToDTO(client);
 	}
 
 	@Override
 	public String getClientSecret(String organizationIpaCode, String clientId) {
+		log.info("Retrieving client secret");
 		return clientRetrieverService.getClientSecret(organizationIpaCode, clientId);
+	}
+
+	@Override
+	public List<ClientNoSecretDTO> getClients(String organizationIpaCode) {
+		log.info("Retrieving clients for {}", organizationIpaCode);
+		return clientRetrieverService.getClients(organizationIpaCode);
 	}
 
 }

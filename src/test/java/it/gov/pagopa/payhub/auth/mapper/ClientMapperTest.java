@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.mapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,34 @@ class ClientMapperTest {
 
     // When
     ClientDTO dtoMapped = service.mapToDTO(client);
+    // Then
+    Assertions.assertEquals(clientDTO, dtoMapped);
+  }
+
+  @Test
+  void WhenMapThenGetClientNoSecretDTOMapped() {
+    // Given
+    byte[] encryptedClientSecret = new byte[16];
+    new Random().nextBytes(encryptedClientSecret);
+    String organizationIpaCode = "organizationIpaCode";
+    String clientName = "clientName";
+    String clientId = organizationIpaCode + clientName;
+
+    ClientNoSecretDTO clientDTO = ClientNoSecretDTO.builder()
+      .clientId(clientId)
+      .clientName(clientName)
+      .organizationIpaCode(organizationIpaCode)
+      .build();
+
+    Client client = Client.builder()
+      .clientId(clientId)
+      .clientName(clientName)
+      .organizationIpaCode(organizationIpaCode)
+      .clientSecret(encryptedClientSecret)
+      .build();
+
+    // When
+    ClientNoSecretDTO dtoMapped = service.mapToNoSecretDTO(client);
     // Then
     Assertions.assertEquals(clientDTO, dtoMapped);
   }

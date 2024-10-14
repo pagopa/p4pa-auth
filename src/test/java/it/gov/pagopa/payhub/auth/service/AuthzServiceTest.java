@@ -27,8 +27,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthzServiceTest {
@@ -281,9 +280,23 @@ class AuthzServiceTest {
         Mockito.when(clientServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
 
         //When
-        String clientSecret = clientServiceMock.getClientSecret(organizationIpaCode, clientId);
+        String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
         //Then
         Assertions.assertEquals(clientSecretMock, clientSecret);
+    }
+
+    @Test
+    void givenOrganizationIpaCodeWhenGetClientsThenInvokeClientService() {
+        //Given
+        String organizationIpaCode = "organizationIpaCode";
+        List<ClientNoSecretDTO> expectedDTOList = new ArrayList<>();
+
+        Mockito.when(clientServiceMock.getClients(organizationIpaCode)).thenReturn(expectedDTOList);
+
+        //When
+        List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
+        //Then
+        Assertions.assertEquals(expectedDTOList, result);
     }
 
 }
