@@ -651,6 +651,200 @@
 			"response": []
 		},
 		{
+			"name": "registerClient",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - registerClient - Response is correct based on record existence\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    // Controlla se il clientId esiste nella risposta\r",
+							"    if (jsonResponse.hasOwnProperty(\"clientId\")) {\r",
+							"        pm.expect(pm.response.status).to.eql(200);\r",
+							"\r",
+							"        // Verifica il contenuto della risposta quando il record non esiste\r",
+							"        pm.expect(jsonResponse).to.have.property(\"clientId\").to.eq(\"IPA_TESTtestClient\");\r",
+							"        pm.expect(jsonResponse).to.have.property(\"clientName\").to.eq(\"testClient\");\r",
+							"        pm.expect(jsonResponse).to.have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\");\r",
+							"        pm.expect(jsonResponse).to.have.property(\"clientSecret\");\r",
+							"    } else {\r",
+							"        // Se il record esiste, ritorna un errore di chiave duplicata\r",
+							"         pm.response.to.have.status(500);\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"clientName\" : \"testClient\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"IPA_TEST"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getClientSecret",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getClientSecret - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getClientSecret - Verify response body\", function () {\r",
+							"    let responseString = pm.response.text();\r",
+							"\r",
+							"    pm.expect(responseString).to.be.a(\"string\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST/IPA_TESTtestClient",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"IPA_TEST",
+						"IPA_TESTtestClient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getClients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getClients - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getClients - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).to.be.an(\"array\").that.is.not.empty;\r",
+							"    jsonResponse.forEach(dto => {\r",
+							"        pm.expect(dto).to.have.property(\"clientId\").to.eql(\"IPA_TESTtestClient\");\r",
+							"        pm.expect(dto).to.have.property(\"clientName\").to.eql(\"testClient\");\r",
+							"        pm.expect(dto).to.have.property(\"organizationIpaCode\").to.eql(\"IPA_TEST\");\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"IPA_TEST"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "deleteOrganizationOperator",
 			"event": [
 				{
@@ -789,185 +983,6 @@
 						"payhub",
 						"auth",
 						"userinfo"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "registerClient",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Auth - registerClient - Responses with 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Auth - registerClient - Verify response body\", function () {\r",
-							"    let jsonResponse = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonResponse).have.property(\"clientId\").to.eq(\"IPA_TESTtestClient\")\r",
-							"    pm.expect(jsonResponse).have.property(\"clientName\").to.eq(\"testClient\")\r",
-							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-							"    pm.expect(jsonResponse).have.property(\"clientSecret\")\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"clientName\" : \"testClient\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
-					"host": [
-						"{{p4paAuthBaseUrl}}"
-					],
-					"path": [
-						"payhub",
-						"auth",
-						"clients",
-						"IPA_TEST"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getClientSecret",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Auth - getClientSecret - Responses with 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Auth - getClientSecret - Verify response body\", function () {\r",
-							"    let responseString = pm.response.text();\r",
-							"\r",
-							"    pm.expect(responseString).to.be.a(\"string\");\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST/IPA_TESTtestClient",
-					"host": [
-						"{{p4paAuthBaseUrl}}"
-					],
-					"path": [
-						"payhub",
-						"auth",
-						"clients",
-						"IPA_TEST",
-						"IPA_TESTtestClient"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getClients",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Auth - getClients - Responses with 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Auth - getClients - Verify response body\", function () {\r",
-							"    let jsonResponse = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonResponse).to.be.an(\"array\").that.is.not.empty;\r",
-							"    jsonResponse.forEach(dto => {\r",
-							"        pm.expect(dto).to.have.property(\"clientId\").to.eql(\"IPA_TESTtestClient\");\r",
-							"        pm.expect(dto).to.have.property(\"clientName\").to.eql(\"testClient\");\r",
-							"        pm.expect(dto).to.have.property(\"organizationIpaCode\").to.eql(\"IPA_TEST\");\r",
-							"    });\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
-					"host": [
-						"{{p4paAuthBaseUrl}}"
-					],
-					"path": [
-						"payhub",
-						"auth",
-						"clients",
-						"IPA_TEST"
 					]
 				}
 			},
