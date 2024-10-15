@@ -55,7 +55,7 @@ class AuthnServiceTest {
                 .thenReturn(expectedResult);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType);
 
         // Then
         Assertions.assertSame(expectedResult, result);

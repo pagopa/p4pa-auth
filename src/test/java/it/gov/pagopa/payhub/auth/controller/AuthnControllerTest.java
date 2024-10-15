@@ -110,7 +110,7 @@ class AuthnControllerTest {
         (exception != null
                 ? doThrow(exception)
                 : doReturn(new AccessToken("token", "bearer", 0)))
-                .when(authnServiceMock).postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+                .when(authnServiceMock).postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType);
 
         MvcResult result = mockMvc.perform(
                 post("/payhub/auth/token")
