@@ -157,7 +157,7 @@ class ValidateExternalTokenServiceTest {
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(InvalidExchangeRequestException.class, () ->
           validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, null, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
     }
 
@@ -169,7 +169,7 @@ class ValidateExternalTokenServiceTest {
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(InvalidExchangeRequestException.class, () ->
           validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, null, ValidateExternalTokenService.ALLOWED_SCOPE));
     }
 
@@ -181,7 +181,7 @@ class ValidateExternalTokenServiceTest {
         String wireMockUrl = utils.getUrlJwkProvider();
         when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(InvalidExchangeRequestException.class, () ->
           validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, null, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
     }
 

@@ -7,9 +7,9 @@ import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -51,8 +51,8 @@ public class ValidateExternalTokenService {
     }
 
     private void validateProtocolConfiguration(String grantType, String subjectTokenType, String scope) {
-        if (subjectTokenType == null) {
-            throw new IllegalArgumentException("subjectTokenType is mandatory with token-exchange grant type");
+        if (!StringUtils.hasText(subjectTokenType)) {
+            throw new InvalidExchangeRequestException("subjectTokenType is mandatory with token-exchange grant type");
         }
         if (!ALLOWED_GRANT_TYPE.equals(grantType)){
             throw new InvalidGrantTypeException("Invalid grantType " + grantType);
@@ -66,8 +66,8 @@ public class ValidateExternalTokenService {
     }
 
     private void validateSubjectTokenIssuer(String subjectIssuer) {
-        if (subjectIssuer == null) {
-            throw new IllegalArgumentException("subjectIssuer is mandatory with token-exchange grant type");
+        if (!StringUtils.hasText(subjectIssuer)) {
+            throw new InvalidExchangeRequestException("subjectIssuer is mandatory with token-exchange grant type");
         }
         if (!allowedIssuer.equals(subjectIssuer)){
             throw new InvalidTokenIssuerException("Invalid subjectIssuer " + subjectIssuer);
@@ -75,8 +75,8 @@ public class ValidateExternalTokenService {
     }
 
     private Map<String, Claim> validateSubjectToken(String subjectToken) {
-        if (subjectToken == null) {
-            throw new IllegalArgumentException("subjectToken is mandatory with token-exchange grant type");
+        if (!StringUtils.hasText(subjectToken)) {
+            throw new InvalidExchangeRequestException("subjectToken is mandatory with token-exchange grant type");
         }
         Map<String, Claim> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
         if (!allowedAudience.equals(claims.get(Claims.AUDIENCE).asString())){
