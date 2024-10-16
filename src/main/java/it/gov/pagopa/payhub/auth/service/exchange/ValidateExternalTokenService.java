@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -36,12 +36,22 @@ public class ValidateExternalTokenService {
     }
 
     public Map<String, Claim> validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+//        validateRequiredNonNull(subjectToken, subjectIssuer, subjectTokenType);
         validateClient(clientId);
         validateProtocolConfiguration(grantType, subjectTokenType, scope);
         validateSubjectTokenIssuer(subjectIssuer);
         Map<String, Claim> claims = validateSubjectToken(subjectToken);
         log.info("SubjectToken authorized");
         return claims;
+    }
+
+    public void validateRequiredNonNull(String subjectToken, String subjectIssuer, String subjectTokenType) {
+        Objects.requireNonNullElseGet(subjectToken,
+          () -> new IllegalArgumentException("subjectToken is mandatory with token-exchange grant type"));
+        Objects.requireNonNullElseGet(subjectTokenType,
+          () -> new IllegalArgumentException("subjectTokenType is mandatory with token-exchange grant type"));
+        Objects.requireNonNullElseGet(subjectIssuer,
+          () -> new IllegalArgumentException("subjectIssuer is mandatory with token-exchange grant type"));
     }
 
     public void validateClient(String clientId) {
@@ -51,28 +61,33 @@ public class ValidateExternalTokenService {
     }
 
     private void validateProtocolConfiguration(String grantType, String subjectTokenType, String scope) {
+        if (subjectTokenType == null) {
+            throw new IllegalArgumentException("subjectTokenType is mandatory with token-exchange grant type");
+        }
         if (!ALLOWED_GRANT_TYPE.equals(grantType)){
             throw new InvalidGrantTypeException("Invalid grantType " + grantType);
         }
-        Optional<String> optionalSubjectTokenType = Optional.ofNullable(subjectTokenType);
-        optionalSubjectTokenType.orElseThrow(() -> new IllegalArgumentException("subjectTokenType is mandatory with token-exchange grant type"));
-        optionalSubjectTokenType.filter(ALLOWED_SUBJECT_TOKEN_TYPE::equals)
-          .orElseThrow(() -> new InvalidTokenException("Invalid subjectTokenType " + subjectTokenType));
+        if (!ALLOWED_SUBJECT_TOKEN_TYPE.equals(subjectTokenType)){
+            throw new InvalidTokenException("Invalid subjectTokenType " + subjectTokenType);
+        }
         if (!ALLOWED_SCOPE.equals(scope)){
             throw new InvalidExchangeRequestException("Invalid scope " + scope);
         }
     }
 
     private void validateSubjectTokenIssuer(String subjectIssuer) {
-        Optional<String> optionalIssuer = Optional.ofNullable(subjectIssuer);
-        optionalIssuer.orElseThrow(() -> new IllegalArgumentException("subjectIssuer is mandatory with token-exchange grant type"));
-        optionalIssuer.filter(allowedIssuer::equals)
-          .orElseThrow(() -> new InvalidTokenIssuerException("Invalid subjectIssuer " + subjectIssuer));
+        if (subjectIssuer == null) {
+            throw new IllegalArgumentException("subjectIssuer is mandatory with token-exchange grant type");
+        }
+        if (!allowedIssuer.equals(subjectIssuer)){
+            throw new InvalidTokenIssuerException("Invalid subjectIssuer " + subjectIssuer);
+        }
     }
 
     private Map<String, Claim> validateSubjectToken(String subjectToken) {
-        Optional.ofNullable(subjectToken)
-          .orElseThrow(() -> new IllegalArgumentException("subjectToken is mandatory with token-exchange grant type"));
+        if (subjectToken == null) {
+            throw new IllegalArgumentException("subjectToken is mandatory with token-exchange grant type");
+        }
         Map<String, Claim> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
         if (!allowedAudience.equals(claims.get(Claims.AUDIENCE).asString())){
             throw new InvalidTokenException("Invalid audience: " + allowedAudience);
