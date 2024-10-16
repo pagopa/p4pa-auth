@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.model.generated.UserInfo;
 
 public interface AuthnService {
 
-    AccessToken postToken(String clientId, String grantType, String scope, String subjectToken, String subjectIssuer, String subjectTokenType);
+    AccessToken postToken(String clientId, String grantType, String scope, String subjectToken, String subjectIssuer, String subjectTokenType, String clientSecret);
     UserInfo getUserInfo(String accessToken);
     void logout(String clientId, String token);
 

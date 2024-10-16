@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -53,21 +54,25 @@ public class ValidateExternalTokenService {
         if (!ALLOWED_GRANT_TYPE.equals(grantType)){
             throw new InvalidGrantTypeException("Invalid grantType " + grantType);
         }
-        if (!ALLOWED_SUBJECT_TOKEN_TYPE.equals(subjectTokenType)){
-            throw new InvalidTokenException("Invalid subjectTokenType " + subjectTokenType);
-        }
+        Optional<String> optionalSubjectTokenType = Optional.ofNullable(subjectTokenType);
+        optionalSubjectTokenType.orElseThrow(() -> new IllegalArgumentException("subjectTokenType is mandatory with token-exchange grant type"));
+        optionalSubjectTokenType.filter(ALLOWED_SUBJECT_TOKEN_TYPE::equals)
+          .orElseThrow(() -> new InvalidTokenException("Invalid subjectTokenType " + subjectTokenType));
         if (!ALLOWED_SCOPE.equals(scope)){
             throw new InvalidExchangeRequestException("Invalid scope " + scope);
         }
     }
 
     private void validateSubjectTokenIssuer(String subjectIssuer) {
-        if (!allowedIssuer.equals(subjectIssuer)){
-            throw new InvalidTokenIssuerException("Invalid subjectIssuer " + subjectIssuer);
-        }
+        Optional<String> optionalIssuer = Optional.ofNullable(subjectIssuer);
+        optionalIssuer.orElseThrow(() -> new IllegalArgumentException("subjectIssuer is mandatory with token-exchange grant type"));
+        optionalIssuer.filter(allowedIssuer::equals)
+          .orElseThrow(() -> new InvalidTokenIssuerException("Invalid subjectIssuer " + subjectIssuer));
     }
 
     private Map<String, Claim> validateSubjectToken(String subjectToken) {
+        Optional.ofNullable(subjectToken)
+          .orElseThrow(() -> new IllegalArgumentException("subjectToken is mandatory with token-exchange grant type"));
         Map<String, Claim> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
         if (!allowedAudience.equals(claims.get(Claims.AUDIENCE).asString())){
             throw new InvalidTokenException("Invalid audience: " + allowedAudience);

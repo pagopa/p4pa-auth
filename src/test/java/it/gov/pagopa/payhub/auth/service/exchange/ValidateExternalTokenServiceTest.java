@@ -149,6 +149,42 @@ class ValidateExternalTokenServiceTest {
 
     }
 
+    @Test
+    void givenNullSubjectIssuerThenIllegalArgumentException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(IllegalArgumentException.class, () ->
+          validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, null, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
+    }
+
+    @Test
+    void givenNullSubjectTypeThenIllegalArgumentException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(IllegalArgumentException.class, () ->
+          validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, subjectToken, ALLOWED_SUBECJECT_ISSUER, null, ValidateExternalTokenService.ALLOWED_SCOPE));
+    }
+
+    @Test
+    void givenNullSubjectTokenThenIllegalArgumentException() throws Exception {
+        String subjectToken = utils.generateJWK(EXPIRES_AT);
+        Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
+
+        String wireMockUrl = utils.getUrlJwkProvider();
+        when(jwtValidator.validate(subjectToken, wireMockUrl)).thenReturn(claimsMap);
+
+        assertThrows(IllegalArgumentException.class, () ->
+          validateExternalTokenService.validate(ValidateExternalTokenService.ALLOWED_CLIENT_ID, ValidateExternalTokenService.ALLOWED_GRANT_TYPE, null, ALLOWED_SUBECJECT_ISSUER, ValidateExternalTokenService.ALLOWED_SUBJECT_TOKEN_TYPE, ValidateExternalTokenService.ALLOWED_SCOPE));
+    }
+
     private Map<String, Claim> createJWKClaims (String iss, String aud){
         return JWT.decode(JWT.create()
                 .withIssuer(iss)

@@ -49,13 +49,14 @@ class AuthnServiceTest {
         String subjectIssuer="SUBJECT_ISSUER";
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
+				String clientSecret = "CLIENT_SECRET";
 
         AccessToken expectedResult = new AccessToken();
         Mockito.when(exchangeTokenServiceMock.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedResult);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType);
+	      AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
 
         // Then
         Assertions.assertSame(expectedResult, result);

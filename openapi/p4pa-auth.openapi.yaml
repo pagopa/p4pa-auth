@@ -52,6 +52,10 @@ paths:
               "openid"
             ]
             type: string
+        - name: client_secret
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: OK
