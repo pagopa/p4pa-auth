@@ -36,22 +36,12 @@ public class ValidateExternalTokenService {
     }
 
     public Map<String, Claim> validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
-//        validateRequiredNonNull(subjectToken, subjectIssuer, subjectTokenType);
         validateClient(clientId);
         validateProtocolConfiguration(grantType, subjectTokenType, scope);
         validateSubjectTokenIssuer(subjectIssuer);
         Map<String, Claim> claims = validateSubjectToken(subjectToken);
         log.info("SubjectToken authorized");
         return claims;
-    }
-
-    public void validateRequiredNonNull(String subjectToken, String subjectIssuer, String subjectTokenType) {
-        Objects.requireNonNullElseGet(subjectToken,
-          () -> new IllegalArgumentException("subjectToken is mandatory with token-exchange grant type"));
-        Objects.requireNonNullElseGet(subjectTokenType,
-          () -> new IllegalArgumentException("subjectTokenType is mandatory with token-exchange grant type"));
-        Objects.requireNonNullElseGet(subjectIssuer,
-          () -> new IllegalArgumentException("subjectIssuer is mandatory with token-exchange grant type"));
     }
 
     public void validateClient(String clientId) {
