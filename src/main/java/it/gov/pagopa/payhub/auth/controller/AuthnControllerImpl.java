@@ -19,8 +19,8 @@ public class AuthnControllerImpl implements AuthnApi {
     }
 
     @Override
-    public ResponseEntity<AccessToken> postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
-        AccessToken accessToken = authnService.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+    public ResponseEntity<AccessToken> postToken(String clientId, String grantType, String scope, String subjectToken, String subjectIssuer, String subjectTokenType, String clientSecret) {
+        AccessToken accessToken = authnService.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }
 

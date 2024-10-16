@@ -17,9 +17,6 @@ paths:
           in: query
           required: true
           schema:
-            enum: [
-              "piattaforma-unitaria"
-            ]
             type: string
         - name: grant_type
           in: query
@@ -33,18 +30,15 @@ paths:
         - name: subject_token
           description: "ID Token"
           in: query
-          required: true
           schema:
             type: string
         - name: subject_issuer
           description: "Issuer del subject_token"
           in: query
-          required: true
           schema:
             type: string
         - name: subject_token_type
           in: query
-          required: true
           schema:
             enum: [
               "urn:ietf:params:oauth:token-type:jwt"
@@ -57,6 +51,10 @@ paths:
             enum: [
               "openid"
             ]
+            type: string
+        - name: client_secret
+          in: query
+          schema:
             type: string
       responses:
         '200':
