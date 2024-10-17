@@ -6,14 +6,12 @@ import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
+import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
-import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.UserDTO;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.model.generated.*;
 import java.util.HashSet;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -29,13 +27,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthzServiceTest {
 
     @Mock
     private UserService userServiceMock;
+
+    @Mock
+    private ClientService clientServiceMock;
 
     @Mock
     private OperatorsRepository operatorsRepository;
@@ -56,14 +57,14 @@ class AuthzServiceTest {
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, usersRepository, operatorsRepository,
-            operatorDTOMapper, userDTOMapper, operator2UserInfoMapper);
+        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, operator2UserInfoMapper);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                userServiceMock
+                userServiceMock,
+                clientServiceMock
         );
     }
 
@@ -218,6 +219,22 @@ class AuthzServiceTest {
     }
 
     @Test
+    void whenCreateClientThenVerifyClient() {
+        //Given
+        String organizationIpaCode = "organizationIpaCode";
+        CreateClientRequest createClientRequest = new CreateClientRequest();
+        createClientRequest.setClientName("clientname");
+        ClientDTO expectedClientDTO = new ClientDTO();
+
+        Mockito.when(clientServiceMock.registerClient(createClientRequest.getClientName(), organizationIpaCode)).thenReturn(expectedClientDTO);
+
+        //When
+        ClientDTO actualClientDTO = service.registerClient(organizationIpaCode, createClientRequest);
+        //Then
+        Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+    }
+
+    @Test
     void whenGetUserInfoFromMappedExternalUserIdThenGetUserInfo() {
         //Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
@@ -227,7 +244,7 @@ class AuthzServiceTest {
         UserInfo expectedUserInfo = new UserInfo();
 
         Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId))
-            .thenReturn(Optional.of(userMock));
+          .thenReturn(Optional.of(userMock));
         Mockito.when(operatorsRepository.findAllByUserId(userMock.getUserId())).thenReturn(operators);
         Mockito.when(operator2UserInfoMapper.apply(userMock, operators)).thenReturn(expectedUserInfo);
 
@@ -243,7 +260,7 @@ class AuthzServiceTest {
         //Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
         Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId))
-            .thenReturn(Optional.empty());
+          .thenReturn(Optional.empty());
 
         //When
         Exception exception = Assertions.assertThrows(UserNotFoundException.class, () -> {
@@ -251,6 +268,35 @@ class AuthzServiceTest {
         });
         //Then
         Assertions.assertTrue(exception.getMessage().contains("Cannot found user having mappedExternalId:" + mappedExternalUserId));
+    }
+
+    @Test
+    void givenClientIdWhenGetClientSecretThenInvokeClientService() {
+        //Given
+        String organizationIpaCode = "organizationIpaCode";
+        String clientId = "clientId";
+        String clientSecretMock = UUID.randomUUID().toString();
+
+        Mockito.when(clientServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
+
+        //When
+        String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
+        //Then
+        Assertions.assertEquals(clientSecretMock, clientSecret);
+    }
+
+    @Test
+    void givenOrganizationIpaCodeWhenGetClientsThenInvokeClientService() {
+        //Given
+        String organizationIpaCode = "organizationIpaCode";
+        List<ClientNoSecretDTO> expectedDTOList = new ArrayList<>();
+
+        Mockito.when(clientServiceMock.getClients(organizationIpaCode)).thenReturn(expectedDTOList);
+
+        //When
+        List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
+        //Then
+        Assertions.assertEquals(expectedDTOList, result);
     }
 
 }

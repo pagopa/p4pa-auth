@@ -4,10 +4,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
-import it.gov.pagopa.payhub.model.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.OperatorsPage;
-import it.gov.pagopa.payhub.model.generated.UserDTO;
+import it.gov.pagopa.payhub.model.generated.*;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -16,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class AuthzControllerImpl implements AuthzApi {
@@ -98,5 +97,29 @@ public class AuthzControllerImpl implements AuthzApi {
             throw new UserUnauthorizedException("User not allowed to create user");
         }
         return ResponseEntity.ok(authzService.createUser(user));
+    }
+
+    @Override
+    public ResponseEntity<ClientDTO> registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to create client");
+        }
+        return ResponseEntity.ok(authzService.registerClient(organizationIpaCode, createClientRequest));
+    }
+
+    @Override
+    public ResponseEntity<String> getClientSecret(String organizationIpaCode, String clientId) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to retrieve client secret");
+        }
+        return ResponseEntity.ok(authzService.getClientSecret(organizationIpaCode, clientId));
+    }
+
+    @Override
+    public ResponseEntity<List<ClientNoSecretDTO>> getClients(String organizationIpaCode) {
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
+        }
+        return ResponseEntity.ok(authzService.getClients(organizationIpaCode));
     }
 }

@@ -4,7 +4,9 @@ import com.auth0.jwt.interfaces.Claim;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
+import java.security.KeyPair;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,13 +25,16 @@ class JWTValidatorTest {
     private JWTValidator jwtValidator;
     private WireMockServer wireMockServer;
     private JWTValidatorUtils utils;
+    private KeyPair keyPair;
 
     @BeforeEach
-    void setup(){
+    void setup() throws Exception {
         wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
         wireMockServer.start();
         utils = new JWTValidatorUtils(wireMockServer);
-        jwtValidator = new JWTValidator();
+        keyPair = JWTValidatorUtils.generateKeyPair();
+        String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
+        jwtValidator = new JWTValidator(publicKey);
     }
 
     @AfterEach
@@ -63,4 +68,26 @@ class JWTValidatorTest {
 
         assertThrows(InvalidTokenException.class, () -> jwtValidator.validate(invalidToken, urlJwkProvider));
     }
+
+    @Test
+    void givenValidInternalJWTThenOk() {
+        String validToken = utils.generateInternalToken(keyPair,new Date(System.currentTimeMillis() + 3600000));
+        Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken));
+    }
+
+    @Test
+    void givenInvalidInternalJWTThenInvalidTokenException() throws Exception {
+        KeyPair otherKeyPair = JWTValidatorUtils.generateKeyPair();
+        String invalidToken = utils.generateInternalToken(otherKeyPair, new Date(System.currentTimeMillis() + 3600000));
+
+        assertThrows(InvalidTokenException.class, () -> jwtValidator.validateInternalToken(invalidToken));
+    }
+
+    @Test
+    void givenTokenExpiredThenTokenExpiredException() {
+        String invalidToken = utils.generateInternalToken(keyPair, new Date(System.currentTimeMillis() - 3600000));
+
+        assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken));
+    }
+
 }

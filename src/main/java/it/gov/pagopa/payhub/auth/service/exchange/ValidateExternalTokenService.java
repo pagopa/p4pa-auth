@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -50,6 +51,9 @@ public class ValidateExternalTokenService {
     }
 
     private void validateProtocolConfiguration(String grantType, String subjectTokenType, String scope) {
+        if (!StringUtils.hasText(subjectTokenType)) {
+            throw new InvalidExchangeRequestException("subjectTokenType is mandatory with token-exchange grant type");
+        }
         if (!ALLOWED_GRANT_TYPE.equals(grantType)){
             throw new InvalidGrantTypeException("Invalid grantType " + grantType);
         }
@@ -62,12 +66,18 @@ public class ValidateExternalTokenService {
     }
 
     private void validateSubjectTokenIssuer(String subjectIssuer) {
+        if (!StringUtils.hasText(subjectIssuer)) {
+            throw new InvalidExchangeRequestException("subjectIssuer is mandatory with token-exchange grant type");
+        }
         if (!allowedIssuer.equals(subjectIssuer)){
             throw new InvalidTokenIssuerException("Invalid subjectIssuer " + subjectIssuer);
         }
     }
 
     private Map<String, Claim> validateSubjectToken(String subjectToken) {
+        if (!StringUtils.hasText(subjectToken)) {
+            throw new InvalidExchangeRequestException("subjectToken is mandatory with token-exchange grant type");
+        }
         Map<String, Claim> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
         if (!allowedAudience.equals(claims.get(Claims.AUDIENCE).asString())){
             throw new InvalidTokenException("Invalid audience: " + allowedAudience);
