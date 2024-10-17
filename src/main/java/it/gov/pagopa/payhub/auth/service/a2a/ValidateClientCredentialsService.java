@@ -14,7 +14,7 @@ public class ValidateClientCredentialsService {
 	public void validate(String scope, String clientSecret) {
 		validateProtocolConfiguration(scope);
 		validateClientSecret(clientSecret);
-		log.info("authorization granted");
+		log.debug("authorization granted");
 	}
 
 	private void validateProtocolConfiguration(String scope) {
