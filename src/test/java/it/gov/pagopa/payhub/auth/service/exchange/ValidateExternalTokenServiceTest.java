@@ -174,7 +174,7 @@ class ValidateExternalTokenServiceTest {
     }
 
     @Test
-    void givenNullSubjectTokenThenIllegalArgumentException() throws Exception {
+    void givenNullSubjectTokenThenInvalidExchangeRequestException() throws Exception {
         String subjectToken = utils.generateJWK(EXPIRES_AT);
         Map<String, Claim> claimsMap = createJWKClaims(ALLOWED_SUBECJECT_ISSUER, ALLOWED_AUDIENCE);
 

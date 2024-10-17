@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,6 +102,19 @@ class ClientServiceTest {
 		List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
 		//Then
 		Assertions.assertEquals(List.of(dto1, dto2), result);
+	}
+
+	@Test
+	void givenClientIdWhenGetClientByClientIdThenInvokeClientService() {
+		// Given
+		String clientId = "clientId";
+		Client expectedClient = new Client();
+
+		Mockito.when(clientRetrieverServiceMock.getClientByClientId(clientId)).thenReturn(Optional.of(expectedClient));
+		//When
+		Optional<Client> result = service.getClientByClientId(clientId);
+		// Then
+		Assertions.assertEquals(Optional.of(expectedClient), result);
 	}
 
 }

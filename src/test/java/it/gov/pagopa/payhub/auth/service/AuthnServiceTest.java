@@ -1,6 +1,10 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidGrantTypeException;
+import it.gov.pagopa.payhub.auth.service.a2a.ClientCredentialService;
+import it.gov.pagopa.payhub.auth.service.a2a.ValidateClientCredentialsService;
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
+import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
 import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
@@ -14,9 +18,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @ExtendWith(MockitoExtension.class)
 class AuthnServiceTest {
 
+    @Mock
+    private ClientCredentialService clientCredentialService;
     @Mock
     private ExchangeTokenService exchangeTokenServiceMock;
     @Mock
@@ -28,15 +36,16 @@ class AuthnServiceTest {
 
     @BeforeEach
     void init(){
-        service = new AuthnServiceImpl(exchangeTokenServiceMock, userServiceMock, logoutServiceMock);
+        service = new AuthnServiceImpl(clientCredentialService, exchangeTokenServiceMock, userServiceMock, logoutServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                exchangeTokenServiceMock,
-                userServiceMock,
-                logoutServiceMock
+          clientCredentialService,
+          exchangeTokenServiceMock,
+          userServiceMock,
+          logoutServiceMock
         );
     }
 
@@ -44,13 +53,13 @@ class AuthnServiceTest {
     void whenPostTokenThenCallExchangeService(){
         // Given
         String clientId="CLIENT_ID";
-        String grantType="GRANT_TYPE";
         String subjectToken="SUBJECT_TOKEN";
         String subjectIssuer="SUBJECT_ISSUER";
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 				String clientSecret = "CLIENT_SECRET";
 
+        String grantType= ValidateExternalTokenService.ALLOWED_GRANT_TYPE;
         AccessToken expectedResult = new AccessToken();
         Mockito.when(exchangeTokenServiceMock.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedResult);
@@ -60,6 +69,43 @@ class AuthnServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenPostTokenThenCallClientCredentialService(){
+        // Given
+        String clientId="CLIENT_ID";
+        String subjectToken="SUBJECT_TOKEN";
+        String subjectIssuer="SUBJECT_ISSUER";
+        String subjectTokenType="SUBJECT_TOKEN_TYPE";
+        String scope="SCOPE";
+        String clientSecret = "CLIENT_SECRET";
+
+        String grantType= ValidateClientCredentialsService.ALLOWED_GRANT_TYPE;
+        AccessToken expectedResult = new AccessToken();
+        Mockito.when(clientCredentialService.postToken(clientId, grantType, scope, clientSecret)).thenReturn(expectedResult);
+
+        // When
+        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenPostTokenWhenCallClientCredentialServiceThenInvalidGrantTypeException(){
+        // Given
+        String clientId="CLIENT_ID";
+        String subjectToken="SUBJECT_TOKEN";
+        String subjectIssuer="SUBJECT_ISSUER";
+        String subjectTokenType="SUBJECT_TOKEN_TYPE";
+        String scope="SCOPE";
+        String clientSecret = "CLIENT_SECRET";
+
+        String grantType="UNEXPECTED_GRANT_TYPE";
+        // When, Then
+        assertThrows(InvalidGrantTypeException.class, () ->
+            service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret));
     }
 
     @Test
