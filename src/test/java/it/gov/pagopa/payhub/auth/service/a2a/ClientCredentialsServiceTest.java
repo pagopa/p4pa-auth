@@ -25,7 +25,7 @@ class ClientCredentialsServiceTest {
 	void givenValidTokenWhenPostTokenThenSuccess(){
 		// Given
 		String clientId="CLIENT_ID";
-		String grantType="GRANT_TYPE";;
+		String grantType="GRANT_TYPE";
 		String scope="SCOPE";
 		String clientSecret="CLIENT_SECRET";
 
