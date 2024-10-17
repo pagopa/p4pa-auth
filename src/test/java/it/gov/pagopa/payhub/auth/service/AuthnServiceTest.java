@@ -61,7 +61,7 @@ class AuthnServiceTest {
 
         String grantType= ValidateExternalTokenService.ALLOWED_GRANT_TYPE;
         AccessToken expectedResult = new AccessToken();
-        Mockito.when(exchangeTokenServiceMock.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
+        Mockito.when(exchangeTokenServiceMock.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedResult);
 
         // When
@@ -83,7 +83,7 @@ class AuthnServiceTest {
 
         String grantType= ValidateClientCredentialsService.ALLOWED_GRANT_TYPE;
         AccessToken expectedResult = new AccessToken();
-        Mockito.when(clientCredentialService.postToken(clientId, grantType, scope, clientSecret)).thenReturn(expectedResult);
+        Mockito.when(clientCredentialService.postToken(clientId, scope, clientSecret)).thenReturn(expectedResult);
 
         // When
         AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);

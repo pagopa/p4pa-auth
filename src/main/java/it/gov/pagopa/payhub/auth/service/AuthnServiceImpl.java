@@ -30,8 +30,8 @@ public class AuthnServiceImpl implements AuthnService {
     @Override
     public AccessToken postToken(String clientId, String grantType, String scope, String subjectToken, String subjectIssuer, String subjectTokenType, String clientSecret) {
 				return switch (grantType) {
-          case ValidateExternalTokenService.ALLOWED_GRANT_TYPE -> exchangeTokenService.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
-					case ValidateClientCredentialsService.ALLOWED_GRANT_TYPE -> clientCredentialService.postToken(clientId, grantType, scope, clientSecret);
+          case ValidateExternalTokenService.ALLOWED_GRANT_TYPE -> exchangeTokenService.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
+					case ValidateClientCredentialsService.ALLOWED_GRANT_TYPE -> clientCredentialService.postToken(clientId, scope, clientSecret);
 					default -> throw new InvalidGrantTypeException("Invalid grantType " + grantType);
 				};
     }

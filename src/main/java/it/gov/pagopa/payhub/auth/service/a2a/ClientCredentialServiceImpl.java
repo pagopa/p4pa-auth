@@ -15,9 +15,9 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 	}
 
 	@Override
-	public AccessToken postToken(String clientId, String grantType, String scope, String clientSecret) {
-		log.info("Client {} requested authentication with grant type {} and scope {}", clientId, grantType, scope);
-		validateClientCredentialsService.validate(clientId, grantType, scope, clientSecret);
+	public AccessToken postToken(String clientId, String scope, String clientSecret) {
+		log.info("Client {} requested authentication with client_credentials grant type and scope {}", clientId, scope);
+		validateClientCredentialsService.validate(scope, clientSecret);
 		return AccessToken.builder().accessToken("accessToken").build();
 	}
 }

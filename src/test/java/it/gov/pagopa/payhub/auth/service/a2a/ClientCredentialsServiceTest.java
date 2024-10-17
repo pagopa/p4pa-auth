@@ -25,14 +25,13 @@ class ClientCredentialsServiceTest {
 	void givenValidTokenWhenPostTokenThenSuccess(){
 		// Given
 		String clientId="CLIENT_ID";
-		String grantType="GRANT_TYPE";
 		String scope="SCOPE";
 		String clientSecret="CLIENT_SECRET";
 
-		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(clientId, grantType, scope, clientSecret);
+		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(scope, clientSecret);
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
 		//When
-		AccessToken result = service.postToken(clientId, grantType, scope, clientSecret);
+		AccessToken result = service.postToken(clientId, scope, clientSecret);
 		//Then
 		Assertions.assertEquals(expectedAccessToken, result);
 	}

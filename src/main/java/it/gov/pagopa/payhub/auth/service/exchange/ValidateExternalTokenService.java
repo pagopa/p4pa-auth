@@ -35,9 +35,9 @@ public class ValidateExternalTokenService {
         this.jwtValidator = jwtValidator;
     }
 
-    public Map<String, Claim> validate(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+    public Map<String, Claim> validate(String clientId, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
         validateClient(clientId);
-        validateProtocolConfiguration(grantType, subjectTokenType, scope);
+        validateProtocolConfiguration(subjectTokenType, scope);
         validateSubjectTokenIssuer(subjectIssuer);
         Map<String, Claim> claims = validateSubjectToken(subjectToken);
         log.info("SubjectToken authorized");
@@ -50,12 +50,9 @@ public class ValidateExternalTokenService {
         }
     }
 
-    private void validateProtocolConfiguration(String grantType, String subjectTokenType, String scope) {
+    private void validateProtocolConfiguration(String subjectTokenType, String scope) {
         if (!StringUtils.hasText(subjectTokenType)) {
             throw new InvalidExchangeRequestException("subjectTokenType is mandatory with token-exchange grant type");
-        }
-        if (!ALLOWED_GRANT_TYPE.equals(grantType)){
-            throw new InvalidGrantTypeException("Invalid grantType " + grantType);
         }
         if (!ALLOWED_SUBJECT_TOKEN_TYPE.equals(subjectTokenType)){
             throw new InvalidTokenException("Invalid subjectTokenType " + subjectTokenType);
