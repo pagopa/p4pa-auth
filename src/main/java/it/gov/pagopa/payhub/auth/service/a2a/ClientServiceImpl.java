@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -27,7 +28,6 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public ClientDTO registerClient(String clientName, String organizationIpaCode) {
-
 		Client client = clientRegistrationService.registerClient(clientName, organizationIpaCode);
 		return clientMapper.mapToDTO(client);
 	}
@@ -42,6 +42,11 @@ public class ClientServiceImpl implements ClientService {
 	public List<ClientNoSecretDTO> getClients(String organizationIpaCode) {
 		log.info("Retrieving clients for {}", organizationIpaCode);
 		return clientRetrieverService.getClients(organizationIpaCode);
+	}
+
+	public Optional<Client> getClientByClientId(String clientId) {
+		log.info("Retrieving client for {}", clientId);
+		return clientRetrieverService.getClientByClientId(clientId);
 	}
 
 }

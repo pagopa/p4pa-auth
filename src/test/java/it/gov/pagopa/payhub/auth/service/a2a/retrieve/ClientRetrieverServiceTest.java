@@ -103,5 +103,23 @@ class ClientRetrieverServiceTest {
 		// Then
 		Assertions.assertEquals(List.of(expectedDto1, expectedDto2), result);
 	}
-	
+
+	@Test
+	void givenClientIdWhenFindByIdThenInvokeClientRetrieverService(){
+		// Given
+		String organizationIpaCode = "organizationIpaCode";
+		String clientName = "clientName";
+		String clientId = organizationIpaCode + clientName;
+		byte[] encryptedClientSecret = new byte[16];
+		new Random().nextBytes(encryptedClientSecret);
+		Client storedClient = new Client(clientId, clientName, organizationIpaCode, encryptedClientSecret);
+
+		Mockito.when(clientRepositoryMock.findById(clientId)).thenReturn(Optional.of(storedClient));
+
+		// When
+		Optional<Client> result = service.getClientByClientId(clientId);
+
+		// Then
+		Assertions.assertEquals(Optional.of(storedClient), result);
+	}
 }

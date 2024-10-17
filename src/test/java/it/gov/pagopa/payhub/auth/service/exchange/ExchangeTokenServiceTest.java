@@ -60,14 +60,13 @@ class ExchangeTokenServiceTest {
     void givenValidTokenWhenPostTokenThenSuccess(){
         // Given
         String clientId="CLIENT_ID";
-        String grantType="GRANT_TYPE";
         String subjectToken="SUBJECT_TOKEN";
         String subjectIssuer="SUBJECT_ISSUER";
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
         HashMap<String, Claim> expectedClaims = new HashMap<>();
-        Mockito.when(validateExternalTokenServiceMock.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope))
+        Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedClaims);
 
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
@@ -83,7 +82,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(registeredUser);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        AccessToken result = service.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
@@ -95,7 +94,6 @@ class ExchangeTokenServiceTest {
     void givenValidTokenFakeWhenPostTokenThenSuccess() {
         // Given
         String clientId = "CLIENT_ID";
-        String grantType = "GRANT_TYPE";
         String subjectToken = "SUBJECT_TOKEN";
         String subjectIssuer = "SUBJECT_ISSUER";
         String subjectTokenType = "FAKE-AUTH";
@@ -110,7 +108,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        AccessToken result = service.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
