@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public class ValidateClientCredentialsServiceTest {
+class ValidateClientCredentialsServiceTest {
 	@Mock
 	private ClientService clientServiceMock;
 	private ValidateClientCredentialsService service;

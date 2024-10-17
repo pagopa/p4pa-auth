@@ -25,8 +25,7 @@ public class ValidateClientCredentialsService {
 		validateClientSecret(clientSecret);
 		log.info("authorization granted");
 	}
-
-	//TODO Client will be used to verify clientSecret and assign roles with organizationIpaCode
+	
 	private Client validateClient(String clientId) {
 		return clientService.getClientByClientId(clientId)
 			.orElseThrow(() -> new InvalidExchangeClientException("Invalid clientId:"+ clientId));
