@@ -28,7 +28,7 @@ class ClientCredentialsServiceTest {
 		String scope="SCOPE";
 		String clientSecret="CLIENT_SECRET";
 
-		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(scope, clientSecret);
+		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(clientId, scope, clientSecret);
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
 		//When
 		AccessToken result = service.postToken(clientId, scope, clientSecret);

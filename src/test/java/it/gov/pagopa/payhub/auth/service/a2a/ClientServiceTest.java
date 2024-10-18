@@ -117,4 +117,28 @@ class ClientServiceTest {
 		Assertions.assertEquals(Optional.of(expectedClient), result);
 	}
 
+	@Test
+	void givenCredentialsWhenGetClientByClientIdThenInvokeClientService() {
+		// Given
+		String organizationIpaCode = "IPA_TEST_2";
+		String clientName = "SERVICE_001";
+		String clientId = organizationIpaCode + clientName;
+		String clientSecretMock = UUID.randomUUID().toString();
+
+		Client mockClient = new Client();
+		ClientDTO expectedClientDTO = ClientDTO.builder()
+			.clientId(clientId)
+			.clientName(clientName)
+			.organizationIpaCode(organizationIpaCode)
+			.clientSecret(clientSecretMock)
+			.build();
+
+		Mockito.when(clientRetrieverServiceMock.getClientByClientId(clientId)).thenReturn(Optional.of(mockClient));
+		Mockito.when(clientMapperMock.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
+		// When
+		ClientDTO actualClientDTO = service.verifyCredentials(clientId, clientSecretMock);
+		// Then
+		Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+	}
+
 }

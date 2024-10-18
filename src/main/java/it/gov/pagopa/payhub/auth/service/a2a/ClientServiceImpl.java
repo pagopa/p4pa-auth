@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeRequestException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
@@ -47,6 +48,13 @@ public class ClientServiceImpl implements ClientService {
 	public Optional<Client> getClientByClientId(String clientId) {
 		log.info("Retrieving client for {}", clientId);
 		return clientRetrieverService.getClientByClientId(clientId);
+	}
+
+	public ClientDTO verifyCredentials(String clientId, String clientSecret) {
+		return this.getClientByClientId(clientId)
+			.map(clientMapper::mapToDTO)
+			.filter(dto -> dto.getClientSecret().equals(clientSecret))
+			.orElseThrow(() -> new InvalidExchangeRequestException("Invalid client-credentials"));
 	}
 
 }

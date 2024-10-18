@@ -8,12 +8,19 @@ import org.springframework.util.StringUtils;
 @Service
 @Slf4j
 public class ValidateClientCredentialsService {
+	private final ClientService clientService;
+
 	public static final String ALLOWED_GRANT_TYPE = "client_credentials";
 	public static final String ALLOWED_SCOPE = "openid";
 
-	public void validate(String scope, String clientSecret) {
+	public ValidateClientCredentialsService(ClientService clientService) {
+		this.clientService = clientService;
+	}
+
+	public void validate(String clientId, String scope, String clientSecret) {
 		validateProtocolConfiguration(scope);
 		validateClientSecret(clientSecret);
+		clientService.verifyCredentials(clientId, clientSecret);
 		log.debug("authorization granted");
 	}
 
