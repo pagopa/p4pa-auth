@@ -16,13 +16,13 @@ class ClientCredentialsServiceTest {
 	@Mock
 	private ValidateClientCredentialsService validateClientCredentialsServiceMock;
 	@Mock
-	private AuthorizeClientCredentialsRequestService authorizeClientCredentialsRequestService;
+	private AuthorizeClientCredentialsRequestService authorizeClientCredentialsRequestServiceMock;
 
 	private ClientCredentialService service;
 
 	@BeforeEach
 	void init() {
-		service = new ClientCredentialServiceImpl(validateClientCredentialsServiceMock, authorizeClientCredentialsRequestService);
+		service = new ClientCredentialServiceImpl(validateClientCredentialsServiceMock, authorizeClientCredentialsRequestServiceMock);
 	}
 
 	@Test
@@ -33,7 +33,7 @@ class ClientCredentialsServiceTest {
 		String clientSecret="CLIENT_SECRET";
 
 		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(scope, clientSecret);
-		Mockito.doReturn(new ClientDTO()).when(authorizeClientCredentialsRequestService).authorizeCredentials(clientId, clientSecret);
+		Mockito.doReturn(new ClientDTO()).when(authorizeClientCredentialsRequestServiceMock).authorizeCredentials(clientId, clientSecret);
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
 		//When
 		AccessToken result = service.postToken(clientId, scope, clientSecret);

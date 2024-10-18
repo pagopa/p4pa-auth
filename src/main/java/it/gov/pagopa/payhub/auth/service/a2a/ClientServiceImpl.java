@@ -50,11 +50,4 @@ public class ClientServiceImpl implements ClientService {
 		return clientRetrieverService.getClientByClientId(clientId);
 	}
 
-	public ClientDTO authorizeCredentials(String clientId, String clientSecret) {
-		return getClientByClientId(clientId)
-			.map(clientMapper::mapToDTO)
-			.filter(dto -> dto.getClientSecret().equals(clientSecret))
-			.orElseThrow(() -> new ClientUnauthorizedException("Unauthorized client for client-credentials"));
-	}
-
 }

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
-import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeRequestException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,13 +26,13 @@ class ValidateClientCredentialsServiceTest {
 
 	@Test
 	void givenInvalidScopeThenInvalidExchangeRequestException() {
-		assertThrows(ClientUnauthorizedException.class, () ->
+		assertThrows(InvalidExchangeRequestException.class, () ->
 			service.validate( "UNEXPECTED_SCOPE", ALLOWED_CLIENT_SECRET));
 	}
 
 	@Test
 	void givenNullClientSecretThenInvalidExchangeRequestException() {
-		assertThrows(ClientUnauthorizedException.class, () ->
+		assertThrows(InvalidExchangeRequestException.class, () ->
 			service.validate(ValidateClientCredentialsService.ALLOWED_SCOPE, null));
 	}
 
