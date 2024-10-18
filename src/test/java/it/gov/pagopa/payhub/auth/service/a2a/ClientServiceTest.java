@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
+import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.a2a.registration.ClientRegistrationService;
@@ -118,7 +119,7 @@ class ClientServiceTest {
 	}
 
 	@Test
-	void givenCredentialsWhenGetClientByClientIdThenInvokeClientService() {
+	void givenRightCredentialsWhenVerifyCredentialsThenOk() {
 		// Given
 		String organizationIpaCode = "IPA_TEST_2";
 		String clientName = "SERVICE_001";
@@ -136,9 +137,42 @@ class ClientServiceTest {
 		Mockito.when(clientRetrieverServiceMock.getClientByClientId(clientId)).thenReturn(Optional.of(mockClient));
 		Mockito.when(clientMapperMock.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
 		// When
-		ClientDTO actualClientDTO = service.verifyCredentials(clientId, clientSecretMock);
+		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecretMock);
 		// Then
 		Assertions.assertEquals(expectedClientDTO, actualClientDTO);
 	}
 
+	@Test
+	void givenUnexpectedClientIdCredentialsWhenVerifyCredentialsThenClientUnauthorizedException() {
+		// Given
+		String clientId = "UNEXPECTED_CLIENT_ID";
+		String clientSecretMock = UUID.randomUUID().toString();
+
+		Mockito.when(clientRetrieverServiceMock.getClientByClientId(clientId)).thenThrow(new ClientUnauthorizedException("error"));
+		// When, Then
+		Assertions.assertThrows(ClientUnauthorizedException.class, () -> service.authorizeCredentials(clientId, clientSecretMock));
+	}
+
+	@Test
+	void givenUnexpectedClientSecretCredentialsWhenVerifyCredentialsThenClientUnauthorizedException() {
+		// Given
+		String organizationIpaCode = "IPA_TEST_2";
+		String clientName = "SERVICE_001";
+		String clientId = organizationIpaCode + clientName;
+		String clientSecret = UUID.randomUUID().toString();
+
+		Client mockClient = new Client();
+		ClientDTO expectedClientDTO = ClientDTO.builder()
+			.clientId(clientId)
+			.clientName(clientName)
+			.organizationIpaCode(organizationIpaCode)
+			.clientSecret(UUID.randomUUID().toString())
+			.build();
+
+		Mockito.when(clientRetrieverServiceMock.getClientByClientId(clientId)).thenReturn(Optional.of(mockClient));
+		Mockito.when(clientMapperMock.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
+
+		// When, Then
+		Assertions.assertThrows(ClientUnauthorizedException.class, () -> service.authorizeCredentials(clientId, clientSecret));
+	}
 }

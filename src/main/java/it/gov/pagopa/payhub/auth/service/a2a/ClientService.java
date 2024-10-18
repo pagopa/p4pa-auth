@@ -13,5 +13,5 @@ public interface ClientService {
 	String getClientSecret(String organizationIpaCode, String clientId);
 	List<ClientNoSecretDTO> getClients(String organizationIpaCode);
 	Optional<Client> getClientByClientId(String clientId);
-	ClientDTO verifyCredentials(String clientId, String clientSecret);
+	ClientDTO authorizeCredentials(String clientId, String clientSecret);
 }
