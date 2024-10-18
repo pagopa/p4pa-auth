@@ -37,13 +37,13 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
     }
 
     @Override
-    public AccessToken postToken(String clientId, String grantType, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
-        log.info("Client {} requested to exchange a {} token provided by {} asking for grant type {} and scope {}",
-                clientId, subjectTokenType, subjectIssuer, grantType, scope);
+    public AccessToken postToken(String clientId, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
+        log.info("Client {} requested to exchange a {} token provided by {} asking for token-exchange grant type and scope {}",
+                clientId, subjectTokenType, subjectIssuer, scope);
         if(SUBJECT_TOKEN_TYPE_FAKE.equals(subjectTokenType)){
             return handleFakeAuth(subjectToken, subjectIssuer);
         }
-        Map<String, Claim> claims = validateExternalTokenService.validate(clientId, grantType, subjectToken, subjectIssuer, subjectTokenType, scope);
+        Map<String, Claim> claims = validateExternalTokenService.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
         AccessToken accessToken = accessTokenBuilderService.build();
         IamUserInfoDTO iamUser = idTokenClaimsMapper.apply(claims);
         User registeredUser = iamUserRegistrationService.registerUser(iamUser);
