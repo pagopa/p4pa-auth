@@ -30,7 +30,7 @@ class AuthorizeClientCredentialsRequestServiceTest {
 	}
 
 	@Test
-	void givenRightCredentialsWhenVerifyCredentialsThenOk() {
+	void givenRightCredentialsWhenAuthorizeCredentialsThenOk() {
 		// Given
 		String organizationIpaCode = "IPA_TEST_2";
 		String clientName = "SERVICE_001";
@@ -54,7 +54,7 @@ class AuthorizeClientCredentialsRequestServiceTest {
 	}
 
 	@Test
-	void givenUnexpectedClientIdCredentialsWhenVerifyCredentialsThenClientUnauthorizedException() {
+	void givenUnexpectedClientIdCredentialsWhenAuthorizeCredentialsThenClientUnauthorizedException() {
 		// Given
 		String clientId = "UNEXPECTED_CLIENT_ID";
 		String clientSecretMock = UUID.randomUUID().toString();
@@ -65,7 +65,7 @@ class AuthorizeClientCredentialsRequestServiceTest {
 	}
 
 	@Test
-	void givenUnexpectedClientSecretCredentialsWhenVerifyCredentialsThenClientUnauthorizedException() {
+	void givenUnexpectedClientSecretCredentialsWhenAuthorizeCredentialsThenClientUnauthorizedException() {
 		// Given
 		String organizationIpaCode = "IPA_TEST_2";
 		String clientName = "SERVICE_001";
