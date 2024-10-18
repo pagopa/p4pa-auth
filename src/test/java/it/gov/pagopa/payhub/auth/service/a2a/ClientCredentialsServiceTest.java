@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
 import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,11 +15,14 @@ class ClientCredentialsServiceTest {
 
 	@Mock
 	private ValidateClientCredentialsService validateClientCredentialsServiceMock;
+	@Mock
+	private AuthorizeClientCredentialsRequestService authorizeClientCredentialsRequestServiceMock;
+
 	private ClientCredentialService service;
 
 	@BeforeEach
 	void init() {
-		service = new ClientCredentialServiceImpl(validateClientCredentialsServiceMock);
+		service = new ClientCredentialServiceImpl(validateClientCredentialsServiceMock, authorizeClientCredentialsRequestServiceMock);
 	}
 
 	@Test
@@ -29,6 +33,7 @@ class ClientCredentialsServiceTest {
 		String clientSecret="CLIENT_SECRET";
 
 		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(scope, clientSecret);
+		Mockito.doReturn(new ClientDTO()).when(authorizeClientCredentialsRequestServiceMock).authorizeCredentials(clientId, clientSecret);
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
 		//When
 		AccessToken result = service.postToken(clientId, scope, clientSecret);
