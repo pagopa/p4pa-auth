@@ -334,6 +334,16 @@
 						"type": "text/javascript",
 						"packages": {}
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.get(\"mappedExternalUserId\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
 				}
 			],
 			"request": {
@@ -350,7 +360,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo/EUqKiD1psLrGNuLxCGzriy-royPlBvuyeJMc0dxaxNs=",
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo/{{mappedExternalUserId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
@@ -358,7 +368,7 @@
 						"payhub",
 						"auth",
 						"userinfo",
-						"EUqKiD1psLrGNuLxCGzriy-royPlBvuyeJMc0dxaxNs="
+						"{{mappedExternalUserId}}"
 					]
 				}
 			},
