@@ -117,4 +117,9 @@ public class AuthzServiceImpl implements AuthzService {
     public List<ClientNoSecretDTO> getClients(String organizationIpaCode) {
         return clientService.getClients(organizationIpaCode);
     }
+
+    @Override
+    public void revokeClient(String organizationIpaCode, String clientId) {
+        //TODO implement revoke
+    }
 }
