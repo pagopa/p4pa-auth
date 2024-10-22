@@ -20,5 +20,8 @@ public class IamUserInfoDTO {
 
   // field calculated upon registration
   private String innerUserId;
+
+  // field to check if it is a real user or a machine/system user
+  private boolean systemUser;
 }
 
