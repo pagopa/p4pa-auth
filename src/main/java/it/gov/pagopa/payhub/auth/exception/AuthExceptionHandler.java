@@ -24,7 +24,7 @@ public class AuthExceptionHandler {
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
     }
 
-    @ExceptionHandler(InvalidExchangeClientException.class)
+    @ExceptionHandler({InvalidExchangeClientException.class, ClientUnauthorizedException.class})
     public ResponseEntity<AuthErrorDTO> handleInvalidClientError(RuntimeException ex, HttpServletRequest request){
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_CLIENT);
     }
