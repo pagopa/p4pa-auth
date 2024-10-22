@@ -689,6 +689,9 @@
 							"        pm.expect(jsonResponse).to.have.property(\"clientName\").to.eq(\"testClient\");\r",
 							"        pm.expect(jsonResponse).to.have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\");\r",
 							"        pm.expect(jsonResponse).to.have.property(\"clientSecret\");\r",
+							"\r",
+							"        pm.environment.set(\"clientId\", jsonResponse.clientId)\r",
+							"        pm.environment.set(\"clientSecret\", jsonResponse.clientSecret)\r",
 							"    } else {\r",
 							"        // Se il record esiste, ritorna un errore di chiave duplicata\r",
 							"         pm.response.to.have.status(500);\r",
@@ -993,6 +996,77 @@
 						"payhub",
 						"auth",
 						"userinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postToken client-credentials",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"    pm.environment.get(\"clientId\")\r",
+							"    pm.environment.get(\"clientSecret\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - postToken - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id={{clientId}}&grant_type=client_credentials&scope=openid&client_secret={{clientSecret}}",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "{{clientId}}"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{clientSecret}}"
+						}
 					]
 				}
 			},
