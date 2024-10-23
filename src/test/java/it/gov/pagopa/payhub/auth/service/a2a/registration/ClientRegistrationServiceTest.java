@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.a2a.registration;
 
+import it.gov.pagopa.payhub.auth.exception.custom.M2MClientConflictException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
@@ -11,8 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.UUID;
+import org.springframework.dao.DuplicateKeyException;
 
 @ExtendWith(MockitoExtension.class)
 class ClientRegistrationServiceTest {
@@ -26,29 +26,54 @@ class ClientRegistrationServiceTest {
     private ClientRegistrationService service;
 
     @Test
-    void whenRegisterClientThenReturnStoredClient(){
+    void whenRegisterClientThenReturnStoredClient() {
         // Given
         String organizationIpaCode = "organizationIpaCode";
         String clientName = "clientName";
-        String clientId = organizationIpaCode + clientName;
-        String uuidForClientSecret = UUID.randomUUID().toString();
 
-        ClientDTO clientDTO = ClientDTO.builder()
-          .clientId(clientId)
-          .clientName(clientName)
-          .organizationIpaCode(organizationIpaCode)
-          .clientSecret(uuidForClientSecret)
-          .build();
+        Client mappedClient = configureClientMapperMock(organizationIpaCode, clientName);
 
-        Client clientMapped = clientMapperMock.mapToModel(clientDTO);
         Client storedClient = new Client();
-
-        Mockito.when(clientRepositoryMock.insert(clientMapped)).thenReturn(storedClient);
+        Mockito.when(clientRepositoryMock.insert(mappedClient)).thenReturn(storedClient);
 
         // When
         Client result = service.registerClient(clientName, organizationIpaCode);
 
         // Then
         Assertions.assertSame(storedClient, result);
+    }
+
+    @Test
+    void givenDuplicateClientIdWhenRegisterClientThenM2MClientConflictException() {
+        String organizationIpaCode = "IPACODE";
+        String clientName = "CLIENTNAME";
+
+        Client mappedClient = configureClientMapperMock(organizationIpaCode, clientName);
+
+        Mockito.when(clientRepositoryMock.insert(mappedClient))
+                .thenThrow(new DuplicateKeyException(""));
+
+        Assertions.assertThrows(M2MClientConflictException.class,
+                () -> service.registerClient(clientName, organizationIpaCode)
+        );
+    }
+
+    private Client configureClientMapperMock(String organizationIpaCode, String clientName) {
+        Client mappedClient = new Client();
+        Mockito.when(clientMapperMock.mapToModel(Mockito.argThat(c -> {
+                    Assertions.assertNotNull(c.getClientSecret());
+                    c.setClientSecret(null);
+
+                    Assertions.assertEquals(
+                            ClientDTO.builder()
+                                    .clientId(organizationIpaCode + clientName)
+                                    .clientName(clientName)
+                                    .organizationIpaCode(organizationIpaCode)
+                                    .build(),
+                            c);
+                    return true;
+                })))
+                .thenReturn(mappedClient);
+        return mappedClient;
     }
 }
