@@ -736,6 +736,69 @@
 			"response": []
 		},
 		{
+			"name": "registerClient_Conflict",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - registerClient_Conflict - Responses with 409\", function () {\r",
+							"    pm.response.to.have.status(409);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"clientName\" : \"testClient\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"IPA_TEST"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "getClientSecret",
 			"event": [
 				{

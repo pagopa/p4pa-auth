@@ -64,6 +64,13 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(httpStatus).body(null);
     }
 
+    @ExceptionHandler(M2MClientConflictException.class)
+    public ResponseEntity<String> handleConflictException(RuntimeException ex, HttpServletRequest request) {
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
+        logException(ex, request, httpStatus);
+        return ResponseEntity.status(httpStatus).body(null);
+    }
+
     static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
         String message = logException(ex, request, httpStatus);
 

@@ -1,10 +1,12 @@
 package it.gov.pagopa.payhub.auth.service.a2a.registration;
 
+import it.gov.pagopa.payhub.auth.exception.custom.M2MClientConflictException;
+import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
-import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -32,6 +34,10 @@ public class ClientRegistrationService {
 				.build()
 		);
 		log.info("Registering client having clientName {} and organizationIpaCode {}", clientName, organizationIpaCode);
-		return clientRepository.insert(client);
+		try{
+			return clientRepository.insert(client);
+		} catch (DuplicateKeyException e){
+			throw new M2MClientConflictException("Client with name " + clientName + " already exists under organization " + organizationIpaCode);
+		}
 	}
 }
