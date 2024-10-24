@@ -33,9 +33,11 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -467,5 +469,55 @@ class AuthzControllerTest {
                         .content(objectMapper.writeValueAsString(createClientRequest))
         ).andExpect(status().isConflict());
     }
+//end region
 
+//region revokeClient tests
+    @Test
+    void givenAuthorizedUserWhenRevokeClientThenOk() throws Exception {
+        String organizationIpaCode = "IPA_TEST_2";
+        String clientId = "CLIENTID";
+
+        UserInfo expectedUser = UserInfo.builder()
+          .userId("USERID")
+          .organizationAccess(organizationIpaCode)
+          .organizations(List.of(UserOrganizationRoles.builder()
+            .organizationIpaCode(organizationIpaCode)
+            .roles(List.of(Constants.ROLE_ADMIN))
+            .build()))
+          .build();
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+          .thenReturn(expectedUser);
+
+        willDoNothing().given(authzServiceMock).revokeClient(organizationIpaCode, clientId);
+
+        mockMvc.perform(
+            delete("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+          ).andExpect(status().isOk())
+          .andDo(print());
+    }
+
+    @Test
+    void givenUnauthorizedUserWhenRevokeClientThenException() throws Exception {
+        //Given
+        String organizationIpaCode = "IPA_TEST_2";
+        String clientId = "CLIENTID";
+
+        //When
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+          .thenReturn(UserInfo.builder()
+            .organizations(List.of(UserOrganizationRoles.builder()
+              .organizationIpaCode("ORG")
+              .roles(List.of(Constants.ROLE_OPER))
+              .build()))
+            .build());
+
+        //Then
+        mockMvc.perform(
+          delete("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+        ).andExpect(status().isUnauthorized());
+    }
+    //end region
 }

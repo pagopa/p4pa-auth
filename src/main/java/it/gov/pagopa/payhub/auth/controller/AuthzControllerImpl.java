@@ -126,7 +126,7 @@ public class AuthzControllerImpl implements AuthzApi {
     @Override
     public ResponseEntity<Void> revokeClient(String organizationIpaCode, String clientId) {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
-            throw new UserUnauthorizedException("User not allowed to delete operator with clientId " + clientId);
+            throw new UserUnauthorizedException("User not allowed to delete client with clientId " + clientId);
         }
         authzService.revokeClient(organizationIpaCode, clientId);
         return ResponseEntity.ok(null);
