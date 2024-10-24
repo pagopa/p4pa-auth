@@ -3,53 +3,49 @@ package it.gov.pagopa.payhub.auth.service.a2a;
 import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @Slf4j
 public class AuthorizeClientCredentialsRequestService {
-	private static final String ERROR = "Unauthorized client for client-credentials";
-	private static final String REGEX = "^(\\w+\\s*)(piattaforma-unitaria\\b)$";
+	private static final String PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX = "piattaforma-unitaria_";
 	private final ClientService clientService;
 	private final ClientMapper clientMapper;
-	private final String clientSecretEnv;
+	private final String piattaformaUnitariaClientSecret;
 
 	public AuthorizeClientCredentialsRequestService(
-			@Value("${piattaforma-unitaria-client-secret}") String clientSecretEnv,
 			ClientService clientService,
-			ClientMapper clientMapper) {
+			ClientMapper clientMapper,
+			@Value("${m2m.piattaforma-unitaria-client-secret}") String piattaformaUnitariaClientSecret) {
 		this.clientService = clientService;
 		this.clientMapper = clientMapper;
-		this.clientSecretEnv = clientSecretEnv;
+		this.piattaformaUnitariaClientSecret = piattaformaUnitariaClientSecret;
 	}
 
 	public ClientDTO authorizeCredentials(String clientId, String clientSecret) {
-		Matcher matcher = Pattern.compile(REGEX).matcher(clientId);
-		if (matcher.matches()) {
-			return retrieveByEnvProperties(clientId, matcher.group(1), matcher.group(2), clientSecret);
+		if (clientId.startsWith(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)) {
+			return authorizePiattaformaUnitariaCredentials(clientId, clientSecret);
 		}
-		return retrieveByCollection(clientId, clientSecret);
+		return authorizeSilCredentials(clientId, clientSecret);
 	}
 
-	private ClientDTO retrieveByCollection(String clientId, String clientSecret) {
+	private ClientDTO authorizeSilCredentials(String clientId, String clientSecret) {
 		return clientService.getClientByClientId(clientId)
 			.map(clientMapper::mapToDTO)
 			.filter(dto -> dto.getClientSecret().equals(clientSecret))
-			.orElseThrow(() -> new ClientUnauthorizedException(ERROR));
+			.orElseThrow(() -> new ClientUnauthorizedException("Unauthorized client with client-credentials grant type"));
 	}
 
-	private ClientDTO retrieveByEnvProperties(String clientId, String organizationIpaCode, String clientName, String clientSecret) {
-		if (!clientSecret.equals(clientSecretEnv))
-			throw new ClientUnauthorizedException(ERROR);
+	private ClientDTO authorizePiattaformaUnitariaCredentials(String clientId, String clientSecret) {
+		if (!clientSecret.equals(piattaformaUnitariaClientSecret))
+			throw new ClientUnauthorizedException("Unauthorized client for piattaforma-unitaria client-credentials");
+		String[] splittedClientId = clientId.split("_");
 		return ClientDTO.builder()
 			.clientId(clientId)
-			.clientName(clientName)
-			.organizationIpaCode(organizationIpaCode)
+			.clientName(splittedClientId[0])
+			.organizationIpaCode(splittedClientId[1])
 			.clientSecret(clientSecret)
 			.build();
 	}
