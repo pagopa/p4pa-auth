@@ -120,6 +120,6 @@ public class AuthzServiceImpl implements AuthzService {
 
     @Override
     public void revokeClient(String organizationIpaCode, String clientId) {
-        //TODO implement revoke
+	    clientService.revokeClient(organizationIpaCode, clientId);
     }
 }
