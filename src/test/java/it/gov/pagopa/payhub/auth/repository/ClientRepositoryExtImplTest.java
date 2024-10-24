@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.Client;
-import it.gov.pagopa.payhub.auth.model.Operator;
-import it.gov.pagopa.payhub.auth.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 @ExtendWith(MockitoExtension.class)
-public class ClientRepositoryExtImplTest {
+class ClientRepositoryExtImplTest {
 
 	@Mock
 	private MongoTemplate mongoTemplateMock;
