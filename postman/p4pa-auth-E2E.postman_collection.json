@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "c7fcdcac-8bbb-446f-8ea3-a1c4fa4451c3",
+		"_postman_id": "c348ca3e-46f7-4ad9-a4bb-38a800bc5713",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36568841"
+		"_exporter_id": "15747968",
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-c348ca3e-46f7-4ad9-a4bb-38a800bc5713?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
 		{
@@ -23,7 +24,7 @@
 							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
 							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
 							"\r",
-							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.accessToken)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -91,7 +92,7 @@
 							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
 							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
 							"\r",
-							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.accessToken)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -159,7 +160,7 @@
 							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
 							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
 							"\r",
-							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.accessToken)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -234,8 +235,8 @@
 							"\r",
 							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(3)\r",
 							"    \r",
-							"    pm.environment.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r",
-							"    pm.environment.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r",
+							"    pm.collectionVariables.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r",
+							"    pm.collectionVariables.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r",
 							"    var recognizedOrganizations = 0\r",
 							"    const registeredOrganizations=[\r",
 							"        \"IPA_TEST\",\r",
@@ -310,8 +311,6 @@
 							"\r",
 							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(2)\r",
 							"    \r",
-							"    pm.environment.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r",
-							"    pm.environment.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r",
 							"    var recognizedOrganizations = 0\r",
 							"    const registeredOrganizations=[\r",
 							"        \"IPA_TEST\",\r",
@@ -677,25 +676,84 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"pm.test(\"Auth - registerClient - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
 							"pm.test(\"Auth - registerClient - Response is correct based on record existence\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
 							"\r",
-							"    // Controlla se il clientId esiste nella risposta\r",
-							"    if (jsonResponse.hasOwnProperty(\"clientId\")) {\r",
-							"        pm.expect(pm.response.status).to.eql(200);\r",
+							"    // Verifica il contenuto della risposta quando il record non esiste\r",
+							"    pm.expect(jsonResponse).to.have.property(\"clientId\").to.eq(\"IPA_TESTtestClient\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"clientName\").to.eq(\"testClient\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"clientSecret\");\r",
 							"\r",
-							"        // Verifica il contenuto della risposta quando il record non esiste\r",
-							"        pm.expect(jsonResponse).to.have.property(\"clientId\").to.eq(\"IPA_TESTtestClient\");\r",
-							"        pm.expect(jsonResponse).to.have.property(\"clientName\").to.eq(\"testClient\");\r",
-							"        pm.expect(jsonResponse).to.have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\");\r",
-							"        pm.expect(jsonResponse).to.have.property(\"clientSecret\");\r",
-							"\r",
-							"        pm.environment.set(\"clientId\", jsonResponse.clientId)\r",
-							"        pm.environment.set(\"clientSecret\", jsonResponse.clientSecret)\r",
-							"    } else {\r",
-							"        // Se il record esiste, ritorna un errore di chiave duplicata\r",
-							"         pm.response.to.have.status(500);\r",
-							"    }\r",
+							"    pm.collectionVariables.set(\"clientId\", jsonResponse.clientId)\r",
+							"    pm.collectionVariables.set(\"clientSecret\", jsonResponse.clientSecret)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"clientName\" : \"testClient\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"clients",
+						"IPA_TEST"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerClient_Conflict",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - registerClient_Conflict - Responses with 409\", function () {\r",
+							"    pm.response.to.have.status(409);\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1098,6 +1156,22 @@
 	"variable": [
 		{
 			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "mappedExternalUserId",
+			"value": ""
+		},
+		{
+			"key": "organizationIpaCode",
+			"value": ""
+		},
+		{
+			"key": "clientId",
+			"value": ""
+		},
+		{
+			"key": "clientSecret",
 			"value": ""
 		}
 	]
