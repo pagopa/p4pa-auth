@@ -299,4 +299,14 @@ class AuthzServiceTest {
         Assertions.assertEquals(expectedDTOList, result);
     }
 
+    @Test
+    void givenClientIdWhenRevokeClientThenVerifyRevoke() {
+        //Given
+        String organizationIpaCode = "organizationIpaCode";
+        String clientId = "clientId";
+        //When
+        service.revokeClient(organizationIpaCode, clientId);
+        //Then
+        Mockito.verify(clientServiceMock).revokeClient(organizationIpaCode, clientId);
+    }
 }

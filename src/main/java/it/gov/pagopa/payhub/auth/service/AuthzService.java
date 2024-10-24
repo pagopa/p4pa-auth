@@ -18,4 +18,5 @@ public interface AuthzService {
     ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest);
     String getClientSecret(String organizationIpaCode, String clientId);
 	  List<ClientNoSecretDTO> getClients(String organizationIpaCode);
+    void revokeClient(String organizationIpaCode, String clientId);
 }

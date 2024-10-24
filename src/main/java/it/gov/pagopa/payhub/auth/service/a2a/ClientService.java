@@ -13,4 +13,5 @@ public interface ClientService {
 	String getClientSecret(String organizationIpaCode, String clientId);
 	List<ClientNoSecretDTO> getClients(String organizationIpaCode);
 	Optional<Client> getClientByClientId(String clientId);
+	void revokeClient(String organizationIpaCode, String clientId);
 }
