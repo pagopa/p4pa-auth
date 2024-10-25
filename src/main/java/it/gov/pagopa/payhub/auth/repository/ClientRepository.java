@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface ClientRepository extends ClientRepositoryExt, MongoRepository<Client, String> {
+public interface ClientRepository extends MongoRepository<Client, String> {
 	List<Client> findAllByOrganizationIpaCode(String organizationIpaCode);
+	long deleteByClientIdAndOrganizationIpaCode(String clientId, String organizationIpaCode);
 }

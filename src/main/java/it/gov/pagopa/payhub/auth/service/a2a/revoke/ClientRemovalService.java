@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.a2a.revoke;
 
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +14,7 @@ public class ClientRemovalService {
 		this.clientRepository = clientRepository;
 	}
 
-	@Transactional
 	public void revokeClient(String organizationIpaCode, String clientId) {
-		clientRepository.deleteClient(organizationIpaCode, clientId);
+		clientRepository.deleteByClientIdAndOrganizationIpaCode(clientId, organizationIpaCode);
 	}
 }

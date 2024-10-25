@@ -24,6 +24,6 @@ class ClientRemovalServiceTest {
 		//When
 		service.revokeClient(organizationIpaCode, clientId);
 		//Then
-		Mockito.verify(clientRepository).deleteClient(organizationIpaCode, clientId);
+		Mockito.verify(clientRepository).deleteByClientIdAndOrganizationIpaCode(clientId, organizationIpaCode);
 	}
 }
