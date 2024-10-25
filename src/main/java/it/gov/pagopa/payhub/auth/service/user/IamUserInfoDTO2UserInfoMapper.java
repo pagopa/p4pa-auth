@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 @Service
