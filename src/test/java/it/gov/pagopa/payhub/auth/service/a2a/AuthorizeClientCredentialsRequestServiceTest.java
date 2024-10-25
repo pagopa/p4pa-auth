@@ -14,8 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorizeClientCredentialsRequestServiceTest {
@@ -26,11 +24,9 @@ class AuthorizeClientCredentialsRequestServiceTest {
 	private ClientMapper clientMapperMock;
 	private AuthorizeClientCredentialsRequestService service;
 
-	private static final String REGEX = "^(\\w+\\s*)(piattaforma-unitaria\\b)$";
-
 	@BeforeEach
 	void init() {
-		service = new AuthorizeClientCredentialsRequestService("SECRET", clientServiceMock, clientMapperMock);
+		service = new AuthorizeClientCredentialsRequestService(clientServiceMock, clientMapperMock, "SECRET");
 	}
 
 	@Test
@@ -51,7 +47,7 @@ class AuthorizeClientCredentialsRequestServiceTest {
 
 		Mockito.when(clientServiceMock.getClientByClientId(clientId)).thenReturn(Optional.of(mockClient));
 		Mockito.when(clientMapperMock.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
-		Assertions.assertFalse(Pattern.compile(REGEX).matcher(clientId).matches());
+
 		// When
 		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecretMock);
 		// Then
@@ -64,7 +60,6 @@ class AuthorizeClientCredentialsRequestServiceTest {
 		String clientId = "UNEXPECTED_CLIENT_ID";
 		String clientSecretMock = UUID.randomUUID().toString();
 
-		Assertions.assertFalse(Pattern.compile(REGEX).matcher(clientId).matches());
 		Mockito.when(clientServiceMock.getClientByClientId(clientId)).thenThrow(new ClientUnauthorizedException("error"));
 		// When, Then
 		Assertions.assertThrows(ClientUnauthorizedException.class, () -> service.authorizeCredentials(clientId, clientSecretMock));
@@ -86,7 +81,6 @@ class AuthorizeClientCredentialsRequestServiceTest {
 			.clientSecret(UUID.randomUUID().toString())
 			.build();
 
-		Assertions.assertFalse(Pattern.compile(REGEX).matcher(clientId).matches());
 		Mockito.when(clientServiceMock.getClientByClientId(clientId)).thenReturn(Optional.of(mockClient));
 		Mockito.when(clientMapperMock.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
 
@@ -97,32 +91,26 @@ class AuthorizeClientCredentialsRequestServiceTest {
 	@Test
 	void givenSystemUserWhenMatcherThenAssertionOk() {
 		// Given
-		String clientId = "IPA_TEST_2piattaforma-unitaria";
-		String clientSecretEnv = "SECRET";
-		Matcher matcher = Pattern.compile(REGEX).matcher(clientId);
+		String clientId = "piattaforma-unitaria_IPA_TEST";
+		String clientSecret = "SECRET";
+		String[] splitted = clientId.split("_");
 
 		// When
-		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecretEnv);
-		Assertions.assertTrue(matcher.matches());
+		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecret);
 		// Then
 		Assertions.assertEquals(
-			ClientDTO.builder()
-				.clientId(clientId)
-				.organizationIpaCode(matcher.group(1))
-				.clientName(matcher.group(2))
-				.clientSecret(clientSecretEnv)
-				.build()
-			, actualClientDTO);
+		ClientDTO.builder()
+			.clientId(clientId)
+			.clientName(splitted[0])
+			.organizationIpaCode(splitted[1])
+			.clientSecret(clientSecret)
+			.build(), actualClientDTO);
 	}
 
 	@Test
 	void givenSystemUserWhenMatcherThenClientUnauthorizedException() {
-		// Given
-		String clientId = "IPA_TEST_2piattaforma-unitaria";
-		Matcher matcher = Pattern.compile(REGEX).matcher(clientId);
-
-		// When, Then
-		Assertions.assertTrue(matcher.matches());
-		Assertions.assertThrows(ClientUnauthorizedException.class, () -> service.authorizeCredentials(clientId, "UNEXPECTED_SECRET"));
+		// Given, When, Then
+		Assertions.assertThrows(ClientUnauthorizedException.class,
+			() -> service.authorizeCredentials("piattaforma-unitaria_IPA_TEST", "UNEXPECTED_SECRET"));
 	}
 }
