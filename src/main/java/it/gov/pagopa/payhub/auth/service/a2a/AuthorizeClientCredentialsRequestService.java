@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class AuthorizeClientCredentialsRequestService {
-	private static final String PIATTAFORMA_UNITARIA = "piattaforma-unitaria";
-	private static final String SEPARATOR = "_";
-	private static final String PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX = PIATTAFORMA_UNITARIA + SEPARATOR;
+	private static final String PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX = "piattaforma-unitaria";
 	private final ClientService clientService;
 	private final ClientMapper clientMapper;
 	private final String piattaformaUnitariaClientSecret;
@@ -45,7 +43,7 @@ public class AuthorizeClientCredentialsRequestService {
 			throw new ClientUnauthorizedException("Unauthorized client for piattaforma-unitaria client-credentials");
 		return ClientDTO.builder()
 			.clientId(clientId)
-			.clientName(PIATTAFORMA_UNITARIA)
+			.clientName(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)
 			.organizationIpaCode(clientId.substring(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX.length()))
 			.clientSecret(clientSecret)
 			.build();

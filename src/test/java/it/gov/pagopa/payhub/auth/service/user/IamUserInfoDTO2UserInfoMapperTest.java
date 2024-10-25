@@ -83,7 +83,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .roles(Set.of("ROLE"))
                 .build());
 
-        testApplyOk(iamUserInfo, user, organizationRoles);
+        testApplyOk(iamUserInfo, user, organizationRoles, null);
     }
 
     @Test
@@ -107,7 +107,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .build();
 
-        testApplyOk(iamUserInfo, user, Collections.emptyList());
+        testApplyOk(iamUserInfo, user, Collections.emptyList(), null);
     }
 
     @Test
@@ -134,7 +134,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .email("EMAIL")
                 .build());
 
-        testApplyOk(iamUserInfo, user, organizationRoles);
+        testApplyOk(iamUserInfo, user, organizationRoles, null);
     }
 
     @Test
@@ -154,25 +154,27 @@ class IamUserInfoDTO2UserInfoMapperTest {
             .build())
           .build();
 
-        testApplyOk(iamUserInfo, null, null);
+        UserInfo expected = UserInfo.builder()
+          .userId("EXTERNALUSERID")
+          .mappedExternalUserId("IPA_CODE-WS_USER")
+          .fiscalCode("FISCALCODE")
+          .familyName("FAMILYNAME")
+          .name("NAME")
+          .issuer("IPA_CODE")
+          .organizations(Collections.singletonList(UserOrganizationRoles.builder()
+            .organizationIpaCode("IPA_CODE")
+            .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+            .build()))
+          .build();
+
+        testApplyOk(iamUserInfo, null, null, expected);
     }
 
-    private void testApplyOk(IamUserInfoDTO iamUserInfo, User user, List<Operator> organizationRoles) {
+    private void testApplyOk(IamUserInfoDTO iamUserInfo, User user, List<Operator> organizationRoles, UserInfo expected) {
 
         UserInfo userInfo;
         if (iamUserInfo.isSystemUser()) {
-            userInfo = UserInfo.builder()
-              .userId(iamUserInfo.getUserId())
-              .mappedExternalUserId(iamUserInfo.getOrganizationAccess().getOrganizationIpaCode() + "-WS_USER")
-              .fiscalCode(iamUserInfo.getFiscalCode())
-              .familyName(iamUserInfo.getFamilyName())
-              .name(iamUserInfo.getName())
-              .issuer(iamUserInfo.getIssuer())
-              .organizations(Collections.singletonList(UserOrganizationRoles.builder()
-                .organizationIpaCode(iamUserInfo.getOrganizationAccess().getOrganizationIpaCode())
-                .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-                .build()))
-              .build();
+            userInfo = expected;
         } else {
             Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
             Mockito.when(operatorsRepositoryMock.findAllByUserId(user.getUserId())).thenReturn(organizationRoles);

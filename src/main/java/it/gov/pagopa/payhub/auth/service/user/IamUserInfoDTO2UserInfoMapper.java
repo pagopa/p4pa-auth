@@ -18,9 +18,7 @@ import java.util.function.Function;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, UserInfo> {
-    private static final String WS_USER = "WS_USER";
-    private static final String SEPARATOR = "-";
-    private static final String WS_USER_SUFFIX = SEPARATOR + WS_USER;
+    private static final String WS_USER_SUFFIX = "-WS_USER";
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
 
