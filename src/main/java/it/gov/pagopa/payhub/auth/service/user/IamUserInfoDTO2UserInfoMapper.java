@@ -18,7 +18,9 @@ import java.util.function.Function;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, UserInfo> {
-
+    private static final String WS_USER = "WS_USER";
+    private static final String SEPARATOR = "-";
+    private static final String WS_USER_SUFFIX = SEPARATOR + WS_USER;
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
 
@@ -38,7 +40,7 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO) {
         return UserInfo.builder()
           .userId(iamUserInfoDTO.getUserId())
-          .mappedExternalUserId(iamUserInfoDTO.getFiscalCode())
+          .mappedExternalUserId(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode() + WS_USER_SUFFIX)
           .fiscalCode(iamUserInfoDTO.getFiscalCode())
           .familyName(iamUserInfoDTO.getFamilyName())
           .name(iamUserInfoDTO.getName())

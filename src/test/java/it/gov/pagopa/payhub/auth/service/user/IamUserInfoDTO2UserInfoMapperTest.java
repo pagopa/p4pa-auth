@@ -163,7 +163,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         if (iamUserInfo.isSystemUser()) {
             userInfo = UserInfo.builder()
               .userId(iamUserInfo.getUserId())
-              .mappedExternalUserId(iamUserInfo.getFiscalCode())
+              .mappedExternalUserId(iamUserInfo.getOrganizationAccess().getOrganizationIpaCode() + "-WS_USER")
               .fiscalCode(iamUserInfo.getFiscalCode())
               .familyName(iamUserInfo.getFamilyName())
               .name(iamUserInfo.getName())

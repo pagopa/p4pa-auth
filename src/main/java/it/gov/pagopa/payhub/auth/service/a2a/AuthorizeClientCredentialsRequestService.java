@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class AuthorizeClientCredentialsRequestService {
 	private static final String PIATTAFORMA_UNITARIA = "piattaforma-unitaria";
 	private static final String SEPARATOR = "_";
+	private static final String PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX = PIATTAFORMA_UNITARIA + SEPARATOR;
 	private final ClientService clientService;
 	private final ClientMapper clientMapper;
 	private final String piattaformaUnitariaClientSecret;
@@ -27,7 +27,7 @@ public class AuthorizeClientCredentialsRequestService {
 	}
 
 	public ClientDTO authorizeCredentials(String clientId, String clientSecret) {
-		if (clientId.startsWith(PIATTAFORMA_UNITARIA + SEPARATOR)) {
+		if (clientId.startsWith(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)) {
 			return authorizePiattaformaUnitariaCredentials(clientId, clientSecret);
 		}
 		return authorizeSilCredentials(clientId, clientSecret);
@@ -46,7 +46,7 @@ public class AuthorizeClientCredentialsRequestService {
 		return ClientDTO.builder()
 			.clientId(clientId)
 			.clientName(PIATTAFORMA_UNITARIA)
-			.organizationIpaCode(StringUtils.substringAfter(clientId, PIATTAFORMA_UNITARIA + SEPARATOR))
+			.organizationIpaCode(clientId.substring(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX.length()))
 			.clientSecret(clientSecret)
 			.build();
 	}
