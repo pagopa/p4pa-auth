@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,16 +94,16 @@ class AuthorizeClientCredentialsRequestServiceTest {
 		// Given
 		String clientId = "piattaforma-unitaria_IPA_TEST";
 		String clientSecret = "SECRET";
-		String[] splitted = clientId.split("_");
-
+		String piattaformaUnitaria = "piattaforma-unitaria";
+		String separator = "_";
 		// When
 		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecret);
 		// Then
 		Assertions.assertEquals(
 		ClientDTO.builder()
 			.clientId(clientId)
-			.clientName(splitted[0])
-			.organizationIpaCode(splitted[1])
+			.clientName(piattaformaUnitaria)
+			.organizationIpaCode(StringUtils.substringAfter(clientId, piattaformaUnitaria + separator))
 			.clientSecret(clientSecret)
 			.build(), actualClientDTO);
 	}

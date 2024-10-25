@@ -31,36 +31,49 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
 
     @Override
     public UserInfo apply(IamUserInfoDTO iamUserInfoDTO) {
-        UserInfo userInfo = UserInfo.builder()
-                .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                .familyName(iamUserInfoDTO.getFamilyName())
-                .name(iamUserInfoDTO.getName())
-                .issuer(iamUserInfoDTO.getIssuer())
-                .build();
         if (iamUserInfoDTO.isSystemUser()) {
-            userInfo.setUserId(iamUserInfoDTO.getUserId());
-            userInfo.setMappedExternalUserId(iamUserInfoDTO.getFiscalCode());
-            UserOrganizationRoles userOrgRoles = UserOrganizationRoles.builder()
-              .organizationIpaCode(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode())
-              .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-              .build();
-            userInfo.setOrganizations(Collections.singletonList(userOrgRoles));
-        } else {
-            User user = usersRepository.findById(iamUserInfoDTO.getInnerUserId()).orElseThrow(() -> new UserNotFoundException("Cannot found user having inner id:" + iamUserInfoDTO.getInnerUserId()));
-            List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
-            userInfo.setUserId(user.getUserId());
-            userInfo.setMappedExternalUserId(user.getMappedExternalUserId());
-            userInfo.setOrganizations(userRoles.stream()
-              .map(r -> UserOrganizationRoles.builder()
-                .operatorId(r.getOperatorId())
-                .organizationIpaCode(r.getOrganizationIpaCode())
-                .roles(new ArrayList<>(r.getRoles()))
-                .email(r.getEmail())
-                .build())
-              .toList());
-            Optional.ofNullable(iamUserInfoDTO.getOrganizationAccess())
-              .map(IamUserOrganizationRolesDTO::getOrganizationIpaCode)
-              .ifPresent(userInfo::setOrganizationAccess);
+            return systemUserMapper(iamUserInfoDTO);
+        }
+        return userInfoMapper(iamUserInfoDTO);
+    }
+
+    private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO) {
+        return UserInfo.builder()
+          .userId(iamUserInfoDTO.getUserId())
+          .mappedExternalUserId(iamUserInfoDTO.getFiscalCode())
+          .fiscalCode(iamUserInfoDTO.getFiscalCode())
+          .familyName(iamUserInfoDTO.getFamilyName())
+          .name(iamUserInfoDTO.getName())
+          .issuer(iamUserInfoDTO.getIssuer())
+          .organizations(Collections.singletonList(UserOrganizationRoles.builder()
+            .organizationIpaCode(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode())
+            .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+            .build()))
+          .build();
+    }
+
+    private UserInfo userInfoMapper(IamUserInfoDTO iamUserInfoDTO) {
+        User user = usersRepository.findById(iamUserInfoDTO.getInnerUserId()).orElseThrow(() -> new UserNotFoundException("Cannot found user having inner id:" + iamUserInfoDTO.getInnerUserId()));
+        List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
+        UserInfo userInfo = UserInfo.builder()
+          .userId(user.getUserId())
+          .mappedExternalUserId(user.getMappedExternalUserId())
+          .fiscalCode(iamUserInfoDTO.getFiscalCode())
+          .familyName(iamUserInfoDTO.getFamilyName())
+          .name(iamUserInfoDTO.getName())
+          .issuer(iamUserInfoDTO.getIssuer())
+          .organizations(userRoles.stream()
+          .map(r -> UserOrganizationRoles.builder()
+            .operatorId(r.getOperatorId())
+            .organizationIpaCode(r.getOrganizationIpaCode())
+            .roles(new ArrayList<>(r.getRoles()))
+            .email(r.getEmail())
+            .build())
+          .toList())
+          .build();
+
+        if(iamUserInfoDTO.getOrganizationAccess() != null){
+            userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
         return userInfo;
     }
