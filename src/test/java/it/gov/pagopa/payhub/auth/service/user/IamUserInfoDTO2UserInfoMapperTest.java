@@ -83,7 +83,15 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .roles(Set.of("ROLE"))
                 .build());
 
-        testApplyOk(iamUserInfo, user, organizationRoles, null);
+        UserInfo expected = UserInfo.builder()
+          .fiscalCode("FISCALCODE")
+          .familyName("FAMILYNAME")
+          .name("NAME")
+          .issuer("ISSUER")
+          .organizationAccess("ORG")
+          .build();
+
+        testApplyOk(iamUserInfo, user, organizationRoles, expected);
     }
 
     @Test
@@ -107,7 +115,15 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .build();
 
-        testApplyOk(iamUserInfo, user, Collections.emptyList(), null);
+        UserInfo expected = UserInfo.builder()
+          .fiscalCode("FISCALCODE")
+          .familyName("FAMILYNAME")
+          .name("NAME")
+          .issuer("ISSUER")
+          .organizationAccess("ORG")
+          .build();
+
+        testApplyOk(iamUserInfo, user, Collections.emptyList(), expected);
     }
 
     @Test
@@ -133,8 +149,15 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .roles(Set.of("ROLE"))
                 .email("EMAIL")
                 .build());
+        
+        UserInfo expected = UserInfo.builder()
+          .fiscalCode("FISCALCODE")
+          .familyName("FAMILYNAME")
+          .name("NAME")
+          .issuer("ISSUER")
+          .build();
 
-        testApplyOk(iamUserInfo, user, organizationRoles, null);
+        testApplyOk(iamUserInfo, user, organizationRoles, expected);
     }
 
     @Test
@@ -147,7 +170,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
           .fiscalCode("FISCALCODE")
           .familyName("FAMILYNAME")
           .name("NAME")
-          .issuer("ISSUER")
+          .issuer("IPA_CODE")
           .organizationAccess(IamUserOrganizationRolesDTO.builder()
             .organizationIpaCode("IPA_CODE")
             .roles(Collections.singletonList(Constants.ROLE_ADMIN))
@@ -172,34 +195,24 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     private void testApplyOk(IamUserInfoDTO iamUserInfo, User user, List<Operator> organizationRoles, UserInfo expected) {
 
-        UserInfo userInfo;
-        if (iamUserInfo.isSystemUser()) {
-            userInfo = expected;
-        } else {
+        if (!iamUserInfo.isSystemUser()) {
             Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
             Mockito.when(operatorsRepositoryMock.findAllByUserId(user.getUserId())).thenReturn(organizationRoles);
-            userInfo = UserInfo.builder()
-              .userId(user.getUserId())
-              .mappedExternalUserId(user.getMappedExternalUserId())
-              .fiscalCode(iamUserInfo.getFiscalCode())
-              .familyName(iamUserInfo.getFamilyName())
-              .name(iamUserInfo.getName())
-              .issuer(iamUserInfo.getIssuer())
-              .organizationAccess(iamUserInfo.getOrganizationAccess()!=null? iamUserInfo.getOrganizationAccess().getOrganizationIpaCode(): null)
-              .organizations(organizationRoles.stream()
-                .map(r -> UserOrganizationRoles.builder()
-                  .operatorId(r.getOperatorId())
-                  .organizationIpaCode(r.getOrganizationIpaCode())
-                  .roles(new ArrayList<>(r.getRoles()))
-                  .email(r.getEmail())
-                  .build())
-                .toList())
-              .build();
+            expected.setUserId(user.getUserId());
+            expected.setMappedExternalUserId(user.getMappedExternalUserId());
+            expected.setOrganizations(organizationRoles.stream()
+              .map(r -> UserOrganizationRoles.builder()
+                .operatorId(r.getOperatorId())
+                .organizationIpaCode(r.getOrganizationIpaCode())
+                .roles(new ArrayList<>(r.getRoles()))
+                .email(r.getEmail())
+                .build())
+              .toList());
         }
         // When
         UserInfo result = mapper.apply(iamUserInfo);
 
         // Then
-        Assertions.assertEquals(userInfo, result);
+        Assertions.assertEquals(expected, result);
     }
 }

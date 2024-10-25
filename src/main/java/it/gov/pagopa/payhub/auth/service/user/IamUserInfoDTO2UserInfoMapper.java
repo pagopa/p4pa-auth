@@ -18,7 +18,9 @@ import java.util.function.Function;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, UserInfo> {
+
     private static final String WS_USER_SUFFIX = "-WS_USER";
+
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
 
@@ -36,18 +38,19 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
     }
 
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO) {
-        return UserInfo.builder()
-          .userId(iamUserInfoDTO.getUserId())
-          .mappedExternalUserId(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode() + WS_USER_SUFFIX)
-          .fiscalCode(iamUserInfoDTO.getFiscalCode())
-          .familyName(iamUserInfoDTO.getFamilyName())
-          .name(iamUserInfoDTO.getName())
-          .issuer(iamUserInfoDTO.getIssuer())
-          .organizations(Collections.singletonList(UserOrganizationRoles.builder()
-            .organizationIpaCode(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode())
-            .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-            .build()))
-          .build();
+			String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
+	    return UserInfo.builder()
+		    .userId(iamUserInfoDTO.getUserId())
+		    .mappedExternalUserId(organizationIpaCode + WS_USER_SUFFIX)
+		    .fiscalCode(iamUserInfoDTO.getFiscalCode())
+		    .familyName(iamUserInfoDTO.getFamilyName())
+		    .name(iamUserInfoDTO.getName())
+		    .issuer(iamUserInfoDTO.getIssuer())
+		    .organizations(Collections.singletonList(UserOrganizationRoles.builder()
+			    .organizationIpaCode(organizationIpaCode)
+			    .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+			    .build()))
+		    .build();
     }
 
     private UserInfo userInfoMapper(IamUserInfoDTO iamUserInfoDTO) {
