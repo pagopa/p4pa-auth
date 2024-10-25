@@ -93,16 +93,15 @@ class AuthorizeClientCredentialsRequestServiceTest {
 		// Given
 		String clientId = "piattaforma-unitaria_IPA_TEST";
 		String clientSecret = "SECRET";
-		String[] splitted = clientId.split("_");
-
+		String piattaformaUnitaria = "piattaforma-unitaria_";
 		// When
 		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecret);
 		// Then
 		Assertions.assertEquals(
 		ClientDTO.builder()
 			.clientId(clientId)
-			.clientName(splitted[0])
-			.organizationIpaCode(splitted[1])
+			.clientName(piattaformaUnitaria)
+			.organizationIpaCode(clientId.substring((piattaformaUnitaria).length()))
 			.clientSecret(clientSecret)
 			.build(), actualClientDTO);
 	}
