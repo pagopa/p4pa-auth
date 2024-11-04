@@ -24,7 +24,7 @@ public class AuthExceptionHandler {
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
     }
 
-    @ExceptionHandler(InvalidExchangeClientException.class)
+    @ExceptionHandler({InvalidExchangeClientException.class, ClientUnauthorizedException.class})
     public ResponseEntity<AuthErrorDTO> handleInvalidClientError(RuntimeException ex, HttpServletRequest request){
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_CLIENT);
     }
@@ -60,6 +60,13 @@ public class AuthExceptionHandler {
     @ExceptionHandler(OperatorNotFoundException.class)
     public ResponseEntity<String> handleOperatorNotFoundException(OperatorNotFoundException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        logException(ex, request, httpStatus);
+        return ResponseEntity.status(httpStatus).body(null);
+    }
+
+    @ExceptionHandler(M2MClientConflictException.class)
+    public ResponseEntity<String> handleConflictException(RuntimeException ex, HttpServletRequest request) {
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
         logException(ex, request, httpStatus);
         return ResponseEntity.status(httpStatus).body(null);
     }

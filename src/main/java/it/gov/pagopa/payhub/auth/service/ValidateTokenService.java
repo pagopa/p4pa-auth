@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.service.exchange.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

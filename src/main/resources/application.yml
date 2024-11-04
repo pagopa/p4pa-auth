@@ -67,3 +67,6 @@ app:
 data-chiper:
     p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
     p4pa-auth-encrypt-psw: "\${DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW:PSW}"
+
+m2m:
+    piattaforma-unitaria-client-secret: "\${PIATTAFORMA_UNITARIA_CLIENT_SECRET:SECRET}"

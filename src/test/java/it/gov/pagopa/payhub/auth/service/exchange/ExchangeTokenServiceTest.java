@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;

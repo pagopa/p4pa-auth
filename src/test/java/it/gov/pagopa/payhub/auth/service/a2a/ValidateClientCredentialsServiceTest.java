@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(MockitoExtension.class)
 class ValidateClientCredentialsServiceTest {
 
+
 	@InjectMocks
 	private ValidateClientCredentialsService service;
 
@@ -26,7 +27,7 @@ class ValidateClientCredentialsServiceTest {
 	@Test
 	void givenInvalidScopeThenInvalidExchangeRequestException() {
 		assertThrows(InvalidExchangeRequestException.class, () ->
-			service.validate("UNEXPECTED_SCOPE", ALLOWED_CLIENT_SECRET));
+			service.validate( "UNEXPECTED_SCOPE", ALLOWED_CLIENT_SECRET));
 	}
 
 	@Test
