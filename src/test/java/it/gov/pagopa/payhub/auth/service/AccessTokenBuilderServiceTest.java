@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.RegisteredClaims;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.junit.jupiter.api.Assertions;
@@ -76,7 +77,7 @@ public class AccessTokenBuilderServiceTest {
         String decodedHeader = new String(Base64.getDecoder().decode(decodedAccessToken.getHeader()));
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
 
-        Assertions.assertEquals("{\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
+        Assertions.assertEquals("{\"iss\":\"p4pa-auth\",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
     }

@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.security;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
+import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,10 +29,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthnService authnService;
     private final ValidateTokenService validateTokenService;
+    private final JWTLegacyHandlerService jwtLegacyHandlerService;
 
-    public JwtAuthenticationFilter(AuthnService authnService, ValidateTokenService validateTokenService) {
-        this.authnService = authnService;
-        this.validateTokenService = validateTokenService;
+    public JwtAuthenticationFilter(AuthnService authnService, ValidateTokenService validateTokenService, JWTLegacyHandlerService jwtLegacyHandlerService) {
+      this.authnService = authnService;
+      this.validateTokenService = validateTokenService;
+	    this.jwtLegacyHandlerService = jwtLegacyHandlerService;
     }
 
     @Override
@@ -40,7 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (StringUtils.hasText(authorization)) {
                 String token = authorization.replace("Bearer ", "");
-                validateTokenService.validate(token);
+                if (validateTokenService.isInternalToken(token)) {
+                    validateTokenService.validate(token);
+                } else {
+                    jwtLegacyHandlerService.handleLegacyToken(token);
+                }
                 UserInfo userInfo = authnService.getUserInfo(token);
                 Collection<? extends GrantedAuthority> authorities = null;
                 if (userInfo.getOrganizationAccess() != null) {
@@ -62,5 +69,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
 }
