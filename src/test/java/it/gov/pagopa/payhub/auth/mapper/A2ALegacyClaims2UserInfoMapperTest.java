@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
-import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class A2ALegacyClaims2UserInfoMapperTest {
@@ -21,12 +20,12 @@ class A2ALegacyClaims2UserInfoMapperTest {
 	@Test
 	void WhenMapThenGetUserInfoMapped() {
 		//Given
+		String prefix = "A2A-";
 		String subject = "subject";
-
 		IamUserInfoDTO expected = IamUserInfoDTO.builder()
 			.systemUser(true)
 			.issuer(subject)
-			.userId(UUID.randomUUID().toString())
+			.userId(prefix + subject)
 			.name(subject)
 			.familyName(subject)
 			.fiscalCode(subject)
@@ -35,6 +34,7 @@ class A2ALegacyClaims2UserInfoMapperTest {
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build())
 			.build();
+
 		//When
 		IamUserInfoDTO result = mapper.map(subject);
 		//Then

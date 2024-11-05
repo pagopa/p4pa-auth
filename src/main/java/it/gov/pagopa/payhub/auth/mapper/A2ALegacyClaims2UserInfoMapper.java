@@ -6,16 +6,17 @@ import it.gov.pagopa.payhub.auth.utils.Constants;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.UUID;
 
 @Service
 public class A2ALegacyClaims2UserInfoMapper {
+
+	private static final String A2A_PREFIX = "A2A-";
 
 	public IamUserInfoDTO map(String subject) {
 		return IamUserInfoDTO.builder()
 			.systemUser(true)
 			.issuer(subject)
-			.userId(UUID.randomUUID().toString())
+			.userId(A2A_PREFIX + subject)
 			.name(subject)
 			.familyName(subject)
 			.fiscalCode(subject)

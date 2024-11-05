@@ -19,10 +19,11 @@ import java.util.function.Function;
 @Service
 public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, UserInfo> {
 
-    private static final String WS_USER_SUFFIX = "-WS_USER";
+	private static final String WS_USER_SUFFIX = "-WS_USER";
+	private static final String A2A_PREFIX = "A2A-";
 
-    private final UsersRepository usersRepository;
-    private final OperatorsRepository operatorsRepository;
+	private final UsersRepository usersRepository;
+	private final OperatorsRepository operatorsRepository;
 
     public IamUserInfoDTO2UserInfoMapper(UsersRepository usersRepository, OperatorsRepository operatorsRepository) {
         this.usersRepository = usersRepository;
@@ -41,7 +42,7 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
 			String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
 	    return UserInfo.builder()
 		    .userId(iamUserInfoDTO.getUserId())
-		    .mappedExternalUserId(organizationIpaCode + WS_USER_SUFFIX)
+		    .mappedExternalUserId(iamUserInfoDTO.getUserId().startsWith(A2A_PREFIX)? iamUserInfoDTO.getUserId() : organizationIpaCode + WS_USER_SUFFIX)
 		    .fiscalCode(iamUserInfoDTO.getFiscalCode())
 		    .familyName(iamUserInfoDTO.getFamilyName())
 		    .name(iamUserInfoDTO.getName())

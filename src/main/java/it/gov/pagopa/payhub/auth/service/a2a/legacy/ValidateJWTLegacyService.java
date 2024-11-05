@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class ValidateJWTLegacyService {
-	private static final String TOKEN_TYPE_A2A = "a2a";
+	public static final String TOKEN_TYPE_A2A = "a2a";
 
 	private final Map<String, PublicKey> clientApplicationsPublicKey;
 
