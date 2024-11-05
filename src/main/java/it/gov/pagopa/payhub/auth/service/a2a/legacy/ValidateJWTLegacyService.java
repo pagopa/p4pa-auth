@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,8 +19,8 @@ import java.time.Instant;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class ValidateJWTLegacyService {
-	private static final String ENV_M2M_LEGACY_SECRET_PREFIX = "m2m.legacy.public";
 	private static final String TOKEN_TYPE_A2A = "a2a";
 
 	private final A2ALegacySecretsRetrieverService a2ALegacySecretsRetrieverService;
@@ -27,7 +28,7 @@ public class ValidateJWTLegacyService {
 
 	public ValidateJWTLegacyService(A2ALegacySecretsRetrieverService a2ALegacySecretsRetrieverService) {
 		this.a2ALegacySecretsRetrieverService = a2ALegacySecretsRetrieverService;
-		this.clientApplicationsPublicKey = a2ALegacySecretsRetrieverService.envToMapByPrefix(ENV_M2M_LEGACY_SECRET_PREFIX);
+		this.clientApplicationsPublicKey = a2ALegacySecretsRetrieverService.envToMap();
 	}
 
 	public Pair<String, Map<String, Claim>> validate(String token) {

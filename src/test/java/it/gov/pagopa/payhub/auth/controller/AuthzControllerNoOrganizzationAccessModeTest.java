@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
+import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.model.generated.*;
 import org.junit.jupiter.api.Assertions;
@@ -49,6 +50,9 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
     @MockBean
     private ValidateTokenService validateTokenServiceMock;
+
+    @MockBean
+    private JWTLegacyHandlerService jwtLegacyHandlerService;
 
 // createOperator region
     @Test

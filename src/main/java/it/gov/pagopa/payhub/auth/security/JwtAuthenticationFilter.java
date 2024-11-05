@@ -31,13 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ValidateTokenService validateTokenService;
     private final JWTLegacyHandlerService jwtLegacyHandlerService;
 
-    public JwtAuthenticationFilter(AuthnService authnService, ValidateTokenService validateTokenService, JWTLegacyHandlerService jwtLegacyHandlerService) {
-      this.authnService = authnService;
-      this.validateTokenService = validateTokenService;
-	    this.jwtLegacyHandlerService = jwtLegacyHandlerService;
-    }
+	public JwtAuthenticationFilter(AuthnService authnService, ValidateTokenService validateTokenService, JWTLegacyHandlerService jwtLegacyHandlerService) {
+		this.authnService = authnService;
+		this.validateTokenService = validateTokenService;
+		this.jwtLegacyHandlerService = jwtLegacyHandlerService;
+	}
 
-    @Override
+	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);

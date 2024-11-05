@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,13 +21,14 @@ public class A2ALegacySecretsRetrieverService {
 		this.a2AClientLegacyPropConfig = a2AClientLegacyPropConfig;
 	}
 
-	public Map<String, PublicKey> envToMapByPrefix(String prefix) {
-		Map<String, PublicKey> secretMap = new HashMap<>();
-		a2AClientLegacyPropConfig.getSecrets()
-			.forEach((key, value) ->
-				secretMap.put(key, getPublicKeyFromString(value))
-			);
-		return secretMap;
+	public Map<String, PublicKey> envToMap() {
+		return Optional.ofNullable(a2AClientLegacyPropConfig.getSecrets())
+			.orElse(Map.of())
+			.entrySet().stream()
+			.collect(Collectors.toUnmodifiableMap(
+				Map.Entry::getKey,
+				entry -> getPublicKeyFromString(entry.getValue())
+			));
 	}
 
 	private PublicKey getPublicKeyFromString(String encodedKey) {
