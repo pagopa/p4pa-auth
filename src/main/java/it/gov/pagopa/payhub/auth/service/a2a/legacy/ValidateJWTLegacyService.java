@@ -23,11 +23,9 @@ import java.util.Map;
 public class ValidateJWTLegacyService {
 	private static final String TOKEN_TYPE_A2A = "a2a";
 
-	private final A2ALegacySecretsRetrieverService a2ALegacySecretsRetrieverService;
 	private final Map<String, PublicKey> clientApplicationsPublicKey;
 
 	public ValidateJWTLegacyService(A2ALegacySecretsRetrieverService a2ALegacySecretsRetrieverService) {
-		this.a2ALegacySecretsRetrieverService = a2ALegacySecretsRetrieverService;
 		this.clientApplicationsPublicKey = a2ALegacySecretsRetrieverService.envToMap();
 	}
 
@@ -38,7 +36,7 @@ public class ValidateJWTLegacyService {
 			.map(pair -> validateLegacyToken(pair.getLeft(), token, pair.getRight()))
 			.findFirst()
 			.orElseThrow(() -> new InvalidTokenException("Invalid token for A2A call"));
-		isA2AAuthToken(claims.getRight());
+		isM2MAuthToken(claims.getRight());
 		validateClaims(claims.getRight());
 		validateSubject(claims.getLeft());
 		return claims;
@@ -50,16 +48,16 @@ public class ValidateJWTLegacyService {
 		}
 	}
 
-	public void isA2AAuthToken(Map<String, Claim> claims){
-		if (TOKEN_TYPE_A2A.equals(claims.getOrDefault("type", null)))
+	private void isM2MAuthToken(Map<String, Claim> claims){
+		if (TOKEN_TYPE_A2A.equals(claims.get("type").asString()))
 			throw new InvalidTokenException("Invalid token type");
 	}
 
 	private void validateClaims(Map<String, Claim> claims) {
-		if (claims.get(RegisteredClaims.ISSUED_AT).asInstant().isBefore(Instant.now().minusSeconds(3600 * 24))) {
+		if (claims.get(RegisteredClaims.ISSUED_AT).asInstant().isBefore(Instant.now().minusSeconds(3_600L * 24))) {
 			throw new InvalidTokenException("Invalid field iat");
 		}
-		if (claims.get(RegisteredClaims.EXPIRES_AT).asInstant().isAfter(Instant.now().plusSeconds(3600 * 24))) {
+		if (claims.get(RegisteredClaims.EXPIRES_AT).asInstant().isAfter(Instant.now().plusSeconds(3_600L * 24))) {
 			throw new InvalidTokenException("Invalid field exp");
 		}
 		if (StringUtils.isBlank(claims.get(RegisteredClaims.JWT_ID).asString())) {

@@ -1,11 +1,10 @@
-package it.gov.pagopa.payhub.auth.service.a2a.retrieve;
+package it.gov.pagopa.payhub.auth.service.a2a.legacy;
 
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Encoders;
-import io.jsonwebtoken.security.Keys;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.service.a2a.legacy.A2AClientLegacyPropConfig;
 import it.gov.pagopa.payhub.auth.service.a2a.legacy.A2ALegacySecretsRetrieverService;
+import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +17,8 @@ import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,13 +32,13 @@ class A2ALegacySecretsRetrieverServiceTest {
 	private KeyPair keyPair;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() throws Exception {
 		service = new A2ALegacySecretsRetrieverService(a2aClientLegacyPropConfigMock);
-		keyPair = Keys.keyPairFor(SignatureAlgorithm.RS512);
+		keyPair = JWTValidatorUtils.generateKeyPair();
 	}
 
 	@Test
-	public void givenEnvPropWhenEnvToMapThenInvokeA2ALegacySecretsRetrieverService() {
+	void givenEnvPropWhenEnvToMapThenInvokeA2ALegacySecretsRetrieverService() {
 		//Given
 		PublicKey publicKey = keyPair.getPublic();
 		String publicKeyEncoded = Encoders.BASE64.encode(publicKey.getEncoded());
@@ -55,7 +54,7 @@ class A2ALegacySecretsRetrieverServiceTest {
 	}
 
 	@Test
-	public void GivenInvalidPropsWhenEnvToMapThenInvalidTokenException() {
+	void GivenInvalidPropsWhenEnvToMapThenInvalidTokenException() {
 		//Given
 		Map<String, String> envMapProps = new HashMap<>();
 		envMapProps.put("nullProperty", null);
