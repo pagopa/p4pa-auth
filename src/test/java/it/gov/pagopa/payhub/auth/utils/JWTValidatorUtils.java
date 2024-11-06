@@ -80,17 +80,24 @@ public class JWTValidatorUtils {
 
     public String generateInternalToken(KeyPair keyPair, Date expiresAt) {
         Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
-        Map<String, Object> headerClaims = new HashMap<>();
-        headerClaims.put("typ", ACCESS_TOKEN_TYPE);
         String tokenType = "bearer";
         return JWT.create()
-            .withHeader(headerClaims)
             .withClaim("typ", tokenType)
             .withIssuer(ISS)
             .withJWTId("my-jwt-id")
             .withIssuedAt(Instant.now())
             .withExpiresAt(expiresAt)
             .sign(algorithm);
+    }
+
+    public static String generateLegacyToken(KeyPair keyPair, String type, Instant issuedAt, Instant expiresAt, String jwtId) {
+        Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        return JWT.create()
+          .withClaim("type", type)
+          .withJWTId(jwtId)
+          .withIssuedAt(issuedAt)
+          .withExpiresAt(expiresAt)
+          .sign(algorithm);
     }
 
     public static String getPublicKey(KeyPair keyPair) throws Exception {

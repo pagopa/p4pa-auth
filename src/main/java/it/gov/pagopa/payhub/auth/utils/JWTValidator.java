@@ -104,7 +104,7 @@ public class JWTValidator {
         try{
             DecodedJWT jwt = JWT.decode(token);
 
-            Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) publicKey);
+            Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) publicKey, null);
             JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(jwt);
 

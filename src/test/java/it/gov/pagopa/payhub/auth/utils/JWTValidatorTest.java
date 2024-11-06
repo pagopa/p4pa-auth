@@ -18,8 +18,7 @@ import java.util.Date;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 class JWTValidatorTest {
@@ -94,16 +93,14 @@ class JWTValidatorTest {
 
     @Test
     void givenValidLegacyJWTThenOk() {
-        PublicKey publicKey = keyPair.getPublic();
-        String validToken = utils.generateInternalToken(keyPair,new Date(System.currentTimeMillis() + 3600000));
-        Assertions.assertDoesNotThrow(() -> jwtValidator.validateLegacyToken("app", validToken, publicKey));
+        String validToken = utils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600_000L), "jwtId");
+        Assertions.assertDoesNotThrow(() -> jwtValidator.validateLegacyToken("app", validToken, keyPair.getPublic()));
     }
 
     @Test
-    void givenInvalidTokenWhenValidateLegacyTokenThenThrowInvalidTokenException() {
+    void givenInvalidTokenWhenValidateLegacyTokenThenThrowExceptionThenReturnNullObject() {
         String invalidToken = "your_invalid_token_here";
         PublicKey publicKey = keyPair.getPublic();
-
-        assertThrows(InvalidTokenException.class, () -> jwtValidator.validateLegacyToken("app", invalidToken, publicKey));
+        assertNull(jwtValidator.validateLegacyToken("app", invalidToken, publicKey));
     }
 }

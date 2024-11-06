@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -30,25 +31,21 @@ public class ValidateJWTLegacyService {
 	public Pair<String, Map<String, Claim>> validate(String token) {
 		Map<String, PublicKey> clientApplicationsPublicKeyMap = a2ALegacySecretsRetrieverService.envToMap();
 		verifyEnvMap(clientApplicationsPublicKeyMap);
-		Pair<String, Map<String, Claim>> claims = clientApplicationsPublicKeyMap.keySet().stream()
-			.map(key -> new ImmutablePair<>(key, clientApplicationsPublicKeyMap.get(key)))
-			.map(pair -> jwtValidator.validateLegacyToken(pair.getLeft(), token, pair.getRight()))
-			.findFirst()
-			.orElseThrow(() -> new InvalidTokenException("Invalid token for A2A call"));
-		isM2MAuthToken(claims.getRight());
+		Pair<String, Map<String, Claim>> claims = validateToken(clientApplicationsPublicKeyMap, token);
+		validateM2MType(claims.getRight());
 		validateClaims(claims.getRight());
-		validateSubject(claims.getLeft());
+
 		return claims;
 	}
 
 	private void verifyEnvMap(Map<String, PublicKey> clientApplicationsPublicKeyMap) {
 		if (clientApplicationsPublicKeyMap.isEmpty()){
-			throw new InvalidTokenException("The token is not present");
+			throw new InvalidTokenException("The PublicKey is not present");
 		}
 	}
 
-	private void isM2MAuthToken(Map<String, Claim> claims){
-		if (TOKEN_TYPE_A2A.equals(claims.get("type").asString()))
+	private void validateM2MType(Map<String, Claim> claims){
+		if (!TOKEN_TYPE_A2A.equals(claims.get("type").asString()))
 			throw new InvalidTokenException("Invalid token type");
 	}
 
@@ -64,9 +61,12 @@ public class ValidateJWTLegacyService {
 		}
 	}
 
-	private void validateSubject(String subject) {
-		if (StringUtils.isBlank(subject)) {
-			throw new InvalidTokenException("Invalid subject");
-		}
+	private Pair<String, Map<String, Claim>> validateToken(Map<String, PublicKey> clientApplicationsPublicKeyMap, String token) {
+		return clientApplicationsPublicKeyMap.keySet().stream()
+			.map(key -> new ImmutablePair<>(key, clientApplicationsPublicKeyMap.get(key)))
+			.map(pair -> jwtValidator.validateLegacyToken(pair.getLeft(), token, pair.getRight()))
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElseThrow(() -> new InvalidTokenException("Invalid token for A2A call"));
 	}
 }
