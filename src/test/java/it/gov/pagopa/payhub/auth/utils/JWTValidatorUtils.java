@@ -7,20 +7,20 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import java.io.StringWriter;
-import java.security.PublicKey;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.json.JSONObject;
 
+import java.io.StringWriter;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -80,8 +80,11 @@ public class JWTValidatorUtils {
 
     public String generateInternalToken(KeyPair keyPair, Date expiresAt) {
         Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        Map<String, Object> headerClaims = new HashMap<>();
+        headerClaims.put("typ", ACCESS_TOKEN_TYPE);
         String tokenType = "bearer";
         return JWT.create()
+          .withHeader(headerClaims)
             .withClaim("typ", tokenType)
             .withIssuer(ISS)
             .withJWTId("my-jwt-id")

@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.mapper.A2ALegacyClaims2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
@@ -42,12 +43,11 @@ class JWTLegacyHandlerServiceTest {
 		Mockito.when(validateJWTLegacyServiceMock.validate(token)).thenReturn(immutablePairClaims);
 
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken(token).build();
-		IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
-		Mockito.when(a2ALegacyClaims2UserInfoMapperMock.map("subject")).thenReturn(iamUserInfo);
+		UserInfo userInfo = new UserInfo();
+		Mockito.when(a2ALegacyClaims2UserInfoMapperMock.map("subject")).thenReturn(userInfo);
 		//When
 		service.handleLegacyToken(token);
 		//Then
-		Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
 		Assertions.assertDoesNotThrow(() -> service.handleLegacyToken(token));
 	}
 

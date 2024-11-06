@@ -1,6 +1,10 @@
 package it.gov.pagopa.payhub.auth.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.RegisteredClaims;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
+import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
@@ -43,12 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (StringUtils.hasText(authorization)) {
                 String token = authorization.replace("Bearer ", "");
-                if (validateTokenService.isInternalToken(token)) {
-                    validateTokenService.validate(token);
-                } else {
-                    jwtLegacyHandlerService.handleLegacyToken(token);
-                }
-                UserInfo userInfo = authnService.getUserInfo(token);
+                UserInfo userInfo = getUserInfoByTokenHeaderClaim(token);
                 Collection<? extends GrantedAuthority> authorities = null;
                 if (userInfo.getOrganizationAccess() != null) {
                     authorities = userInfo.getOrganizations().stream()
@@ -68,5 +67,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private UserInfo getUserInfoByTokenHeaderClaim(String token) {
+        DecodedJWT jwt = JWT.decode(token);
+        if (AccessTokenBuilderService.ISSUER.equalsIgnoreCase(jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString())) {
+            validateTokenService.validate(token);
+            return authnService.getUserInfo(token);
+        }
+        return jwtLegacyHandlerService.handleLegacyToken(token);
     }
 }

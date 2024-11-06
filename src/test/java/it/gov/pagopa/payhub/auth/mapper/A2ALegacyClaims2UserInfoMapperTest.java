@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.mapper;
 
-import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.utils.Constants;
+import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,21 +22,20 @@ class A2ALegacyClaims2UserInfoMapperTest {
 		//Given
 		String prefix = "A2A-";
 		String subject = "subject";
-		IamUserInfoDTO expected = IamUserInfoDTO.builder()
-			.systemUser(true)
+		UserInfo expected = UserInfo.builder()
 			.issuer(subject)
 			.userId(prefix + subject)
 			.name(subject)
 			.familyName(subject)
-			.fiscalCode(subject)
-			.organizationAccess(IamUserOrganizationRolesDTO.builder()
+			.fiscalCode(prefix + subject)
+			.organizations(Collections.singletonList(UserOrganizationRoles.builder()
 				.organizationIpaCode(subject)
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
-				.build())
+				.build()))
 			.build();
 
 		//When
-		IamUserInfoDTO result = mapper.map(subject);
+		UserInfo result = mapper.map(subject);
 		//Then
 		Assertions.assertEquals(expected,	result);
 	}

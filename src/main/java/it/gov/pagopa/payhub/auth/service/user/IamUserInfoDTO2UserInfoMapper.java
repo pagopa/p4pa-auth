@@ -42,7 +42,7 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
 			String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
 	    return UserInfo.builder()
 		    .userId(iamUserInfoDTO.getUserId())
-		    .mappedExternalUserId(iamUserInfoDTO.getUserId().startsWith(A2A_PREFIX)? iamUserInfoDTO.getUserId() : organizationIpaCode + WS_USER_SUFFIX)
+		    .mappedExternalUserId(organizationIpaCode + WS_USER_SUFFIX)
 		    .fiscalCode(iamUserInfoDTO.getFiscalCode())
 		    .familyName(iamUserInfoDTO.getFamilyName())
 		    .name(iamUserInfoDTO.getName())

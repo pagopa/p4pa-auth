@@ -1,18 +1,15 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.RegisteredClaims;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import org.junit.jupiter.api.Assertions;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -56,22 +53,5 @@ class ValidateTokenServiceTest {
 
     // Then
     Assertions.assertThrows(InvalidTokenException.class, ()->validateTokenService.validate(invalidToken));
-  }
-
-  @Test
-  void givenValidJWTThenIsInternalToken() {
-    String validToken = "eyJpc3MiOiJwNHBhLWF1dGgiLCJ0eXAiOiJhdCtKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJBUFBMSUNBVElPTl9BVURJRU5DRSIsImp0aSI6ImVjN2JmOWFkLWY3YjMtNGZjOS1iZWQ3LTJmZTdjYjRmMWVlMSIsImlhdCI6MTczMDgyMjM2NiwiZXhwIjoxNzMwODI1OTY2fQ.lPOmmygolociw_dnmo-WOBhzBUs_-LOE-Yx86qMv8x19Pr50k5pwbnf_VM5lqjmZR-fPAiHUYNzct3C5fxHCY263mQIdY00vgkf4EYyHcmYstf0k4VmaCXQBKzk4BpoB-MsJEmioMWczK6wpAxo_lSZ4HZFDWRzvwrEpAzP2SQKY0EEPUxm80T9-SqZN1w3kZPAZSpTcIxH41oXEQpyyIqqHVhX5nUCJv6jPMXb1idmdAcDH56PZ4PPpKJIYCLT875MaUpLlROEfiEdZ7HWHKJZTBUTbcfO9Ojblh3LJBBC0EGiiDEyNbKTxke64eyRzOx-C1z8_1ejKk4isl7nDQA";
-    DecodedJWT jwt = JWT.decode(validToken);
-
-    Assertions.assertEquals(AccessTokenBuilderService.ISSUER, jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString());
-  }
-
-  @Test
-  void givenInvalidJWTTypeThenIsNotInternalToken() {
-    String invalidToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJkZXYucGlhdHRhZm9ybWF1bml0YXJpYS5wYWdvcGEuaXQiLCJqdGkiOiI5NzZhYTYzMy0wMTVmLTQ3MDMtYWM3NC03NjE2YjJlN2JkNjQiLCJpYXQiOjE3MjgyOTkwOTksImV4cCI6MTcyODMxMzQ5OX0.NxbnCRBGcr0iftbagyPU-v3140loAQq4k0JaAg1fdTvI3qHBm4CS8za31s7OnRpNQ2ojlww9ApEAowzcjajnVJRo4L5D1W5M0RcVN_wSdBJrNcvPmN7PFKQn37xCbDkQ00I1d4ZLJVbP5hA2FFekJXu_w0NlUhSHsGPQoSYNOJr70fJUQ15K_asr6zi7J5XfbYSMNJBZWdVSCJoVfQDVRaWCq5H4zcBhfCbiOYtYeVDbYygFDWizHTiz9XwF-79aJcjp9VCTduyJ1ROJCBZfnUqZgN4BM75E5H-bmBEEbahqIT3eAY1lYAyv83s3Y5ys-5n6pFWgi6NuvP5vifl78w";
-    DecodedJWT jwt = JWT.decode(invalidToken);
-
-    // Then
-    Assertions.assertNotEquals(AccessTokenBuilderService.ISSUER, jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString());
   }
 }

@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
 @TestPropertySource(properties = { "app.enable-access-organization-mode=false" })
 class AuthzControllerNoOrganizzationAccessModeTest {
+    private static final String TOKEN = "eyJpc3MiOiJwNHBhLWF1dGgiLCJ0eXAiOiJhdCtKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJBUFBMSUNBVElPTl9BVURJRU5DRSIsImp0aSI6ImM2ZTQwZjI2LTBlYjktNDIwMy04YzBkLTFiYjgwMjdiYzQwYiIsImlhdCI6MTczMDg5NjM1MSwiZXhwIjoxNzMwODk5OTUxfQ.hdP7P3hINFmLALMgz8z4j-0RAXcYjkJF8AIPt_Cda-x49huwzsnnQfrXUHOCh1Gsa_K0LLyNkZbVaq9IAd7wsUtFKTJ6sNn57VT_OY7ss4P3lZX3r1NTX25nLp_Kv37yIcsyc-3SwDnLWJOYajJ5heljCZUwsuVr1_7Y5IiR2YeIhj3nHwX_JvEAYYKhloE9vowSd4LObEYnhvl5XRBZpS2N97luycklig-NAeqDDFTp5ZirFLTRDlls8_Mbbx4QuF9ka_2Zz5KywDWcd33uO-Uuji4wsdnwW3wdvt42ei6aVhCfoLJrME3bZQfhINg1XDoJIueJPTgtX2rlXeLtcQ";
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,7 +63,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         request.setExternalUserId("EXTERNALUSERID");
         Gson gson = new Gson();
         String body = gson.toJson(request);
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG2")
@@ -71,7 +72,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                 .build());
         mockMvc.perform(
             post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf((body)))
         ).andExpect(status().isUnauthorized());
@@ -91,7 +92,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         String body = gson.toJson(createOperatorRequest);
 
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
@@ -101,7 +102,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
         mockMvc.perform(
             post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
         ).andExpect(status().isOk());
@@ -118,7 +119,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         Gson gson = new Gson();
         String body = gson.toJson(user);
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
@@ -128,7 +129,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
         mockMvc.perform(
             post("/payhub/am/users")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
         ).andExpect(status().isOk());
@@ -140,7 +141,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         request.setExternalUserId("EXTERNALUSERID");
         Gson gson = new Gson();
         String body = gson.toJson(request);
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
@@ -149,7 +150,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                 .build());
         mockMvc.perform(
             post("/payhub/am/users")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf((body)))
         ).andExpect(status().isUnauthorized());
@@ -163,7 +164,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         request.setClientName("CLIENTNAME");
         Gson gson = new Gson();
         String body = gson.toJson(request);
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
           .thenReturn(UserInfo.builder()
             .organizations(List.of(UserOrganizationRoles.builder()
               .organizationIpaCode("ORG2")
@@ -172,7 +173,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
             .build());
         mockMvc.perform(
           post("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content(String.valueOf((body)))
         ).andExpect(status().isUnauthorized());
@@ -196,7 +197,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
             .build()))
           .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
           .thenReturn(expectedUser);
 
         doReturn(new ClientDTO(organizationIpaCode + createClientRequest.getClientName(), createClientRequest.getClientName(), organizationIpaCode, uuidRandomForSecret))
@@ -204,7 +205,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
         MvcResult result = mockMvc.perform(
             post("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
-              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
               .contentType(MediaType.APPLICATION_JSON)
               .content(new Gson().toJson(createClientRequest))
           ).andExpect(status().isOk())
@@ -235,7 +236,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
             .build()))
           .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
           .thenReturn(expectedUser);
 
         doReturn(uuidRandomForClientSecret)
@@ -243,7 +244,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
         MvcResult result = mockMvc.perform(
             get("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
-              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
           ).andExpect(status().isOk())
           .andReturn();
 

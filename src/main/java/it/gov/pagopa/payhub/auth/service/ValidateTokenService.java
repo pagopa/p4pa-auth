@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.RegisteredClaims;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
@@ -28,10 +27,4 @@ public class ValidateTokenService {
       throw new InvalidTokenException("Invalid token type " + type);
     }
   }
-
-  public boolean isInternalToken(String token) {
-    DecodedJWT jwt = JWT.decode(token);
-    return jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString().equalsIgnoreCase(AccessTokenBuilderService.ISSUER);
-  }
-
 }
