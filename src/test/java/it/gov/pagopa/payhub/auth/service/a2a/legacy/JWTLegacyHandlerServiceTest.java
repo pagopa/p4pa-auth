@@ -37,7 +37,7 @@ class JWTLegacyHandlerServiceTest {
 	@Test
 	void givenValidTokenWhenHandleLegacyTokenThenSuccess() {
 		//Given
-		String token = "accessToken";//"MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAplNu5dm2xSvbfa+guCFMMw7eKDZV/Z5k9XtW19/0dWGFLCCpGDIvOaOhdCMC/wH/ESyVmbaYzvU+ehRtqUNIF4zhitjY5+5atqiku/GBYp0x9tYLnS2Ztr9dVyW/kMA0s1gd5fSH/5hD44M2iKXSLut/IfDlWD4KAZBmaU/0q1iaMfdtG8yt11UEOQh9Ia0+BFv4Iy7tHY+bckTPVdIrLKlpG9EHPGUm+LNx9dH+SML0fhCGO0bSInb8UdGGwikxSr/CYi3+Kzsfox6wW31SSqkqrhI5u9gmttimtRAE0ordqNpe+8JJMY5ZOVcpLvAb1vtu3xKtwiDAUBAWPFyGCjDfVIiQJu1qI0kMd8J/eV6sz42PVUJyqQi/+T/Qpqy7YCGYVx5Q6k5zhTWRRti/wvSU5Je0nmzydhZUy4vT8WyWyQvNUvjlswEXFDiUbw4x7pSKp10ec0c9md24/zAHHyU/rgeiJEdK1KHN+rzE+BJH7ru4HNW/ZF+0IPjlQ8sm3MisuTJzq8uedYFCDRfR9P1u7jee1OyNwyw6Iy06cK0TIl1xFcqKKvR9KxLBwMINrSM3BcE0sDpr5qc7wthJSe0zC/XbNkb72UtWoI7rPox7WY/DvuScK5uKPhgUQTZQeBfWIN7/Kpqra7tcrw14RdexxO1QOFRlPGy+FfdOyU0CAwEAAQ==";
+		String token = "accessToken";
 		Pair<String, Map<String, Claim>> immutablePairClaims = createJWKClaims();
 		Mockito.when(validateJWTLegacyServiceMock.validate(token)).thenReturn(immutablePairClaims);
 

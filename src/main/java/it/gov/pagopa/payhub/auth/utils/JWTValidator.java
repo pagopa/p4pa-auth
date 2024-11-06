@@ -14,7 +14,11 @@ import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -84,6 +88,29 @@ public class JWTValidator {
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {
             throw new InvalidTokenException("The token is not valid");
+        }
+    }
+
+    /**
+     * Validates JWT signature with publickey.
+     *
+     * @param applicationName the application name for which to validate the token
+     * @param token the JWT to validate
+     * @param publicKey the key to use in the verify instance.
+     * @throws Exception if the token is invalid for any other reason
+     *         (e.g., signature verification failure).
+     */
+    public Pair<String, Map<String, Claim>> validateLegacyToken(String applicationName, String token, PublicKey publicKey) {
+        try{
+            DecodedJWT jwt = JWT.decode(token);
+
+            Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) publicKey);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            verifier.verify(jwt);
+
+            return new ImmutablePair<>(applicationName, jwt.getClaims());
+        } catch (Exception e){
+            return null;
         }
     }
 }

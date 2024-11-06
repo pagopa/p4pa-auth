@@ -2,8 +2,6 @@ package it.gov.pagopa.payhub.auth.service.a2a.legacy;
 
 import io.jsonwebtoken.io.Encoders;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.service.a2a.legacy.A2AClientLegacyPropConfig;
-import it.gov.pagopa.payhub.auth.service.a2a.legacy.A2ALegacySecretsRetrieverService;
 import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

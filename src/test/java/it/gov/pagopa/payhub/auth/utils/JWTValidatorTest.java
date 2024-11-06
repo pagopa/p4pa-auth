@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.security.PublicKey;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -90,4 +92,18 @@ class JWTValidatorTest {
         assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken));
     }
 
+    @Test
+    void givenValidLegacyJWTThenOk() {
+        PublicKey publicKey = keyPair.getPublic();
+        String validToken = utils.generateInternalToken(keyPair,new Date(System.currentTimeMillis() + 3600000));
+        Assertions.assertDoesNotThrow(() -> jwtValidator.validateLegacyToken("app", validToken, publicKey));
+    }
+
+    @Test
+    void givenInvalidTokenWhenValidateLegacyTokenThenThrowInvalidTokenException() {
+        String invalidToken = "your_invalid_token_here";
+        PublicKey publicKey = keyPair.getPublic();
+
+        assertThrows(InvalidTokenException.class, () -> jwtValidator.validateLegacyToken("app", invalidToken, publicKey));
+    }
 }

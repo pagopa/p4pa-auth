@@ -1,12 +1,9 @@
 package it.gov.pagopa.payhub.auth.service.a2a.legacy;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.RegisteredClaims;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -14,7 +11,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.security.PublicKey;
-import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.util.Map;
 
@@ -23,17 +19,20 @@ import java.util.Map;
 public class ValidateJWTLegacyService {
 	public static final String TOKEN_TYPE_A2A = "a2a";
 
-	private final Map<String, PublicKey> clientApplicationsPublicKey;
+	private final A2ALegacySecretsRetrieverService a2ALegacySecretsRetrieverService;
+	private final JWTValidator jwtValidator;
 
-	public ValidateJWTLegacyService(A2ALegacySecretsRetrieverService a2ALegacySecretsRetrieverService) {
-		this.clientApplicationsPublicKey = a2ALegacySecretsRetrieverService.envToMap();
+	public ValidateJWTLegacyService(A2ALegacySecretsRetrieverService a2ALegacySecretsRetrieverService, JWTValidator jwtValidator) {
+		this.a2ALegacySecretsRetrieverService = a2ALegacySecretsRetrieverService;
+		this.jwtValidator = jwtValidator;
 	}
 
 	public Pair<String, Map<String, Claim>> validate(String token) {
-		verifyEnvMap();
-		Pair<String, Map<String, Claim>> claims = this.clientApplicationsPublicKey.keySet().stream()
-			.map(key -> new ImmutablePair<>(key, this.clientApplicationsPublicKey.get(key)))
-			.map(pair -> validateLegacyToken(pair.getLeft(), token, pair.getRight()))
+		Map<String, PublicKey> clientApplicationsPublicKeyMap = a2ALegacySecretsRetrieverService.envToMap();
+		verifyEnvMap(clientApplicationsPublicKeyMap);
+		Pair<String, Map<String, Claim>> claims = clientApplicationsPublicKeyMap.keySet().stream()
+			.map(key -> new ImmutablePair<>(key, clientApplicationsPublicKeyMap.get(key)))
+			.map(pair -> jwtValidator.validateLegacyToken(pair.getLeft(), token, pair.getRight()))
 			.findFirst()
 			.orElseThrow(() -> new InvalidTokenException("Invalid token for A2A call"));
 		isM2MAuthToken(claims.getRight());
@@ -42,8 +41,8 @@ public class ValidateJWTLegacyService {
 		return claims;
 	}
 
-	private void verifyEnvMap() {
-		if (this.clientApplicationsPublicKey.isEmpty()){
+	private void verifyEnvMap(Map<String, PublicKey> clientApplicationsPublicKeyMap) {
+		if (clientApplicationsPublicKeyMap.isEmpty()){
 			throw new InvalidTokenException("The token is not present");
 		}
 	}
@@ -68,20 +67,6 @@ public class ValidateJWTLegacyService {
 	private void validateSubject(String subject) {
 		if (StringUtils.isBlank(subject)) {
 			throw new InvalidTokenException("Invalid subject");
-		}
-	}
-
-	private Pair<String, Map<String, Claim>> validateLegacyToken(String app, String token, PublicKey publicKey) {
-		try{
-			DecodedJWT jwt = JWT.decode(token);
-
-			Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) publicKey);
-			JWTVerifier verifier = JWT.require(algorithm).build();
-			verifier.verify(jwt);
-
-			return new ImmutablePair<>(app, jwt.getClaims());
-		} catch (Exception e) {
-			return null;
 		}
 	}
 }

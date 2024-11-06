@@ -72,6 +72,6 @@ class ValidateTokenServiceTest {
     DecodedJWT jwt = JWT.decode(invalidToken);
 
     // Then
-    Assertions.assertFalse(AccessTokenBuilderService.ISSUER.equals(jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString()));
+    Assertions.assertNotEquals(AccessTokenBuilderService.ISSUER, jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString());
   }
 }
