@@ -14,12 +14,10 @@ import java.util.Map;
 @Slf4j
 public class JWTLegacyHandlerService {
 	private final ValidateJWTLegacyService validateJWTLegacyService;
-	private final TokenStoreService tokenStoreService;
 	private final A2ALegacyClaims2UserInfoMapper a2ALegacyClaims2UserInfoMapper;
 
-	public JWTLegacyHandlerService(ValidateJWTLegacyService validateJWTLegacyService, TokenStoreService tokenStoreService, A2ALegacyClaims2UserInfoMapper a2ALegacyClaims2UserInfoMapper) {
+	public JWTLegacyHandlerService(ValidateJWTLegacyService validateJWTLegacyService, A2ALegacyClaims2UserInfoMapper a2ALegacyClaims2UserInfoMapper) {
 		this.validateJWTLegacyService = validateJWTLegacyService;
-		this.tokenStoreService = tokenStoreService;
 		this.a2ALegacyClaims2UserInfoMapper = a2ALegacyClaims2UserInfoMapper;
 	}
 
