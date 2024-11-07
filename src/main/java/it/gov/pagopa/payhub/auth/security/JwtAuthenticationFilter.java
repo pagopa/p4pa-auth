@@ -71,10 +71,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private UserInfo getUserInfoByTokenHeaderClaim(String token) {
         DecodedJWT jwt = JWT.decode(token);
-        if (AccessTokenBuilderService.ISSUER.equalsIgnoreCase(jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString())) {
-            validateTokenService.validate(token);
-            return authnService.getUserInfo(token);
-        }
-        return jwtLegacyHandlerService.handleLegacyToken(token);
+        if (!AccessTokenBuilderService.ISSUER.equalsIgnoreCase(jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString()))
+            return jwtLegacyHandlerService.handleLegacyToken(token);
+
+        validateTokenService.validate(token);
+        return authnService.getUserInfo(token);
     }
 }

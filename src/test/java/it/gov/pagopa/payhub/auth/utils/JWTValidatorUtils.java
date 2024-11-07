@@ -84,7 +84,7 @@ public class JWTValidatorUtils {
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
         String tokenType = "bearer";
         return JWT.create()
-          .withHeader(headerClaims)
+            .withHeader(headerClaims)
             .withClaim("typ", tokenType)
             .withIssuer(ISS)
             .withJWTId("my-jwt-id")

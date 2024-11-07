@@ -97,7 +97,8 @@ public class JWTValidator {
      * @param applicationName the application name for which to validate the token
      * @param token the JWT to validate
      * @param publicKey the key to use in the verify instance.
-     * @throws Exception if the token is invalid for any other reason
+     * @throws TokenExpiredException if the token has expired.
+     * @throws InvalidTokenException if the token is invalid for any other reason
      *         (e.g., signature verification failure).
      */
     public Pair<String, Map<String, Claim>> validateLegacyToken(String applicationName, String token, PublicKey publicKey) {
@@ -109,8 +110,10 @@ public class JWTValidator {
             verifier.verify(jwt);
 
             return new ImmutablePair<>(applicationName, jwt.getClaims());
-        } catch (Exception e){
-            return null;
+        } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
+            throw new TokenExpiredException(e.getMessage());
+        } catch (JWTVerificationException ex) {
+            throw new InvalidTokenException("The token is not valid");
         }
     }
 }

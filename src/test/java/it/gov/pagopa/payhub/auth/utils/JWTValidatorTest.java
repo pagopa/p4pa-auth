@@ -98,9 +98,16 @@ class JWTValidatorTest {
     }
 
     @Test
-    void givenInvalidTokenWhenValidateLegacyTokenThenThrowExceptionThenReturnNullObject() {
+    void givenInvalidTokenWhenValidateLegacyTokenThenThrowInvalidTokenException() {
         String invalidToken = "your_invalid_token_here";
         PublicKey publicKey = keyPair.getPublic();
-        assertNull(jwtValidator.validateLegacyToken("app", invalidToken, publicKey));
+        assertThrows(InvalidTokenException.class, () ->jwtValidator.validateLegacyToken("app", invalidToken, publicKey));
+    }
+
+    @Test
+    void givenInvalidTokenWhenValidateLegacyTokenThenThrowTokenExpiredException() {
+        String invalidToken = utils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().minusSeconds(3_600_000L), "jwtId");
+        PublicKey publicKey = keyPair.getPublic();
+        assertThrows(TokenExpiredException.class, () ->jwtValidator.validateLegacyToken("app", invalidToken, publicKey));
     }
 }
