@@ -256,12 +256,12 @@ class AuthnControllerTest {
 
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("legacy");
-        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("accessToken")).thenReturn(expectedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
 
         mockMvc.perform(
             get("/payhub/auth/userinfo")
-              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer legacyAccessToken")
           ).andExpect(status().isOk())
           .andExpect(content().json("{\"userId\":\"USERID\"}"));
     }

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class ValidateJWTLegacyServiceTest {
 
 	@Mock
-	private A2ALegacySecretsService a2ALegacySecretsServiceMock;
+	private A2AClientLegacyPropConfig a2AClientLegacyPropConfig;
 	@Mock
 	private JWTValidator jwtValidatorMock;
 	private ValidateJWTLegacyService service;
@@ -36,7 +36,7 @@ class ValidateJWTLegacyServiceTest {
 
 	@BeforeEach
 	void setup() throws Exception {
-		service = new ValidateJWTLegacyService(a2ALegacySecretsServiceMock, jwtValidatorMock);
+		service = new ValidateJWTLegacyService(a2AClientLegacyPropConfig, jwtValidatorMock);
 		keyPair = JWTValidatorUtils.generateKeyPair();
 	}
 
@@ -44,8 +44,8 @@ class ValidateJWTLegacyServiceTest {
 	void GivenValidTokenThenOk() {
 		String appName = "A2A-IPA_TEST_1";
 		PublicKey publicKey = keyPair.getPublic();
-		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600L), "jti");
-		when(a2ALegacySecretsServiceMock.getLegacySecrets()).thenReturn(Map.of(appName, publicKey));
+		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600_000L), "jti");
+		when(a2AClientLegacyPropConfig.getPublicKeysAsMap()).thenReturn(Map.of(appName, publicKey));
 
 		Map<String, Claim> claimsMap = JWT.decode(token).getClaims();
 		Mockito.when(jwtValidatorMock.validate(token, publicKey)).thenReturn(claimsMap);
@@ -56,10 +56,20 @@ class ValidateJWTLegacyServiceTest {
 	}
 
 	@Test
+	void GivenInvalidTokenThenInvalidTokenException() {
+		String appName = "A2A-IPA_TEST_1";
+		PublicKey publicKey = keyPair.getPublic();
+		String token = "invalidToken";
+		when(a2AClientLegacyPropConfig.getPublicKeysAsMap()).thenReturn(Map.of(appName, publicKey));
+
+		assertThrows(Exception.class, () -> service.validate(token), "given an invalid token");
+	}
+
+	@Test
 	void GivenNonM2MAuthTokenThenInvalidTokenException() {
 		PublicKey publicKey = keyPair.getPublic();
 		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "notA2A", Instant.now(), Instant.now().plusSeconds(3_600L), "jwtId");
-		when(a2ALegacySecretsServiceMock.getLegacySecrets()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
+		when(a2AClientLegacyPropConfig.getPublicKeysAsMap()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
 
 		Map<String, Claim> claimsMap = JWT.decode(token).getClaims();
 		Mockito.when(jwtValidatorMock.validate(token, publicKey)).thenReturn(claimsMap);
@@ -70,10 +80,10 @@ class ValidateJWTLegacyServiceTest {
 	@Test
 	void GivenInvalidIatThenInvalidTokenException() {
 		PublicKey publicKey = keyPair.getPublic();
-		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now().minusSeconds(3_600L * 48), Instant.now().plusSeconds(3_600_000L), "jwtId");
+		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now().plusSeconds(3_600L), Instant.now().plusSeconds(3_600_000L), "jwtId");
 
 
-		when(a2ALegacySecretsServiceMock.getLegacySecrets()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
+		when(a2AClientLegacyPropConfig.getPublicKeysAsMap()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
 
 		Map<String, Claim> claimsMap = JWT.decode(token).getClaims();
 		Mockito.when(jwtValidatorMock.validate(token, publicKey)).thenReturn(claimsMap);
@@ -84,9 +94,9 @@ class ValidateJWTLegacyServiceTest {
 	@Test
 	void GivenInvalidExpThenInvalidTokenException() {
 		PublicKey publicKey = keyPair.getPublic();
-		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600L * 48), "jwtId");
+		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().minusSeconds(3_600L), "jwtId");
 
-		when(a2ALegacySecretsServiceMock.getLegacySecrets()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
+		when(a2AClientLegacyPropConfig.getPublicKeysAsMap()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
 
 		Map<String, Claim> claimsMap = JWT.decode(token).getClaims();
 		Mockito.when(jwtValidatorMock.validate(token, publicKey)).thenReturn(claimsMap);
@@ -99,7 +109,7 @@ class ValidateJWTLegacyServiceTest {
 		PublicKey publicKey = keyPair.getPublic();
 		String token = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600L), "");
 
-		when(a2ALegacySecretsServiceMock.getLegacySecrets()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
+		when(a2AClientLegacyPropConfig.getPublicKeysAsMap()).thenReturn(Map.of("A2A-IPA_TEST_1", publicKey));
 
 		Map<String, Claim> claimsMap = JWT.decode(token).getClaims();
 		Mockito.when(jwtValidatorMock.validate(token, publicKey)).thenReturn(claimsMap);
