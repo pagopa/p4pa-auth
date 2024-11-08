@@ -27,7 +27,6 @@ public class AccessTokenBuilderService {
     private final RSAPublicKey rsaPublicKey;
     private final RSAPrivateKey rsaPrivateKey;
     private final String kid;
-    private final DataCipherService dataCipherService;
 
     public AccessTokenBuilderService(
 	    @Value("${jwt.audience}") String allowedAudience,
@@ -36,7 +35,6 @@ public class AccessTokenBuilderService {
 	    @Value("${jwt.access-token.public-key}") String publicKey, DataCipherService dataCipherService) {
         this.allowedAudience = allowedAudience;
         this.expireIn = expireIn;
-	      this.dataCipherService = dataCipherService;
         byte[] hashed = dataCipherService.hash(publicKey);
 	      this.kid = UUID.nameUUIDFromBytes(hashed).toString();
 

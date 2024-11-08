@@ -84,7 +84,7 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {
-            throw new InvalidTokenException("The token is not valid");
+            throw new InvalidTokenException("The internal token is not valid");
         }
     }
 
@@ -109,7 +109,7 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {
-            throw new InvalidTokenException("The token is not valid");
+            throw new InvalidTokenException("The legacy token is not valid");
         }
     }
 }

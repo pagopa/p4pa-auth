@@ -79,11 +79,11 @@ public class AccessTokenBuilderServiceTest {
         DecodedJWT decodedAccessToken = JWT.decode(result.getAccessToken());
         String decodedHeader = new String(Base64.getDecoder().decode(decodedAccessToken.getHeader()));
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
-        String decodedprefix = new String(Base64.getDecoder().decode(prefix));
+        String decodedPrefix = new String(Base64.getDecoder().decode(prefix));
 
-        Assertions.assertEquals(decodedprefix +",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
+        Assertions.assertEquals(decodedPrefix +",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
-        Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedprefix).matches(), "key identifier not matches requested pattern: " + decodedprefix);
+        Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
     }
 }
