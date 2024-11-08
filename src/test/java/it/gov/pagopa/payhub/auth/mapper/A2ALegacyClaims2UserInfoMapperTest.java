@@ -21,21 +21,21 @@ class A2ALegacyClaims2UserInfoMapperTest {
 	void WhenMapThenGetUserInfoMapped() {
 		//Given
 		String prefix = "A2A-";
-		String subject = "subject";
+		String issuer = "issuer";
 		UserInfo expected = UserInfo.builder()
-			.issuer(subject)
-			.userId(prefix + subject)
-			.name(subject)
-			.familyName(subject)
-			.fiscalCode(prefix + subject)
+			.issuer(issuer)
+			.userId(prefix + issuer)
+			.name(issuer)
+			.familyName(issuer)
+			.fiscalCode(prefix + issuer)
 			.organizations(Collections.singletonList(UserOrganizationRoles.builder()
-				.organizationIpaCode(subject)
+				.organizationIpaCode(issuer)
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build()))
 			.build();
 
 		//When
-		UserInfo result = mapper.map(subject);
+		UserInfo result = mapper.map(issuer);
 		//Then
 		Assertions.assertEquals(expected,	result);
 	}

@@ -70,5 +70,10 @@ data-chiper:
 
 m2m:
     piattaforma-unitaria-client-secret: "\${PIATTAFORMA_UNITARIA_CLIENT_SECRET:SECRET}"
-# list here the keys used to identify external apps
-# for example if an app is called "acme" then you should define its public key in the property "m2m.legacy.public.acme"
+#   legacy:
+#       public-keys:
+#               foo: "\${FOO_APPLICATION_PUBLIC_KEY:FOO_PUCLIC_KEY}"
+#               bar: "\${BAR_APPLICATION_PUBLIC_KEY:BAR_PUCLIC_KEY}"
+# list here the keys/values used to identify external apps
+# the key naming is mandatory to be the value of the organization IPA code
+# you should define its public key in the property like this for example --> "m2m.legacy.public-keys.IPACODE"

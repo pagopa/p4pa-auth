@@ -1,8 +1,5 @@
 package it.gov.pagopa.payhub.auth.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.RegisteredClaims;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
@@ -34,11 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final AuthnService authnService;
     private final ValidateTokenService validateTokenService;
     private final JWTLegacyHandlerService jwtLegacyHandlerService;
+    private final AccessTokenBuilderService accessTokenBuilderService;
 
-	public JwtAuthenticationFilter(AuthnService authnService, ValidateTokenService validateTokenService, JWTLegacyHandlerService jwtLegacyHandlerService) {
+	public JwtAuthenticationFilter(AuthnService authnService, ValidateTokenService validateTokenService, JWTLegacyHandlerService jwtLegacyHandlerService, AccessTokenBuilderService accessTokenBuilderService) {
 		this.authnService = authnService;
 		this.validateTokenService = validateTokenService;
 		this.jwtLegacyHandlerService = jwtLegacyHandlerService;
+		this.accessTokenBuilderService = accessTokenBuilderService;
 	}
 
 	@Override
@@ -47,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (StringUtils.hasText(authorization)) {
                 String token = authorization.replace("Bearer ", "");
-                UserInfo userInfo = getUserInfoByTokenHeaderClaim(token);
+                UserInfo userInfo = validateToken(token);
                 Collection<? extends GrantedAuthority> authorities = null;
                 if (userInfo.getOrganizationAccess() != null) {
                     authorities = userInfo.getOrganizations().stream()
@@ -65,13 +64,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e){
             log.error("Something gone wrong while retrieving UserInfo", e);
         }
-
         filterChain.doFilter(request, response);
     }
 
-    private UserInfo getUserInfoByTokenHeaderClaim(String token) {
-        DecodedJWT jwt = JWT.decode(token);
-        if (!AccessTokenBuilderService.ISSUER.equalsIgnoreCase(jwt.getHeaderClaim(RegisteredClaims.ISSUER).asString()))
+    private UserInfo validateToken(String token) {
+        if (!token.startsWith(accessTokenBuilderService.getHeaderPrefix()))
             return jwtLegacyHandlerService.handleLegacyToken(token);
 
         validateTokenService.validate(token);

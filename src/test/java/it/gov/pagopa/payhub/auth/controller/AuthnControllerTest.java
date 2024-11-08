@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
+import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
@@ -37,8 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AuthnControllerImpl.class)
 @Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
 class AuthnControllerTest {
-    
-    private static final String TOKEN = "eyJpc3MiOiJwNHBhLWF1dGgiLCJ0eXAiOiJhdCtKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJBUFBMSUNBVElPTl9BVURJRU5DRSIsImp0aSI6ImM2ZTQwZjI2LTBlYjktNDIwMy04YzBkLTFiYjgwMjdiYzQwYiIsImlhdCI6MTczMDg5NjM1MSwiZXhwIjoxNzMwODk5OTUxfQ.hdP7P3hINFmLALMgz8z4j-0RAXcYjkJF8AIPt_Cda-x49huwzsnnQfrXUHOCh1Gsa_K0LLyNkZbVaq9IAd7wsUtFKTJ6sNn57VT_OY7ss4P3lZX3r1NTX25nLp_Kv37yIcsyc-3SwDnLWJOYajJ5heljCZUwsuVr1_7Y5IiR2YeIhj3nHwX_JvEAYYKhloE9vowSd4LObEYnhvl5XRBZpS2N97luycklig-NAeqDDFTp5ZirFLTRDlls8_Mbbx4QuF9ka_2Zz5KywDWcd33uO-Uuji4wsdnwW3wdvt42ei6aVhCfoLJrME3bZQfhINg1XDoJIueJPTgtX2rlXeLtcQ";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -52,7 +52,10 @@ class AuthnControllerTest {
     private ValidateTokenService validateTokenServiceMock;
 
     @MockBean
-    private JWTLegacyHandlerService jwtLegacyHandlerService;
+    private JWTLegacyHandlerService jwtLegacyHandlerServiceMock;
+
+    @MockBean
+    private AccessTokenBuilderService accessTokenBuilderServiceMock;
 
 //region desc=postToken tests
     @Test
@@ -162,12 +165,13 @@ class AuthnControllerTest {
                         .build()))
                 .build();
 
-        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
                         get("/payhub/auth/userinfo")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isOk())
                 .andExpect(content().json("{\"userId\":\"USERID\"}"));
     }
@@ -176,35 +180,36 @@ class AuthnControllerTest {
     void givenRequestWitAuthorizationAndNotOrganizationAccessWhenGetUserInfoThenOk() throws Exception {
         
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
-        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
                         get("/payhub/auth/userinfo")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isOk())
                 .andExpect(content().json("{\"userId\":\"USERID\"}"));
     }
 
     @Test
     void givenRequestWithInvalidAuthorizationWhenGetUserInfoThenForbidden() throws Exception {
-        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new InvalidAccessTokenException(""));
 
         mockMvc.perform(
                 get("/payhub/auth/userinfo")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isForbidden());
     }
 
     @Test
     void givenRequestWithUserNotFoundWhenGetUserInfoThenForbidden() throws Exception {
-        Mockito.when(authnServiceMock.getUserInfo(TOKEN))
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(
                 get("/payhub/auth/userinfo")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isForbidden());
     }
 //endregion
@@ -244,6 +249,21 @@ class AuthnControllerTest {
                 AuthErrorDTO.class);
         assertEquals(AuthErrorDTO.ErrorEnum.INVALID_CLIENT, actual.getError());
         assertEquals("", actual.getErrorDescription());
+    }
+
+    @Test
+    void givenM2MLegacyRequestWhenGetUserInfoThenOk() throws Exception {
+
+        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
+
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("legacy");
+        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("accessToken")).thenReturn(expectedUser);
+
+        mockMvc.perform(
+            get("/payhub/auth/userinfo")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+          ).andExpect(status().isOk())
+          .andExpect(content().json("{\"userId\":\"USERID\"}"));
     }
 //end region
 }

@@ -12,15 +12,15 @@ public class A2ALegacyClaims2UserInfoMapper {
 
 	private static final String A2A_PREFIX = "A2A-";
 
-	public UserInfo map(String subject) {
+	public UserInfo map(String issuer) {
 		return UserInfo.builder()
-			.issuer(subject)
-			.userId(A2A_PREFIX + subject)
-			.name(subject)
-			.familyName(subject)
-			.fiscalCode(A2A_PREFIX + subject)
+			.issuer(issuer)
+			.userId(A2A_PREFIX + issuer)
+			.name(issuer)
+			.familyName(issuer)
+			.fiscalCode(A2A_PREFIX + issuer)
 			.organizations(Collections.singletonList(UserOrganizationRoles.builder()
-				.organizationIpaCode(subject)
+				.organizationIpaCode(issuer)
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build()))
 			.build();

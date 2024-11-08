@@ -40,9 +40,9 @@ class JWTLegacyHandlerServiceTest {
 		UserInfo userInfo = new UserInfo();
 		Mockito.when(a2ALegacyClaims2UserInfoMapperMock.map("subject")).thenReturn(userInfo);
 		//When
-		service.handleLegacyToken(token);
+		UserInfo result = service.handleLegacyToken(token);
 		//Then
-		Assertions.assertDoesNotThrow(() -> service.handleLegacyToken(token));
+		Assertions.assertEquals(userInfo, result);
 	}
 
 	private Pair<String, Map<String, Claim>>  createJWKClaims(){

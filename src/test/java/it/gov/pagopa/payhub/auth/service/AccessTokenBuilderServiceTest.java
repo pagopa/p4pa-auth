@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,16 +59,19 @@ public class AccessTokenBuilderServiceTest {
 
     private AccessTokenBuilderService accessTokenBuilderService;
 
+    private DataCipherService dataCipherService;
+
     @BeforeEach
     void init(){
-        accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY);
+        dataCipherService = new DataCipherService("PSW","PEPPER", new ObjectMapper());
+        accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService);
     }
 
     @Test
     void test(){
         // When
         AccessToken result = accessTokenBuilderService.build();
-
+        String prefix = accessTokenBuilderService.getHeaderPrefix();
         // Then
         Assertions.assertEquals("bearer", result.getTokenType());
         Assertions.assertEquals(EXPIRE_IN, result.getExpiresIn());
@@ -75,9 +79,11 @@ public class AccessTokenBuilderServiceTest {
         DecodedJWT decodedAccessToken = JWT.decode(result.getAccessToken());
         String decodedHeader = new String(Base64.getDecoder().decode(decodedAccessToken.getHeader()));
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
+        String decodedprefix = new String(Base64.getDecoder().decode(prefix));
 
-        Assertions.assertEquals("{\"iss\":\"p4pa-auth\",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
+        Assertions.assertEquals(decodedprefix +",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
+        Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedprefix).matches(), "key identifier not matches requested pattern: " + decodedprefix);
     }
 }

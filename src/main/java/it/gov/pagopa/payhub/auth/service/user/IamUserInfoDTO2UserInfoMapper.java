@@ -20,6 +20,7 @@ import java.util.function.Function;
 public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, UserInfo> {
 
 	private static final String WS_USER_SUFFIX = "-WS_USER";
+
 	private final UsersRepository usersRepository;
 	private final OperatorsRepository operatorsRepository;
 
