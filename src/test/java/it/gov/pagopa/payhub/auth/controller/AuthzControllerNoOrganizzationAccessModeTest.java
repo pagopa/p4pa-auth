@@ -4,9 +4,11 @@ import com.nimbusds.jose.shaded.gson.Gson;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
+import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
+import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.model.generated.*;
 import org.junit.jupiter.api.Assertions;
@@ -50,6 +52,12 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     @MockBean
     private ValidateTokenService validateTokenServiceMock;
 
+    @MockBean
+    private JWTLegacyHandlerService jwtLegacyHandlerServiceMock;
+
+    @MockBean
+    private AccessTokenBuilderService accessTokenBuilderServiceMock;
+
 // createOperator region
     @Test
     void givenUnauthorizedUserWhenCreateOrganizationOperatorThenOk() throws Exception {
@@ -65,6 +73,8 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
                 .build());
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+
         mockMvc.perform(
             post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
@@ -94,6 +104,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
                 .build());
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
             post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
@@ -121,6 +132,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
                 .build());
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
             post("/payhub/am/users")
@@ -143,6 +155,8 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                     .roles(List.of(Constants.ROLE_OPER))
                     .build()))
                 .build());
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+
         mockMvc.perform(
             post("/payhub/am/users")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
@@ -166,6 +180,8 @@ class AuthzControllerNoOrganizzationAccessModeTest {
               .roles(List.of(Constants.ROLE_OPER))
               .build()))
             .build());
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+
         mockMvc.perform(
           post("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
@@ -194,6 +210,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
           .thenReturn(expectedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         doReturn(new ClientDTO(organizationIpaCode + createClientRequest.getClientName(), createClientRequest.getClientName(), organizationIpaCode, uuidRandomForSecret))
                 .when(authzServiceMock).registerClient(organizationIpaCode, createClientRequest);
@@ -233,6 +250,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
           .thenReturn(expectedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         doReturn(uuidRandomForClientSecret)
           .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);

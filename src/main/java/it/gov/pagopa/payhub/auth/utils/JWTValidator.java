@@ -12,13 +12,14 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 
 
@@ -83,7 +84,32 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {
-            throw new InvalidTokenException("The token is not valid");
+            throw new InvalidTokenException("The internal token is not valid");
+        }
+    }
+
+    /**
+     * Validates JWT signature with publickey.
+     *
+     * @param token the JWT to validate
+     * @param publicKey the key to use in the verify instance.
+     * @throws TokenExpiredException if the token has expired.
+     * @throws InvalidTokenException if the token is invalid for any other reason
+     *         (e.g., signature verification failure).
+     */
+    public Map<String, Claim> validate(String token, PublicKey publicKey) {
+        try{
+            DecodedJWT jwt = JWT.decode(token);
+
+            Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) publicKey, null);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            verifier.verify(jwt);
+
+            return jwt.getClaims();
+        } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
+            throw new TokenExpiredException(e.getMessage());
+        } catch (JWTVerificationException ex) {
+            throw new InvalidTokenException("The legacy token is not valid");
         }
     }
 }

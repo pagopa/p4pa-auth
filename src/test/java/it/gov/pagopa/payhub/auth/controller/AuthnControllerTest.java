@@ -5,8 +5,10 @@ import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
+import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
+import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
 import it.gov.pagopa.payhub.model.generated.UserInfo;
@@ -36,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AuthnControllerImpl.class)
 @Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
 class AuthnControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -47,6 +50,12 @@ class AuthnControllerTest {
 
     @MockBean
     private ValidateTokenService validateTokenServiceMock;
+
+    @MockBean
+    private JWTLegacyHandlerService jwtLegacyHandlerServiceMock;
+
+    @MockBean
+    private AccessTokenBuilderService accessTokenBuilderServiceMock;
 
 //region desc=postToken tests
     @Test
@@ -158,6 +167,7 @@ class AuthnControllerTest {
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
                         get("/payhub/auth/userinfo")
@@ -168,10 +178,11 @@ class AuthnControllerTest {
 
     @Test
     void givenRequestWitAuthorizationAndNotOrganizationAccessWhenGetUserInfoThenOk() throws Exception {
+        
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
-
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
                         get("/payhub/auth/userinfo")
@@ -238,6 +249,21 @@ class AuthnControllerTest {
                 AuthErrorDTO.class);
         assertEquals(AuthErrorDTO.ErrorEnum.INVALID_CLIENT, actual.getError());
         assertEquals("", actual.getErrorDescription());
+    }
+
+    @Test
+    void givenM2MLegacyRequestWhenGetUserInfoThenOk() throws Exception {
+
+        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
+
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
+
+        mockMvc.perform(
+            get("/payhub/auth/userinfo")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer legacyAccessToken")
+          ).andExpect(status().isOk())
+          .andExpect(content().json("{\"userId\":\"USERID\"}"));
     }
 //end region
 }

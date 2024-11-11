@@ -7,20 +7,20 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import java.io.StringWriter;
-import java.security.PublicKey;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.json.JSONObject;
 
+import java.io.StringWriter;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -91,6 +91,16 @@ public class JWTValidatorUtils {
             .withIssuedAt(Instant.now())
             .withExpiresAt(expiresAt)
             .sign(algorithm);
+    }
+
+    public static String generateLegacyToken(KeyPair keyPair, String type, Instant issuedAt, Instant expiresAt, String jwtId) {
+        Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        return JWT.create()
+          .withClaim("type", type)
+          .withJWTId(jwtId)
+          .withIssuedAt(issuedAt)
+          .withExpiresAt(expiresAt)
+          .sign(algorithm);
     }
 
     public static String getPublicKey(KeyPair keyPair) throws Exception {
