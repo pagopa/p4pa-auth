@@ -39,15 +39,15 @@ class ValidateJWTLegacyServiceTest {
 		keyPair1 = JWTValidatorUtils.generateKeyPair();
 		keyPair2 = JWTValidatorUtils.generateKeyPair();
 		Map<String, PublicKey> publicKeyMap = Map.of(
-			"A2A-IPA_TEST_1", keyPair1.getPublic(),
-			"A2A-IPA_TEST_2", keyPair2.getPublic());
+			"IPA_TEST_1", keyPair1.getPublic(),
+			"IPA_TEST_2", keyPair2.getPublic());
 		when(a2AClientLegacyPropConfig.getPublicKeysAsMap()).thenReturn(publicKeyMap);
 		service = new ValidateJWTLegacyService(a2AClientLegacyPropConfig, jwtValidatorMock);
 	}
 
 	@Test
 	void GivenValidTokenThenOk() {
-		String appName = "A2A-IPA_TEST_2";
+		String appName = "IPA_TEST_2";
 		String token = JWTValidatorUtils.generateLegacyToken(keyPair2, "a2a", Instant.now(), Instant.now().plusSeconds(3_600_000L), "jti");
 
 		Map<String, Claim> claimsMap = JWT.decode(token).getClaims();

@@ -53,13 +53,13 @@ public class ValidateJWTLegacyService {
 	}
 
 	private Pair<String, Map<String, Claim>> validateToken(String token) {
-		for (String key : clientApplicationsPublicKeyMap.keySet()) {
-			PublicKey publicKey = clientApplicationsPublicKeyMap.get(key);
+		for (Map.Entry<String, PublicKey> entry : clientApplicationsPublicKeyMap.entrySet()) {
+			PublicKey publicKey = entry.getValue();
 			try {
 				Map<String, Claim> claims = jwtValidator.validate(token, publicKey);
-				return Pair.of(key, claims);
+				return Pair.of(entry.getKey(), claims);
 			} catch (Exception e) {
-				log.debug("continue cycling - validation failed with key {}", key);
+				log.debug("continue cycling - validation failed with entry {}", entry.getKey());
 			}
 		}
 		throw new InvalidTokenException("Invalid token for A2A call");
