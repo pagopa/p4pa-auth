@@ -18,17 +18,16 @@ import java.util.Map;
 public class ValidateJWTLegacyService {
 	public static final String TOKEN_TYPE_A2A = "a2a";
 
-	private final A2AClientLegacyPropConfig a2AClientLegacyPropConfig;
 	private final JWTValidator jwtValidator;
+	private final Map<String, PublicKey> clientApplicationsPublicKeyMap;
 
 	public ValidateJWTLegacyService(A2AClientLegacyPropConfig a2AClientLegacyPropConfig, JWTValidator jwtValidator) {
-		this.a2AClientLegacyPropConfig = a2AClientLegacyPropConfig;
+		this.clientApplicationsPublicKeyMap = a2AClientLegacyPropConfig.getPublicKeysAsMap();
 		this.jwtValidator = jwtValidator;
 	}
 
 	public Pair<String, Map<String, Claim>> validate(String token) {
-		Map<String, PublicKey> clientApplicationsPublicKeyMap = a2AClientLegacyPropConfig.getPublicKeysAsMap();
-		Pair<String, Map<String, Claim>> claims = validateToken(clientApplicationsPublicKeyMap, token);
+		Pair<String, Map<String, Claim>> claims = validateToken(token);
 		validateM2MType(claims.getRight());
 		validateClaims(claims.getRight());
 
@@ -53,14 +52,16 @@ public class ValidateJWTLegacyService {
 		}
 	}
 
-	private Pair<String, Map<String, Claim>> validateToken(Map<String, PublicKey> clientApplicationsPublicKeyMap, String token) {
-		try {
-			return clientApplicationsPublicKeyMap.keySet().stream()
-				.map(key -> Pair.of(key, jwtValidator.validate(token, clientApplicationsPublicKeyMap.get(key))))
-				.findFirst()
-				.orElseThrow(() -> new InvalidTokenException("Invalid token for A2A call"));
-		} catch (Exception e) {
-			return null;
+	private Pair<String, Map<String, Claim>> validateToken(String token) {
+		for (String key : clientApplicationsPublicKeyMap.keySet()) {
+			PublicKey publicKey = clientApplicationsPublicKeyMap.get(key);
+			try {
+				Map<String, Claim> claims = jwtValidator.validate(token, publicKey);
+				return Pair.of(key, claims);
+			} catch (Exception e) {
+				log.debug("continue cycling - validation failed with key {}", key);
+			}
 		}
+		throw new InvalidTokenException("Invalid token for A2A call");
 	}
 }
