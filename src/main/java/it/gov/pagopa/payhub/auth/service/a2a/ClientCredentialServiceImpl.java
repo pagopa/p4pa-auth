@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.model.generated.AccessToken;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,6 +39,7 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 		ClientDTO authorizedClient = authorizeClientCredentialsRequestService.authorizeCredentials(clientId, clientSecret);
 		AccessToken accessToken = accessTokenBuilderService.build();
 		IamUserInfoDTO iamUser = clientDTO2UserInfoMapper.apply(authorizedClient);
+		MDC.put("externalUserId", iamUser.getUserId());
 		tokenStoreService.save(accessToken.getAccessToken(), iamUser);
 		return accessToken;
 	}

@@ -39,11 +39,13 @@ val wiremockVersion = "3.5.4"
 val findbugsVersion = "3.0.2"
 val bouncycastleVersion = "1.78.1"
 val hikariCPVersion = "5.1.0"
+val micrometerVersion = "1.3.5"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
