@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(authorization)) {
                 String token = authorization.replace("Bearer ", "");
                 UserInfo userInfo = validateToken(token);
+                MDC.put("externalUserId", userInfo.getMappedExternalUserId());
                 Collection<? extends GrantedAuthority> authorities = null;
                 if (userInfo.getOrganizationAccess() != null) {
                     authorities = userInfo.getOrganizations().stream()
