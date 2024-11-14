@@ -1,4 +1,4 @@
-name: 📦 Payments Snapshot docker
+name: 📦 Snapshot docker
 
 on:
   push:
