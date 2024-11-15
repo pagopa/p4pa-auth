@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfo getUserInfo(String accessToken) {
-        log.info("Retrieving user info");
+        log.debug("Retrieving user info");
         IamUserInfoDTO userInfo = tokenStoreService.load(accessToken);
         if (userInfo == null) {
             throw new InvalidAccessTokenException("AccessToken not found");

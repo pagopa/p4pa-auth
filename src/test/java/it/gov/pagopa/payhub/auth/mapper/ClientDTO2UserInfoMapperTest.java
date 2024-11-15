@@ -7,18 +7,14 @@ import it.gov.pagopa.payhub.auth.utils.TestUtils;
 import it.gov.pagopa.payhub.model.generated.ClientDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.UUID;
 
-@ExtendWith(MockitoExtension.class)
 class ClientDTO2UserInfoMapperTest {
 
-	@InjectMocks
-	private ClientDTO2UserInfoMapper mapper;
+
+	private ClientDTO2UserInfoMapper mapper = new ClientDTO2UserInfoMapper();
 
 	@Test
 	void givenDTOWhenApplyTheOk() {

@@ -12,12 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.security.PublicKey;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 class JWTValidatorTest {
@@ -90,4 +91,23 @@ class JWTValidatorTest {
         assertThrows(TokenExpiredException.class, () -> jwtValidator.validateInternalToken(invalidToken));
     }
 
+    @Test
+    void givenValidLegacyJWTThenOk() {
+        String validToken = utils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600_000L), "jwtId");
+        Assertions.assertDoesNotThrow(() -> jwtValidator.validate(validToken, keyPair.getPublic()));
+    }
+
+    @Test
+    void givenInvalidTokenWhenValidateLegacyTokenThenThrowInvalidTokenException() {
+        String invalidToken = "your_invalid_token_here";
+        PublicKey publicKey = keyPair.getPublic();
+        assertThrows(InvalidTokenException.class, () ->jwtValidator.validate(invalidToken, publicKey));
+    }
+
+    @Test
+    void givenInvalidTokenWhenValidateLegacyTokenThenThrowTokenExpiredException() {
+        String invalidToken = utils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().minusSeconds(3_600_000L), "jwtId");
+        PublicKey publicKey = keyPair.getPublic();
+        assertThrows(TokenExpiredException.class, () ->jwtValidator.validate(invalidToken, publicKey));
+    }
 }
