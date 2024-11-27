@@ -1,0 +1,460 @@
+{
+	"info": {
+		"_postman_id": "c1508e85-2efa-460b-8f3a-ff7ee32007a0",
+		"name": "p4pa-auth-NoAccessModeOrganization",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36568841"
+	},
+	"item": [
+		{
+			"name": "postToken org1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - postToken - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "piattaforma-unitaria"
+						},
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange"
+						},
+						{
+							"key": "subject_token",
+							"value": "{{tokenExchange_subjectToken}}"
+						},
+						{
+							"key": "subject_issuer",
+							"value": "{{tokenExchange_issuer}}"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:jwt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postToken org2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - postToken - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "piattaforma-unitaria"
+						},
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange"
+						},
+						{
+							"key": "subject_token",
+							"value": "{{tokenExchange_subjectToken_2}}"
+						},
+						{
+							"key": "subject_issuer",
+							"value": "{{tokenExchange_issuer}}"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:jwt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postToken org3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - postToken - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "piattaforma-unitaria"
+						},
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange"
+						},
+						{
+							"key": "subject_token",
+							"value": "{{tokenExchange_subjectToken_3}}"
+						},
+						{
+							"key": "subject_issuer",
+							"value": "{{tokenExchange_issuer}}"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:jwt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUserInfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - getUserInfo - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - getUserInfo - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"userId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"name\").to.eq(\"demo\")\r",
+							"    pm.expect(jsonResponse).have.property(\"familyName\").to.eq(\"demo\")\r",
+							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
+							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
+							"    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r",
+							"\r",
+							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(3)\r",
+							"    \r",
+							"    pm.collectionVariables.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r",
+							"    pm.collectionVariables.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r",
+							"    var recognizedOrganizations = 0\r",
+							"    const registeredOrganizations=[\r",
+							"        \"IPA_TEST\",\r",
+							"        \"IPA_TEST_2\",\r",
+							"        \"DEMO\"\r",
+							"    ]\r",
+							"    jsonResponse.organizations.forEach(org => {\r",
+							"        pm.expect(org).have.property(\"operatorId\")\r",
+							"        if(registeredOrganizations.includes(org.organizationIpaCode)){\r",
+							"            pm.expect(org.roles).have.property(\"length\").to.eq(1)\r",
+							"            pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
+							"            recognizedOrganizations++\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(recognizedOrganizations).to.eq(3)\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"auth",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.get(\"organizationIpaCode\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - createOrganizationOperator - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - createOrganizationOperator - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"externalUserId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"firstName\").to.eq(\"TIZIO\")\r",
+							"    pm.expect(jsonResponse).have.property(\"lastName\").to.eq(\"CAIO\")\r",
+							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"CAITZI80A01E506W\")\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"externalUserId\": \"TESTCREATEOPERATOR\",\r\n  \"firstName\": \"TIZIO\",\r\n  \"lastName\": \"CAIO\",\r\n  \"fiscalCode\": \"CAITZI80A01E506W\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/am/users",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"am",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createOrganizationOperator",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.get(\"organizationIpaCode\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - createOrganizationOperator - Responses with 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Auth - createOrganizationOperator - Verify response body\", function () {\r",
+							"    let jsonResponse = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonResponse).have.property(\"userId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")\r",
+							"    pm.expect(jsonResponse).have.property(\"firstName\").to.eq(\"TIZIO\")\r",
+							"    pm.expect(jsonResponse).have.property(\"lastName\").to.eq(\"CAIO\")\r",
+							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"CAITZI80A01E506W\")\r",
+							"    pm.expect(jsonResponse).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
+							"    pm.expect(jsonResponse).have.property(\"email\")\r",
+							"    pm.expect(jsonResponse).have.property(\"roles\").to.include(\"ROLE_ADMIN\")\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"externalUserId\": \"TESTCREATEOPERATOR\",\r\n  \"firstName\": \"TIZIO\",\r\n  \"lastName\": \"CAIO\",\r\n  \"fiscalCode\": \"CAITZI80A01E506W\",\r\n  \"organizationIpaCode\": \"IPA_TEST\",\r\n  \"email\": \"updated@ee.it\",\r\n  \"roles\": [\r\n    \"ROLE_ADMIN\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/{{organizationIpaCode}}",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						"am",
+						"operators",
+						"{{organizationIpaCode}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
