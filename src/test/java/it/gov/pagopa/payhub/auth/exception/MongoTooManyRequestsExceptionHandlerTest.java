@@ -9,15 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.Collections;
 
 import static org.mockito.Mockito.doThrow;
 
@@ -31,7 +34,7 @@ class MongoTooManyRequestsExceptionHandlerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @SpyBean
+    @MockitoSpyBean
     private AuthExceptionHandlerTest.TestController testControllerSpy;
 
     @Test
@@ -97,13 +100,13 @@ class MongoTooManyRequestsExceptionHandlerTest {
                         .param(AuthExceptionHandlerTest.DATA, "DATA")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-                .andExpect(MockMvcResultMatchers.content().json("{\"error_description\":\"DUMMY\"}", false));
+                .andExpect(MockMvcResultMatchers.content().json("{\"error_description\":\"DUMMY\"}", JsonCompareMode.LENIENT));
     }
 
 
     private void handleMongoWriteException(String writeErrorMessage) throws Exception {
         final MongoWriteException mongoWriteException = new MongoWriteException(
-                new WriteError(16500, writeErrorMessage, BsonDocument.parse("{}")), new ServerAddress());
+                new WriteError(16500, writeErrorMessage, BsonDocument.parse("{}")), new ServerAddress(), Collections.emptySet());
         doThrow(
                 new DataIntegrityViolationException(mongoWriteException.getMessage(), mongoWriteException))
                 .when(testControllerSpy).testEndpoint("DATA");

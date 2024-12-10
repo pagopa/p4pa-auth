@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -51,19 +51,19 @@ class AuthzControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private AuthzService authzServiceMock;
 
-    @MockBean
+    @MockitoBean
     private AuthnService authnServiceMock;
 
-    @MockBean
+    @MockitoBean
     private ValidateTokenService validateTokenServiceMock;
 
-    @MockBean
+    @MockitoBean
     private JWTLegacyHandlerService jwtLegacyHandlerServiceMock;
 
-    @MockBean
+    @MockitoBean
     private AccessTokenBuilderService accessTokenBuilderServiceMock;
 
     //region desc=getOrganizationOperators tests

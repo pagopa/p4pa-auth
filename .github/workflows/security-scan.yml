@@ -37,7 +37,7 @@ jobs:
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
-        uses: aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8 # 0.24.0
+        uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # 0.28.0
         with:
           trivy-config: 'config/trivy.yaml'
           image-ref: "localbuild/testimage:latest"
@@ -62,7 +62,7 @@ jobs:
   SendSlackNotification:
     needs: BuildAndScan
     uses: ./.github/workflows/send-notification.yml
-    if: always() && needs.BuildAndScan.result == 'failure'
+    if: always() && (needs.BuildAndScan.outputs.CVE_HIGH > 0 || needs.BuildAndScan.outputs.CVE_CRITICAL > 0)
     with:
       CVE_CRITICAL: ${{needs.BuildAndScan.outputs.CVE_CRITICAL}}
       CVE_HIGH: ${{needs.BuildAndScan.outputs.CVE_HIGH}}
