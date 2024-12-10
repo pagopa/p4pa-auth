@@ -1,11 +1,11 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.2.5"
-	id("io.spring.dependency-management") version "1.1.4"
+	id("org.springframework.boot") version "3.4.0"
+	id("io.spring.dependency-management") version "1.1.6"
 	jacoco
-	id("org.sonarqube") version "5.0.0.4638"
+	id("org.sonarqube") version "6.0.1.5171"
 	id("com.github.ben-manes.versions") version "0.51.0"
-	id("org.openapi.generator") version "7.5.0"
+	id("org.openapi.generator") version "7.10.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -13,7 +13,7 @@ version = "0.1.0"
 description = "p4pa-auth"
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
@@ -27,19 +27,17 @@ repositories {
 	mavenCentral()
 }
 
-val springDocOpenApiVersion = "2.5.0"
+val springDocOpenApiVersion = "2.7.0"
 val janinoVersion = "3.1.12"
 val openApiToolsVersion = "0.2.6"
 val snakeYamlVersion = "2.0"
 val javaJwtVersion = "4.4.0"
 val jwksRsaVersion = "0.22.1"
-val nimbusJoseJwtVersion = "9.38-rc5"
-val jjwtVersion = "0.12.5"
-val wiremockVersion = "3.5.4"
-val findbugsVersion = "3.0.2"
-val bouncycastleVersion = "1.78.1"
-val hikariCPVersion = "5.1.0"
-val micrometerVersion = "1.3.5"
+val nimbusJoseJwtVersion = "9.47"
+val jjwtVersion = "0.12.6"
+val wiremockVersion = "3.10.0"
+val bouncycastleVersion = "1.79"
+val micrometerVersion = "1.4.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -54,8 +52,6 @@ dependencies {
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
-	implementation("com.google.code.findbugs:jsr305:$findbugsVersion")
-	implementation("com.zaxxer:HikariCP:$hikariCPVersion")
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
@@ -142,7 +138,7 @@ openApiGenerate {
 			"interfaceOnly" to "true",
 			"useTags" to "true",
 			"generateConstructorWithAllArgs" to "false",
-			"generatedConstructorWithRequiredArgs" to "false",
-			"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor @lombok.RequiredArgsConstructor"
+			"generatedConstructorWithRequiredArgs" to "true",
+			"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
 	))
 }
