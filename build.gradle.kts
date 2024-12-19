@@ -6,6 +6,7 @@ plugins {
 	id("org.sonarqube") version "6.0.1.5171"
 	id("com.github.ben-manes.versions") version "0.51.0"
 	id("org.openapi.generator") version "7.10.0"
+	id("org.ajoberstar.grgit") version "5.3.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -112,7 +113,7 @@ configurations {
 }
 
 tasks.compileJava {
-	dependsOn("openApiGenerate")
+	dependsOn("openApiGenerateP4PAAUTH","openApiGenerateOrganization")
 }
 
 configure<SourceSetContainer> {
@@ -125,7 +126,10 @@ springBoot {
 	mainClass.value("it.gov.pagopa.payhub.auth.PayhubAuthApplication")
 }
 
-openApiGenerate {
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateP4PAAUTH") {
+	group = "openapi"
+	description = "description"
+
 	generatorName.set("spring")
 	inputSpec.set("$rootDir/openapi/p4pa-auth.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
@@ -141,4 +145,31 @@ openApiGenerate {
 			"generatedConstructorWithRequiredArgs" to "true",
 			"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
 	))
+}
+
+var targetEnv = when (grgit.branch.current().name) {
+	"uat" -> "uat"
+	"main" -> "main"
+	else -> "develop"
+}
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateOrganization") {
+	group = "openapi"
+	description = "description"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-organization/refs/heads/$targetEnv/openapi/generated.openapi.json")
+	outputDir.set("$projectDir/build/generated")
+	apiPackage.set("it.gov.pagopa.pu.p4pa-organization.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4pa-organization.dto.generated")
+	configOptions.set(mapOf(
+			"swaggerAnnotations" to "false",
+			"openApiNullable" to "false",
+			"dateLibrary" to "java17",
+			"useSpringBoot3" to "true",
+			"useJakartaEe" to "true",
+			"serializationLibrary" to "jackson",
+			"generateSupportingFiles" to "true"
+	))
+	library.set("resttemplate")
 }

@@ -63,6 +63,8 @@ app:
     # Thus it will register te relation between the operator and the relation with the provided roles.
     # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
     enable-access-organization-mode: "\${ACCESS_ORGANIZATION_MODE_ENABLED:true}"
+    organization:
+        base-url: "\${ORGANIZATION_BASE_URL:}"
 
 data-chiper:
     p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
