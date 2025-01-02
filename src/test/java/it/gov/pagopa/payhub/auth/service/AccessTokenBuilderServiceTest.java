@@ -3,6 +3,8 @@ package it.gov.pagopa.payhub.auth.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,9 +68,13 @@ public class AccessTokenBuilderServiceTest {
     }
 
     @Test
-    void test(){
+    void givenAccessOrganizationWhenBuildThenOk(){
+        // Given
+        String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder().organizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORGIPACODE").build()).build();
+
         // When
-        AccessToken result = accessTokenBuilderService.build();
+        AccessToken result = accessTokenBuilderService.build(mappedUserExternalId, iamUserInfo);
         String prefix = accessTokenBuilderService.getHeaderPrefix();
         // Then
         Assertions.assertEquals("bearer", result.getTokenType());
@@ -81,7 +87,24 @@ public class AccessTokenBuilderServiceTest {
 
         Assertions.assertEquals(decodedPrefix +",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
-        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
+        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
+    }
+
+
+    @Test
+    void givenNoAccessOrganizationWhenBuildThenOk(){
+        // Given
+        String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+
+        // When
+        AccessToken result = accessTokenBuilderService.build(mappedUserExternalId, iamUserInfo);
+        // Then
+
+        DecodedJWT decodedAccessToken = JWT.decode(result.getAccessToken());
+        String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
+
+        Assertions.assertFalse(decodedPayload.contains("organizationIpaCode"));
     }
 }
