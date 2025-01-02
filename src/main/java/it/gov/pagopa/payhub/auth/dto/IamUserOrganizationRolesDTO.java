@@ -15,6 +15,7 @@ import java.util.List;
 public class IamUserOrganizationRolesDTO {
 
   private String organizationIpaCode;
+  @Builder.Default
   private List<String> roles = new ArrayList<>();
   private String email;
 

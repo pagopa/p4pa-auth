@@ -127,7 +127,7 @@ openApiGenerate {
 	inputSpec.set("$rootDir/openapi/p4pa-auth.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
 	apiPackage.set("it.gov.pagopa.payhub.controller.generated")
-	modelPackage.set("it.gov.pagopa.payhub.model.generated")
+	modelPackage.set("it.gov.pagopa.payhub.dto.generated")
 	configOptions.set(mapOf(
 			"dateLibrary" to "java8",
 			"requestMappingMode" to "api_interface",

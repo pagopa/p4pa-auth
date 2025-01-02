@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
-import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ import java.util.Collections;
 
 class A2ALegacyClaims2UserInfoMapperTest {
 
-	private A2ALegacyClaims2UserInfoMapper mapper = new A2ALegacyClaims2UserInfoMapper();
+	private final A2ALegacyClaims2UserInfoMapper mapper = new A2ALegacyClaims2UserInfoMapper();
 
 	@Test
 	void WhenMapThenGetUserInfoMapped() {

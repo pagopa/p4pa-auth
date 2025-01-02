@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.service.a2a.legacy;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.mapper.A2ALegacyClaims2UserInfoMapper;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;

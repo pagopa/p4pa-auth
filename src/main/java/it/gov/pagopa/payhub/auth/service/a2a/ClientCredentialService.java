@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
-import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
 
 public interface ClientCredentialService {
 	AccessToken postToken(String clientId, String scope, String clientSecret);
