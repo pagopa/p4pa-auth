@@ -41,7 +41,7 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
 		String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
 		return UserInfo.builder()
 			.userId(iamUserInfoDTO.getUserId())
-			.mappedExternalUserId(organizationIpaCode + WS_USER_SUFFIX)
+			.mappedExternalUserId(buildSystemMappedExternalUserId(organizationIpaCode))
 			.fiscalCode(iamUserInfoDTO.getFiscalCode())
 			.familyName(iamUserInfoDTO.getFamilyName())
 			.name(iamUserInfoDTO.getName())
@@ -51,6 +51,10 @@ public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, U
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build()))
 			.build();
+	}
+
+	public static String buildSystemMappedExternalUserId(String organizationIpaCode) {
+		return organizationIpaCode + WS_USER_SUFFIX;
 	}
 
 	private UserInfo userInfoMapper(IamUserInfoDTO iamUserInfoDTO) {

@@ -46,7 +46,7 @@ public class AccessTokenBuilderService {
 		}
 	}
 
-	public AccessToken build(){
+	public AccessToken build(String subject){
 		Algorithm algorithm = Algorithm.RSA512(rsaPublicKey, rsaPrivateKey);
 		Map<String, Object> headerClaims = new HashMap<>();
 		headerClaims.put(HeaderParams.KEY_ID, kid);
@@ -57,6 +57,7 @@ public class AccessTokenBuilderService {
 			.withClaim("typ", tokenType)
 			.withIssuer(allowedAudience)
 			.withJWTId(UUID.randomUUID().toString())
+				.withSubject(subject)
 			.withIssuedAt(Instant.now())
 			.withExpiresAt(Instant.now().plusSeconds(expireIn))
 			.sign(algorithm);

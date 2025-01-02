@@ -67,8 +67,10 @@ public class AccessTokenBuilderServiceTest {
 
     @Test
     void test(){
+        // Given
+        String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
         // When
-        AccessToken result = accessTokenBuilderService.build();
+        AccessToken result = accessTokenBuilderService.build(mappedUserExternalId);
         String prefix = accessTokenBuilderService.getHeaderPrefix();
         // Then
         Assertions.assertEquals("bearer", result.getTokenType());
@@ -81,7 +83,7 @@ public class AccessTokenBuilderServiceTest {
 
         Assertions.assertEquals(decodedPrefix +",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
-        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
+        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
     }
 }
