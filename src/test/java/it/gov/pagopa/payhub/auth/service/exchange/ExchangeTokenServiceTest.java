@@ -80,7 +80,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(registeredUser);
 
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-        Mockito.when(accessTokenBuilderServiceMock.build(registeredUser.getMappedExternalUserId()))
+        Mockito.when(accessTokenBuilderServiceMock.build(registeredUser.getMappedExternalUserId(), iamUserInfo))
                 .thenReturn(expectedAccessToken);
 
         // When
@@ -108,7 +108,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(Pair.of(mappedExternalUserId, iamUserInfo));
 
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-        Mockito.when(accessTokenBuilderServiceMock.build(mappedExternalUserId))
+        Mockito.when(accessTokenBuilderServiceMock.build(mappedExternalUserId, iamUserInfo))
                 .thenReturn(expectedAccessToken);
 
         // When

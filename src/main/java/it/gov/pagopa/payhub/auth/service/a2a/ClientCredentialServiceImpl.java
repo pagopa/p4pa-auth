@@ -38,8 +38,10 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 		log.info("Client {} requested authentication with client_credentials grant type and scope {}", clientId, scope);
 		validateClientCredentialsService.validate(scope, clientSecret);
 		ClientDTO authorizedClient = authorizeClientCredentialsRequestService.authorizeCredentials(clientId, clientSecret);
-		AccessToken accessToken = accessTokenBuilderService.build(IamUserInfoDTO2UserInfoMapper.buildSystemMappedExternalUserId(authorizedClient.getOrganizationIpaCode()));
 		IamUserInfoDTO iamUser = clientDTO2UserInfoMapper.apply(authorizedClient);
+		AccessToken accessToken = accessTokenBuilderService.build(
+				IamUserInfoDTO2UserInfoMapper.buildSystemMappedExternalUserId(authorizedClient.getOrganizationIpaCode()),
+				iamUser);
 		MDC.put("externalUserId", iamUser.getUserId());
 		tokenStoreService.save(accessToken.getAccessToken(), iamUser);
 		return accessToken;

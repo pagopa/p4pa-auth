@@ -49,7 +49,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         Map<String, Claim> claims = validateExternalTokenService.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
         IamUserInfoDTO iamUser = idTokenClaimsMapper.apply(claims);
         User registeredUser = iamUserRegistrationService.registerUser(iamUser);
-        AccessToken accessToken = accessTokenBuilderService.build(registeredUser.getMappedExternalUserId());
+        AccessToken accessToken = accessTokenBuilderService.build(registeredUser.getMappedExternalUserId(), iamUser);
         MDC.put("externalUserId", registeredUser.getMappedExternalUserId());
         iamUser.setInnerUserId(registeredUser.getUserId());
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
@@ -58,7 +58,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
     private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer) {
         Pair<String, IamUserInfoDTO> mappedExternalUser2iamUser = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
-        AccessToken accessToken = accessTokenBuilderService.build(mappedExternalUser2iamUser.getKey());
+        AccessToken accessToken = accessTokenBuilderService.build(mappedExternalUser2iamUser.getKey(), mappedExternalUser2iamUser.getValue());
         tokenStoreService.save(accessToken.getAccessToken(), mappedExternalUser2iamUser.getValue());
         return accessToken;
     }

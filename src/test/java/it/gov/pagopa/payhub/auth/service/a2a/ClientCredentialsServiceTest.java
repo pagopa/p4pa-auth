@@ -53,10 +53,10 @@ class ClientCredentialsServiceTest {
 				.organizationIpaCode("ORGIPACODE")
 				.build();
 		Mockito.doReturn(clientDTO).when(authorizeClientCredentialsRequestServiceMock).authorizeCredentials(clientId, clientSecret);
-		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-		Mockito.when(accessTokenBuilderServiceMock.build("ORGIPACODE-WS_USER")).thenReturn(expectedAccessToken);
 		IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
 		Mockito.when(clientDTO2UserInfoMapperMock.apply(clientDTO)).thenReturn(iamUserInfo);
+		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
+		Mockito.when(accessTokenBuilderServiceMock.build("ORGIPACODE-WS_USER", iamUserInfo)).thenReturn(expectedAccessToken);
 		//When
 		AccessToken result = service.postToken(clientId, scope, clientSecret);
 		//Then
