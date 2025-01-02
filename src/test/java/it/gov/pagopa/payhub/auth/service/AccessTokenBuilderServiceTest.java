@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.auth.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,11 +59,9 @@ public class AccessTokenBuilderServiceTest {
 
     private AccessTokenBuilderService accessTokenBuilderService;
 
-    private DataCipherService dataCipherService;
-
     @BeforeEach
     void init(){
-        dataCipherService = new DataCipherService("PSW","PEPPER", new ObjectMapper());
+        DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new ObjectMapper());
         accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService);
     }
 

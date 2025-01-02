@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
-import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

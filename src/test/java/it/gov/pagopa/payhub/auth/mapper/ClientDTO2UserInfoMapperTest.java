@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
-import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
 class ClientDTO2UserInfoMapperTest {
 
 
-	private ClientDTO2UserInfoMapper mapper = new ClientDTO2UserInfoMapper();
+	private final ClientDTO2UserInfoMapper mapper = new ClientDTO2UserInfoMapper();
 
 	@Test
 	void givenDTOWhenApplyTheOk() {

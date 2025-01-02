@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.auth.mapper;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.model.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

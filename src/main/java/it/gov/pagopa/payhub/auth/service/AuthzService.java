@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.model.generated.*;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.*;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

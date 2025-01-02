@@ -11,7 +11,7 @@ import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
-import it.gov.pagopa.payhub.model.generated.*;
+import it.gov.pagopa.payhub.dto.generated.*;
 import java.util.HashSet;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -119,7 +119,7 @@ class AuthzServiceTest {
 
         // Then
         Assertions.assertEquals(1, result.getTotalElements());
-        Assertions.assertEquals(operatorDTO, result.getContent().get(0));
+        Assertions.assertEquals(operatorDTO, result.getContent().getFirst());
     }
 
     @Test
@@ -263,9 +263,7 @@ class AuthzServiceTest {
           .thenReturn(Optional.empty());
 
         //When
-        Exception exception = Assertions.assertThrows(UserNotFoundException.class, () -> {
-            service.getUserInfoFromMappedExternalUserId(mappedExternalUserId);
-        });
+        Exception exception = Assertions.assertThrows(UserNotFoundException.class, () -> service.getUserInfoFromMappedExternalUserId(mappedExternalUserId));
         //Then
         Assertions.assertTrue(exception.getMessage().contains("Cannot found user having mappedExternalId:" + mappedExternalUserId));
     }
