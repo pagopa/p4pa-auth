@@ -30,7 +30,6 @@ repositories {
 val springDocOpenApiVersion = "2.7.0"
 val janinoVersion = "3.1.12"
 val openApiToolsVersion = "0.2.6"
-val snakeYamlVersion = "2.0"
 val javaJwtVersion = "4.4.0"
 val jwksRsaVersion = "0.22.1"
 val nimbusJoseJwtVersion = "9.48"
