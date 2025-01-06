@@ -11,13 +11,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class AccessTokenBuilderServiceTest {
 
     public static final int EXPIRE_IN = 3600;
 
-    private static final String PRIVATE_KEY= """
+    private static final String PRIVATE_KEY = """
             -----BEGIN RSA PRIVATE KEY-----
             MIIEogIBAAKCAQEA2ovm/rd3g69dq9PisinQ6mWy8ZttT8D+GKXCsHZycsGnN7b7
             4TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2reOk/rD7ZHbpfQvHK8MYfgIVdtTxY
@@ -47,7 +49,7 @@ public class AccessTokenBuilderServiceTest {
             -----END RSA PRIVATE KEY-----
             """;
 
-    private static final String PUBLIC_KEY= """
+    private static final String PUBLIC_KEY = """
             -----BEGIN PUBLIC KEY-----
             MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ
             6mWy8ZttT8D+GKXCsHZycsGnN7b74TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2r
@@ -62,13 +64,13 @@ public class AccessTokenBuilderServiceTest {
     private AccessTokenBuilderService accessTokenBuilderService;
 
     @BeforeEach
-    void init(){
+    void init() {
         DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new ObjectMapper());
         accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService);
     }
 
     @Test
-    void givenAccessOrganizationWhenBuildThenOk(){
+    void givenAccessOrganizationWhenBuildThenOk() {
         // Given
         String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder().organizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORGIPACODE").build()).build();
@@ -85,7 +87,7 @@ public class AccessTokenBuilderServiceTest {
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
         String decodedPrefix = new String(Base64.getDecoder().decode(prefix));
 
-        Assertions.assertEquals(decodedPrefix +",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
+        Assertions.assertEquals(decodedPrefix + ",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
@@ -93,7 +95,7 @@ public class AccessTokenBuilderServiceTest {
 
 
     @Test
-    void givenNoAccessOrganizationWhenBuildThenOk(){
+    void givenNoAccessOrganizationWhenBuildThenOk() {
         // Given
         String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
@@ -106,5 +108,23 @@ public class AccessTokenBuilderServiceTest {
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
 
         Assertions.assertFalse(decodedPayload.contains("organizationIpaCode"));
+    }
+
+    @Test
+    void whenGetJwkThenReturnIt() {
+        Map<String, Object> jwk = accessTokenBuilderService.getJwk();
+
+        Assertions.assertEquals(
+                Map.of(
+                        "kid", "25cad9db-0022-3b87-a70a-f2da27217c88",
+                        "kty", "RSA",
+                        "alg", "RS512",
+                        "use", "sign",
+                        "x5c", List.of("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ6mWy8ZttT8D+GKXCsHZycsGnN7b74TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2reOk/rD7ZHbpfQvHK8MYfgIVdtTxYMX/GGdOrX6/5TV2b8e2aCG6GmxF0UuEvxY9oTmcZUxnIeDtl/ixz4DQ754eS363qWfEA92opW+jcYzr07sbQtR86e+Z/s/CUeX6W1PHNvBqdlAgp2ecr/1DOLq1D9hEANBPSwbt+FM6FNe4vLphi7GTwiB0yaAuy+jE8odND6HPvvvmgbK1/2qTHn/HJjWUm11LUC73BszR32BKbdEEhxPQnnwswVekWzPi1IwIDAQAB"),
+                        "n", "27588938889881121694320877919460434087393786609816863957594309567560385882887118598467478095855849477631172404876445340710682494047315323118216434932374751736577921650607618316062304970742018382451331022143705928802830365691945549274785661141422707943053645770015383360522231368786857260494721124595584379978043131023528470459535020864977124819605861570702436628990223039112228241538403249215717745195028788924831099274746724483120010510878416440702449205160574616460653381677687446861979358375953250279629734953500576266647728037366637896182463683456747099613630755989548302527924576374577452010580636768433318966563",
+                        "e", "65537"
+                ).toString(),
+                jwk.toString()
+        );
     }
 }

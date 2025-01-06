@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +17,17 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AccessTokenBuilderService {
     public static final String ACCESS_TOKEN_TYPE = "at+JWT";
     private final String allowedAudience;
     private final int expireIn;
-    private final RSAPublicKey rsaPublicKey;
-    private final RSAPrivateKey rsaPrivateKey;
+    private final Algorithm algorithm;
     private final String kid;
+    @Getter
+    private final Map<String, Object> jwk;
 
     public AccessTokenBuilderService(
             @Value("${jwt.audience}") String allowedAudience,
@@ -41,15 +40,27 @@ public class AccessTokenBuilderService {
         this.kid = UUID.nameUUIDFromBytes(hashed).toString();
 
         try {
-            rsaPrivateKey = CertUtils.pemKey2PrivateKey(privateKey);
-            rsaPublicKey = CertUtils.pemPub2PublicKey(publicKey);
+            RSAPrivateKey rsaPrivateKey = CertUtils.pemKey2PrivateKey(privateKey);
+            RSAPublicKey rsaPublicKey = CertUtils.pemPub2PublicKey(publicKey);
+
+            algorithm = Algorithm.RSA512(rsaPublicKey, rsaPrivateKey);
+
+            jwk = Map.of(
+                    "kid", kid,
+                    "kty", "RSA",
+                    "alg", algorithm.getName(),
+                    "use", "sign",
+                    "x5c", List.of(Base64.getEncoder().encodeToString(rsaPublicKey.getEncoded())),
+                    "n", rsaPublicKey.getModulus(),
+                    "e", rsaPublicKey.getPublicExponent()
+                    );
         } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
             throw new IllegalStateException("Cannot load private and/or public key", e);
         }
+
     }
 
     public AccessToken build(String subject, IamUserInfoDTO iamUserInfoDTO) {
-        Algorithm algorithm = Algorithm.RSA512(rsaPublicKey, rsaPrivateKey);
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(HeaderParams.KEY_ID, kid);
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -74,4 +85,5 @@ public class AccessTokenBuilderService {
         var prefix = String.format("{\"kid\":\"%s\"", kid);
         return Base64.getEncoder().encodeToString(prefix.getBytes());
     }
+
 }
