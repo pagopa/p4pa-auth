@@ -2,7 +2,12 @@ package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.jsonwebtoken.security.Jwks;
+import io.jsonwebtoken.security.PublicJwk;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
@@ -17,7 +22,7 @@ public class AccessTokenBuilderServiceTest {
 
     public static final int EXPIRE_IN = 3600;
 
-    private static final String PRIVATE_KEY= """
+    private static final String PRIVATE_KEY = """
             -----BEGIN RSA PRIVATE KEY-----
             MIIEogIBAAKCAQEA2ovm/rd3g69dq9PisinQ6mWy8ZttT8D+GKXCsHZycsGnN7b7
             4TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2reOk/rD7ZHbpfQvHK8MYfgIVdtTxY
@@ -47,7 +52,7 @@ public class AccessTokenBuilderServiceTest {
             -----END RSA PRIVATE KEY-----
             """;
 
-    private static final String PUBLIC_KEY= """
+    public static final String PUBLIC_KEY = """
             -----BEGIN PUBLIC KEY-----
             MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ
             6mWy8ZttT8D+GKXCsHZycsGnN7b74TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2r
@@ -62,13 +67,13 @@ public class AccessTokenBuilderServiceTest {
     private AccessTokenBuilderService accessTokenBuilderService;
 
     @BeforeEach
-    void init(){
+    void init() {
         DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new ObjectMapper());
         accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService);
     }
 
     @Test
-    void givenAccessOrganizationWhenBuildThenOk(){
+    void givenAccessOrganizationWhenBuildThenOk() {
         // Given
         String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder().organizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORGIPACODE").build()).build();
@@ -85,7 +90,7 @@ public class AccessTokenBuilderServiceTest {
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
         String decodedPrefix = new String(Base64.getDecoder().decode(prefix));
 
-        Assertions.assertEquals(decodedPrefix +",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
+        Assertions.assertEquals(decodedPrefix + ",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
@@ -93,7 +98,7 @@ public class AccessTokenBuilderServiceTest {
 
 
     @Test
-    void givenNoAccessOrganizationWhenBuildThenOk(){
+    void givenNoAccessOrganizationWhenBuildThenOk() {
         // Given
         String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
@@ -106,5 +111,29 @@ public class AccessTokenBuilderServiceTest {
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
 
         Assertions.assertFalse(decodedPayload.contains("organizationIpaCode"));
+    }
+
+    @Test
+    void whenGetJwkThenReturnIt() throws JsonProcessingException {
+        PublicJwk<?> jwk = accessTokenBuilderService.getJwk();
+
+        ObjectMapper om = new ObjectMapper();
+        om.setDefaultPrettyPrinter(new DefaultPrettyPrinter());
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+        om.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+
+        Assertions.assertEquals(
+                om.writeValueAsString(om.readValue(
+                """
+                {
+                    "kid": "25cad9db-0022-3b87-a70a-f2da27217c88",
+                    "kty": "RSA",
+                    "alg": "RS512",
+                    "use": "sign",
+                    "n": "2ovm_rd3g69dq9PisinQ6mWy8ZttT8D-GKXCsHZycsGnN7b74TPyYy-4-h-9cgJeizp8RDRrufHjiBrqi_2reOk_rD7ZHbpfQvHK8MYfgIVdtTxYMX_GGdOrX6_5TV2b8e2aCG6GmxF0UuEvxY9oTmcZUxnIeDtl_ixz4DQ754eS363qWfEA92opW-jcYzr07sbQtR86e-Z_s_CUeX6W1PHNvBqdlAgp2ecr_1DOLq1D9hEANBPSwbt-FM6FNe4vLphi7GTwiB0yaAuy-jE8odND6HPvvvmgbK1_2qTHn_HJjWUm11LUC73BszR32BKbdEEhxPQnnwswVekWzPi1Iw",
+                    "e": "AQAB"
+                }
+                """, Object.class)),
+                om.writeValueAsString(om.readValue(Jwks.json(jwk), Object.class)));
     }
 }
