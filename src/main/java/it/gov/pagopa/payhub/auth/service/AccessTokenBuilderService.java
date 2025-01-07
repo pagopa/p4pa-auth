@@ -4,6 +4,8 @@ import com.auth0.jwt.HeaderParams;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import io.jsonwebtoken.security.Jwks;
+import io.jsonwebtoken.security.PublicJwk;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
@@ -17,7 +19,10 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AccessTokenBuilderService {
@@ -27,7 +32,7 @@ public class AccessTokenBuilderService {
     private final Algorithm algorithm;
     private final String kid;
     @Getter
-    private final Map<String, Object> jwk;
+    private final PublicJwk<?> jwk;
 
     public AccessTokenBuilderService(
             @Value("${jwt.audience}") String allowedAudience,
@@ -45,15 +50,12 @@ public class AccessTokenBuilderService {
 
             algorithm = Algorithm.RSA512(rsaPublicKey, rsaPrivateKey);
 
-            jwk = Map.of(
-                    "kid", kid,
-                    "kty", "RSA",
-                    "alg", algorithm.getName(),
-                    "use", "sign",
-                    "x5c", List.of(Base64.getEncoder().encodeToString(rsaPublicKey.getEncoded())),
-                    "n", rsaPublicKey.getModulus(),
-                    "e", rsaPublicKey.getPublicExponent()
-                    );
+            jwk = Jwks.builder()
+                    .id(kid)
+                    .algorithm(algorithm.getName())
+                    .key(rsaPublicKey)
+                    .publicKeyUse("sign")
+                    .build();
         } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
             throw new IllegalStateException("Cannot load private and/or public key", e);
         }

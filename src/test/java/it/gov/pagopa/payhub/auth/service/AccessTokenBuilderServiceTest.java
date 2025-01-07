@@ -2,7 +2,12 @@ package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.jsonwebtoken.security.Jwks;
+import io.jsonwebtoken.security.PublicJwk;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
@@ -11,8 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class AccessTokenBuilderServiceTest {
@@ -49,7 +52,7 @@ public class AccessTokenBuilderServiceTest {
             -----END RSA PRIVATE KEY-----
             """;
 
-    private static final String PUBLIC_KEY = """
+    public static final String PUBLIC_KEY = """
             -----BEGIN PUBLIC KEY-----
             MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ
             6mWy8ZttT8D+GKXCsHZycsGnN7b74TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2r
@@ -111,20 +114,26 @@ public class AccessTokenBuilderServiceTest {
     }
 
     @Test
-    void whenGetJwkThenReturnIt() {
-        Map<String, Object> jwk = accessTokenBuilderService.getJwk();
+    void whenGetJwkThenReturnIt() throws JsonProcessingException {
+        PublicJwk<?> jwk = accessTokenBuilderService.getJwk();
+
+        ObjectMapper om = new ObjectMapper();
+        om.setDefaultPrettyPrinter(new DefaultPrettyPrinter());
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+        om.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 
         Assertions.assertEquals(
-                Map.of(
-                        "kid", "25cad9db-0022-3b87-a70a-f2da27217c88",
-                        "kty", "RSA",
-                        "alg", "RS512",
-                        "use", "sign",
-                        "x5c", List.of("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ6mWy8ZttT8D+GKXCsHZycsGnN7b74TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2reOk/rD7ZHbpfQvHK8MYfgIVdtTxYMX/GGdOrX6/5TV2b8e2aCG6GmxF0UuEvxY9oTmcZUxnIeDtl/ixz4DQ754eS363qWfEA92opW+jcYzr07sbQtR86e+Z/s/CUeX6W1PHNvBqdlAgp2ecr/1DOLq1D9hEANBPSwbt+FM6FNe4vLphi7GTwiB0yaAuy+jE8odND6HPvvvmgbK1/2qTHn/HJjWUm11LUC73BszR32BKbdEEhxPQnnwswVekWzPi1IwIDAQAB"),
-                        "n", "27588938889881121694320877919460434087393786609816863957594309567560385882887118598467478095855849477631172404876445340710682494047315323118216434932374751736577921650607618316062304970742018382451331022143705928802830365691945549274785661141422707943053645770015383360522231368786857260494721124595584379978043131023528470459535020864977124819605861570702436628990223039112228241538403249215717745195028788924831099274746724483120010510878416440702449205160574616460653381677687446861979358375953250279629734953500576266647728037366637896182463683456747099613630755989548302527924576374577452010580636768433318966563",
-                        "e", "65537"
-                ).toString(),
-                jwk.toString()
-        );
+                om.writeValueAsString(om.readValue(
+                """
+                {
+                    "kid": "25cad9db-0022-3b87-a70a-f2da27217c88",
+                    "kty": "RSA",
+                    "alg": "RS512",
+                    "use": "sign",
+                    "n": "2ovm_rd3g69dq9PisinQ6mWy8ZttT8D-GKXCsHZycsGnN7b74TPyYy-4-h-9cgJeizp8RDRrufHjiBrqi_2reOk_rD7ZHbpfQvHK8MYfgIVdtTxYMX_GGdOrX6_5TV2b8e2aCG6GmxF0UuEvxY9oTmcZUxnIeDtl_ixz4DQ754eS363qWfEA92opW-jcYzr07sbQtR86e-Z_s_CUeX6W1PHNvBqdlAgp2ecr_1DOLq1D9hEANBPSwbt-FM6FNe4vLphi7GTwiB0yaAuy-jE8odND6HPvvvmgbK1_2qTHn_HJjWUm11LUC73BszR32BKbdEEhxPQnnwswVekWzPi1Iw",
+                    "e": "AQAB"
+                }
+                """, Object.class)),
+                om.writeValueAsString(om.readValue(Jwks.json(jwk), Object.class)));
     }
 }
