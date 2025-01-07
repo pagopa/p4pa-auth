@@ -6,7 +6,7 @@ info:
 servers:
   - url: "http://localhost:8080/payhub"
 paths:
-  /.well-known:
+  /.well-known/jwks.json:
     get:
       tags:
         - wellKnown
