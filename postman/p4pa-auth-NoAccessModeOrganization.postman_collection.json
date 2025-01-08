@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "c1508e85-2efa-460b-8f3a-ff7ee32007a0",
+		"_postman_id": "4cce1599-b728-41d3-8dab-bfa5f589956c",
 		"name": "p4pa-auth-NoAccessModeOrganization",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36568841"
+		"_exporter_id": "29647564",
+		"_collection_link": "https://galactic-eclipse-948669.postman.co/workspace/New-Team-Workspace~be56c5f1-de0c-4252-95d0-ee80f35e2474/collection/29647564-4cce1599-b728-41d3-8dab-bfa5f589956c?action=share&source=collection_link&creator=29647564"
 	},
 	"item": [
 		{
@@ -231,6 +232,20 @@
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
 							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r",
+							"\r",
+							"     if (jsonResponse.brokerId) {\r",
+							"        pm.expect(jsonResponse).to.have.property(\"brokerId\").that.is.a(\"number\");\r",
+							"    } else {\r",
+							"        pm.expect(jsonResponse).to.not.have.property(\"brokerId\");\r",
+							"    }\r",
+							"\r",
+							"    if (jsonResponse.brokerFiscalCode) {\r",
+							"        pm.expect(jsonResponse).to.have.property(\"brokerFiscalCode\").that.is.a(\"string\");\r",
+							"    } else {\r",
+							"        pm.expect(jsonResponse).to.not.have.property(\"brokerFiscalCode\");\r",
+							"    }\r",
+							"\r",
+							"    pm.expect(jsonResponse).to.have.property(\"canManageUsers\").that.is.a(\"boolean\");\r",
 							"\r",
 							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(3)\r",
 							"    \r",
