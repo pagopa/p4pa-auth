@@ -6,6 +6,19 @@ info:
 servers:
   - url: "http://localhost:8080/payhub"
 paths:
+  /.well-known/jwks.json:
+    get:
+      tags:
+        - wellKnown
+      operationId: jwks
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
   /auth/token:
     post:
       tags:

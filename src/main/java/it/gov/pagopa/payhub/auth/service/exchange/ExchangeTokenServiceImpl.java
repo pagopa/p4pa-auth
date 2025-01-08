@@ -5,8 +5,9 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
-import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class ExchangeTokenServiceImpl implements ExchangeTokenService{
+public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
     private final ValidateExternalTokenService validateExternalTokenService;
     private final AccessTokenBuilderService accessTokenBuilderService;
@@ -42,23 +43,23 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService{
     public AccessToken postToken(String clientId, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
         log.info("Client {} requested to exchange a {} token provided by {} asking for token-exchange grant type and scope {}",
                 clientId, subjectTokenType, subjectIssuer, scope);
-        if(SUBJECT_TOKEN_TYPE_FAKE.equals(subjectTokenType)){
+        if (SUBJECT_TOKEN_TYPE_FAKE.equals(subjectTokenType)) {
             return handleFakeAuth(subjectToken, subjectIssuer);
         }
         Map<String, Claim> claims = validateExternalTokenService.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
-        AccessToken accessToken = accessTokenBuilderService.build();
         IamUserInfoDTO iamUser = idTokenClaimsMapper.apply(claims);
         User registeredUser = iamUserRegistrationService.registerUser(iamUser);
+        AccessToken accessToken = accessTokenBuilderService.build(registeredUser.getMappedExternalUserId(), iamUser);
         MDC.put("externalUserId", registeredUser.getMappedExternalUserId());
         iamUser.setInnerUserId(registeredUser.getUserId());
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
         return accessToken;
     }
 
-    private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer){
-        AccessToken accessToken = accessTokenBuilderService.build();
-        IamUserInfoDTO iamUser = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
-        tokenStoreService.save(accessToken.getAccessToken(), iamUser);
+    private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer) {
+        Pair<String, IamUserInfoDTO> mappedExternalUser2iamUser = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
+        AccessToken accessToken = accessTokenBuilderService.build(mappedExternalUser2iamUser.getKey(), mappedExternalUser2iamUser.getValue());
+        tokenStoreService.save(accessToken.getAccessToken(), mappedExternalUser2iamUser.getValue());
         return accessToken;
     }
 }

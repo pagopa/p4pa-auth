@@ -5,7 +5,8 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
-import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,17 +71,17 @@ class ExchangeTokenServiceTest {
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedClaims);
 
-        AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-        Mockito.when(accessTokenBuilderServiceMock.build())
-                .thenReturn(expectedAccessToken);
-
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
                 .thenReturn(iamUserInfo);
 
-        User registeredUser = User.builder().userId("INNERUSERID").build();
+        User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
         Mockito.when(iamUserRegistrationServiceMock.registerUser(Mockito.same(iamUserInfo)))
                 .thenReturn(registeredUser);
+
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
+        Mockito.when(accessTokenBuilderServiceMock.build(registeredUser.getMappedExternalUserId(), iamUserInfo))
+                .thenReturn(expectedAccessToken);
 
         // When
         AccessToken result = service.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
@@ -100,13 +101,15 @@ class ExchangeTokenServiceTest {
         String subjectTokenType = "FAKE-AUTH";
         String scope = "SCOPE";
 
-        AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-        Mockito.when(accessTokenBuilderServiceMock.build())
-                .thenReturn(expectedAccessToken);
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
 
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
         Mockito.when(fakeUserInfoServiceMock.buildIamUserInfoFake(subjectToken, subjectIssuer))
-                .thenReturn(iamUserInfo);
+                .thenReturn(Pair.of(mappedExternalUserId, iamUserInfo));
+
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
+        Mockito.when(accessTokenBuilderServiceMock.build(mappedExternalUserId, iamUserInfo))
+                .thenReturn(expectedAccessToken);
 
         // When
         AccessToken result = service.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);

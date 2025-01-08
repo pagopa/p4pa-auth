@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
-import it.gov.pagopa.payhub.model.generated.ClientDTO;
-import it.gov.pagopa.payhub.model.generated.ClientNoSecretDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

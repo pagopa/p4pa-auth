@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.exception;
 
-import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
+import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;

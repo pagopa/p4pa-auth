@@ -1,12 +1,59 @@
 {
 	"info": {
-		"_postman_id": "c348ca3e-46f7-4ad9-a4bb-38a800bc5713",
+		"_postman_id": "5b798cd0-2e20-45a4-88bb-08a0b26c6158",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15747968",
-		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-c348ca3e-46f7-4ad9-a4bb-38a800bc5713?action=share&source=collection_link&creator=15747968"
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-5b798cd0-2e20-45a4-88bb-08a0b26c6158?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
+		{
+			"name": "well-known_jwks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - well-known_jwks - Responses with 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Auth - well - Verify response body\", function () {",
+							"    let jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse).have.property(\"keys\");",
+							"    ",
+							"    pm.expect(jsonResponse.keys).have.property(\"length\").eq(1)",
+							"",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"kid\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"alg\").eq(\"RS512\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"use\").eq(\"sign\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"kty\").eq(\"RSA\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"n\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"e\")",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{p4paAuthBaseUrl}}/payhub/.well-known/jwks.json",
+					"host": [
+						"{{p4paAuthBaseUrl}}"
+					],
+					"path": [
+						"payhub",
+						".well-known",
+						"jwks.json"
+					]
+				}
+			},
+			"response": []
+		},
 		{
 			"name": "postToken org1",
 			"event": [
