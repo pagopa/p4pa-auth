@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.connector.client;
 
 import it.gov.pagopa.payhub.auth.connector.config.OrganizationApisHolder;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.EntityModelBroker;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.EntityModelOrganization;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class OrganizationSearchClient {
     }
 
 
-    public EntityModelBroker getBrokerById(Long id, String accessToken) {
+    public Broker getBrokerById(Long id, String accessToken) {
         try {
             return organizationApisHolder.getBrokerEntityControllerApi(accessToken).getItemResourceBrokerGet(String.valueOf(id));
         } catch (Exception e) {
@@ -28,7 +28,7 @@ public class OrganizationSearchClient {
         }
     }
 
-    public EntityModelOrganization getOrganizationByIpaCode(String ipaCode, String accessToken) {
+    public Organization getOrganizationByIpaCode(String ipaCode, String accessToken) {
         try {
             return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
                     .executeSearchOrganizationGet(ipaCode);

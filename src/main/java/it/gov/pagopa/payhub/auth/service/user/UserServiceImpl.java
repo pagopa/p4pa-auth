@@ -11,8 +11,8 @@ import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationServi
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.EntityModelBroker;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.EntityModelOrganization;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -61,14 +61,14 @@ public class UserServiceImpl implements UserService {
             throw new InvalidAccessTokenException("AccessToken not found");
         }
 
-        EntityModelBroker brokerInfo = null;
+        Broker brokerInfo = null;
 
         if (Boolean.TRUE.equals(organizationAccessMode) && userInfo.getOrganizationAccess() != null) {
             log.debug("SelfCare mode enabled. Using organizationAccess: {}", userInfo.getOrganizationAccess());
 
             String organizationIpaCode = userInfo.getOrganizationAccess().getOrganizationIpaCode();
             if (organizationIpaCode != null) {
-                EntityModelOrganization organization = organizationSearchClient.getOrganizationByIpaCode(organizationIpaCode, accessToken);
+                Organization organization = organizationSearchClient.getOrganizationByIpaCode(organizationIpaCode, accessToken);
 
                 if (organization != null && organization.getBrokerId() != null) {
                     log.info("Organization found. Fetching broker details for brokerId: {}", organization.getBrokerId());
