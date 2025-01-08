@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
-import it.gov.pagopa.payhub.auth.connector.OrganizationClientImpl;
+import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.model.Operator;
@@ -9,8 +9,8 @@ import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.EntityModelBroker;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.EntityModelOrganization;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.Set;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private OrganizationClientImpl organizationClient;
+    private OrganizationSearchClient organizationSearchClient;
     private final TokenStoreService tokenStoreService;
     private final UserRegistrationService userRegistrationService;
     private final OperatorRegistrationService operatorRegistrationService;
@@ -68,11 +68,11 @@ public class UserServiceImpl implements UserService {
 
             String organizationIpaCode = userInfo.getOrganizationAccess().getOrganizationIpaCode();
             if (organizationIpaCode != null) {
-                EntityModelOrganization organization = organizationClient.getOrganizationByIpaCode(organizationIpaCode, accessToken);
+                EntityModelOrganization organization = organizationSearchClient.getOrganizationByIpaCode(organizationIpaCode, accessToken);
 
                 if (organization != null && organization.getBrokerId() != null) {
                     log.info("Organization found. Fetching broker details for brokerId: {}", organization.getBrokerId());
-                    brokerInfo = organizationClient.getBrokerById(organization.getBrokerId(), accessToken);
+                    brokerInfo = organizationSearchClient.getBrokerById(organization.getBrokerId(), accessToken);
                 } else {
                     log.warn("No valid organization or brokerId found for IPA Code: {}", organizationIpaCode);
                 }
@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
         }
 
         UserInfo result = userInfoMapper.apply(userInfo);
+        result.setCanManageUsers(!organizationAccessMode);
         if (brokerInfo != null) {
             result.setBrokerId(brokerInfo.getBrokerId());
             result.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
