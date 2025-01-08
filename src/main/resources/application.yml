@@ -64,7 +64,7 @@ app:
     # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
     enable-access-organization-mode: "\${ACCESS_ORGANIZATION_MODE_ENABLED:true}"
 
-data-chiper:
+data-cipher:
     p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
     p4pa-auth-encrypt-psw: "\${DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW:PSW}"
 
