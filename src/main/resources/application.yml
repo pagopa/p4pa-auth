@@ -3,6 +3,9 @@ spring:
         name: ${artifactId}
         version: ${version}
     jmx.enabled: true
+    threads:
+        virtual:
+            enabled: "\${VIRTUAL_THREADS_ENABLED:true}"
     cache:
         type: redis
     data:
@@ -66,7 +69,7 @@ app:
     organization:
         base-url: "\${ORGANIZATION_BASE_URL:}"
 
-data-chiper:
+data-cipher:
     p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
     p4pa-auth-encrypt-psw: "\${DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW:PSW}"
 
