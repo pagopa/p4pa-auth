@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
-import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.model.Operator;
@@ -11,8 +10,6 @@ import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationServi
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,7 +22,6 @@ import java.util.Set;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private OrganizationSearchClient organizationSearchClient;
     private final TokenStoreService tokenStoreService;
     private final UserRegistrationService userRegistrationService;
     private final OperatorRegistrationService operatorRegistrationService;
@@ -61,35 +57,12 @@ public class UserServiceImpl implements UserService {
             throw new InvalidAccessTokenException("AccessToken not found");
         }
 
-        Broker brokerInfo = null;
-
-        if (Boolean.TRUE.equals(organizationAccessMode) && userInfo.getOrganizationAccess() != null) {
-            log.debug("SelfCare mode enabled. Using organizationAccess: {}", userInfo.getOrganizationAccess());
-
-            String organizationIpaCode = userInfo.getOrganizationAccess().getOrganizationIpaCode();
-            if (organizationIpaCode != null) {
-                Organization organization = organizationSearchClient.getOrganizationByIpaCode(organizationIpaCode, accessToken);
-
-                if (organization != null && organization.getBrokerId() != null) {
-                    log.info("Organization found. Fetching broker details for brokerId: {}", organization.getBrokerId());
-                    brokerInfo = organizationSearchClient.getBrokerById(organization.getBrokerId(), accessToken);
-                } else {
-                    log.warn("No valid organization or brokerId found for IPA Code: {}", organizationIpaCode);
-                }
-            }
-        } else {
-            log.debug("SelfCare mode disabled or organizationAccess not provided. Cannot fetch organization.");
-        }
-
         UserInfo result = userInfoMapper.apply(userInfo);
+
         result.setCanManageUsers(!organizationAccessMode);
-        if (brokerInfo != null) {
-            result.setBrokerId(brokerInfo.getBrokerId());
-            result.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
-        }
 
         log.debug("User info retrieved successfully with brokerId: {}",
-                brokerInfo != null ? brokerInfo.getBrokerId() : "N/A");
+                result.getBrokerId() != null ? result.getBrokerId() : "N/A");
         return result;
     }
 

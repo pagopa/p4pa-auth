@@ -66,6 +66,11 @@ app:
     # Thus it will register te relation between the operator and the relation with the provided roles.
     # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
     enable-access-organization-mode: "\${ACCESS_ORGANIZATION_MODE_ENABLED:true}"
+
+rest:
+    default-timeout:
+        connect-millis: "\${DEFAULT_REST_CONNECT_TIMEOUT_MILLIS:120000}"
+        read-millis: "\${DEFAULT_REST_READ_TIMEOUT_MILLIS:120000}"
     organization:
         base-url: "\${ORGANIZATION_BASE_URL:}"
 

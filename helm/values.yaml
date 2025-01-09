@@ -68,6 +68,8 @@ microservice-chart:
     JWT_TOKEN_EXPIRATION_SECONDS: "14400" # 4 HOURS
     ACCESS_ORGANIZATION_MODE_ENABLED: "true"
 
+    ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
+
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
 

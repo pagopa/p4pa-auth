@@ -21,17 +21,23 @@ public class OrganizationSearchClient {
 
     public Broker getBrokerById(Long id, String accessToken) {
         try {
-            return organizationApisHolder.getBrokerEntityControllerApi(accessToken).getItemResourceBrokerGet(String.valueOf(id));
+            return organizationApisHolder.getBrokerEntityControllerApi(accessToken).crudGetBroker(String.valueOf(id));
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                log.info("Broker with ID {} not found.", id);
+                return null;
+            }
+            throw e;
         } catch (Exception e) {
-            log.error(String.valueOf(e.getCause()));
-            return null;
+            log.error("An unexpected error occurred: {}", e.getMessage(), e);
+            throw e;
         }
     }
 
     public Organization getOrganizationByIpaCode(String ipaCode, String accessToken) {
         try {
             return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
-                    .executeSearchOrganizationGet(ipaCode);
+                    .crudOrganizationsFindByIpaCode(ipaCode);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 log.warn("Organization with IPA code {} not found", ipaCode);
