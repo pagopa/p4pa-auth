@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidAccessTokenException("AccessToken not found");
         }
 
-        UserInfo result = userInfoMapper.apply(userInfo);
+        UserInfo result = userInfoMapper.apply(userInfo, accessToken);
 
         log.debug("User info retrieved successfully with brokerId: {}", result.getBrokerId());
 

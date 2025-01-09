@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,14 +37,13 @@ class IamUserInfoDTO2UserInfoMapperTest {
     @Mock
     private OrganizationSearchClient organizationSearchClientMock;
 
-    @InjectMocks
     private IamUserInfoDTO2UserInfoMapper mapper;
 
     private final boolean organizationAccessMode = false;
 
     @BeforeEach
     void init() {
-        mapper = new IamUserInfoDTO2UserInfoMapper(usersRepositoryMock, operatorsRepositoryMock, organizationSearchClientMock);
+        mapper = new IamUserInfoDTO2UserInfoMapper(usersRepositoryMock, operatorsRepositoryMock, organizationSearchClientMock, organizationAccessMode);
     }
 
     @AfterEach

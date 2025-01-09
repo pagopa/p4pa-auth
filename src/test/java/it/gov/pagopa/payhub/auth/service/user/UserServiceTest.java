@@ -76,7 +76,7 @@ class UserServiceTest {
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
         UserInfo expectedUserInfo = new UserInfo();
         Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(iamUserInfo);
-        Mockito.when(userInfoMapperMock.apply(iamUserInfo)).thenReturn(expectedUserInfo);
+        Mockito.when(userInfoMapperMock.apply(iamUserInfo, accessToken)).thenReturn(expectedUserInfo);
 
         // When
         UserInfo result = service.getUserInfo(accessToken);

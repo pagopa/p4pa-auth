@@ -13,34 +13,27 @@ import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Service
-public class IamUserInfoDTO2UserInfoMapper implements Function<IamUserInfoDTO, UserInfo> {
+public class IamUserInfoDTO2UserInfoMapper {
 
     public static final String WS_USER_SUFFIX = "-WS_USER";
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
     private final OrganizationSearchClient organizationSearchClient;
-    @Value("${app.enable-access-organization-mode}")
-    private boolean organizationAccessMode;
+    private final boolean organizationAccessMode;
 
-    public IamUserInfoDTO2UserInfoMapper(UsersRepository usersRepository, OperatorsRepository operatorsRepository, OrganizationSearchClient organizationSearchClient) {
+    public IamUserInfoDTO2UserInfoMapper(UsersRepository usersRepository, OperatorsRepository operatorsRepository, OrganizationSearchClient organizationSearchClient, boolean organizationAccessMode) {
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.organizationSearchClient = organizationSearchClient;
-    }
-
-    @Override
-    public UserInfo apply(IamUserInfoDTO iamUserInfoDTO) {
-        throw new UnsupportedOperationException("AccessToken is required for this operation.");
+        this.organizationAccessMode = organizationAccessMode;
     }
 
     public UserInfo apply(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
