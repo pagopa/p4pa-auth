@@ -11,7 +11,6 @@ import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetri
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,8 +26,6 @@ public class UserServiceImpl implements UserService {
     private final OperatorRegistrationService operatorRegistrationService;
     private final IamUserInfoDTO2UserInfoMapper userInfoMapper;
     private final OrganizationOperatorRetrieverService organizationOperatorRetrieverService;
-    @Value("${app.enable-access-organization-mode}")
-    private boolean organizationAccessMode;
 
 
     public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService, IamUserInfoDTO2UserInfoMapper userInfoMapper, OrganizationOperatorRetrieverService organizationOperatorRetrieverService) {
@@ -59,10 +56,8 @@ public class UserServiceImpl implements UserService {
 
         UserInfo result = userInfoMapper.apply(userInfo);
 
-        result.setCanManageUsers(!organizationAccessMode);
+        log.debug("User info retrieved successfully with brokerId: {}", result.getBrokerId());
 
-        log.debug("User info retrieved successfully with brokerId: {}",
-                result.getBrokerId() != null ? result.getBrokerId() : "N/A");
         return result;
     }
 

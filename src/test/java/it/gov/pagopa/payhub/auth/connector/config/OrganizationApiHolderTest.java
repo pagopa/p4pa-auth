@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.config;
 
 import it.gov.pagopa.payhub.auth.connector.BaseApiHolderTest;
-import it.gov.pagopa.payhub.auth.connector.config.OrganizationApisHolder;
 import it.gov.pagopa.pu.p4pa_organization.controller.ApiClient;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;

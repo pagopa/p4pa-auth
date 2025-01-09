@@ -41,6 +41,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
     @InjectMocks
     private IamUserInfoDTO2UserInfoMapper mapper;
 
+    private final boolean organizationAccessMode = false;
 
     @BeforeEach
     void init() {
@@ -54,6 +55,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @Test
     void givenNotUserWhenApplyThenUserNotFoundException() {
+        String accessToken = "sampleAccessToken";
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
                 .userId("EXTERNALUSERID")
@@ -63,11 +65,12 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.empty());
 
         // When, Then
-        Assertions.assertThrows(UserNotFoundException.class, () -> mapper.apply(iamUserInfo));
+        Assertions.assertThrows(UserNotFoundException.class, () -> mapper.apply(iamUserInfo, accessToken));
     }
 
     @Test
     void givenCompleteDataWhenApplyThenOk() {
+        String accessToken = "sampleAccessToken";
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
                 .userId("EXTERNALUSERID")
@@ -108,6 +111,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
                         .build()))
+                .canManageUsers(!organizationAccessMode)
                 .build();
 
         Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
@@ -116,7 +120,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .thenReturn(new Organization());
 
         // When
-        UserInfo result = mapper.apply(iamUserInfo);
+        UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
         // Then
         Assertions.assertEquals(expected, result);
@@ -124,6 +128,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @Test
     void givenNotOperatorsWhenApplyThenOk() {
+        String accessToken = "sampleAccessToken";
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
                 .userId("EXTERNALUSERID")
@@ -152,13 +157,14 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .issuer("ISSUER")
                 .organizationAccess("ORG")
                 .organizations(Collections.emptyList())
+                .canManageUsers(!organizationAccessMode)
                 .build();
 
         Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
         Mockito.when(operatorsRepositoryMock.findAllByUserId(user.getUserId())).thenReturn(Collections.emptyList());
 
         // When
-        UserInfo result = mapper.apply(iamUserInfo);
+        UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
         // Then
         Assertions.assertEquals(expected, result);
@@ -166,6 +172,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @Test
     void givenNoOrganizationAccessWhenApplyThenOk() {
+        String accessToken = "sampleAccessToken";
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
                 .userId("EXTERNALUSERID")
@@ -201,13 +208,14 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
                         .build()))
+                .canManageUsers(!organizationAccessMode)
                 .build();
 
         Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
         Mockito.when(operatorsRepositoryMock.findAllByUserId(user.getUserId())).thenReturn(organizationRoles);
 
         // When
-        UserInfo result = mapper.apply(iamUserInfo);
+        UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
         // Then
         Assertions.assertEquals(expected, result);
@@ -215,6 +223,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @Test
     void givenSystemUserWhenApplyThenOk() {
+        String accessToken = "sampleAccessToken";
         // Given
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
                 .systemUser(Boolean.TRUE)
@@ -244,7 +253,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build();
 
         // When
-        UserInfo result = mapper.apply(iamUserInfo);
+        UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
         // Then
         Assertions.assertEquals(expected, result);

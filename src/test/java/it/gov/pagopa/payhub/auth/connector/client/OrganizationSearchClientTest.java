@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.connector.client;
 
-import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.auth.connector.config.OrganizationApisHolder;
 import it.gov.pagopa.pu.p4pa_organization.controller.generated.OrganizationSearchControllerApi;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
