@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final IamUserInfoDTO2UserInfoMapper userInfoMapper;
     private final OrganizationOperatorRetrieverService organizationOperatorRetrieverService;
 
+
     public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService, IamUserInfoDTO2UserInfoMapper userInfoMapper, OrganizationOperatorRetrieverService organizationOperatorRetrieverService) {
         this.tokenStoreService = tokenStoreService;
         this.userRegistrationService = userRegistrationService;
@@ -51,9 +52,13 @@ public class UserServiceImpl implements UserService {
         IamUserInfoDTO userInfo = tokenStoreService.load(accessToken);
         if (userInfo == null) {
             throw new InvalidAccessTokenException("AccessToken not found");
-        } else {
-            return userInfoMapper.apply(userInfo);
         }
+
+        UserInfo result = userInfoMapper.apply(userInfo, accessToken);
+
+        log.debug("User info retrieved successfully with brokerId: {}", result.getBrokerId());
+
+        return result;
     }
 
     @Override
@@ -61,4 +66,5 @@ public class UserServiceImpl implements UserService {
         log.info("Retrieving organization {} operators", organizationIpaCode);
         return organizationOperatorRetrieverService.retrieveOrganizationOperators(organizationIpaCode, pageable);
     }
+
 }

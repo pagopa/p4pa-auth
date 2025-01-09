@@ -551,6 +551,9 @@ components:
         - email
         - issuer
         - organizations
+        - brokerId
+        - brokerFiscalCode
+        - canManageUsers
       properties:
         userId:
           type: string
@@ -572,6 +575,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserOrganizationRoles'
+        brokerId:
+          type: integer
+          format: int64
+        brokerFiscalCode:
+          type: string
+        canManageUsers:
+          type: boolean
     UserOrganizationRoles:
       type: object
       required:

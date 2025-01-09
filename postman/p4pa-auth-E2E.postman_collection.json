@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "5b798cd0-2e20-45a4-88bb-08a0b26c6158",
+		"_postman_id": "cc929f09-50c0-4887-bf81-b41f8c297554",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "15747968",
-		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-5b798cd0-2e20-45a4-88bb-08a0b26c6158?action=share&source=collection_link&creator=15747968"
+		"_exporter_id": "29647564",
+		"_collection_link": "https://galactic-eclipse-948669.postman.co/workspace/New-Team-Workspace~be56c5f1-de0c-4252-95d0-ee80f35e2474/collection/29647564-cc929f09-50c0-4887-bf81-b41f8c297554?action=share&source=collection_link&creator=29647564"
 	},
 	"item": [
 		{
@@ -279,8 +279,11 @@
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
 							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r",
+							"    pm.expect(jsonResponse).to.have.property(\"brokerId\").that.is.a(\"number\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"brokerFiscalCode\").that.is.a(\"string\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"canManageUsers\").that.is.a(\"boolean\");\r",
 							"\r",
-							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(3)\r",
+							"    pm.expect(jsonResponse.organizations).to.have.property(\"length\").to.gte(3);\r",
 							"    \r",
 							"    pm.collectionVariables.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r",
 							"    pm.collectionVariables.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r",
