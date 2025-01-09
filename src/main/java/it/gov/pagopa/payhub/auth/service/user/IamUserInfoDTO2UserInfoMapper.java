@@ -13,6 +13,7 @@ import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +30,10 @@ public class IamUserInfoDTO2UserInfoMapper {
     private final OrganizationSearchClient organizationSearchClient;
     private final boolean organizationAccessMode;
 
-    public IamUserInfoDTO2UserInfoMapper(UsersRepository usersRepository, OperatorsRepository operatorsRepository, OrganizationSearchClient organizationSearchClient, boolean organizationAccessMode) {
+    public IamUserInfoDTO2UserInfoMapper(@Value("${app.enable-access-organization-mode}") boolean organizationAccessMode,
+                                         UsersRepository usersRepository,
+                                         OperatorsRepository operatorsRepository,
+                                         OrganizationSearchClient organizationSearchClient) {
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.organizationSearchClient = organizationSearchClient;

@@ -43,7 +43,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @BeforeEach
     void init() {
-        mapper = new IamUserInfoDTO2UserInfoMapper(usersRepositoryMock, operatorsRepositoryMock, organizationSearchClientMock, organizationAccessMode);
+        mapper = new IamUserInfoDTO2UserInfoMapper(organizationAccessMode, usersRepositoryMock, operatorsRepositoryMock, organizationSearchClientMock);
     }
 
     @AfterEach
