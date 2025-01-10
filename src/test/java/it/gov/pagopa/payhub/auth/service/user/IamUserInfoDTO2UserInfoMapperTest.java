@@ -81,6 +81,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .organizationIpaCode("ORG")
                         .email("EMAIL")
                         .build())
+                .brokerId(1L)
                 .build();
 
         User user = User.builder()
@@ -109,6 +110,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
                         .build()))
+                .brokerId(1L)
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
@@ -139,6 +141,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .organizationIpaCode("ORG")
                         .email("EMAIL")
                         .build())
+                .brokerId(1L)
                 .build();
 
         User user = User.builder()
@@ -155,6 +158,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .issuer("ISSUER")
                 .organizationAccess("ORG")
                 .organizations(Collections.emptyList())
+                .brokerId(1L)
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
@@ -179,6 +183,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .familyName("FAMILYNAME")
                 .name("NAME")
                 .issuer("ISSUER")
+                .brokerId(1L)
                 .build();
 
         User user = User.builder()
@@ -206,6 +211,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
                         .build()))
+                .brokerId(1L)
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
@@ -235,6 +241,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .organizationIpaCode("IPA_CODE")
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                         .build())
+                .brokerId(1L)
                 .build();
 
         UserInfo expected = UserInfo.builder()
@@ -248,6 +255,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .organizationIpaCode("IPA_CODE")
                         .roles(List.of(Constants.ROLE_ADMIN))
                         .build()))
+                .brokerId(1L)
                 .build();
 
         // When

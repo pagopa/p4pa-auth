@@ -60,6 +60,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                         .organizationIpaCode(organizationIpaCode)
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                         .build()))
+                .brokerId(iamUserInfoDTO.getBrokerId())
                 .build();
     }
 
@@ -88,6 +89,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                                 .email(r.getEmail())
                                 .build())
                         .toList())
+                .brokerId(iamUserInfoDTO.getBrokerId())
                 .build();
 
         if (iamUserInfoDTO.getOrganizationAccess() != null) {

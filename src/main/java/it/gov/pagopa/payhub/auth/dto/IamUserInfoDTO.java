@@ -17,6 +17,7 @@ public class IamUserInfoDTO {
   private String name;
   private String issuer;
   private IamUserOrganizationRolesDTO organizationAccess;
+  private Long brokerId;
 
   // field calculated upon registration
   private String innerUserId;
