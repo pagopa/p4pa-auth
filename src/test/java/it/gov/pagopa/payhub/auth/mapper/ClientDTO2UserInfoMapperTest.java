@@ -46,6 +46,6 @@ class ClientDTO2UserInfoMapperTest {
 		IamUserInfoDTO result = mapper.apply(clientDTO);
 		//Then
 		Assertions.assertEquals(iamUserInfoDTO,	result);
-		TestUtils.checkNotNullFields(result, "innerUserId", "brokerId");
+		TestUtils.checkNotNullFields(result, "innerUserId");
 	}
 }

@@ -3,11 +3,13 @@ package it.gov.pagopa.payhub.auth.service.user;
 import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
+import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
@@ -29,27 +31,30 @@ public class IamUserInfoDTO2UserInfoMapper {
     private final OperatorsRepository operatorsRepository;
     private final OrganizationSearchClient organizationSearchClient;
     private final boolean organizationAccessMode;
+    private final TokenStoreService tokenStoreService;
 
     public IamUserInfoDTO2UserInfoMapper(@Value("${app.enable-access-organization-mode}") boolean organizationAccessMode,
                                          UsersRepository usersRepository,
                                          OperatorsRepository operatorsRepository,
-                                         OrganizationSearchClient organizationSearchClient) {
+                                         OrganizationSearchClient organizationSearchClient,
+                                         TokenStoreService tokenStoreService) {
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.organizationSearchClient = organizationSearchClient;
         this.organizationAccessMode = organizationAccessMode;
+        this.tokenStoreService = tokenStoreService;
     }
 
     public UserInfo apply(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         if (iamUserInfoDTO.isSystemUser()) {
-            return systemUserMapper(iamUserInfoDTO);
+            return systemUserMapper(iamUserInfoDTO, accessToken);
         }
         return userInfoMapper(iamUserInfoDTO, accessToken);
     }
 
-    private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO) {
+    private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
-        return UserInfo.builder()
+        UserInfo userInfo = UserInfo.builder()
                 .userId(iamUserInfoDTO.getUserId())
                 .mappedExternalUserId(buildSystemMappedExternalUserId(organizationIpaCode))
                 .fiscalCode(iamUserInfoDTO.getFiscalCode())
@@ -60,8 +65,9 @@ public class IamUserInfoDTO2UserInfoMapper {
                         .organizationIpaCode(organizationIpaCode)
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                         .build()))
-                .brokerId(iamUserInfoDTO.getBrokerId())
                 .build();
+        setBrokerInfo(userInfo, accessToken);
+        return userInfo;
     }
 
     public static String buildSystemMappedExternalUserId(String organizationIpaCode) {
@@ -71,8 +77,6 @@ public class IamUserInfoDTO2UserInfoMapper {
     private UserInfo userInfoMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         User user = usersRepository.findById(iamUserInfoDTO.getInnerUserId()).orElseThrow(() -> new UserNotFoundException("Cannot found user having inner id:" + iamUserInfoDTO.getInnerUserId()));
         List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
-
-        Broker brokerInfo = getSessionBroker(iamUserInfoDTO, userRoles, accessToken);
 
         UserInfo userInfo = UserInfo.builder()
                 .userId(user.getUserId())
@@ -89,16 +93,12 @@ public class IamUserInfoDTO2UserInfoMapper {
                                 .email(r.getEmail())
                                 .build())
                         .toList())
-                .brokerId(iamUserInfoDTO.getBrokerId())
                 .build();
 
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
             userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
-        if (brokerInfo != null) {
-            userInfo.setBrokerId(brokerInfo.getBrokerId());
-            userInfo.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
-        }
+        setBrokerInfo(userInfo, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
         return userInfo;
     }
@@ -115,6 +115,23 @@ public class IamUserInfoDTO2UserInfoMapper {
             }
         }
         return null;
+    }
+
+    private void setBrokerInfo(UserInfo userInfo, String accessToken) {
+        IamUserInfoDTO iamUserInfo = tokenStoreService.load(accessToken);
+        if (iamUserInfo == null) {
+            throw new InvalidAccessTokenException("AccessToken not found");
+        }
+
+        List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfo.getInnerUserId());
+        Broker brokerInfo = getSessionBroker(iamUserInfo, userRoles, accessToken);
+
+        if (brokerInfo != null) {
+            userInfo.setBrokerId(brokerInfo.getBrokerId());
+            userInfo.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
+        } else {
+            throw new IllegalStateException("Broker information not found for the user.");
+        }
     }
 
 }
