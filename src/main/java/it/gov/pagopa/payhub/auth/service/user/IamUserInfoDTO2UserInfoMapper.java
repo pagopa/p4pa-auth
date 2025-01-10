@@ -42,14 +42,14 @@ public class IamUserInfoDTO2UserInfoMapper {
 
     public UserInfo apply(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         if (iamUserInfoDTO.isSystemUser()) {
-            return systemUserMapper(iamUserInfoDTO);
+            return systemUserMapper(iamUserInfoDTO, accessToken);
         }
         return userInfoMapper(iamUserInfoDTO, accessToken);
     }
 
-    private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO) {
+    private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
-        return UserInfo.builder()
+        UserInfo userInfo = UserInfo.builder()
                 .userId(iamUserInfoDTO.getUserId())
                 .mappedExternalUserId(buildSystemMappedExternalUserId(organizationIpaCode))
                 .fiscalCode(iamUserInfoDTO.getFiscalCode())
@@ -61,6 +61,8 @@ public class IamUserInfoDTO2UserInfoMapper {
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                         .build()))
                 .build();
+        setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
+        return userInfo;
     }
 
     public static String buildSystemMappedExternalUserId(String organizationIpaCode) {
@@ -70,8 +72,6 @@ public class IamUserInfoDTO2UserInfoMapper {
     private UserInfo userInfoMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         User user = usersRepository.findById(iamUserInfoDTO.getInnerUserId()).orElseThrow(() -> new UserNotFoundException("Cannot found user having inner id:" + iamUserInfoDTO.getInnerUserId()));
         List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
-
-        Broker brokerInfo = getSessionBroker(iamUserInfoDTO, userRoles, accessToken);
 
         UserInfo userInfo = UserInfo.builder()
                 .userId(user.getUserId())
@@ -93,18 +93,15 @@ public class IamUserInfoDTO2UserInfoMapper {
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
             userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
-        if (brokerInfo != null) {
-            userInfo.setBrokerId(brokerInfo.getBrokerId());
-            userInfo.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
-        }
+        setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
         return userInfo;
     }
 
-    private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<Operator> userRoles, String accessToken) {
+    private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<UserOrganizationRoles> userOrganizations, String accessToken) {
         String orgIpaCode = Optional.ofNullable(iamUserInfoDTO.getOrganizationAccess())
                 .map(IamUserOrganizationRolesDTO::getOrganizationIpaCode)
-                .orElseGet(() -> !userRoles.isEmpty() ? userRoles.get(0).getOrganizationIpaCode() : null);
+                .orElseGet(() -> userOrganizations.isEmpty() ? null : userOrganizations.get(0).getOrganizationIpaCode());
 
         if (orgIpaCode != null) {
             Organization organization = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
@@ -113,6 +110,17 @@ public class IamUserInfoDTO2UserInfoMapper {
             }
         }
         return null;
+    }
+
+    private void setBrokerInfo(UserInfo userInfo, IamUserInfoDTO iamUserInfo, String accessToken) {
+        Broker brokerInfo = getSessionBroker(iamUserInfo, userInfo.getOrganizations(), accessToken);
+
+        if (brokerInfo != null) {
+            userInfo.setBrokerId(brokerInfo.getBrokerId());
+            userInfo.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
+        } else {
+            throw new IllegalStateException("Broker information not found for the user.");
+        }
     }
 
 }

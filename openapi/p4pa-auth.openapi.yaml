@@ -551,8 +551,6 @@ components:
         - email
         - issuer
         - organizations
-        - brokerId
-        - brokerFiscalCode
         - canManageUsers
       properties:
         userId:
