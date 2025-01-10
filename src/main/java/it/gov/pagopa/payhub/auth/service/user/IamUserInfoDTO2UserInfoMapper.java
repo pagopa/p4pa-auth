@@ -16,7 +16,10 @@ import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper {
@@ -95,10 +98,10 @@ public class IamUserInfoDTO2UserInfoMapper {
         return userInfo;
     }
 
-    private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<Operator> userRoles, String accessToken) {
+    private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<UserOrganizationRoles> userOrganizations, String accessToken) {
         String orgIpaCode = Optional.ofNullable(iamUserInfoDTO.getOrganizationAccess())
                 .map(IamUserOrganizationRolesDTO::getOrganizationIpaCode)
-                .orElseGet(() -> !userRoles.isEmpty() ? userRoles.get(0).getOrganizationIpaCode() : null);
+                .orElseGet(() -> userOrganizations.isEmpty() ? null : userOrganizations.get(0).getOrganizationIpaCode());
 
         if (orgIpaCode != null) {
             Organization organization = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
@@ -110,16 +113,7 @@ public class IamUserInfoDTO2UserInfoMapper {
     }
 
     private void setBrokerInfo(UserInfo userInfo, IamUserInfoDTO iamUserInfo, String accessToken) {
-        List<Operator> userRoles = userInfo.getOrganizations().stream()
-                .map(org -> Operator.builder()
-                        .operatorId(org.getOperatorId())
-                        .organizationIpaCode(org.getOrganizationIpaCode())
-                        .roles(new HashSet<>(org.getRoles()))
-                        .email(org.getEmail())
-                        .build())
-                .toList();
-
-        Broker brokerInfo = getSessionBroker(iamUserInfo, userRoles, accessToken);
+        Broker brokerInfo = getSessionBroker(iamUserInfo, userInfo.getOrganizations(), accessToken);
 
         if (brokerInfo != null) {
             userInfo.setBrokerId(brokerInfo.getBrokerId());
