@@ -3,13 +3,11 @@ package it.gov.pagopa.payhub.auth.service.user;
 import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
-import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
@@ -18,10 +16,7 @@ import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper {
@@ -31,18 +26,15 @@ public class IamUserInfoDTO2UserInfoMapper {
     private final OperatorsRepository operatorsRepository;
     private final OrganizationSearchClient organizationSearchClient;
     private final boolean organizationAccessMode;
-    private final TokenStoreService tokenStoreService;
 
     public IamUserInfoDTO2UserInfoMapper(@Value("${app.enable-access-organization-mode}") boolean organizationAccessMode,
                                          UsersRepository usersRepository,
                                          OperatorsRepository operatorsRepository,
-                                         OrganizationSearchClient organizationSearchClient,
-                                         TokenStoreService tokenStoreService) {
+                                         OrganizationSearchClient organizationSearchClient) {
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.organizationSearchClient = organizationSearchClient;
         this.organizationAccessMode = organizationAccessMode;
-        this.tokenStoreService = tokenStoreService;
     }
 
     public UserInfo apply(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
@@ -66,7 +58,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                         .build()))
                 .build();
-        setBrokerInfo(userInfo, accessToken);
+        setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         return userInfo;
     }
 
@@ -98,7 +90,7 @@ public class IamUserInfoDTO2UserInfoMapper {
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
             userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
-        setBrokerInfo(userInfo, accessToken);
+        setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
         return userInfo;
     }
@@ -117,13 +109,16 @@ public class IamUserInfoDTO2UserInfoMapper {
         return null;
     }
 
-    private void setBrokerInfo(UserInfo userInfo, String accessToken) {
-        IamUserInfoDTO iamUserInfo = tokenStoreService.load(accessToken);
-        if (iamUserInfo == null) {
-            throw new InvalidAccessTokenException("AccessToken not found");
-        }
+    private void setBrokerInfo(UserInfo userInfo, IamUserInfoDTO iamUserInfo, String accessToken) {
+        List<Operator> userRoles = userInfo.getOrganizations().stream()
+                .map(org -> Operator.builder()
+                        .operatorId(org.getOperatorId())
+                        .organizationIpaCode(org.getOrganizationIpaCode())
+                        .roles(new HashSet<>(org.getRoles()))
+                        .email(org.getEmail())
+                        .build())
+                .toList();
 
-        List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfo.getInnerUserId());
         Broker brokerInfo = getSessionBroker(iamUserInfo, userRoles, accessToken);
 
         if (brokerInfo != null) {

@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
-import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
@@ -39,16 +38,13 @@ class IamUserInfoDTO2UserInfoMapperTest {
     @Mock
     private OrganizationSearchClient organizationSearchClientMock;
 
-    @Mock
-    private TokenStoreService tokenStoreService;
-
     private IamUserInfoDTO2UserInfoMapper mapper;
 
     private final boolean organizationAccessMode = false;
 
     @BeforeEach
     void init() {
-        mapper = new IamUserInfoDTO2UserInfoMapper(organizationAccessMode, usersRepositoryMock, operatorsRepositoryMock, organizationSearchClientMock, tokenStoreService);
+        mapper = new IamUserInfoDTO2UserInfoMapper(organizationAccessMode, usersRepositoryMock, operatorsRepositoryMock, organizationSearchClientMock);
     }
 
     @AfterEach
@@ -130,8 +126,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
-        Mockito.when(tokenStoreService.load("sampleAccessToken")).thenReturn(iamUserInfo);
-
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
         Assertions.assertEquals(expected, result);
@@ -184,8 +178,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockBroker.setBrokerId(1L);
         Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
-
-        Mockito.when(tokenStoreService.load("sampleAccessToken")).thenReturn(iamUserInfo);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
@@ -247,8 +239,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
-        Mockito.when(tokenStoreService.load("sampleAccessToken")).thenReturn(iamUserInfo);
-
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
         Assertions.assertEquals(expected, result);
@@ -295,9 +285,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockBroker.setBrokerId(1L);
         Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
-
-        Mockito.when(tokenStoreService.load("sampleAccessToken")).thenReturn(iamUserInfo);
-        Mockito.when(operatorsRepositoryMock.findAllByUserId(Mockito.anyString())).thenReturn(Collections.emptyList());
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
