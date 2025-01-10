@@ -118,8 +118,6 @@ public class IamUserInfoDTO2UserInfoMapper {
         if (brokerInfo != null) {
             userInfo.setBrokerId(brokerInfo.getBrokerId());
             userInfo.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
-        } else {
-            throw new IllegalStateException("Broker information not found for the user.");
         }
     }
 
