@@ -49,17 +49,35 @@ jwt:
 
 
 management:
+    endpoints:
+        jmx:
+            exposure.include: "*"
+        web:
+            exposure:
+                include: health, info, prometheus, metrics
+            base-path: /actuator
     endpoint:
         health:
             probes.enabled: true
             group:
                 readiness.include: "*"
                 liveness.include: livenessState,diskSpace,ping
-    endpoints:
-        jmx:
-            exposure.include: "*"
-        web:
-            exposure.include: info, health
+        prometheus:
+            enabled: true
+    metrics:
+        tags:
+            application: ${artifactId}
+        export:
+            prometheus:
+                enabled: true
+                step: 1m
+                descriptions: true
+        enable:
+            jvm: true
+            process: true
+            system: true
+            http: true
+            logback: true
 
 app:
     # If true, it will expect the presence of the access organization inside the ID Token.
