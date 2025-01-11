@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "cc929f09-50c0-4887-bf81-b41f8c297554",
+		"_postman_id": "13831639-b265-4c57-b4d3-e94d2799ba31",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29647564",
-		"_collection_link": "https://galactic-eclipse-948669.postman.co/workspace/New-Team-Workspace~be56c5f1-de0c-4252-95d0-ee80f35e2474/collection/29647564-cc929f09-50c0-4887-bf81-b41f8c297554?action=share&source=collection_link&creator=29647564"
+		"_exporter_id": "15747968",
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-13831639-b265-4c57-b4d3-e94d2799ba31?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
 		{
@@ -67,11 +67,11 @@
 							"\r",
 							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
-							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
-							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
-							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"access_token\");\r",
 							"\r",
-							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -135,11 +135,11 @@
 							"\r",
 							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
-							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
-							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
-							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"access_token\");\r",
 							"\r",
-							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -203,11 +203,11 @@
 							"\r",
 							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
-							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
-							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
-							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"access_token\");\r",
 							"\r",
-							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -716,7 +716,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							""
+							"pm.collectionVariables.set(\"clientName\", \"testClient\" + pm.variables.get(\"currentdatetime\"));"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -733,9 +733,11 @@
 							"pm.test(\"Auth - registerClient - Response is correct based on record existence\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
 							"\r",
+							"    let clientName = pm.collectionVariables.get(\"clientName\")\r",
+							"\r",
 							"    // Verifica il contenuto della risposta quando il record non esiste\r",
-							"    pm.expect(jsonResponse).to.have.property(\"clientId\").to.eq(\"IPA_TESTtestClient\");\r",
-							"    pm.expect(jsonResponse).to.have.property(\"clientName\").to.eq(\"testClient\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"clientId\").to.eq(\"IPA_TEST\"+clientName);\r",
+							"    pm.expect(jsonResponse).to.have.property(\"clientName\").to.eq(clientName);\r",
 							"    pm.expect(jsonResponse).to.have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\");\r",
 							"    pm.expect(jsonResponse).to.have.property(\"clientSecret\");\r",
 							"\r",
@@ -763,7 +765,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"clientName\" : \"testClient\"\r\n}",
+					"raw": "{\r\n  \"clientName\" : \"{{clientName}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -826,7 +828,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"clientName\" : \"testClient\"\r\n}",
+					"raw": "{\r\n  \"clientName\" : \"{{clientName}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -913,12 +915,18 @@
 							"pm.test(\"Auth - getClients - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
 							"\r",
+							"    let clientId = pm.collectionVariables.get(\"clientId\");\r",
+							"    let clientName = pm.collectionVariables.get(\"clientName\");\r",
+							"\r",
 							"    pm.expect(jsonResponse).to.be.an(\"array\").that.is.not.empty;\r",
-							"    jsonResponse.forEach(dto => {\r",
-							"        pm.expect(dto).to.have.property(\"clientId\").to.eql(\"IPA_TESTtestClient\");\r",
-							"        pm.expect(dto).to.have.property(\"clientName\").to.eql(\"testClient\");\r",
-							"        pm.expect(dto).to.have.property(\"organizationIpaCode\").to.eql(\"IPA_TEST\");\r",
-							"    });\r",
+							"    let currentClient = jsonResponse.filter(c => c.clientId==clientId)[0]\r",
+							"    console.log(clientId)\r",
+							"    console.log(currentClient)\r",
+							"    pm.expect(currentClient).to.not.null\r",
+							"    \r",
+							"    pm.expect(currentClient).to.have.property(\"clientId\").to.eq(\"IPA_TEST\"+clientName);\r",
+							"    pm.expect(currentClient).to.have.property(\"clientName\").to.eq(clientName);\r",
+							"    pm.expect(currentClient).to.have.property(\"organizationIpaCode\").to.eql(\"IPA_TEST\");\r",
 							"});\r",
 							""
 						],
@@ -1133,11 +1141,11 @@
 							"\r",
 							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
-							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
-							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
-							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"access_token\");\r",
 							"\r",
-							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.variables.set(\"accessToken\", jsonResponse.access_token)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1199,8 +1207,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"    pm.environment.get(\"clientId\")\r",
-							"    pm.environment.get(\"organizationIpaCode\")"
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -1244,7 +1251,9 @@
 				"type": "text/javascript",
 				"packages": {},
 				"exec": [
-					""
+					"var moment = require('moment');",
+					"",
+					"pm.variables.set('currentdatetime', moment().format((\"YYYY-MM-DDTHH:mm:ss\")));"
 				]
 			}
 		},
@@ -1278,6 +1287,10 @@
 		},
 		{
 			"key": "clientSecret",
+			"value": ""
+		},
+		{
+			"key": "clientName",
 			"value": ""
 		}
 	]

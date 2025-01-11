@@ -103,9 +103,7 @@ RUN mkdir -p src/main/java && \
 
 USER ${APP_USER}
 
-RUN gradle openApiGenerateP4PAAUTH dependencies --no-daemon
-
-RUN gradle openApiGenerateOrganization dependencies --no-daemon
+RUN gradle dependenciesBuild dependencies --no-daemon
 
 #
 # 🏗️ Build Stage
