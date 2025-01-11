@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "13831639-b265-4c57-b4d3-e94d2799ba31",
+		"_postman_id": "eb0efc3f-4546-4f06-922e-722a785ae180",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15747968",
-		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-13831639-b265-4c57-b4d3-e94d2799ba31?action=share&source=collection_link&creator=15747968"
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-eb0efc3f-4546-4f06-922e-722a785ae180?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
 		{
@@ -41,13 +41,58 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/.well-known/jwks.json",
+					"raw": "{{p4paAuthInnerBaseUrl}}/.well-known/jwks.json",
 					"host": [
-						"{{p4paAuthBaseUrl}}"
+						"{{p4paAuthInnerBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						".well-known",
+						"jwks.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "well-known_jwks APIm",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Auth - well-known_jwks - Responses with 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Auth - well - Verify response body\", function () {",
+							"    let jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse).have.property(\"keys\");",
+							"    ",
+							"    pm.expect(jsonResponse.keys).have.property(\"length\").eq(1)",
+							"",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"kid\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"alg\").eq(\"RS512\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"use\").eq(\"sign\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"kty\").eq(\"RSA\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"n\")",
+							"    pm.expect(jsonResponse.keys[0]).have.property(\"e\")",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/well-known/jwks.json",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"well-known",
 						"jwks.json"
 					]
 				}
@@ -83,12 +128,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -151,12 +195,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -219,12 +262,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -326,12 +368,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo",
+					"raw": "{{p4paAuthBaseUrl}}/auth/userinfo",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"userinfo"
 					]
@@ -409,12 +450,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo/{{mappedExternalUserId}}",
+					"raw": "{{p4paAuthBaseUrl}}/auth/userinfo/{{mappedExternalUserId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"userinfo",
 						"{{mappedExternalUserId}}"
@@ -484,12 +524,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST",
+					"raw": "{{p4paAuthBaseUrl}}/am/operators/IPA_TEST",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"operators",
 						"IPA_TEST"
@@ -559,12 +598,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST?fiscalCode=DMEMPY15L21L736U&firstName=demo&lastName=demo",
+					"raw": "{{p4paAuthBaseUrl}}/am/operators/IPA_TEST?fiscalCode=DMEMPY15L21L736U&firstName=demo&lastName=demo",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"operators",
 						"IPA_TEST"
@@ -642,12 +680,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST/{{mappedExternalUserId}}",
+					"raw": "{{p4paAuthBaseUrl}}/am/operators/IPA_TEST/{{mappedExternalUserId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"operators",
 						"IPA_TEST",
@@ -695,12 +732,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/NOTEXISTENTIPDACODE",
+					"raw": "{{p4paAuthBaseUrl}}/am/operators/NOTEXISTENTIPDACODE",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"operators",
 						"NOTEXISTENTIPDACODE"
@@ -773,12 +809,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"clients",
 						"IPA_TEST"
@@ -836,12 +871,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"clients",
 						"IPA_TEST"
@@ -886,16 +920,15 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST/IPA_TESTtestClient",
+					"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST/{{clientId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"clients",
 						"IPA_TEST",
-						"IPA_TESTtestClient"
+						"{{clientId}}"
 					]
 				}
 			},
@@ -959,12 +992,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/IPA_TEST",
+					"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"clients",
 						"IPA_TEST"
@@ -1013,12 +1045,11 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/IPA_TEST/{{mappedExternalUserId}}",
+					"raw": "{{p4paAuthBaseUrl}}/am/operators/IPA_TEST/{{mappedExternalUserId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"operators",
 						"IPA_TEST",
@@ -1051,12 +1082,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
+					"raw": "{{p4paAuthBaseUrl}}/auth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"revoke"
 					],
@@ -1104,12 +1134,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo",
+					"raw": "{{p4paAuthBaseUrl}}/auth/userinfo",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"userinfo"
 					]
@@ -1157,12 +1186,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id={{clientId}}&grant_type=client_credentials&scope=openid&client_secret={{clientSecret}}",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id={{clientId}}&grant_type=client_credentials&scope=openid&client_secret={{clientSecret}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -1228,12 +1256,11 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/clients/{{organizationIpaCode}}/{{clientId}}",
+					"raw": "{{p4paAuthBaseUrl}}/auth/clients/{{organizationIpaCode}}/{{clientId}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"clients",
 						"{{organizationIpaCode}}",

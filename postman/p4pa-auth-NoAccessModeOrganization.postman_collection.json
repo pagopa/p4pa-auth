@@ -36,12 +36,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -104,12 +103,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -172,12 +170,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -278,12 +275,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo",
+					"raw": "{{p4paAuthBaseUrl}}/auth/userinfo",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"userinfo"
 					]
@@ -349,12 +345,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/users",
+					"raw": "{{p4paAuthBaseUrl}}/am/users",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"users"
 					]
@@ -424,12 +419,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/{{organizationIpaCode}}",
+					"raw": "{{p4paAuthBaseUrl}}/am/operators/{{organizationIpaCode}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"operators",
 						"{{organizationIpaCode}}"
