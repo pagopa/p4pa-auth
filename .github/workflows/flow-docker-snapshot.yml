@@ -33,7 +33,7 @@ jobs:
           enable_azure_devops_step: 'true'
           azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
           azure_devops_pipeline_name: 'p4pa-payhub-deploy-aks.deploy'
-          azure_devops_pat: ${{ secrets.AZUREDEVOPS_PAT }}
+          azure_devops_pat: ${{ secrets.AZURE_DEVOPS_TOKEN }}
           azure_template_parameters: |
             {
               "APPS": "[APPS_TOP]",
