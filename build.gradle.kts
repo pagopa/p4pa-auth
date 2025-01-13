@@ -110,7 +110,17 @@ configurations {
 }
 
 tasks.compileJava {
-	dependsOn("openApiGenerateP4PAAUTH","openApiGenerateOrganization")
+	dependsOn("dependenciesBuild")
+}
+
+tasks.register("dependenciesBuild") {
+	group = "AutomaticallyGeneratedCode"
+	description = "grouping all together automatically generate code tasks"
+
+	dependsOn(
+		"openApiGenerateP4PAAUTH",
+		"openApiGenerateORGANIZATION"
+	)
 }
 
 configure<SourceSetContainer> {
@@ -133,14 +143,15 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 	apiPackage.set("it.gov.pagopa.payhub.controller.generated")
 	modelPackage.set("it.gov.pagopa.payhub.dto.generated")
 	configOptions.set(mapOf(
-			"dateLibrary" to "java8",
-			"requestMappingMode" to "api_interface",
-			"useSpringBoot3" to "true",
-			"interfaceOnly" to "true",
-			"useTags" to "true",
-			"generateConstructorWithAllArgs" to "false",
-			"generatedConstructorWithRequiredArgs" to "true",
-			"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"dateLibrary" to "java8",
+		"requestMappingMode" to "api_interface",
+		"useSpringBoot3" to "true",
+		"interfaceOnly" to "true",
+		"useTags" to "true",
+		"useBeanValidation" to "true",
+		"generateConstructorWithAllArgs" to "true",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Builder"
 	))
 }
 
@@ -150,7 +161,7 @@ var targetEnv = when (grgit.branch.current().name) {
 	else -> "develop"
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateOrganization") {
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateORGANIZATION") {
 	group = "openapi"
 	description = "description"
 

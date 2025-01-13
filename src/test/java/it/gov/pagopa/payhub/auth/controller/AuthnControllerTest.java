@@ -63,8 +63,10 @@ class AuthnControllerTest {
         MvcResult result =
                 invokePostTokenAndVerify(null, HttpStatus.OK, null);
 
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("{\"accessToken\":\"token\",\"tokenType\":\"bearer\",\"expiresIn\":0}", result.getResponse().getContentAsString());
+        Assertions.assertEquals("{\"access_token\":\"token\",\"token_type\":\"bearer\",\"expires_in\":0}", result.getResponse().getContentAsString());
     }
 
     @Test
