@@ -1,4 +1,4 @@
-name: 📦 Snapshot docker
+name: 📦 Flow Snapshot Docker
 
 on:
   push:
