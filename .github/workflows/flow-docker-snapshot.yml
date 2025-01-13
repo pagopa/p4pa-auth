@@ -36,6 +36,6 @@ jobs:
           azure_devops_pat: ${{ secrets.AZURE_DEVOPS_TOKEN }}
           azure_template_parameters: |
             {
-              "APPS": "[APPS_TOP]",
+              "APPS_TOP": "[p4pa-auth]",
               "POSTMAN_BRANCH": "${{ github.ref_name }}"
             }
