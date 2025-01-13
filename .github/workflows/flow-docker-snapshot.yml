@@ -1,4 +1,4 @@
-name: 📦 Snapshot docker
+name: 📦 Flow Snapshot Docker
 
 on:
   push:
@@ -30,3 +30,12 @@ jobs:
         uses: pagopa/github-actions-template/payments-flow-docker-snapshot@37569377fa759368a01c1e7f40700b4118d65d0c
         with:
           current_branch: ${{ github.ref_name }}
+          enable_azure_devops_step: 'true'
+          azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
+          azure_devops_pipeline_name: 'p4pa-payhub-deploy-aks.deploy'
+          azure_devops_pat: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+          azure_template_parameters: |
+            {
+              "APPS_TOP": "[p4pa-auth]",
+              "POSTMAN_BRANCH": "${{ github.ref_name }}"
+            }
