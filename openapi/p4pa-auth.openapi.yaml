@@ -586,6 +586,7 @@ components:
         - operatorId
         - organizationIpaCode
         - roles
+        - organizationId
       properties:
         operatorId:
           type: string
@@ -597,6 +598,9 @@ components:
           type: array
           items:
             type: string
+        organizationId:
+          type: integer
+          format: int64
     OperatorsPage:
       type: object
       required:

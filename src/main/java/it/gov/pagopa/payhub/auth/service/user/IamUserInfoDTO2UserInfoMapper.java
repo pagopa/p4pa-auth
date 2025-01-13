@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
+import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
@@ -86,6 +87,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                                 .organizationIpaCode(r.getOrganizationIpaCode())
                                 .roles(new ArrayList<>(r.getRoles()))
                                 .email(r.getEmail())
+                                .organizationId(retrieveOrganizationId(r.getOrganizationIpaCode(), accessToken))
                                 .build())
                         .toList())
                 .build();
@@ -96,6 +98,16 @@ public class IamUserInfoDTO2UserInfoMapper {
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
         return userInfo;
+    }
+
+    private Long retrieveOrganizationId(String organizationIpaCode, String accessToken) {
+        if (StringUtils.isNotBlank(organizationIpaCode)) {
+            Organization organization = organizationSearchClient.getOrganizationByIpaCode(organizationIpaCode, accessToken);
+            if (organization != null) {
+                return organization.getOrganizationId();
+            }
+        }
+        return null;
     }
 
     private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<UserOrganizationRoles> userOrganizations, String accessToken) {
