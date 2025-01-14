@@ -11,8 +11,22 @@ on:
       - '**.md'
       - '.**'
   workflow_dispatch:
+    inputs:
+      docker_build_enabled:
+        description: 'Enable Docker build'
+        required: false
+        default: 'true'
+      azdo_trigger_enabled:
+        description: 'Enable Azure DevOps trigger'
+        required: false
+        default: 'false'
+      deploy_aks_branch:
+          description: 'Branch name'
+          required: false
+          default: 'main'
 
 env:
+  # current branch or branch choosed from workload_dispatch
   CURRENT_BRANCH: ${{ github.event.inputs.branch || github.ref_name }}
 
 jobs:
@@ -26,10 +40,17 @@ jobs:
           ref: ${{ env.CURRENT_BRANCH }}
 
       - name: 📦 Run Snapshot Docker Build/Push & Trigger
+        if: ${{ github.event.inputs.docker_build_enabled == 'true' }}
         # https://github.com/pagopa/github-actions-template/releases/tag/v1.19.0
-        uses: pagopa/github-actions-template/payments-flow-docker-snapshot@37569377fa759368a01c1e7f40700b4118d65d0c
+        uses: pagopa/github-actions-template/payments-flow-docker-snapshot@new-azdo-trigger-pipeline
         with:
           current_branch: ${{ github.ref_name }}
+
+      - name: 🅰️ Azure devops trigger
+        if: ${{ github.event.inputs.azdo_trigger_enabled == 'true' }}
+        # https://github.com/pagopa/github-actions-template/releases/tag/v1.19.0
+        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@new-azdo-trigger-pipeline
+        with:
           enable_azure_devops_step: 'true'
           azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
           azure_devops_pipeline_name: 'p4pa-payhub-deploy-aks.deploy'
