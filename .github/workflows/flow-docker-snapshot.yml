@@ -40,8 +40,8 @@ jobs:
           ref: ${{ env.CURRENT_BRANCH }}
 
       - name: 📦 Run Snapshot Docker Build/Push & Trigger
-        if: ${{ github.event.inputs.docker_build_enabled == 'true' }}
-        # https://github.com/pagopa/github-actions-template/releases/tag/v1.19.0
+        if: ${{ github.event_name == 'push' || github.event.inputs.docker_build_enabled == 'true' }}
+      # https://github.com/pagopa/github-actions-template/releases/tag/v1.19.0
         uses: pagopa/github-actions-template/payments-flow-docker-snapshot@new-azdo-trigger-pipeline
         with:
           current_branch: ${{ github.ref_name }}
