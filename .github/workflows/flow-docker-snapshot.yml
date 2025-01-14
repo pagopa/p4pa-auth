@@ -19,9 +19,9 @@ on:
       azdo_trigger_enabled:
         description: 'Enable Azure DevOps trigger'
         required: false
-        default: 'false'
+        default: 'true'
       deploy_aks_branch:
-          description: 'Branch name'
+          description: 'argocd deploy aks branch name'
           required: false
           default: 'main'
 
