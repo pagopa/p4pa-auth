@@ -58,7 +58,10 @@ jobs:
     name: 🅰️ Azure DevOps Pipeline Trigger
     needs: docker-build
     runs-on: ubuntu-22.04
-    if: ${{ github.event.inputs.azdo_trigger_enabled == 'true' }}
+    if: |
+      always() &&
+      needs.docker-build.result != 'failure' &&
+      github.event.inputs.azdo_trigger_enabled == 'true'
     steps:
       - name: Trigger Azure DevOps Pipeline
         uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@new-azdo-trigger-pipeline
