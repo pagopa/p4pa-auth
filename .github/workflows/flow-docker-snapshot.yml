@@ -26,29 +26,41 @@ on:
           default: 'main'
 
 env:
-  # current branch or branch choosed from workload_dispatch
   CURRENT_BRANCH: ${{ github.event.inputs.branch || github.ref_name }}
 
 jobs:
-  payments-flow-docker-snapshot:
+  checkout:
+    name: 🔖 Checkout Repository
     runs-on: ubuntu-22.04
     steps:
-      - name: 🔖 Checkout code
-        # https://github.com/actions/checkout/releases/tag/v4.2.1
+      - name: Checkout code
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
         with:
           ref: ${{ env.CURRENT_BRANCH }}
 
-      - name: 📦 Run Snapshot Docker Build/Push & Trigger
-        if: ${{ github.event_name == 'push' || github.event.inputs.docker_build_enabled == 'true' }}
-      # https://github.com/pagopa/github-actions-template/releases/tag/v1.19.0
+  docker-build:
+    name: 📦 Docker Build and Push
+    needs: checkout
+    runs-on: ubuntu-22.04
+    if: ${{ github.event_name == 'push' || github.event.inputs.docker_build_enabled == 'true' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+        with:
+          ref: ${{ env.CURRENT_BRANCH }}
+          
+      - name: Run Snapshot Docker Build/Push
         uses: pagopa/github-actions-template/payments-flow-docker-snapshot@new-azdo-trigger-pipeline
         with:
           current_branch: ${{ github.ref_name }}
 
-      - name: 🅰️ Azure devops trigger
-        if: ${{ github.event.inputs.azdo_trigger_enabled == 'true' }}
-        # https://github.com/pagopa/github-actions-template/releases/tag/v1.19.0
+  azure-devops-trigger:
+    name: 🅰️ Azure DevOps Pipeline Trigger
+    needs: docker-build
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.inputs.azdo_trigger_enabled == 'true' }}
+    steps:
+      - name: Trigger Azure DevOps Pipeline
         uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@new-azdo-trigger-pipeline
         with:
           enable_azure_devops_step: 'true'
