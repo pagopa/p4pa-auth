@@ -27,7 +27,7 @@ jobs:
     name: 🚀 Release
     runs-on: ubuntu-22.04
     steps:
-      - name: 🚀 release + docker + azdo
+      - name: 🚀 release + docker
         # https://github.com/pagopa/github-actions-template/releases/tag/v1.19.1
         uses: pagopa/github-actions-template/payments-flow-release@new-azdo-trigger-pipeline
         with:
