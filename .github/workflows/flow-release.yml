@@ -50,5 +50,6 @@ jobs:
           azure_template_parameters: |
             {
               "APPS_TOP": "[p4pa-auth]",
-              "POSTMAN_BRANCH": "${{ github.ref_name }}"
+              "POSTMAN_BRANCH": "${{ github.ref_name }}",
+              "TRIGGER_MESSAGE": "p4pa-auth"
             }
