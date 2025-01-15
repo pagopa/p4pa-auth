@@ -78,10 +78,7 @@ jobs:
           azure-pipeline-variables: '{"system.debug": "true"}'
           azure-template-parameters: |
             {
-              "APPS_TOP": "[one-color]",
-              "ARGOCD_TARGET_BRANCH": "${{ github.event.inputs.argocd_target_branch }}",
-              "POSTMAN_BRANCH": "${{ github.event.inputs.postman_branch }}"
-              "TRIGGER_MESSAGE": "p4pa-auth"
+             "TRIGGER_MESSAGE": "p4pa-auth"
             }
         # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
         # uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@b825ee193430395706a4a7e580b8435bdded0227
