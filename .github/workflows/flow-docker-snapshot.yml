@@ -20,10 +20,14 @@ on:
         description: 'Enable Azure DevOps trigger'
         required: false
         default: 'true'
-      deploy_aks_branch:
-          description: 'argocd deploy aks branch name'
+      argocd_target_branch:
+          description: 'argocd target branch name'
           required: false
           default: 'main'
+      postman_branch:
+        description: postman branch name'
+        required: false
+        default: 'develop'
 
 env:
   # branch choosed by workflow_dispatch or by push event
@@ -67,7 +71,7 @@ jobs:
     steps:
       - name: Trigger Azure DevOps Pipeline
         # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
-        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@b825ee193430395706a4a7e580b8435bdded0227
+        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@trigger-azdo-updated
         with:
           enable_azure_devops_step: 'true'
           azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
@@ -75,6 +79,10 @@ jobs:
           azure_devops_pat: ${{ secrets.AZURE_DEVOPS_TOKEN }}
           azure_template_parameters: |
             {
-              "APPS_TOP": "[p4pa-auth]",
-              "POSTMAN_BRANCH": "${{ github.ref_name }}"
+              "APPS_TOP": "[one-color]",
+              "ARGOCD_TARGET_BRANCH": "${{ github.event.inputs.argocd_target_branch }}",
+              "POSTMAN_BRANCH": "${{ github.event.inputs.postman_branch }}",
+              "TRIGGER_MESSAGE": "p4pa-auth"
             }
+
+
