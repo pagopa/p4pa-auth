@@ -70,17 +70,31 @@ jobs:
       github.event.inputs.azdo_trigger_enabled == 'true'
     steps:
       - name: Trigger Azure DevOps Pipeline
-        # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
-        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@b825ee193430395706a4a7e580b8435bdded0227
+        uses: pagopa/azure-pipelines@51d971651241601a348e4e2ed2431b8b7576d4f0
         with:
-          enable_azure_devops_step: 'true'
-          azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
-          azure_devops_pipeline_name: 'p4pa-payhub-deploy-aks.deploy'
-          azure_devops_pat: ${{ secrets.AZURE_DEVOPS_TOKEN }}
-          azure_template_parameters: |
+          azure-devops-project-url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
+          azure-pipeline-name: 'p4pa-payhub-deploy-aks.deploy'
+          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+          azure-pipeline-variables: '{"system.debug": "true"}'
+          azure-template-parameters: |
             {
               "APPS_TOP": "[one-color]",
               "ARGOCD_TARGET_BRANCH": "${{ github.event.inputs.argocd_target_branch }}",
               "POSTMAN_BRANCH": "${{ github.event.inputs.postman_branch }}"
               "TRIGGER_MESSAGE": "p4pa-auth"
             }
+        # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
+        # uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@b825ee193430395706a4a7e580b8435bdded0227
+        # with:
+        #   enable_azure_devops_step: 'true'
+        #   azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
+        #   azure_devops_pipeline_name: 'p4pa-payhub-deploy-aks.deploy'
+        #   azure_devops_pat: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+        #   azure_template_parameters: |
+        #     {
+        #       "APPS_TOP": "[one-color]",
+        #       "ARGOCD_TARGET_BRANCH": "${{ github.event.inputs.argocd_target_branch }}",
+        #       "POSTMAN_BRANCH": "${{ github.event.inputs.postman_branch }}"
+        #       "TRIGGER_MESSAGE": "p4pa-auth"
+        #     }
+
