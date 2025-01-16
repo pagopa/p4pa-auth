@@ -70,8 +70,8 @@ jobs:
       github.event.inputs.azdo_trigger_enabled == 'true'
     steps:
       - name: Trigger Azure DevOps Pipeline
-        # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
-        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@trigger-azdo-updated
+        # https://github.com/pagopa/github-actions-template/releases/tag/v2.1.0
+        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@cad30356d9046af6e7b0cee43db4cf919cc408f9
         with:
           enable_azure_devops_step: 'true'
           azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
