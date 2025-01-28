@@ -47,7 +47,6 @@ dependencies {
 	implementation("io.micrometer:micrometer-registry-prometheus")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion")
 	implementation("org.codehaus.janino:janino:$janinoVersion")
@@ -60,9 +59,6 @@ dependencies {
 	implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
 	implementation("io.jsonwebtoken:jjwt:$jjwtVersion")
 	implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
-
-	// PostgreSQL
-	runtimeOnly("org.postgresql:postgresql")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")

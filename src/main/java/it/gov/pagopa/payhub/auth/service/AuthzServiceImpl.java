@@ -13,7 +13,6 @@ import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.dto.generated.*;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -75,7 +74,6 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    @Transactional
     public void deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
         operatorsRepository.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
     }
