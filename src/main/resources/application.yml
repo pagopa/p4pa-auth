@@ -52,6 +52,7 @@ management:
     endpoint:
         health:
             probes.enabled: true
+            logging.slow-indicator-threshold: "\${HEALTH_ACTUATOR_LOGGER_TIMEOUT_DURATION:PT1S}"
             group:
                 readiness.include: "*"
                 liveness.include: livenessState,diskSpace,ping
@@ -71,6 +72,13 @@ management:
             system: true
             http: true
             logback: true
+
+logging:
+    level:
+        root: "\${LOG_LEVEL_ROOT:INFO}"
+        it.gov.pagopa: "\${LOG_LEVEL_PAGOPA:INFO}"
+        org.springframework: "\${LOG_LEVEL_SPRING:INFO}"
+        org.springframework.boot.availability: "\${LOG_LEVEL_SPRING_BOOT_AVAILABILITY:DEBUG}"
 
 app:
     # If true, it will expect the presence of the access organization inside the ID Token.
