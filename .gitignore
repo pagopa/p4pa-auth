@@ -39,6 +39,6 @@ out/
 .vscode/
 
 ### Terraform ###
-**/.terraform/*
+.github/terraform/.terraform/*
 *.tfstate
 *.tfstate.*
