@@ -22,6 +22,33 @@ resource "github_repository_environment" "github_repository_environment" {
   }
 }
 
+
+###############
+# ENV Secrets #
+###############
+
+resource "github_actions_environment_secret" "environment_secrets" {
+  for_each = local.env_secrets
+
+  repository      = local.github.repository
+  environment     = var.env
+  secret_name     = each.key
+  plaintext_value = each.value
+}
+
+#################
+# ENV Variables #
+#################
+
+resource "github_actions_environment_variable" "environment_variables" {
+  for_each = local.env_variables
+
+  repository    = local.github.repository
+  environment   = var.env
+  variable_name = each.key
+  value         = each.value
+}
+
 #################################
 # Environment Deployment Policy #
 #################################
@@ -34,6 +61,17 @@ resource "github_repository_environment_deployment_policy" "this" {
   depends_on = [
     github_repository_environment.github_repository_environment
   ]
+}
+
+##########################################
+# Environment Variable of the Repository #
+##########################################
+resource "github_actions_variable" "repo_env" {
+  for_each = var.env_short == "p" ? local.repo_env : {}
+
+  repository    = local.github.repository
+  variable_name = each.key
+  value         = each.value
 }
 
 #############################
