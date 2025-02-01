@@ -147,7 +147,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 		"useBeanValidation" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
-		"additionalModelTypeAnnotations" to "@lombok.Builder"
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 }
 
@@ -167,13 +167,16 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 	apiPackage.set("it.gov.pagopa.pu.p4pa-organization.controller.generated")
 	modelPackage.set("it.gov.pagopa.pu.p4pa-organization.dto.generated")
 	configOptions.set(mapOf(
-			"swaggerAnnotations" to "false",
-			"openApiNullable" to "false",
-			"dateLibrary" to "java17",
-			"useSpringBoot3" to "true",
-			"useJakartaEe" to "true",
-			"serializationLibrary" to "jackson",
-			"generateSupportingFiles" to "true"
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java17",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "true",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
 }
