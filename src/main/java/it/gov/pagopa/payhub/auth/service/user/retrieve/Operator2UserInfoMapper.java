@@ -7,6 +7,8 @@ import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +30,7 @@ public class Operator2UserInfoMapper implements BiFunction<User, List<Operator>,
                 .roles(new ArrayList<>(r.getRoles()))
                 .email(r.getEmail())
                 .build())
-            .toList())
+            .collect(Collectors.toList()))
         .build();
   }
 }

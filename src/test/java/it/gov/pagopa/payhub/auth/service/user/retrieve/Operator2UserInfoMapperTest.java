@@ -7,6 +7,8 @@ import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +51,7 @@ class Operator2UserInfoMapperTest {
                     .roles(new ArrayList<>(r.getRoles()))
                     .email(r.getEmail())
                     .build())
-                .toList())
+                .collect(Collectors.toList()))
             .build(),
         result
     );

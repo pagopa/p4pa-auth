@@ -14,7 +14,9 @@ version = "0.1.0"
 description = "p4pa-auth"
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 configurations {
