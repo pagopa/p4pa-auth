@@ -580,6 +580,8 @@ components:
           type: string
         canManageUsers:
           type: boolean
+        systemUser:
+          type: boolean
     UserOrganizationRoles:
       type: object
       required:

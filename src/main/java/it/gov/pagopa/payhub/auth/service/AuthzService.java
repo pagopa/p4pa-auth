@@ -14,7 +14,7 @@ public interface AuthzService {
     void deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId);
     OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest);
     UserDTO createUser(UserDTO user);
-    UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId);
+    UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId, String accessToken);
     ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest);
     String getClientSecret(String organizationIpaCode, String clientId);
 	  List<ClientNoSecretDTO> getClients(String organizationIpaCode);

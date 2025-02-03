@@ -7,7 +7,6 @@ import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -49,17 +48,19 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         Map<String, Claim> claims = validateExternalTokenService.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
         IamUserInfoDTO iamUser = idTokenClaimsMapper.apply(claims);
         User registeredUser = iamUserRegistrationService.registerUser(iamUser);
-        AccessToken accessToken = accessTokenBuilderService.build(registeredUser.getMappedExternalUserId(), iamUser);
         MDC.put("externalUserId", registeredUser.getMappedExternalUserId());
         iamUser.setInnerUserId(registeredUser.getUserId());
+        iamUser.setMappedExternalUserId(registeredUser.getMappedExternalUserId());
+
+        AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
         return accessToken;
     }
 
     private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer) {
-        Pair<String, IamUserInfoDTO> mappedExternalUser2iamUser = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
-        AccessToken accessToken = accessTokenBuilderService.build(mappedExternalUser2iamUser.getKey(), mappedExternalUser2iamUser.getValue());
-        tokenStoreService.save(accessToken.getAccessToken(), mappedExternalUser2iamUser.getValue());
+        IamUserInfoDTO fakeIamUserInfo = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
+        AccessToken accessToken = accessTokenBuilderService.build(fakeIamUserInfo);
+        tokenStoreService.save(accessToken.getAccessToken(), fakeIamUserInfo);
         return accessToken;
     }
 }

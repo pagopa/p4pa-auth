@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.auth.service.user;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
+import it.gov.pagopa.payhub.auth.mapper.ClientDTO2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
@@ -59,6 +61,19 @@ public class UserServiceImpl implements UserService {
         log.debug("User info retrieved successfully with brokerId: {}", result.getBrokerId());
 
         return result;
+    }
+
+    @Override
+    public UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId, String accessToken) {
+        IamUserInfoDTO iamUserInfo;
+        if(ClientDTO2UserInfoMapper.isSystemMappedUser(mappedExternalUserId)) {
+            iamUserInfo = null; // TODO
+        } else {
+            // TODO
+            iamUserInfo = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
+                    .orElseThrow(() -> new UserNotFoundException("Cannot found user having mappedExternalId:" + mappedExternalUserId));
+        }
+        return userInfoMapper.apply(iamUserInfo, accessToken);
     }
 
     @Override

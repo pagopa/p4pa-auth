@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.user.registration.ExternalUserIdObfuscatorService;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,17 +18,18 @@ public class FakeUserInfoService {
         this.externalUserIdObfuscatorService = externalUserIdObfuscatorService;
     }
 
-    public Pair<String, IamUserInfoDTO> buildIamUserInfoFake(String iamUserId, String subjectIssuer) {
+    public IamUserInfoDTO buildIamUserInfoFake(String iamUserId, String subjectIssuer) {
         String mappedExternalUserId = externalUserIdObfuscatorService.obfuscate(iamUserId);
         User userInfo = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
                 .orElseThrow(() -> new UserNotFoundException("User with this mappedExternalUserId not found"));
-        return Pair.of(mappedExternalUserId, IamUserInfoDTO.builder()
+        return IamUserInfoDTO.builder()
                 .userId(iamUserId)
                 .innerUserId(userInfo.getUserId())
+                .mappedExternalUserId(mappedExternalUserId)
                 .name("fake")
                 .familyName("user")
                 .fiscalCode(userInfo.getUserCode())
                 .issuer(subjectIssuer)
-                .build());
+                .build();
     }
 }

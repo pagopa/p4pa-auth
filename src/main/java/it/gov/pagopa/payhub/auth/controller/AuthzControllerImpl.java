@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.dto.generated.*;
-import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,11 +53,15 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<UserInfo> getUserInfoFromMappedExternaUserId(String mappedExternalUserId) {
-        if(!SecurityUtils.hasAdminRole()
-            && !mappedExternalUserId.equals(SecurityUtils.getPrincipal().getMappedExternalUserId())){
+        String accessToken = SecurityUtils.getAccessToken();
+        UserInfo loggedUser = SecurityUtils.getPrincipal();
+        if(loggedUser.getMappedExternalUserId().equals(mappedExternalUserId)){
+            return ResponseEntity.ok(loggedUser);
+        }
+        if(!SecurityUtils.hasAdminRole()){
             throw new UserUnauthorizedException("User not allowed to retrieve these information");
         }
-        return ResponseEntity.ok(authzService.getUserInfoFromMappedExternalUserId(mappedExternalUserId));
+        return ResponseEntity.ok(authzService.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken));
     }
 
     @Override

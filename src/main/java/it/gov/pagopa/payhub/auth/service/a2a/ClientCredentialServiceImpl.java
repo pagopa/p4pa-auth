@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.mapper.ClientDTO2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
-import it.gov.pagopa.payhub.auth.service.user.IamUserInfoDTO2UserInfoMapper;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.ClientDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +38,10 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 		validateClientCredentialsService.validate(scope, clientSecret);
 		ClientDTO authorizedClient = authorizeClientCredentialsRequestService.authorizeCredentials(clientId, clientSecret);
 		IamUserInfoDTO iamUser = clientDTO2UserInfoMapper.apply(authorizedClient);
-		AccessToken accessToken = accessTokenBuilderService.build(
-				IamUserInfoDTO2UserInfoMapper.buildSystemMappedExternalUserId(authorizedClient.getOrganizationIpaCode()),
-				iamUser);
+		AccessToken accessToken = accessTokenBuilderService.build(iamUser);
 		MDC.put("externalUserId", iamUser.getUserId());
 		tokenStoreService.save(accessToken.getAccessToken(), iamUser);
 		return accessToken;
 	}
+
 }
