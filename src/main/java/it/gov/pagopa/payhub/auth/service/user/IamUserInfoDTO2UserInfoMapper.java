@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper {
@@ -89,7 +90,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                                 .email(r.getEmail())
                                 .organizationId(retrieveOrganizationId(r.getOrganizationIpaCode(), accessToken))
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
 
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
@@ -113,7 +114,7 @@ public class IamUserInfoDTO2UserInfoMapper {
     private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<UserOrganizationRoles> userOrganizations, String accessToken) {
         String orgIpaCode = Optional.ofNullable(iamUserInfoDTO.getOrganizationAccess())
                 .map(IamUserOrganizationRolesDTO::getOrganizationIpaCode)
-                .orElseGet(() -> userOrganizations.isEmpty() ? null : userOrganizations.get(0).getOrganizationIpaCode());
+                .orElseGet(() -> userOrganizations.isEmpty() ? null : userOrganizations.getFirst().getOrganizationIpaCode());
 
         if (orgIpaCode != null) {
             Organization organization = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
