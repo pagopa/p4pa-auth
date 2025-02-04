@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.user.registration.ExternalUserIdObfuscatorService;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +30,7 @@ class FakeUserInfoServiceTest {
 
     @Test
     void givenIamUserIdValidWhenBuildIamUserInfoFakeThenSuccess(){
+        // Given
         String iamUserId = "iam_userid";
         String subjectIssuer = "issuer";
         String mappedExternalUserId = "external_userid";
@@ -41,6 +41,7 @@ class FakeUserInfoServiceTest {
 
         IamUserInfoDTO iamUserInfoFakeExpected = IamUserInfoDTO.builder()
                 .userId(iamUserId)
+                .mappedExternalUserId(mappedExternalUserId)
                 .innerUserId("userid")
                 .name("fake")
                 .familyName("user")
@@ -50,9 +51,12 @@ class FakeUserInfoServiceTest {
 
         Mockito.when(externalUserIdObfuscatorServiceMock.obfuscate(iamUserId)).thenReturn(mappedExternalUserId);
         Mockito.when(usersRepositoryMock.findByMappedExternalUserId(mappedExternalUserId)).thenReturn(Optional.ofNullable(user));
-        Pair<String, IamUserInfoDTO> result = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
 
-        Assertions.assertEquals(Pair.of(mappedExternalUserId, iamUserInfoFakeExpected), result);
+        // When
+        IamUserInfoDTO result = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
+
+        // Then
+        Assertions.assertEquals(iamUserInfoFakeExpected, result);
     }
 
     @Test

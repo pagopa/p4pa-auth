@@ -3,11 +3,8 @@ package it.gov.pagopa.payhub.auth.service.user;
 import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
-import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
-import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
-import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
@@ -24,14 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 class IamUserInfoDTO2UserInfoMapperTest {
 
-    @Mock
-    private UsersRepository usersRepositoryMock;
     @Mock
     private OperatorsRepository operatorsRepositoryMock;
 
@@ -44,35 +38,24 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @BeforeEach
     void init() {
-        mapper = new IamUserInfoDTO2UserInfoMapper(organizationAccessMode, usersRepositoryMock, operatorsRepositoryMock, organizationSearchClientMock);
+        mapper = new IamUserInfoDTO2UserInfoMapper(organizationAccessMode, operatorsRepositoryMock, organizationSearchClientMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(usersRepositoryMock, operatorsRepositoryMock);
-    }
-
-    @Test
-    void givenNotUserWhenApplyThenUserNotFoundException() {
-        String accessToken = "sampleAccessToken";
-
-        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
-                .userId("EXTERNALUSERID")
-                .innerUserId("INNERUSERID")
-                .build();
-
-        Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.empty());
-
-        Assertions.assertThrows(UserNotFoundException.class, () -> mapper.apply(iamUserInfo, accessToken));
+        Mockito.verifyNoMoreInteractions(operatorsRepositoryMock, organizationSearchClientMock);
     }
 
     @Test
     void givenCompleteDataWhenApplyThenOk() {
         String accessToken = "sampleAccessToken";
+        String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .systemUser(false)
                 .userId("EXTERNALUSERID")
-                .innerUserId("INNERUSERID")
+                .innerUserId(userId)
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
@@ -83,11 +66,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .build())
                 .build();
 
-        User user = User.builder()
-                .userId(iamUserInfo.getInnerUserId())
-                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
-                .build();
-
         List<Operator> organizationRoles = List.of(Operator.builder()
                 .operatorId("OPERATORID")
                 .organizationIpaCode("ORG")
@@ -96,7 +74,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build());
 
         UserInfo expected = UserInfo.builder()
-                .userId("INNERUSERID")
+                .systemUser(false)
+                .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
@@ -113,8 +92,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
-        Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
-        Mockito.when(operatorsRepositoryMock.findAllByUserId(user.getUserId())).thenReturn(organizationRoles);
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(organizationRoles);
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
@@ -134,10 +112,13 @@ class IamUserInfoDTO2UserInfoMapperTest {
     @Test
     void givenNotOperatorsWhenApplyThenOk() {
         String accessToken = "sampleAccessToken";
+        String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .systemUser(false)
                 .userId("EXTERNALUSERID")
-                .innerUserId("INNERUSERID")
+                .innerUserId(userId)
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
@@ -148,13 +129,9 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .build())
                 .build();
 
-        User user = User.builder()
-                .userId(iamUserInfo.getInnerUserId())
-                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
-                .build();
-
         UserInfo expected = UserInfo.builder()
-                .userId("INNERUSERID")
+                .systemUser(false)
+                .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
@@ -166,8 +143,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
-        Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
-        Mockito.when(operatorsRepositoryMock.findAllByUserId(user.getUserId())).thenReturn(Collections.emptyList());
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(Collections.emptyList());
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
@@ -187,19 +163,17 @@ class IamUserInfoDTO2UserInfoMapperTest {
     @Test
     void givenNoOrganizationAccessWhenApplyThenOk() {
         String accessToken = "sampleAccessToken";
+        String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .systemUser(false)
                 .userId("EXTERNALUSERID")
-                .innerUserId("INNERUSERID")
+                .innerUserId(userId)
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
                 .issuer("ISSUER")
-                .build();
-
-        User user = User.builder()
-                .userId(iamUserInfo.getInnerUserId())
-                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .build();
 
         List<Operator> organizationRoles = List.of(Operator.builder()
@@ -210,7 +184,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build());
 
         UserInfo expected = UserInfo.builder()
-                .userId("INNERUSERID")
+                .systemUser(false)
+                .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
@@ -226,8 +201,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
-        Mockito.when(usersRepositoryMock.findById(iamUserInfo.getInnerUserId())).thenReturn(Optional.of(user));
-        Mockito.when(operatorsRepositoryMock.findAllByUserId(user.getUserId())).thenReturn(organizationRoles);
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(organizationRoles);
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
@@ -247,11 +221,13 @@ class IamUserInfoDTO2UserInfoMapperTest {
     @Test
     void givenSystemUserWhenApplyThenOk() {
         String accessToken = "sampleAccessToken";
+        String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
                 .systemUser(Boolean.TRUE)
                 .userId("EXTERNALUSERID")
-                .innerUserId("INNERUSERID")
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
+                .innerUserId(userId)
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
@@ -263,8 +239,9 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build();
 
         UserInfo expected = UserInfo.builder()
-                .userId("EXTERNALUSERID")
-                .mappedExternalUserId("IPA_CODE-WS_USER")
+                .systemUser(true)
+                .userId(userId)
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")

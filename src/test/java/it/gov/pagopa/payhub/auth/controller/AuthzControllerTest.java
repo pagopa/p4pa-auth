@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -269,9 +269,10 @@ class AuthzControllerTest {
     //end region
     //region getUserInfoFromMappedExternalUserId
     @Test
-    void givenRequestWitAuthorizationWhenGetUserInfoThenOk() throws Exception {
+    void givenLoggedUserRequestWhenGetUserInfoThenOk() throws Exception {
         //Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        String accessToken = "accessToken";
         UserInfo expectedUser = UserInfo.builder()
             .userId("USERID")
             .organizationAccess("IPA_CODE")
@@ -282,17 +283,19 @@ class AuthzControllerTest {
                 .build()))
             .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(accessToken))
             .thenReturn(UserInfo.builder()
+                .userId("USERID")
+                .mappedExternalUserId(mappedExternalUserId)
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG")
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
                 .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn(accessToken);
 
         //When
-        Mockito.when(authzServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId))
+        Mockito.when(authzServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken))
             .thenReturn(expectedUser);
 
         //Then
@@ -300,13 +303,51 @@ class AuthzControllerTest {
                 get("/payhub/auth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             ).andExpect(status().isOk())
-            .andExpect(content().json("{\"userId\":\"USERID\"}"));
+            .andExpect(content().json("{\"userId\":\"USERID\",\"mappedExternalUserId\":\"MAPPEDEXTERNALUSERID\",\"organizations\":[{\"organizationIpaCode\":\"ORG\",\"roles\":[\"ROLE_ADMIN\"]}]}"));
+    }
+
+    @Test
+    void givenOtherUserAndAdminLoggedinWhenGetUserInfoThenOk() throws Exception {
+        //Given
+        String mappedExternalUserId = "OTHERUSERID";
+        String accessToken = "accessToken";
+        UserInfo expectedUser = UserInfo.builder()
+                .userId("USERID")
+                .organizationAccess("IPA_CODE")
+                .mappedExternalUserId(mappedExternalUserId)
+                .organizations(List.of(UserOrganizationRoles.builder()
+                        .organizationIpaCode("IPA_CODE")
+                        .roles(List.of("ROLE_OPER"))
+                        .build()))
+                .build();
+
+        Mockito.when(authnServiceMock.getUserInfo(accessToken))
+                .thenReturn(UserInfo.builder()
+                        .mappedExternalUserId("LOGGEDUSERID")
+                        .organizations(List.of(UserOrganizationRoles.builder()
+                                .organizationIpaCode("ORG")
+                                .roles(List.of(Constants.ROLE_ADMIN))
+                                .build()))
+                        .build());
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn(accessToken);
+
+        //When
+        Mockito.when(authzServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken))
+                .thenReturn(expectedUser);
+
+        //Then
+        mockMvc.perform(
+                        get("/payhub/auth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                ).andExpect(status().isOk())
+                .andExpect(content().json("{\"userId\":\"USERID\",\"mappedExternalUserId\":\"OTHERUSERID\"}"));
     }
 
     @Test
     void givenRequestUnauthorizedWhenGetUserInfoThenException() throws Exception {
         //Given
-        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        String mappedExternalUserId = "OTHEREXTERNALUSERID";
+        String accessToken = "accessToken";
         UserInfo expectedUser = UserInfo.builder()
             .userId("USERID")
             .organizationAccess("IPA_CODE")
@@ -317,17 +358,18 @@ class AuthzControllerTest {
                 .build()))
             .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        Mockito.when(authnServiceMock.getUserInfo(accessToken))
             .thenReturn(UserInfo.builder()
+                .mappedExternalUserId("EXTERNALUSERID")
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG")
                     .roles(List.of(Constants.ROLE_OPER))
                     .build()))
                 .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn(accessToken);
 
         //When
-        Mockito.when(authzServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId))
+        Mockito.when(authzServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken))
             .thenReturn(expectedUser);
 
         //Then

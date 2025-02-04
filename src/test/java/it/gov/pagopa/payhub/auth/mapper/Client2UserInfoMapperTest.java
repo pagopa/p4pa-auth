@@ -4,34 +4,33 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
-import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.UUID;
 
-class ClientDTO2UserInfoMapperTest {
+class Client2UserInfoMapperTest {
 
 
-	private final ClientDTO2UserInfoMapper mapper = new ClientDTO2UserInfoMapper();
+	private final Client2UserInfoMapper mapper = new Client2UserInfoMapper();
 
 	@Test
 	void givenDTOWhenApplyTheOk() {
 		// Given
-		String plainClientSecret = UUID.randomUUID().toString();
 		String organizationIpaCode = "organizationIpaCode";
 		String clientName = "clientName";
 		String clientId = organizationIpaCode + clientName;
 
-		ClientDTO clientDTO = ClientDTO.builder()
+		ClientNoSecretDTO clientDTO = ClientNoSecretDTO.builder()
 			.clientId(clientId)
 			.clientName(clientName)
 			.organizationIpaCode(organizationIpaCode)
-			.clientSecret(plainClientSecret)
 			.build();
 		IamUserInfoDTO iamUserInfoDTO = IamUserInfoDTO.builder()
 			.systemUser(true)
+			.mappedExternalUserId("WS_USER-" + clientDTO.getClientId())
+			.innerUserId(clientDTO.getClientId())
 			.issuer(clientDTO.getOrganizationIpaCode())
 			.userId(clientDTO.getClientId())
 			.name(clientDTO.getClientName())

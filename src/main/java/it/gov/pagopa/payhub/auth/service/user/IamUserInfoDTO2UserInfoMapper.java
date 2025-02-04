@@ -45,7 +45,7 @@ public class IamUserInfoDTO2UserInfoMapper {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
         UserInfo userInfo = UserInfo.builder()
                 .systemUser(true)
-                .userId(iamUserInfoDTO.getUserId())
+                .userId(iamUserInfoDTO.getInnerUserId())
                 .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
                 .fiscalCode(iamUserInfoDTO.getFiscalCode())
                 .familyName(iamUserInfoDTO.getFamilyName())

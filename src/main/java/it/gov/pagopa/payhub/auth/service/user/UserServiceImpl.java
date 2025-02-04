@@ -2,14 +2,13 @@ package it.gov.pagopa.payhub.auth.service.user;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
-import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
-import it.gov.pagopa.payhub.auth.mapper.ClientDTO2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +27,16 @@ public class UserServiceImpl implements UserService {
     private final OperatorRegistrationService operatorRegistrationService;
     private final IamUserInfoDTO2UserInfoMapper userInfoMapper;
     private final OrganizationOperatorRetrieverService organizationOperatorRetrieverService;
+    private final UserInfoRetrieverService userInfoRetrieverService;
 
 
-    public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService, IamUserInfoDTO2UserInfoMapper userInfoMapper, OrganizationOperatorRetrieverService organizationOperatorRetrieverService) {
+    public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService, IamUserInfoDTO2UserInfoMapper userInfoMapper, OrganizationOperatorRetrieverService organizationOperatorRetrieverService, UserInfoRetrieverService userInfoRetrieverService) {
         this.tokenStoreService = tokenStoreService;
         this.userRegistrationService = userRegistrationService;
         this.operatorRegistrationService = operatorRegistrationService;
         this.userInfoMapper = userInfoMapper;
         this.organizationOperatorRetrieverService = organizationOperatorRetrieverService;
+        this.userInfoRetrieverService = userInfoRetrieverService;
     }
 
     @Override
@@ -65,15 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId, String accessToken) {
-        IamUserInfoDTO iamUserInfo;
-        if(ClientDTO2UserInfoMapper.isSystemMappedUser(mappedExternalUserId)) {
-            iamUserInfo = null; // TODO
-        } else {
-            // TODO
-            iamUserInfo = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
-                    .orElseThrow(() -> new UserNotFoundException("Cannot found user having mappedExternalId:" + mappedExternalUserId));
-        }
-        return userInfoMapper.apply(iamUserInfo, accessToken);
+        return userInfoRetrieverService.findByMappedExternalUserId(mappedExternalUserId, accessToken);
     }
 
     @Override
