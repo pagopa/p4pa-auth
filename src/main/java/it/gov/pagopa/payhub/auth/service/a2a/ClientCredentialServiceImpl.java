@@ -1,12 +1,11 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.mapper.ClientDTO2UserInfoMapper;
+import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
-import it.gov.pagopa.payhub.auth.service.user.IamUserInfoDTO2UserInfoMapper;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -19,31 +18,30 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 	private final AuthorizeClientCredentialsRequestService authorizeClientCredentialsRequestService;
 	private final AccessTokenBuilderService accessTokenBuilderService;
 	private final TokenStoreService tokenStoreService;
-	private final ClientDTO2UserInfoMapper clientDTO2UserInfoMapper;
+	private final Client2UserInfoMapper client2UserInfoMapper;
 
 	public ClientCredentialServiceImpl(
 			ValidateClientCredentialsService validateClientCredentialsService,
 			AuthorizeClientCredentialsRequestService authorizeClientCredentialsRequestService,
 			AccessTokenBuilderService accessTokenBuilderService,
-			TokenStoreService tokenStoreService, ClientDTO2UserInfoMapper clientDTO2UserInfoMapper) {
+			TokenStoreService tokenStoreService, Client2UserInfoMapper client2UserInfoMapper) {
 		this.validateClientCredentialsService = validateClientCredentialsService;
 		this.authorizeClientCredentialsRequestService = authorizeClientCredentialsRequestService;
 		this.accessTokenBuilderService = accessTokenBuilderService;
 		this.tokenStoreService = tokenStoreService;
-		this.clientDTO2UserInfoMapper = clientDTO2UserInfoMapper;
+		this.client2UserInfoMapper = client2UserInfoMapper;
 	}
 
 	@Override
 	public AccessToken postToken(String clientId, String scope, String clientSecret) {
 		log.info("Client {} requested authentication with client_credentials grant type and scope {}", clientId, scope);
 		validateClientCredentialsService.validate(scope, clientSecret);
-		ClientDTO authorizedClient = authorizeClientCredentialsRequestService.authorizeCredentials(clientId, clientSecret);
-		IamUserInfoDTO iamUser = clientDTO2UserInfoMapper.apply(authorizedClient);
-		AccessToken accessToken = accessTokenBuilderService.build(
-				IamUserInfoDTO2UserInfoMapper.buildSystemMappedExternalUserId(authorizedClient.getOrganizationIpaCode()),
-				iamUser);
+		ClientNoSecretDTO authorizedClient = authorizeClientCredentialsRequestService.authorizeCredentials(clientId, clientSecret);
+		IamUserInfoDTO iamUser = client2UserInfoMapper.apply(authorizedClient);
+		AccessToken accessToken = accessTokenBuilderService.build(iamUser);
 		MDC.put("externalUserId", iamUser.getUserId());
 		tokenStoreService.save(accessToken.getAccessToken(), iamUser);
 		return accessToken;
 	}
+
 }

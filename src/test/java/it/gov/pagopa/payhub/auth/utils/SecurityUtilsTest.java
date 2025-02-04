@@ -17,13 +17,26 @@ class SecurityUtilsTest {
     void testGetPrincipal() {
         // Given
         UserInfo expectedUserInfo = new UserInfo();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         UserInfo result = SecurityUtils.getPrincipal();
 
         // Then
         Assertions.assertSame(expectedUserInfo, result);
+    }
+
+    @Test
+    void testGetAccessToken() {
+        // Given
+        String expectedAccessToken = "TOKEN";
+        configureSecurityContext(null, expectedAccessToken);
+
+        // When
+        String result = SecurityUtils.getAccessToken();
+
+        // Then
+        Assertions.assertSame(expectedAccessToken, result);
     }
 
     @Test
@@ -42,7 +55,7 @@ class SecurityUtilsTest {
                                 .build())
                 )
                 .build();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         List<String> result1 = SecurityUtils.getPrincipalRoles("ORG");
@@ -68,7 +81,7 @@ class SecurityUtilsTest {
                                 .build())
                 )
                 .build();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         boolean result1 = SecurityUtils.isPrincipalAdmin("ORG");
@@ -94,14 +107,14 @@ class SecurityUtilsTest {
                     .build())
             )
             .build();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         boolean result = SecurityUtils.hasAdminRole();
         Assertions.assertTrue(result);
     }
 
-    private static void configureSecurityContext(UserInfo expectedUserInfo) {
-        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, null)));
+    private static void configureSecurityContext(UserInfo expectedUserInfo, String token) {
+        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, token)));
     }
 }

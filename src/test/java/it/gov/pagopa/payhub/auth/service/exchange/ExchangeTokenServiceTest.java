@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +79,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(registeredUser);
 
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-        Mockito.when(accessTokenBuilderServiceMock.build(registeredUser.getMappedExternalUserId(), iamUserInfo))
+        Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(expectedAccessToken);
 
         // When
@@ -90,6 +89,7 @@ class ExchangeTokenServiceTest {
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
+        Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
     }
 
     @Test
@@ -101,14 +101,12 @@ class ExchangeTokenServiceTest {
         String subjectTokenType = "FAKE-AUTH";
         String scope = "SCOPE";
 
-        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
-
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
         Mockito.when(fakeUserInfoServiceMock.buildIamUserInfoFake(subjectToken, subjectIssuer))
-                .thenReturn(Pair.of(mappedExternalUserId, iamUserInfo));
+                .thenReturn(iamUserInfo);
 
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-        Mockito.when(accessTokenBuilderServiceMock.build(mappedExternalUserId, iamUserInfo))
+        Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(expectedAccessToken);
 
         // When

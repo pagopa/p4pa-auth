@@ -57,7 +57,7 @@ public class AuthExceptionHandler {
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.AUTH_USER_UNAUTHORIZED);
     }
 
-    @ExceptionHandler({OperatorNotFoundException.class, ClientNotFoundException.class})
+    @ExceptionHandler({OperatorNotFoundException.class, ClientNotFoundException.class, UserNotFoundException.class})
     public ResponseEntity<String> handleOperatorNotFoundException(Exception ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         logException(ex, request, httpStatus);

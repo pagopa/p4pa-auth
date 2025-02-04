@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.auth.service.a2a;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.mapper.ClientDTO2UserInfoMapper;
+import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class ClientCredentialsServiceTest {
 	@Mock
 	private TokenStoreService tokenStoreServiceMock;
 	@Mock
-	private ClientDTO2UserInfoMapper clientDTO2UserInfoMapperMock;
+	private Client2UserInfoMapper client2UserInfoMapperMock;
 
 	private ClientCredentialService service;
 
@@ -37,7 +37,7 @@ class ClientCredentialsServiceTest {
 			authorizeClientCredentialsRequestServiceMock,
 			accessTokenBuilderServiceMock,
 			tokenStoreServiceMock,
-			clientDTO2UserInfoMapperMock
+                client2UserInfoMapperMock
 		);
 	}
 
@@ -49,14 +49,14 @@ class ClientCredentialsServiceTest {
 		String clientSecret="CLIENT_SECRET";
 
 		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(scope, clientSecret);
-		ClientDTO clientDTO = ClientDTO.builder()
+		ClientNoSecretDTO clientDTO = ClientNoSecretDTO.builder()
 				.organizationIpaCode("ORGIPACODE")
 				.build();
 		Mockito.doReturn(clientDTO).when(authorizeClientCredentialsRequestServiceMock).authorizeCredentials(clientId, clientSecret);
 		IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
-		Mockito.when(clientDTO2UserInfoMapperMock.apply(clientDTO)).thenReturn(iamUserInfo);
+		Mockito.when(client2UserInfoMapperMock.apply(clientDTO)).thenReturn(iamUserInfo);
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-		Mockito.when(accessTokenBuilderServiceMock.build("ORGIPACODE-WS_USER", iamUserInfo)).thenReturn(expectedAccessToken);
+		Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo)).thenReturn(expectedAccessToken);
 		//When
 		AccessToken result = service.postToken(clientId, scope, clientSecret);
 		//Then

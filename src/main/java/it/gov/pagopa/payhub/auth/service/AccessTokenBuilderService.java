@@ -62,7 +62,7 @@ public class AccessTokenBuilderService {
 
     }
 
-    public AccessToken build(String subject, IamUserInfoDTO iamUserInfoDTO) {
+    public AccessToken build(IamUserInfoDTO iamUserInfoDTO) {
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(HeaderParams.KEY_ID, kid);
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -72,7 +72,7 @@ public class AccessTokenBuilderService {
                 .withClaim("typ", tokenType)
                 .withIssuer(allowedAudience)
                 .withJWTId(UUID.randomUUID().toString())
-                .withSubject(subject)
+                .withSubject(iamUserInfoDTO.getMappedExternalUserId())
                 .withIssuedAt(Instant.now())
                 .withExpiresAt(Instant.now().plusSeconds(expireIn));
         if(iamUserInfoDTO.getOrganizationAccess()!=null){

@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +27,16 @@ public class UserServiceImpl implements UserService {
     private final OperatorRegistrationService operatorRegistrationService;
     private final IamUserInfoDTO2UserInfoMapper userInfoMapper;
     private final OrganizationOperatorRetrieverService organizationOperatorRetrieverService;
+    private final UserInfoRetrieverService userInfoRetrieverService;
 
 
-    public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService, IamUserInfoDTO2UserInfoMapper userInfoMapper, OrganizationOperatorRetrieverService organizationOperatorRetrieverService) {
+    public UserServiceImpl(TokenStoreService tokenStoreService, UserRegistrationService userRegistrationService, OperatorRegistrationService operatorRegistrationService, IamUserInfoDTO2UserInfoMapper userInfoMapper, OrganizationOperatorRetrieverService organizationOperatorRetrieverService, UserInfoRetrieverService userInfoRetrieverService) {
         this.tokenStoreService = tokenStoreService;
         this.userRegistrationService = userRegistrationService;
         this.operatorRegistrationService = operatorRegistrationService;
         this.userInfoMapper = userInfoMapper;
         this.organizationOperatorRetrieverService = organizationOperatorRetrieverService;
+        this.userInfoRetrieverService = userInfoRetrieverService;
     }
 
     @Override
@@ -59,6 +62,11 @@ public class UserServiceImpl implements UserService {
         log.debug("User info retrieved successfully with brokerId: {}", result.getBrokerId());
 
         return result;
+    }
+
+    @Override
+    public UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId, String accessToken) {
+        return userInfoRetrieverService.findByMappedExternalUserId(mappedExternalUserId, accessToken);
     }
 
     @Override

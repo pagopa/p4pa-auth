@@ -3,20 +3,24 @@ package it.gov.pagopa.payhub.auth.mapper;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.function.Function;
 
 @Service
-public class ClientDTO2UserInfoMapper implements Function<ClientDTO, IamUserInfoDTO> {
+public class Client2UserInfoMapper implements Function<ClientNoSecretDTO, IamUserInfoDTO> {
+	public static final String WS_USER_PREFIX = "WS_USER-";
+
 	@Override
-	public IamUserInfoDTO apply(ClientDTO clientDTO) {
+	public IamUserInfoDTO apply(ClientNoSecretDTO clientDTO) {
 		return IamUserInfoDTO.builder()
 			.systemUser(true)
 			.issuer(clientDTO.getOrganizationIpaCode())
 			.userId(clientDTO.getClientId())
+			.innerUserId(clientDTO.getClientId())
+			.mappedExternalUserId(buildSystemMappedExternalUserId(clientDTO.getClientId()))
 			.name(clientDTO.getClientName())
 			.familyName(clientDTO.getOrganizationIpaCode())
 			.fiscalCode(clientDTO.getOrganizationIpaCode())
@@ -26,4 +30,17 @@ public class ClientDTO2UserInfoMapper implements Function<ClientDTO, IamUserInfo
 				.build())
 			.build();
 	}
+
+	private String buildSystemMappedExternalUserId(String clientId) {
+		return WS_USER_PREFIX + clientId;
+	}
+
+	public static boolean isSystemMappedUser(String mappedExternalUserId){
+		return mappedExternalUserId.startsWith(WS_USER_PREFIX);
+	}
+
+	public static String extractClientId(String mappedExternalUserId){
+		return mappedExternalUserId.substring(WS_USER_PREFIX.length());
+	}
+
 }

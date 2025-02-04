@@ -76,10 +76,13 @@ public class AccessTokenBuilderServiceTest {
     void givenAccessOrganizationWhenBuildThenOk() {
         // Given
         String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
-        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder().organizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORGIPACODE").build()).build();
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .mappedExternalUserId(mappedUserExternalId)
+                .organizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORGIPACODE").build())
+                .build();
 
         // When
-        AccessToken result = accessTokenBuilderService.build(mappedUserExternalId, iamUserInfo);
+        AccessToken result = accessTokenBuilderService.build(iamUserInfo);
         String prefix = accessTokenBuilderService.getHeaderPrefix();
         // Then
         Assertions.assertEquals("bearer", result.getTokenType());
@@ -100,11 +103,10 @@ public class AccessTokenBuilderServiceTest {
     @Test
     void givenNoAccessOrganizationWhenBuildThenOk() {
         // Given
-        String mappedUserExternalId = "MAPPEDUSEREXTERNALID";
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
 
         // When
-        AccessToken result = accessTokenBuilderService.build(mappedUserExternalId, iamUserInfo);
+        AccessToken result = accessTokenBuilderService.build(iamUserInfo);
         // Then
 
         DecodedJWT decodedAccessToken = JWT.decode(result.getAccessToken());

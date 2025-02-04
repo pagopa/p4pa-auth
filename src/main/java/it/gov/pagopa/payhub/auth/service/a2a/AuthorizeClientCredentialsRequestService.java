@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.service.a2a;
 import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,28 +27,32 @@ public class AuthorizeClientCredentialsRequestService {
 		this.piattaformaUnitariaClientSecret = piattaformaUnitariaClientSecret;
 	}
 
-	public ClientDTO authorizeCredentials(String clientId, String clientSecret) {
+	public ClientNoSecretDTO authorizeCredentials(String clientId, String clientSecret) {
 		if (clientId.startsWith(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)) {
 			return authorizePiattaformaUnitariaCredentials(clientId, clientSecret);
 		}
 		return authorizeSilCredentials(clientId, clientSecret);
 	}
 
-	private ClientDTO authorizeSilCredentials(String clientId, String clientSecret) {
+	private ClientNoSecretDTO authorizeSilCredentials(String clientId, String clientSecret) {
 		return clientService.getClientByClientId(clientId)
-			.map(clientMapper::mapToDTO)
-			.filter(dto -> dto.getClientSecret().equals(clientSecret))
+			.map(c -> {
+				ClientDTO clientDTO = clientMapper.mapToDTO(c);
+				if(!clientDTO.getClientSecret().equals(clientSecret)){
+					return null;
+				}
+				return clientMapper.mapToNoSecretDTO(c);
+            })
 			.orElseThrow(() -> new ClientUnauthorizedException("Unauthorized client with client-credentials grant type"));
 	}
 
-	private ClientDTO authorizePiattaformaUnitariaCredentials(String clientId, String clientSecret) {
+	private ClientNoSecretDTO authorizePiattaformaUnitariaCredentials(String clientId, String clientSecret) {
 		if (!clientSecret.equals(piattaformaUnitariaClientSecret))
 			throw new ClientUnauthorizedException("Unauthorized client for piattaforma-unitaria client-credentials");
-		return ClientDTO.builder()
+		return ClientNoSecretDTO.builder()
 			.clientId(clientId)
 			.clientName(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)
 			.organizationIpaCode(clientId.substring(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX.length()))
-			.clientSecret(clientSecret)
 			.build();
 	}
 }

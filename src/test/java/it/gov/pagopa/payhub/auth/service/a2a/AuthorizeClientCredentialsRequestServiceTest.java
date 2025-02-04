@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,19 +40,18 @@ class AuthorizeClientCredentialsRequestServiceTest {
 
 		Client mockClient = new Client();
 		ClientDTO expectedClientDTO = ClientDTO.builder()
-			.clientId(clientId)
-			.clientName(clientName)
-			.organizationIpaCode(organizationIpaCode)
 			.clientSecret(clientSecretMock)
 			.build();
+		ClientNoSecretDTO expectedResult = new ClientNoSecretDTO();
 
 		Mockito.when(clientServiceMock.getClientByClientId(clientId)).thenReturn(Optional.of(mockClient));
 		Mockito.when(clientMapperMock.mapToDTO(mockClient)).thenReturn(expectedClientDTO);
+		Mockito.when(clientMapperMock.mapToNoSecretDTO(mockClient)).thenReturn(expectedResult);
 
 		// When
-		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecretMock);
+		ClientNoSecretDTO result = service.authorizeCredentials(clientId, clientSecretMock);
 		// Then
-		Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+		Assertions.assertEquals(expectedResult, result);
 	}
 
 	@Test
@@ -95,14 +95,13 @@ class AuthorizeClientCredentialsRequestServiceTest {
 		String clientSecret = "SECRET";
 		String piattaformaUnitaria = "piattaforma-unitaria_";
 		// When
-		ClientDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecret);
+		ClientNoSecretDTO actualClientDTO = service.authorizeCredentials(clientId, clientSecret);
 		// Then
 		Assertions.assertEquals(
-		ClientDTO.builder()
+		ClientNoSecretDTO.builder()
 			.clientId(clientId)
 			.clientName(piattaformaUnitaria)
 			.organizationIpaCode(clientId.substring((piattaformaUnitaria).length()))
-			.clientSecret(clientSecret)
 			.build(), actualClientDTO);
 	}
 

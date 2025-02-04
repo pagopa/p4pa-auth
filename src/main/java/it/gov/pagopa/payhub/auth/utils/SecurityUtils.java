@@ -10,6 +10,11 @@ import java.util.List;
 public final class SecurityUtils {
     private SecurityUtils(){}
 
+    /** It will return user's session accessToken */
+    public static String getAccessToken() {
+        return (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    }
+
     /** It will return user's session data from ThreadLocal */
     public static UserInfo getPrincipal(){
         return (UserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
