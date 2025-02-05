@@ -30,7 +30,9 @@ import static org.mockito.Mockito.doThrow;
 @WebMvcTest(value = {
         MongoTooManyRequestsExceptionHandler.class,
         AuthExceptionHandlerTest.TestController.class})
-@ContextConfiguration(classes = {MongoTooManyRequestsExceptionHandler.class,
+@ContextConfiguration(classes = {
+        AuthExceptionHandler.class,
+        MongoTooManyRequestsExceptionHandler.class,
         AuthExceptionHandlerTest.TestController.class})
 @AutoConfigureMockMvc(addFilters = false)
 class MongoTooManyRequestsExceptionHandlerTest {
