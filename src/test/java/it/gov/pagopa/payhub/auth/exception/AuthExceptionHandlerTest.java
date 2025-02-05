@@ -45,6 +45,7 @@ import static org.mockito.Mockito.doThrow;
 @ContextConfiguration(classes = {
         AuthExceptionHandlerTest.TestController.class,
         AuthExceptionHandler.class,
+        MongoTooManyRequestsExceptionHandler.class,
         JsonConfig.class})
 class AuthExceptionHandlerTest {
 
