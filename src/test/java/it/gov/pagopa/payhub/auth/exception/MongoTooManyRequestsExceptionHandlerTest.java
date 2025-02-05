@@ -6,6 +6,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.WriteError;
 import org.bson.BsonDocument;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +23,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 
 @WebMvcTest(value = {
@@ -51,11 +54,12 @@ class MongoTooManyRequestsExceptionHandlerTest {
                 BsonDocument.parse(mongoFullErrorResponse), new ServerAddress());
         doThrow(
                 new UncategorizedMongoDbException(mongoQueryException.getMessage(), mongoQueryException))
-                .when(testControllerSpy).testEndpoint("DATA");
+                .when(testControllerSpy).testEndpoint(eq("DATA"), any());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+        mockMvc.perform(MockMvcRequestBuilders.post("/test")
                         .param(AuthExceptionHandlerTest.DATA, "DATA")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"requiredField\":\"data\"}"))
                 .andExpect(MockMvcResultMatchers.status().isTooManyRequests())
                 .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.RETRY_AFTER))
                 .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.RETRY_AFTER, "1"))
@@ -94,11 +98,13 @@ class MongoTooManyRequestsExceptionHandlerTest {
     void handleUncategorizedMongoDbExceptionNotRequestRateTooLarge() throws Exception {
 
         doThrow(new UncategorizedMongoDbException("DUMMY", new Exception()))
-                .when(testControllerSpy).testEndpoint("DATA");
+                .when(testControllerSpy).testEndpoint(eq("DATA"), any());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+        mockMvc.perform(MockMvcRequestBuilders.post("/test")
                         .param(AuthExceptionHandlerTest.DATA, "DATA")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content("{\"requiredField\":\"data\"}"))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.content().json("{\"error_description\":\"DUMMY\"}", JsonCompareMode.LENIENT));
     }
@@ -109,11 +115,13 @@ class MongoTooManyRequestsExceptionHandlerTest {
                 new WriteError(16500, writeErrorMessage, BsonDocument.parse("{}")), new ServerAddress(), Collections.emptySet());
         doThrow(
                 new DataIntegrityViolationException(mongoWriteException.getMessage(), mongoWriteException))
-                .when(testControllerSpy).testEndpoint("DATA");
+                .when(testControllerSpy).testEndpoint(Mockito.eq("DATA"), any());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+        mockMvc.perform(MockMvcRequestBuilders.post("/test")
                         .param(AuthExceptionHandlerTest.DATA, "DATA")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content("{\"requiredField\":\"data\"}"))
                 .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
     }
 }
