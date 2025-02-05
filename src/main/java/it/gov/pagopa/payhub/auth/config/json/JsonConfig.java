@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.config;
+package it.gov.pagopa.payhub.auth.config.json;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 @Configuration
@@ -21,7 +23,7 @@ public class JsonConfig {
   @Bean
   public ObjectMapper objectMapper() {
     ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
+    mapper.registerModule(configureDateTimeModule());
     mapper.registerModule(new Jdk8Module());
     mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.DEFAULT));
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -36,5 +38,12 @@ public class JsonConfig {
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.setTimeZone(TimeZone.getDefault());
     return mapper;
+  }
+
+  /** openApi is documenting LocalDateTime as date-time, which is interpreted as an OffsetDateTime by openApiGenerator */
+  private static SimpleModule configureDateTimeModule() {
+    return new JavaTimeModule()
+      .addSerializer(LocalDateTime.class, new LocalDateTimeToOffsetDateTimeSerializer())
+      .addDeserializer(LocalDateTime.class, new OffsetDateTimeToLocalDateTimeDeserializer());
   }
 }

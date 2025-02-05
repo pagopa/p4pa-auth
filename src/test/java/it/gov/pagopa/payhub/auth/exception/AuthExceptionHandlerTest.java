@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.auth.exception;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
+import jakarta.servlet.ServletException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +21,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerErrorException;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import java.util.Set;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
@@ -35,12 +42,14 @@ class AuthExceptionHandlerTest {
 
     @MockitoSpyBean
     private TestController testControllerSpy;
+    @MockitoSpyBean
+    private RequestMappingHandlerAdapter requestMappingHandlerAdapterSpy;
 
     @RestController
     @Slf4j
     static class TestController {
 
-        @GetMapping("/test")
+        @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
         String testEndpoint(@RequestParam(DATA) String data) {
             return "OK";
         }
@@ -84,5 +93,69 @@ class AuthExceptionHandlerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request parameter 'data' for method parameter type String is not present"));
 
+    }
+
+    @Test
+    void handleRuntimeExceptionError() throws Exception {
+        doThrow(new RuntimeException("Error")).when(testControllerSpy).testEndpoint(DATA);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+                        .param(DATA, DATA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
+    }
+
+    @Test
+    void handleGenericServletException() throws Exception {
+        doThrow(new ServletException("Error"))
+                .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+                        .param(DATA, DATA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
+    }
+
+    @Test
+    void handle4xxHttpServletException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+                        .param(DATA, DATA)
+                        .accept("application/hal+json"))
+                .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No acceptable representation"));
+    }
+
+    @Test
+    void handle5xxHttpServletException() throws Exception {
+        doThrow(new ServerErrorException("Error", new RuntimeException("Error")))
+                .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+                        .param(DATA, DATA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("500 INTERNAL_SERVER_ERROR \"Error\""));
+    }
+
+    @Test
+    void handleViolationException() throws Exception {
+        doThrow(new ConstraintViolationException("Error", Set.of())).when(testControllerSpy).testEndpoint(DATA);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/test")
+                        .param(DATA, DATA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
     }
 }

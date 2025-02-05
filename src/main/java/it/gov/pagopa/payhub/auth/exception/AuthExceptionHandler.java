@@ -2,15 +2,18 @@ package it.gov.pagopa.payhub.auth.exception;
 
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
@@ -20,40 +23,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AuthExceptionHandler {
 
     @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class})
-    public ResponseEntity<AuthErrorDTO> handleInvalidGrantError(RuntimeException ex, HttpServletRequest request){
+    public ResponseEntity<AuthErrorDTO> handleInvalidGrantError(RuntimeException ex, HttpServletRequest request) {
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
     }
 
     @ExceptionHandler({InvalidExchangeClientException.class, ClientUnauthorizedException.class})
-    public ResponseEntity<AuthErrorDTO> handleInvalidClientError(RuntimeException ex, HttpServletRequest request){
+    public ResponseEntity<AuthErrorDTO> handleInvalidClientError(RuntimeException ex, HttpServletRequest request) {
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_CLIENT);
     }
 
     @ExceptionHandler({InvalidExchangeRequestException.class, InvalidTokenIssuerException.class})
-    public ResponseEntity<AuthErrorDTO> handleInvalidRequestError(RuntimeException ex, HttpServletRequest request){
+    public ResponseEntity<AuthErrorDTO> handleInvalidRequestError(RuntimeException ex, HttpServletRequest request) {
         return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
     }
 
     @ExceptionHandler({InvalidGrantTypeException.class})
-    public ResponseEntity<AuthErrorDTO> handleUnsupportedGrantType(RuntimeException ex, HttpServletRequest request){
+    public ResponseEntity<AuthErrorDTO> handleUnsupportedGrantType(RuntimeException ex, HttpServletRequest request) {
         return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE);
     }
 
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public AuthErrorDTO handleMissingServletRequestParameterException(
-            MissingServletRequestParameterException ex, HttpServletRequest request) {
-
-        String message = ex.getMessage();
-
-        log.info("A MissingServletRequestParameterException occurred handling request {}: HttpStatus 400 - {}",
-                AuthExceptionHandler.getRequestDetails(request), message);
-        log.debug("Something went wrong handling request", ex);
-        return new AuthErrorDTO(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, message);
-    }
-
     @ExceptionHandler({UserUnauthorizedException.class})
-    public ResponseEntity<AuthErrorDTO> handleUserUnauthorizedException(RuntimeException ex, HttpServletRequest request){
+    public ResponseEntity<AuthErrorDTO> handleUserUnauthorizedException(RuntimeException ex, HttpServletRequest request) {
         return handleAuthErrorException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.AUTH_USER_UNAUTHORIZED);
     }
 
@@ -71,7 +61,30 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(httpStatus).body(null);
     }
 
-    static ResponseEntity<AuthErrorDTO> handleAuthErrorException(RuntimeException ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
+    @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class})
+    public ResponseEntity<AuthErrorDTO> handleViolationException(RuntimeException ex, HttpServletRequest request) {
+        return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
+    }
+
+    @ExceptionHandler({ServletException.class})
+    public ResponseEntity<AuthErrorDTO> handleServletException(ServletException ex, HttpServletRequest request) {
+        HttpStatusCode httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        AuthErrorDTO.ErrorEnum errorCode = AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR;
+        if (ex instanceof ErrorResponse errorResponse) {
+            httpStatus = errorResponse.getStatusCode();
+            if (httpStatus.is4xxClientError()) {
+                errorCode = AuthErrorDTO.ErrorEnum.INVALID_REQUEST;
+            }
+        }
+        return handleAuthErrorException(ex, request, httpStatus, errorCode);
+    }
+
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<AuthErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
+        return handleAuthErrorException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
+    }
+
+    static ResponseEntity<AuthErrorDTO> handleAuthErrorException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
         String message = logException(ex, request, httpStatus);
 
         return ResponseEntity
@@ -79,7 +92,7 @@ public class AuthExceptionHandler {
                 .body(new AuthErrorDTO(errorEnum, message));
     }
 
-    private static String logException(Exception ex, HttpServletRequest request, HttpStatus httpStatus) {
+    private static String logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {
         String message = ex.getMessage();
         log.info("A {} occurred handling request {}: HttpStatus {} - {}",
                 ex.getClass(),
