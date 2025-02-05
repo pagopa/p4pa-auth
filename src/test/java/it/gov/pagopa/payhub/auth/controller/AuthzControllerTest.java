@@ -224,9 +224,7 @@ class AuthzControllerTest {
     @Test
     void givenIsNotImplementedWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
-        CreateOperatorRequest request = new CreateOperatorRequest();
-        request.setExternalUserId("EXTERNALUSERID");
-        String body = objectMapper.writeValueAsString(request);
+        String body = AuthzControllerNoOrganizzationAccessModeTest.buildCreateOperatorRequest();
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -247,9 +245,8 @@ class AuthzControllerTest {
     //region createUser
     @Test
     void givenIsNotImplementedWhenCreateUserThenError() throws Exception {
-        UserDTO request = new UserDTO();
-        request.setExternalUserId("EXTERNALUSERID");
-        String body = objectMapper.writeValueAsString(request);
+        String body = AuthzControllerNoOrganizzationAccessModeTest.buildCreateUserRequest();
+
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()

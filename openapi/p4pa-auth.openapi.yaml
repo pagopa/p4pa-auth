@@ -673,7 +673,6 @@ components:
         - lastName
         - fiscalCode
         - roles
-        - organizationIpaCode
         - email
       properties:
         externalUserId:
@@ -683,8 +682,6 @@ components:
         lastName:
           type: string
         fiscalCode:
-          type: string
-        organizationIpaCode:
           type: string
         email:
           type: string

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -61,8 +62,8 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(httpStatus).body(null);
     }
 
-    @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class})
-    public ResponseEntity<AuthErrorDTO> handleViolationException(RuntimeException ex, HttpServletRequest request) {
+    @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class})
+    public ResponseEntity<AuthErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
         return handleAuthErrorException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
     }
 
