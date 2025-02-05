@@ -23,6 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,7 +73,7 @@ class AuthExceptionHandlerTest {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TestRequestBody{
+    public static class TestRequestBody {
         @NotNull
         private String requiredField;
         private String notRequiredField;
@@ -80,15 +82,29 @@ class AuthExceptionHandlerTest {
         private LocalDateTime dateTimeField;
     }
 
+    private ResultActions performRequest(String data, MediaType accept) throws Exception {
+        return performRequest(data, accept, objectMapper.writeValueAsString(AuthExceptionHandlerTest.BODY));
+    }
+
+    private ResultActions performRequest(String data, MediaType accept, String body) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/test")
+                .param(DATA, data)
+                .accept(accept);
+
+        if (body != null) {
+            requestBuilder
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body);
+        }
+
+        return mockMvc.perform(requestBuilder);
+    }
+
     @Test
     void handleInvalidTokenException() throws Exception {
         doThrow(new InvalidTokenException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_grant"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
@@ -99,11 +115,7 @@ class AuthExceptionHandlerTest {
     void handleTokenExpiredException() throws Exception {
         doThrow(new TokenExpiredException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_grant"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
@@ -113,10 +125,7 @@ class AuthExceptionHandlerTest {
     @Test
     void handleMissingServletRequestParameterException() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(null, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request parameter 'data' for method parameter type String is not present"));
@@ -127,11 +136,7 @@ class AuthExceptionHandlerTest {
     void handleRuntimeExceptionError() throws Exception {
         doThrow(new RuntimeException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
@@ -142,11 +147,7 @@ class AuthExceptionHandlerTest {
         doThrow(new ServletException("Error"))
                 .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
@@ -154,10 +155,7 @@ class AuthExceptionHandlerTest {
 
     @Test
     void handle4xxHttpServletException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .accept("application/hal+json")
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(DATA, MediaType.parseMediaType("application/hal+json"))
                 .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No acceptable representation"));
@@ -165,9 +163,7 @@ class AuthExceptionHandlerTest {
 
     @Test
     void handleNoBodyException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON))
+        performRequest(DATA, MediaType.APPLICATION_JSON, null)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request body is missing"));
@@ -175,11 +171,8 @@ class AuthExceptionHandlerTest {
 
     @Test
     void handleInvalidBodyException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content("{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}"))
+        performRequest(DATA, MediaType.APPLICATION_JSON,
+                "{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}")
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Invalid request content: lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"));
@@ -187,11 +180,8 @@ class AuthExceptionHandlerTest {
 
     @Test
     void handleNotParsableBodyException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content("{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}"))
+        performRequest(DATA, MediaType.APPLICATION_JSON,
+                "{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}")
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Cannot parse body: dateTimeField: Text '2025-02-05' could not be parsed at index 10"));
@@ -202,11 +192,7 @@ class AuthExceptionHandlerTest {
         doThrow(new ServerErrorException("Error", new RuntimeException("Error")))
                 .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("500 INTERNAL_SERVER_ERROR \"Error\""));
@@ -216,11 +202,7 @@ class AuthExceptionHandlerTest {
     void handleViolationException() throws Exception {
         doThrow(new ConstraintViolationException("Error", Set.of())).when(testControllerSpy).testEndpoint(DATA, BODY);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/test")
-                        .param(DATA, DATA)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BODY)))
+        performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
