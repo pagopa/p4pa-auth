@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.exception;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.ServletException;
@@ -12,10 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 
 @RestControllerAdvice
@@ -86,21 +90,45 @@ public class AuthExceptionHandler {
     }
 
     static ResponseEntity<AuthErrorDTO> handleAuthErrorException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
-        String message = logException(ex, request, httpStatus);
+        logException(ex, request, httpStatus);
+
+        String message = buildReturnedMessage(ex);
 
         return ResponseEntity
                 .status(httpStatus)
                 .body(new AuthErrorDTO(errorEnum, message));
     }
 
-    private static String logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {
-        String message = ex.getMessage();
+    private static void logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {
         log.info("A {} occurred handling request {}: HttpStatus {} - {}",
                 ex.getClass(),
                 getRequestDetails(request),
                 httpStatus.value(),
-                message);
-        return message;
+                ex.getMessage());
+    }
+
+    private static String buildReturnedMessage(Exception ex) {
+        if (ex instanceof HttpMessageNotReadableException) {
+            if(ex.getCause() instanceof JsonMappingException jsonMappingException){
+                return "Cannot parse body: " +
+                        jsonMappingException.getPath().stream()
+                                .map(JsonMappingException.Reference::getFieldName)
+                                .collect(Collectors.joining(".")) +
+                        ": " + jsonMappingException.getOriginalMessage();
+            }
+            return "Required request body is missing";
+        } else if (ex instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
+            return "Invalid request content:" +
+                    methodArgumentNotValidException.getBindingResult()
+                            .getAllErrors().stream()
+                            .map(e -> " " +
+                                    (e instanceof FieldError fieldError? fieldError.getField(): e.getObjectName()) +
+                                    ": " + e.getDefaultMessage())
+                            .sorted()
+                            .collect(Collectors.joining(";"));
+        } else {
+            return ex.getMessage();
+        }
     }
 
     static String getRequestDetails(HttpServletRequest request) {
