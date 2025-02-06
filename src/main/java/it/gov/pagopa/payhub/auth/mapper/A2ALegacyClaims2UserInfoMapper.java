@@ -14,15 +14,29 @@ public class A2ALegacyClaims2UserInfoMapper {
 
 	public UserInfo map(String ipaCode) {
 		return UserInfo.builder()
+			.systemUser(true)
 			.issuer(ipaCode)
 			.userId(A2A_PREFIX + ipaCode)
-			.name(ipaCode)
+			.mappedExternalUserId(buildA2AMappedExternalUserId(ipaCode))
+			.name("A2A")
 			.familyName(ipaCode)
-			.fiscalCode(A2A_PREFIX + ipaCode)
+			.fiscalCode(ipaCode)
 			.organizations(Collections.singletonList(UserOrganizationRoles.builder()
 				.organizationIpaCode(ipaCode)
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build()))
 			.build();
+	}
+
+	private String buildA2AMappedExternalUserId(String orgIpaCode) {
+		return A2A_PREFIX + orgIpaCode;
+	}
+
+	public static boolean isA2AMappedUser(String mappedExternalUserId){
+		return mappedExternalUserId.startsWith(A2A_PREFIX);
+	}
+
+	public static String extractOrgIpaCode(String mappedExternalUserId){
+		return mappedExternalUserId.substring(A2A_PREFIX.length());
 	}
 }

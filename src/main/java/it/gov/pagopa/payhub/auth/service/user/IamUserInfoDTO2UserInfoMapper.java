@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
 import io.micrometer.common.util.StringUtils;
-import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
+import it.gov.pagopa.payhub.auth.connector.organization.BrokerService;
+import it.gov.pagopa.payhub.auth.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.model.Operator;
@@ -23,14 +24,20 @@ import java.util.Optional;
 public class IamUserInfoDTO2UserInfoMapper {
 
     private final OperatorsRepository operatorsRepository;
-    private final OrganizationSearchClient organizationSearchClient;
+    private final OrganizationService organizationService;
+    private final BrokerService brokerService;
     private final boolean organizationAccessMode;
 
-    public IamUserInfoDTO2UserInfoMapper(@Value("${app.enable-access-organization-mode}") boolean organizationAccessMode,
-                                         OperatorsRepository operatorsRepository,
-                                         OrganizationSearchClient organizationSearchClient) {
+    public IamUserInfoDTO2UserInfoMapper(
+            @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode,
+
+            OperatorsRepository operatorsRepository,
+            OrganizationService organizationService,
+            BrokerService brokerService
+    ) {
         this.operatorsRepository = operatorsRepository;
-        this.organizationSearchClient = organizationSearchClient;
+        this.organizationService = organizationService;
+        this.brokerService = brokerService;
         this.organizationAccessMode = organizationAccessMode;
     }
 
@@ -73,14 +80,14 @@ public class IamUserInfoDTO2UserInfoMapper {
                 .name(iamUserInfoDTO.getName())
                 .issuer(iamUserInfoDTO.getIssuer())
                 .organizations(userRoles.stream()
-                        .map(r -> (UserOrganizationRoles)UserOrganizationRoles.builder()
+                        .map(r -> (UserOrganizationRoles) UserOrganizationRoles.builder()
                                 .operatorId(r.getOperatorId())
                                 .organizationIpaCode(r.getOrganizationIpaCode())
                                 .roles(new ArrayList<>(r.getRoles()))
                                 .email(r.getEmail())
                                 .organizationId(retrieveOrganizationId(r.getOrganizationIpaCode(), accessToken))
                                 .build())
-                        . toList())
+                        .toList())
                 .build();
 
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
@@ -93,7 +100,7 @@ public class IamUserInfoDTO2UserInfoMapper {
 
     private Long retrieveOrganizationId(String organizationIpaCode, String accessToken) {
         if (StringUtils.isNotBlank(organizationIpaCode)) {
-            Organization organization = organizationSearchClient.getOrganizationByIpaCode(organizationIpaCode, accessToken);
+            Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken);
             if (organization != null) {
                 return organization.getOrganizationId();
             }
@@ -107,9 +114,9 @@ public class IamUserInfoDTO2UserInfoMapper {
                 .orElseGet(() -> userOrganizations.isEmpty() ? null : userOrganizations.getFirst().getOrganizationIpaCode());
 
         if (orgIpaCode != null) {
-            Organization organization = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
+            Organization organization = organizationService.getOrganizationByIpaCode(orgIpaCode, accessToken);
             if (organization != null && organization.getBrokerId() != null) {
-                return organizationSearchClient.getBrokerById(organization.getBrokerId(), accessToken);
+                return brokerService.getBrokerById(organization.getBrokerId(), accessToken);
             }
         }
         return null;

@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
-import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
+import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;

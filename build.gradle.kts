@@ -40,6 +40,7 @@ val jjwtVersion = "0.12.6"
 val wiremockVersion = "3.10.0"
 val bouncycastleVersion = "1.79"
 val micrometerVersion = "1.4.1"
+val caffeineVersion = "3.2.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -50,6 +51,8 @@ dependencies {
 	implementation("io.micrometer:micrometer-registry-prometheus")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	implementation("org.springframework.boot:spring-boot-starter-cache")
+	implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion")
 	implementation("org.codehaus.janino:janino:$janinoVersion")

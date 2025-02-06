@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.user.retrieve;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
+import it.gov.pagopa.payhub.auth.mapper.A2ALegacyClaims2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.User;
@@ -18,13 +19,15 @@ public class UserInfoRetrieverService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
     private final Client2UserInfoMapper client2UserInfoMapper;
+    private final A2ALegacyClaims2UserInfoMapper a2aLegacy2UserInfoMapper;
     private final IamUserInfoDTO2UserInfoMapper iamUserInfoMapper;
 
-    public UserInfoRetrieverService(UsersRepository usersRepository, ClientRepository clientRepository, ClientMapper clientMapper, Client2UserInfoMapper client2UserInfoMapper, IamUserInfoDTO2UserInfoMapper iamUserInfoMapper) {
+    public UserInfoRetrieverService(UsersRepository usersRepository, ClientRepository clientRepository, ClientMapper clientMapper, Client2UserInfoMapper client2UserInfoMapper, A2ALegacyClaims2UserInfoMapper a2aLegacy2UserInfoMapper, IamUserInfoDTO2UserInfoMapper iamUserInfoMapper) {
         this.usersRepository = usersRepository;
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
         this.client2UserInfoMapper = client2UserInfoMapper;
+        this.a2aLegacy2UserInfoMapper = a2aLegacy2UserInfoMapper;
         this.iamUserInfoMapper = iamUserInfoMapper;
     }
 
@@ -32,6 +35,8 @@ public class UserInfoRetrieverService {
         IamUserInfoDTO iamUserInfo;
         if(Client2UserInfoMapper.isSystemMappedUser(mappedExternalUserId)) {
             iamUserInfo = findSystemIamUser(mappedExternalUserId);
+        } else if(A2ALegacyClaims2UserInfoMapper.isA2AMappedUser(mappedExternalUserId)) {
+            return a2aLegacy2UserInfoMapper.map(A2ALegacyClaims2UserInfoMapper.extractOrgIpaCode(mappedExternalUserId));
         } else {
             iamUserInfo = findIamUser(mappedExternalUserId);
         }

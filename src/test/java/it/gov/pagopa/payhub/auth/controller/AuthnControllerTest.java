@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
-import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
+import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;

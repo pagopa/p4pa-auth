@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidGrantTypeException;
-import it.gov.pagopa.payhub.auth.service.a2a.ClientCredentialService;
-import it.gov.pagopa.payhub.auth.service.a2a.ValidateClientCredentialsService;
+import it.gov.pagopa.payhub.auth.service.m2m.ClientCredentialService;
+import it.gov.pagopa.payhub.auth.service.m2m.ValidateClientCredentialsService;
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
 import it.gov.pagopa.payhub.auth.service.logout.LogoutService;

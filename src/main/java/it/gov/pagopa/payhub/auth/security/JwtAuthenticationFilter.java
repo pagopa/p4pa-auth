@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
-import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
+import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;

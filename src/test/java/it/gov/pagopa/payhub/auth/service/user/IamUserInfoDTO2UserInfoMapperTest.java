@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
-import it.gov.pagopa.payhub.auth.connector.client.OrganizationSearchClient;
+import it.gov.pagopa.payhub.auth.connector.organization.BrokerService;
+import it.gov.pagopa.payhub.auth.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.model.Operator;
@@ -28,9 +29,10 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @Mock
     private OperatorsRepository operatorsRepositoryMock;
-
     @Mock
-    private OrganizationSearchClient organizationSearchClientMock;
+    private OrganizationService organizationServiceMock;
+    @Mock
+    private BrokerService brokerServiceMock;
 
     private IamUserInfoDTO2UserInfoMapper mapper;
 
@@ -38,12 +40,19 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
     @BeforeEach
     void init() {
-        mapper = new IamUserInfoDTO2UserInfoMapper(organizationAccessMode, operatorsRepositoryMock, organizationSearchClientMock);
+        mapper = new IamUserInfoDTO2UserInfoMapper(
+                organizationAccessMode,
+                operatorsRepositoryMock,
+                organizationServiceMock,
+                brokerServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(operatorsRepositoryMock, organizationSearchClientMock);
+        Mockito.verifyNoMoreInteractions(
+                operatorsRepositoryMock,
+                organizationServiceMock,
+                brokerServiceMock);
     }
 
     @Test
@@ -96,12 +105,12 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -147,12 +156,12 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -205,12 +214,12 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -255,12 +264,12 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getOrganizationByIpaCode(Mockito.eq("IPA_CODE"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("IPA_CODE"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
-        Mockito.when(organizationSearchClientMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);

@@ -1,0 +1,58 @@
+package it.gov.pagopa.payhub.auth.service.m2m;
+
+import it.gov.pagopa.payhub.auth.exception.custom.ClientUnauthorizedException;
+import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
+import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+@Service
+@Slf4j
+public class AuthorizeClientCredentialsRequestService {
+
+	private static final String PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX = "piattaforma-unitaria_";
+
+	private final ClientService clientService;
+	private final ClientMapper clientMapper;
+	private final String piattaformaUnitariaClientSecret;
+
+	public AuthorizeClientCredentialsRequestService(
+			ClientService clientService,
+			ClientMapper clientMapper,
+			@Value("${m2m.piattaforma-unitaria-client-secret}") String piattaformaUnitariaClientSecret) {
+		this.clientService = clientService;
+		this.clientMapper = clientMapper;
+		this.piattaformaUnitariaClientSecret = piattaformaUnitariaClientSecret;
+	}
+
+	public ClientNoSecretDTO authorizeCredentials(String clientId, String clientSecret) {
+		if (clientId.startsWith(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)) {
+			return authorizePiattaformaUnitariaCredentials(clientId, clientSecret);
+		}
+		return authorizeSilCredentials(clientId, clientSecret);
+	}
+
+	private ClientNoSecretDTO authorizeSilCredentials(String clientId, String clientSecret) {
+		return clientService.getClientByClientId(clientId)
+			.map(c -> {
+				ClientDTO clientDTO = clientMapper.mapToDTO(c);
+				if(!clientDTO.getClientSecret().equals(clientSecret)){
+					return null;
+				}
+				return clientMapper.mapToNoSecretDTO(c);
+            })
+			.orElseThrow(() -> new ClientUnauthorizedException("Unauthorized client with client-credentials grant type"));
+	}
+
+	private ClientNoSecretDTO authorizePiattaformaUnitariaCredentials(String clientId, String clientSecret) {
+		if (!clientSecret.equals(piattaformaUnitariaClientSecret))
+			throw new ClientUnauthorizedException("Unauthorized client for piattaforma-unitaria client-credentials");
+		return ClientNoSecretDTO.builder()
+			.clientId(clientId)
+			.clientName(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)
+			.organizationIpaCode(clientId.substring(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX.length()))
+			.build();
+	}
+}
