@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.user.retrieve;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
+import it.gov.pagopa.payhub.auth.mapper.A2ALegacyClaims2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
@@ -34,6 +35,8 @@ class UserInfoRetrieverServiceTest {
     @Mock
     private Client2UserInfoMapper client2UserInfoMapperMock;
     @Mock
+    private A2ALegacyClaims2UserInfoMapper a2ALegacyClaims2UserInfoMapperMock;
+    @Mock
     private IamUserInfoDTO2UserInfoMapper iamUserInfoMapperMock;
 
     private UserInfoRetrieverService service;
@@ -45,6 +48,7 @@ class UserInfoRetrieverServiceTest {
                 clientRepositoryMock,
                 clientMapperMock,
                 client2UserInfoMapperMock,
+                a2ALegacyClaims2UserInfoMapperMock,
                 iamUserInfoMapperMock);
     }
 
@@ -55,6 +59,7 @@ class UserInfoRetrieverServiceTest {
                 clientRepositoryMock,
                 clientMapperMock,
                 client2UserInfoMapperMock,
+                a2ALegacyClaims2UserInfoMapperMock,
                 iamUserInfoMapperMock);
     }
 
@@ -99,6 +104,25 @@ class UserInfoRetrieverServiceTest {
         Assertions.assertThrows(UserNotFoundException.class, () -> service.findByMappedExternalUserId("WS_USER-" + clientId, accessToken));
     }
 //endregion
+
+    //region A2A legacy user
+    @Test
+    void givenA2ALegacyUserWhenFindByMappedExternalUserIdThenOk() {
+        // Given
+        String orgIpaCode = "ORGIPACODE";
+        String accessToken = "ACCESSTOKEN";
+        UserInfo expectedResult = new UserInfo();
+
+        Mockito.when(a2ALegacyClaims2UserInfoMapperMock.map(orgIpaCode))
+                .thenReturn(expectedResult);
+
+        // When
+        UserInfo result = service.findByMappedExternalUserId("A2A-" + orgIpaCode, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+    //endregion
 
     //region regular user
     @Test

@@ -82,9 +82,20 @@ logging:
 
 app:
     # If true, it will expect the presence of the access organization inside the ID Token.
-    # Thus it will register te relation between the operator and the relation with the provided roles.
+    # Thus, it will register te relation between the operator and the relation with the provided roles.
     # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
     enable-access-organization-mode: "\${ACCESS_ORGANIZATION_MODE_ENABLED:true}"
+
+cache:
+    jwks:
+        size: "\${CACHE_JWKS_SIZE:10}"
+        expire-in: "\${CACHE_JWKS_MINUTES:60}"
+    organization:
+        size: "\${CACHE_ORGANIZATION_SIZE:100}"
+        expire-in: "\${CACHE_ORGANIZATION_MINUTES:60}"
+    broker:
+        size: "\${CACHE_BROKER_MAXIMUM_SIZE:100}"
+        expire-in: "\${CACHE_BROKER_MINUTES:60}"
 
 rest:
     default-timeout:

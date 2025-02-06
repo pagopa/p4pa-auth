@@ -698,6 +698,7 @@ components:
           type: string
           enum:
             - AUTH_GENERIC_ERROR
+            - AUTH_NOT_FOUND
             - AUTH_USER_UNAUTHORIZED
             - invalid_request
             - invalid_client

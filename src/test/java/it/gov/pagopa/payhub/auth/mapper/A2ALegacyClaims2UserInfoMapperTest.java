@@ -18,11 +18,13 @@ class A2ALegacyClaims2UserInfoMapperTest {
 		String prefix = "A2A-";
 		String ipaCode = "ipaCode";
 		UserInfo expected = UserInfo.builder()
+			.systemUser(true)
 			.issuer(ipaCode)
 			.userId(prefix + ipaCode)
-			.name(ipaCode)
+			.mappedExternalUserId(prefix + ipaCode)
+			.name("A2A")
 			.familyName(ipaCode)
-			.fiscalCode(prefix + ipaCode)
+			.fiscalCode(ipaCode)
 			.organizations(Collections.singletonList(UserOrganizationRoles.builder()
 				.organizationIpaCode(ipaCode)
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
