@@ -50,6 +50,7 @@ public class IamUserInfoDTO2UserInfoMapper {
 
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
+        Optional<Organization> organization = retrieveOrganization(organizationIpaCode, accessToken);
         UserInfo userInfo = UserInfo.builder()
                 .systemUser(true)
                 .userId(iamUserInfoDTO.getInnerUserId())
@@ -58,10 +59,14 @@ public class IamUserInfoDTO2UserInfoMapper {
                 .familyName(iamUserInfoDTO.getFamilyName())
                 .name(iamUserInfoDTO.getName())
                 .issuer(iamUserInfoDTO.getIssuer())
+                .organizationAccess(organizationIpaCode)
+                .canManageUsers(false)
                 .organizations(Collections.singletonList(UserOrganizationRoles.builder()
-                        .organizationId(retrieveOrganizationId(organizationIpaCode, accessToken))
+                        .operatorId(iamUserInfoDTO.getInnerUserId())
+                        .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
                         .organizationIpaCode(organizationIpaCode)
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+                        .email(organization.map(Organization::getOrgEmail).orElse(null))
                         .build()))
                 .build();
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
@@ -85,7 +90,8 @@ public class IamUserInfoDTO2UserInfoMapper {
                                 .organizationIpaCode(r.getOrganizationIpaCode())
                                 .roles(new ArrayList<>(r.getRoles()))
                                 .email(r.getEmail())
-                                .organizationId(retrieveOrganizationId(r.getOrganizationIpaCode(), accessToken))
+                                .organizationId(retrieveOrganization(r.getOrganizationIpaCode(), accessToken)
+                                        .map(Organization::getOrganizationId).orElse(null))
                                 .build())
                         .toList())
                 .build();
@@ -98,14 +104,11 @@ public class IamUserInfoDTO2UserInfoMapper {
         return userInfo;
     }
 
-    private Long retrieveOrganizationId(String organizationIpaCode, String accessToken) {
+    private Optional<Organization> retrieveOrganization(String organizationIpaCode, String accessToken) {
         if (StringUtils.isNotBlank(organizationIpaCode)) {
-            Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken);
-            if (organization != null) {
-                return organization.getOrganizationId();
-            }
+            return Optional.ofNullable(organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken));
         }
-        return null;
+        return Optional.empty();
     }
 
     private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<UserOrganizationRoles> userOrganizations, String accessToken) {

@@ -563,8 +563,6 @@ components:
           type: string
         name:
           type: string
-        email:
-          type: string
         issuer:
           type: string
         organizationAccess:

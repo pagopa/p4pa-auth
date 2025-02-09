@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "8c74ff9d-60bb-4b43-a80b-017099b9b0e6",
+		"_postman_id": "34e149d3-3a38-4cb6-b98d-2cb4dd70892c",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15747968",
-		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-8c74ff9d-60bb-4b43-a80b-017099b9b0e6?action=share&source=collection_link&creator=15747968"
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-34e149d3-3a38-4cb6-b98d-2cb4dd70892c?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
 		{
@@ -1266,6 +1266,7 @@
 									"    const org = jsonResponse.organizations[0];\r",
 									"    pm.expect(org).have.property(\"organizationId\").that.is.a(\"number\");\r",
 									"    pm.expect(org).have.property(\"organizationIpaCode\").eq(orgIpaCode);\r",
+									"    pm.expect(org).have.property(\"email\");\r",
 									"    pm.expect(org.roles).have.property(\"length\").to.eq(1)\r",
 									"    pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r",
 									"\r",
