@@ -82,7 +82,7 @@ jobs:
               "APPS_TOP": "[p4pa-auth]",
               "APPS_MID": "[]",
               "APPS_EXT": "[]",
-              "ARGOCD_TARGET_BRANCH": "fix-umberto"
+              "ARGOCD_TARGET_BRANCH": "${{ github.event.inputs.argocd_target_branch }}",
               "POSTMAN_BRANCH": "${{ github.event.inputs.postman_branch }}",
               "TRIGGER_MESSAGE": "p4pa-auth"
             }
