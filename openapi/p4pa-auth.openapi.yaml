@@ -584,13 +584,19 @@ components:
       type: object
       required:
         - operatorId
-        - organizationIpaCode
-        - roles
         - organizationId
+        - organizationIpaCode
+        - organizationFiscalCode
+        - roles
       properties:
         operatorId:
           type: string
+        organizationId:
+          type: integer
+          format: int64
         organizationIpaCode:
+          type: string
+        organizationFiscalCode:
           type: string
         email:
           type: string
@@ -598,9 +604,6 @@ components:
           type: array
           items:
             type: string
-        organizationId:
-          type: integer
-          format: int64
     OperatorsPage:
       type: object
       required:

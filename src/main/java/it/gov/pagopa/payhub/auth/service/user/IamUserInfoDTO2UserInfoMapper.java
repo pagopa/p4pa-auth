@@ -65,6 +65,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                         .operatorId(iamUserInfoDTO.getInnerUserId())
                         .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
                         .organizationIpaCode(organizationIpaCode)
+                        .organizationFiscalCode(organization.map(Organization::getOrgFiscalCode).orElse(null))
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                         .email(organization.map(Organization::getOrgEmail).orElse(null))
                         .build()))
@@ -85,14 +86,17 @@ public class IamUserInfoDTO2UserInfoMapper {
                 .name(iamUserInfoDTO.getName())
                 .issuer(iamUserInfoDTO.getIssuer())
                 .organizations(userRoles.stream()
-                        .map(r -> (UserOrganizationRoles) UserOrganizationRoles.builder()
-                                .operatorId(r.getOperatorId())
-                                .organizationIpaCode(r.getOrganizationIpaCode())
-                                .roles(new ArrayList<>(r.getRoles()))
-                                .email(r.getEmail())
-                                .organizationId(retrieveOrganization(r.getOrganizationIpaCode(), accessToken)
-                                        .map(Organization::getOrganizationId).orElse(null))
-                                .build())
+                        .map(r -> {
+                            Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
+                            return (UserOrganizationRoles) UserOrganizationRoles.builder()
+                                    .operatorId(r.getOperatorId())
+                                    .organizationId(organizationOpt.map(Organization::getOrganizationId).orElse(null))
+                                    .organizationIpaCode(r.getOrganizationIpaCode())
+                                    .organizationFiscalCode(organizationOpt.map(Organization::getOrgFiscalCode).orElse(null))
+                                    .roles(new ArrayList<>(r.getRoles()))
+                                    .email(r.getEmail())
+                                    .build();
+                        })
                         .toList())
                 .build();
 

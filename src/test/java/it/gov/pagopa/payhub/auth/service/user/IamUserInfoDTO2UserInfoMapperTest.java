@@ -96,6 +96,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .operatorId("OPERATORID")
                         .organizationId(2L)
                         .organizationIpaCode("ORG")
+                        .organizationFiscalCode("ORGFISCALCODE")
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
                         .build()))
@@ -109,6 +110,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Organization mockOrganization = new Organization();
         mockOrganization.setOrganizationId(2L);
         mockOrganization.setOrgEmail("email@email.it");
+        mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setBrokerId(1L);
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
@@ -218,8 +220,9 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .issuer("ISSUER")
                 .organizations(List.of(UserOrganizationRoles.builder()
                         .operatorId("OPERATORID")
+                        .organizationId(2L)
                         .organizationIpaCode("ORG")
-                                .organizationId(2L)
+                        .organizationFiscalCode("ORGFISCALCODE")
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
                         .build()))
@@ -233,6 +236,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
         mockOrganization.setOrganizationId(2L);
+        mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setOrgEmail("email@email.it");
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
@@ -284,6 +288,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .operatorId("INNERUSERID")
                         .organizationId(2L)
                         .organizationIpaCode("IPA_CODE")
+                        .organizationFiscalCode("ORGFISCALCODE")
                         .email("email@email.it")
                         .roles(List.of(Constants.ROLE_ADMIN))
                         .build()))
@@ -295,6 +300,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Organization mockOrganization = new Organization();
         mockOrganization.setOrganizationId(2L);
         mockOrganization.setOrgEmail("email@email.it");
+        mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setBrokerId(1L);
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("IPA_CODE"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
