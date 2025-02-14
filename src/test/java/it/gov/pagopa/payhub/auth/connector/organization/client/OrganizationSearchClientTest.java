@@ -59,7 +59,7 @@ class OrganizationSearchClientTest {
         Mockito.when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
         Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
-                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         Organization result = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
 
