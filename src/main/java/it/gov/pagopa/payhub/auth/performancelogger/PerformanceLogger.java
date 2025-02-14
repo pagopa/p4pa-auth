@@ -75,7 +75,7 @@ public final class PerformanceLogger {
                         payload);
     }
 
-    private static Level resolveLevel(long durationMillis, PerformanceLoggerThresholdLevels thresholdLevels) {
+    static Level resolveLevel(long durationMillis, PerformanceLoggerThresholdLevels thresholdLevels) {
         long durationSeconds = durationMillis / 1000;
         thresholdLevels = ObjectUtils.firstNonNull(thresholdLevels, defaultThresholdLevels);
         if (durationSeconds < thresholdLevels.getWarn()) {

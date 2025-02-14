@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.performancelogger;
 
-import ch.qos.logback.classic.LoggerContext;
 import it.gov.pagopa.payhub.auth.utils.MemoryAppender;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -42,12 +40,7 @@ class ApiRequestPerformanceLoggerTest {
 
     @BeforeEach
     public void setupMemoryAppender() {
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("PERFORMANCE_LOG."+APPENDER_NAME);
-        memoryAppender = new MemoryAppender();
-        memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
-        logger.setLevel(ch.qos.logback.classic.Level.INFO);
-        logger.addAppender(memoryAppender);
-        memoryAppender.start();
+        this.memoryAppender = PerformanceLoggerTest.buildPerformanceLoggerMemoryAppender(APPENDER_NAME);
     }
 
     @AfterEach
@@ -66,6 +59,18 @@ class ApiRequestPerformanceLoggerTest {
     void givenNotHttpServletRequestWhenDoFilterThenDontPerformanceLog() throws ServletException, IOException {
         // Given
         httpServletRequestMock = Mockito.mock(ServletRequest.class);
+
+        // When
+        filter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+
+        // Then
+        Assertions.assertEquals(0, memoryAppender.getLoggedEvents().size());
+    }
+
+    @Test
+    void givenNotHttpServletResponseWhenDoFilterThenDontPerformanceLog() throws ServletException, IOException {
+        // Given
+        httpServletResponseMock = Mockito.mock(ServletResponse.class);
 
         // When
         filter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);

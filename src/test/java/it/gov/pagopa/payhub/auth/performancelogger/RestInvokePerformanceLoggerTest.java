@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.performancelogger;
 
-import ch.qos.logback.classic.LoggerContext;
 import it.gov.pagopa.payhub.auth.utils.MemoryAppender;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -41,12 +39,7 @@ class RestInvokePerformanceLoggerTest {
 
     @BeforeEach
     public void setupMemoryAppender() {
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("PERFORMANCE_LOG."+APPENDER_NAME);
-        memoryAppender = new MemoryAppender();
-        memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
-        logger.setLevel(ch.qos.logback.classic.Level.INFO);
-        logger.addAppender(memoryAppender);
-        memoryAppender.start();
+        this.memoryAppender = PerformanceLoggerTest.buildPerformanceLoggerMemoryAppender(APPENDER_NAME);
     }
 
     @AfterEach
