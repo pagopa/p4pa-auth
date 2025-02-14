@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
+import org.springframework.util.function.ThrowingFunction;
 import org.springframework.util.function.ThrowingSupplier;
 
 import java.util.function.Function;
@@ -28,7 +29,7 @@ public final class PerformanceLogger {
      * @param thresholdLevels An optional object to configure the log level based on the logic duration (if not provided, it will use {@link #defaultThresholdLevels}
      * @return The object returned by the monitored logic
      */
-    public static <T> T execute(String appenderName, String contextData, ThrowingSupplier<T> logic, Function<T, String> payloadBuilder, PerformanceLoggerThresholdLevels thresholdLevels) {
+    public static <T> T execute(String appenderName, String contextData, ThrowingSupplier<T> logic, ThrowingFunction<T, String> payloadBuilder, PerformanceLoggerThresholdLevels thresholdLevels) {
         long startTime = System.currentTimeMillis();
         String payload = "";
         try {
