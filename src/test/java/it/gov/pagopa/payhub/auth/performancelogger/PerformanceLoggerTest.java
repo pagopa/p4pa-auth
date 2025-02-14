@@ -61,6 +61,42 @@ public class PerformanceLoggerTest {
     }
 
     @Test
+    void givenNoPayloadBuilderWhenThenLogExceptionInfo(){
+        // Given
+        Object expectedResult = new Object();
+
+        // When
+        Object result = PerformanceLogger.execute(APPENDER_NAME, CONTEXT_DATA, () -> expectedResult, null, null);
+
+        //Then
+        Assertions.assertSame(expectedResult, result);
+        assertPerformanceLogMessage(APPENDER_NAME, CONTEXT_DATA, "", memoryAppender);
+    }
+
+    @Test
+    void givenPayloadBuilderReturningNullWhenThenLogExceptionInfo(){
+        // Given
+        Object expectedResult = new Object();
+
+        // When
+        Object result = PerformanceLogger.execute(APPENDER_NAME, CONTEXT_DATA, () -> expectedResult, x -> null, null);
+
+        //Then
+        Assertions.assertSame(expectedResult, result);
+        assertPerformanceLogMessage(APPENDER_NAME, CONTEXT_DATA, "null", memoryAppender);
+    }
+
+    @Test
+    void givenPayloadBuilderAndNullOutputReturningNullWhenThenLogExceptionInfo(){
+        // When
+        Object result = PerformanceLogger.execute(APPENDER_NAME, CONTEXT_DATA, () -> null, x -> null, null);
+
+        //Then
+        Assertions.assertNull(result);
+        assertPerformanceLogMessage(APPENDER_NAME, CONTEXT_DATA, "Returned null", memoryAppender);
+    }
+
+    @Test
     void testThresholdLevelTranscoding(){
         PerformanceLoggerThresholdLevels thresholdLevels = new PerformanceLoggerThresholdLevels(1, 2);
 
