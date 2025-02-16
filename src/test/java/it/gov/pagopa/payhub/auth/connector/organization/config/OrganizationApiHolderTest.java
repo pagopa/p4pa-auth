@@ -24,7 +24,7 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        OrganizationClientConfig clientConfig = OrganizationClientConfig.builder()
+        OrganizationApiClientConfig clientConfig = OrganizationApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .build();
         organizationApisHolder = new OrganizationApisHolder(clientConfig, restTemplateBuilderMock);

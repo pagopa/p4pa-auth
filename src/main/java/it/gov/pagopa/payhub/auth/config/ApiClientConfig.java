@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.connector.config;
+package it.gov.pagopa.payhub.auth.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientConfig {
+public class ApiClientConfig {
     private String baseUrl;
     private int maxAttempts;
     private long waitTimeMillis;

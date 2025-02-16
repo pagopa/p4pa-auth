@@ -21,7 +21,7 @@ public class OrganizationApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public OrganizationApisHolder(
-            OrganizationClientConfig clientConfig,
+            OrganizationApiClientConfig clientConfig,
             RestTemplateBuilder restTemplateBuilder
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
