@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.1"
+	id("org.springframework.boot") version "3.4.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	jacoco
 	id("org.sonarqube") version "6.0.1.5171"
@@ -30,16 +30,16 @@ repositories {
 	mavenCentral()
 }
 
-val springDocOpenApiVersion = "2.7.0"
+val springDocOpenApiVersion = "2.8.5"
 val janinoVersion = "3.1.12"
 val openApiToolsVersion = "0.2.6"
-val javaJwtVersion = "4.4.0"
+val javaJwtVersion = "4.5.0"
 val jwksRsaVersion = "0.22.1"
-val nimbusJoseJwtVersion = "9.48"
+val nimbusJoseJwtVersion = "10.0.1"
 val jjwtVersion = "0.12.6"
-val wiremockVersion = "3.10.0"
-val bouncycastleVersion = "1.79"
-val micrometerVersion = "1.4.1"
+val wiremockVersion = "3.12.0"
+val bouncycastleVersion = "1.80"
+val micrometerVersion = "1.4.3"
 val caffeineVersion = "3.2.0"
 
 dependencies {
