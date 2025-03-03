@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,5 +40,11 @@ public final class SecurityUtils {
         return getPrincipal().getOrganizations().stream()
             .flatMap(o -> o.getRoles().stream())
             .anyMatch(Constants.ROLE_ADMIN::equals);
+    }
+
+    public static String removePiiFromURI(URI uri){
+        return uri != null
+                ? uri.toString().replaceAll("=[^&]*", "=***")
+                : null;
     }
 }
