@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -21,14 +22,23 @@ public abstract class BaseApiHolderTest {
 
     @Mock
     protected RestTemplate restTemplateMock;
+    @Mock
+    protected Void voidMock;
 
-    protected <T> void assertAuthenticationShouldBeSetInThreadSafeMode(Function<String, T> apiInvoke, Class<T> apiReturnedType, Runnable apiUnloader) throws InterruptedException {
+    @SuppressWarnings("unchecked")
+    protected <T> void assertAuthenticationShouldBeSetInThreadSafeMode(Function<String, T> apiInvoke, ParameterizedTypeReference<T> apiReturnedType, Runnable apiUnloader) throws InterruptedException {
         // Configuring useCases in a single thread
         List<Pair<String, T>> useCases = IntStream.rangeClosed(0, 100)
                 .mapToObj(i -> {
                     try {
                         String accessToken = "accessToken" + i;
-                        T expectedResult = apiReturnedType.getConstructor().newInstance();
+                        T expectedResult =
+                                String.class.equals(apiReturnedType.getType()) ? (T)"RESULT"
+                                : Integer.class.equals(apiReturnedType.getType()) ? (T)Integer.valueOf(0)
+                                : Long.class.equals(apiReturnedType.getType()) ? (T)Long.valueOf(0L)
+                                        : apiReturnedType.getType().getTypeName().startsWith(List.class.getName()) ? (T)List.of()
+                                        : Void.class.equals(apiReturnedType.getType()) ? (T)voidMock
+                                        : (T)Mockito.mock(Class.forName(apiReturnedType.getType().getTypeName()));
 
                         Mockito.doReturn(ResponseEntity.ok(expectedResult))
                                 .when(restTemplateMock)
@@ -58,7 +68,14 @@ public abstract class BaseApiHolderTest {
                         Assertions.assertSame(expectedResult, result);
                         return true;
                     })
-                    .toList());
+                    .toList())
+                    .forEach(future -> {
+                        try {
+                            future.get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
         }
 
         apiUnloader.run();

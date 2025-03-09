@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.organization.config;
 
 import it.gov.pagopa.payhub.auth.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +42,7 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
                         .crudOrganizationsFindByIpaCode("IPACODE"),
-                Organization.class,
+                new ParameterizedTypeReference<>() {},
                 organizationApisHolder::unload);
     }
 
@@ -52,7 +51,7 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
                         .crudGetBroker("BROKERID"),
-                Broker.class,
+                new ParameterizedTypeReference<>() {},
                 organizationApisHolder::unload);
     }
 
