@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +77,7 @@ public class AuthExceptionHandler {
         AuthErrorDTO.ErrorEnum errorCode = AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR;
         if (ex instanceof ErrorResponse errorResponse) {
             httpStatus = errorResponse.getStatusCode();
-            if(httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
+            if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
                 errorCode = AuthErrorDTO.ErrorEnum.AUTH_NOT_FOUND;
             } else if (httpStatus.is4xxClientError()) {
                 errorCode = AuthErrorDTO.ErrorEnum.INVALID_REQUEST;
@@ -101,19 +102,24 @@ public class AuthExceptionHandler {
     }
 
     private static void logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {
-        log.info("A {} occurred handling request {}: HttpStatus {} - {}",
-                ex.getClass(),
-                getRequestDetails(request),
-                httpStatus.value(),
-                ex.getMessage());
-        if(log.isDebugEnabled() && ex.getCause()!=null){
+        boolean printStackTrace = httpStatus.is5xxServerError();
+        Level logLevel = printStackTrace ? Level.ERROR : Level.INFO;
+        log.makeLoggingEventBuilder(logLevel)
+                .log("A {} occurred handling request {}: HttpStatus {} - {}",
+                        ex.getClass(),
+                        getRequestDetails(request),
+                        httpStatus.value(),
+                        ex.getMessage(),
+                        printStackTrace ? ex : null
+                );
+        if (!printStackTrace && log.isDebugEnabled() && ex.getCause() != null) {
             log.debug("CausedBy: ", ex.getCause());
         }
     }
 
     private static String buildReturnedMessage(Exception ex) {
         if (ex instanceof HttpMessageNotReadableException) {
-            if(ex.getCause() instanceof JsonMappingException jsonMappingException){
+            if (ex.getCause() instanceof JsonMappingException jsonMappingException) {
                 return "Cannot parse body: " +
                         jsonMappingException.getPath().stream()
                                 .map(JsonMappingException.Reference::getFieldName)
@@ -126,7 +132,7 @@ public class AuthExceptionHandler {
                     methodArgumentNotValidException.getBindingResult()
                             .getAllErrors().stream()
                             .map(e -> " " +
-                                    (e instanceof FieldError fieldError? fieldError.getField(): e.getObjectName()) +
+                                    (e instanceof FieldError fieldError ? fieldError.getField() : e.getObjectName()) +
                                     ": " + e.getDefaultMessage())
                             .sorted()
                             .collect(Collectors.joining(";"));
