@@ -42,6 +42,7 @@ val wiremockVersion = "3.12.0"
 val bouncycastleVersion = "1.80"
 val micrometerVersion = "1.4.3"
 val caffeineVersion = "3.2.0"
+val httpClientVersion = "5.4.2"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -59,6 +60,7 @@ dependencies {
     implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+    implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
 
     // validation token jwt
     implementation("com.auth0:java-jwt:$javaJwtVersion")
