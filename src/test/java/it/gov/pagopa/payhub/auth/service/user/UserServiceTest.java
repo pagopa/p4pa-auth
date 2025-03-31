@@ -8,8 +8,9 @@ import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
-import it.gov.pagopa.payhub.model.generated.OperatorDTO;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
+import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,12 +40,20 @@ class UserServiceTest {
     private IamUserInfoDTO2UserInfoMapper userInfoMapperMock;
     @Mock
     private OrganizationOperatorRetrieverService organizationOperatorRetrieverServiceMock;
+    @Mock
+    private UserInfoRetrieverService userInfoRetrieverServiceMock;
 
     private UserService service;
 
     @BeforeEach
     void init() {
-        service = new UserServiceImpl(tokenStoreServiceMock, userRegistrationServiceMock, operatorRegistrationServiceMock, userInfoMapperMock, organizationOperatorRetrieverServiceMock);
+        service = new UserServiceImpl(
+                tokenStoreServiceMock,
+                userRegistrationServiceMock,
+                operatorRegistrationServiceMock,
+                userInfoMapperMock,
+                organizationOperatorRetrieverServiceMock,
+                userInfoRetrieverServiceMock);
     }
 
     @AfterEach
@@ -54,7 +63,8 @@ class UserServiceTest {
                 userRegistrationServiceMock,
                 operatorRegistrationServiceMock,
                 userInfoMapperMock,
-                organizationOperatorRetrieverServiceMock);
+                organizationOperatorRetrieverServiceMock,
+                userInfoRetrieverServiceMock);
     }
 
     @Test
@@ -76,7 +86,7 @@ class UserServiceTest {
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
         UserInfo expectedUserInfo = new UserInfo();
         Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(iamUserInfo);
-        Mockito.when(userInfoMapperMock.apply(iamUserInfo)).thenReturn(expectedUserInfo);
+        Mockito.when(userInfoMapperMock.apply(iamUserInfo, accessToken)).thenReturn(expectedUserInfo);
 
         // When
         UserInfo result = service.getUserInfo(accessToken);
@@ -138,5 +148,22 @@ class UserServiceTest {
 
         // Then
         Assertions.assertSame(expectedOperators, result);
+    }
+
+    @Test
+    void whenGetUserInfoFromMappedExternalUserIdThenOk(){
+        // Given
+        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
+        String accessToken = "ACCESSTOKEN";
+        UserInfo expectedResult = new UserInfo();
+
+        Mockito.when(userInfoRetrieverServiceMock.findByMappedExternalUserId(mappedExternalUserId, accessToken))
+                .thenReturn(expectedResult);
+
+        // When
+        UserInfo result = service.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
     }
 }

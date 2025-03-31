@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "c1508e85-2efa-460b-8f3a-ff7ee32007a0",
+		"_postman_id": "6a49a33e-71f8-41bf-a00d-29a1d20005b6",
 		"name": "p4pa-auth-NoAccessModeOrganization",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36568841"
+		"_exporter_id": "15747968",
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-6a49a33e-71f8-41bf-a00d-29a1d20005b6?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
 		{
@@ -19,11 +20,11 @@
 							"\r",
 							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
-							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
-							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
-							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"access_token\");\r",
 							"\r",
-							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -35,12 +36,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -87,11 +87,11 @@
 							"\r",
 							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
-							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
-							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
-							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"access_token\");\r",
 							"\r",
-							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -103,12 +103,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -155,11 +154,11 @@
 							"\r",
 							"pm.test(\"Auth - postToken - Verify response body\", function () {\r",
 							"    let jsonResponse = pm.response.json();\r",
-							"    pm.expect(jsonResponse).have.property(\"tokenType\").to.eq(\"bearer\");\r",
-							"    pm.expect(jsonResponse).have.property(\"expiresIn\").to.eq(14400);\r",
-							"    pm.expect(jsonResponse).have.property(\"accessToken\");\r",
+							"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r",
+							"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r",
+							"    pm.expect(jsonResponse).have.property(\"access_token\");\r",
 							"\r",
-							"    pm.variables.set(\"accessToken\", jsonResponse.accessToken)\r",
+							"    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -171,12 +170,11 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+					"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"token"
 					],
@@ -231,6 +229,9 @@
 							"    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r",
 							"    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r",
 							"    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r",
+							"    pm.expect(jsonResponse).to.have.property(\"brokerId\").that.is.a(\"number\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"brokerFiscalCode\").that.is.a(\"string\");\r",
+							"    pm.expect(jsonResponse).to.have.property(\"canManageUsers\").that.is.a(\"boolean\");\r",
 							"\r",
 							"    pm.expect(jsonResponse.organizations).have.property(\"length\").to.gte(3)\r",
 							"    \r",
@@ -274,12 +275,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/auth/userinfo",
+					"raw": "{{p4paAuthBaseUrl}}/auth/userinfo",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"auth",
 						"userinfo"
 					]
@@ -345,12 +345,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/users",
+					"raw": "{{p4paAuthBaseUrl}}/am/users",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"users"
 					]
@@ -420,12 +419,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{p4paAuthBaseUrl}}/payhub/am/operators/{{organizationIpaCode}}",
+					"raw": "{{p4paAuthBaseUrl}}/am/operators/{{organizationIpaCode}}",
 					"host": [
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"payhub",
 						"am",
 						"operators",
 						"{{organizationIpaCode}}"
@@ -455,6 +453,20 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "mappedExternalUserId",
+			"value": ""
+		},
+		{
+			"key": "organizationIpaCode",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
 		}
 	]
 }

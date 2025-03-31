@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.auth.security;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
-import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull FilterChain filterChain) throws ServletException, IOException {
         try {
             String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (StringUtils.hasText(authorization)) {
@@ -57,11 +59,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .map(SimpleGrantedAuthority::new)
                             .toList();
                 }
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userInfo, null, authorities);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userInfo, token, authorities);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-        } catch (InvalidAccessTokenException e){
+        } catch (InvalidAccessTokenException | InvalidTokenException e){
             log.info("An invalid accessToken has been provided: " + e.getMessage());
         } catch (Exception e){
             log.error("Something gone wrong while retrieving UserInfo", e);

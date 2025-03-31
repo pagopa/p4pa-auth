@@ -8,15 +8,15 @@ import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
-import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
+import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.model.generated.*;
+import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -43,29 +43,27 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private AuthzService authzServiceMock;
 
-    @MockBean
+    @MockitoBean
     private AuthnService authnServiceMock;
 
-    @MockBean
+    @MockitoBean
     private ValidateTokenService validateTokenServiceMock;
 
-    @MockBean
+    @MockitoBean
     private JWTLegacyHandlerService jwtLegacyHandlerServiceMock;
 
-    @MockBean
+    @MockitoBean
     private AccessTokenBuilderService accessTokenBuilderServiceMock;
 
 // createOperator region
     @Test
     void givenUnauthorizedUserWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
-        CreateOperatorRequest request = new CreateOperatorRequest();
-        request.setExternalUserId("EXTERNALUSERID");
-        Gson gson = new Gson();
-        String body = gson.toJson(request);
+        String body = buildCreateOperatorRequest();
+
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -86,16 +84,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     @Test
     void givenAuthorizedUserWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
-        CreateOperatorRequest createOperatorRequest = new CreateOperatorRequest();
-        createOperatorRequest.setExternalUserId("externalUserId");
-        createOperatorRequest.setFiscalCode("fiscalCode");
-        createOperatorRequest.setFirstName("firstName");
-        createOperatorRequest.setLastName("lastName");
-        createOperatorRequest.setEmail("email@example.com");
-        createOperatorRequest.setRoles(List.of("ROLE_ADMIN"));
-        Gson gson = new Gson();
-        String body = gson.toJson(createOperatorRequest);
-
+        String body = buildCreateOperatorRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
@@ -113,17 +102,25 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                 .content(body)
         ).andExpect(status().isOk());
     }
+
+    public static String buildCreateOperatorRequest() {
+        CreateOperatorRequest createOperatorRequest = new CreateOperatorRequest();
+        createOperatorRequest.setExternalUserId("externalUserId");
+        createOperatorRequest.setFiscalCode("fiscalCode");
+        createOperatorRequest.setFirstName("firstName");
+        createOperatorRequest.setLastName("lastName");
+        createOperatorRequest.setEmail("email@example.com");
+        createOperatorRequest.setRoles(List.of("ROLE_ADMIN"));
+        Gson gson = new Gson();
+        return gson.toJson(createOperatorRequest);
+    }
+
     // end region
+
     //createUser region
     @Test
     void givenAuthorizedUserWhenCreateUserThenOk() throws Exception {
-        UserDTO user = new UserDTO();
-        user.setExternalUserId("EXTERNALUSERID");
-        user.setFiscalCode("FISCALCODE");
-        user.setFirstName("FIRSTNAME");
-        user.setLastName("LASTNAME");
-        Gson gson = new Gson();
-        String body = gson.toJson(user);
+        String body = buildCreateUserRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
@@ -144,10 +141,8 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
     @Test
     void givenUnauthorizedUserWhenCreateUserThenOk() throws Exception {
-        UserDTO request = new UserDTO();
-        request.setExternalUserId("EXTERNALUSERID");
-        Gson gson = new Gson();
-        String body = gson.toJson(request);
+        String body = buildCreateUserRequest();
+
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -164,13 +159,23 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                 .content(String.valueOf((body)))
         ).andExpect(status().isUnauthorized());
     }
+
+    public static String buildCreateUserRequest() {
+        UserDTO user = new UserDTO();
+        user.setExternalUserId("EXTERNALUSERID");
+        user.setFiscalCode("FISCALCODE");
+        user.setFirstName("FIRSTNAME");
+        user.setLastName("LASTNAME");
+        Gson gson = new Gson();
+        return gson.toJson(user);
+    }
     //end region
 
+    //region createClient
     @Test
     void givenUnauthorizedUserWhenRegisterClientThenUnauthorizedException() throws Exception {
         String organizationIpaCode = "IPACODE";
-        CreateClientRequest request = new CreateClientRequest();
-        request.setClientName("CLIENTNAME");
+        CreateClientRequest request = buildCreateClientRequest();
         Gson gson = new Gson();
         String body = gson.toJson(request);
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
@@ -196,8 +201,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         String uuidRegex =
           "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
         String organizationIpaCode = "IPA_TEST_2";
-        CreateClientRequest createClientRequest = new CreateClientRequest();
-        createClientRequest.setClientName("CLIENTNAME");
+        CreateClientRequest createClientRequest = buildCreateClientRequest();
 
         UserInfo expectedUser = UserInfo.builder()
           .userId("USERID")
@@ -233,6 +237,14 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         assertEquals(uuidRandomForSecret, clientDTO.getClientSecret());
     }
 
+    private static CreateClientRequest buildCreateClientRequest() {
+        CreateClientRequest createClientRequest = new CreateClientRequest();
+        createClientRequest.setClientName("CLIENTNAME");
+        return createClientRequest;
+    }
+    //endregion
+
+    //region getClientSecret
     @Test
     void givenAuthorizedUserWhenGetClientSecretThenOk() throws Exception {
         String uuidRandomForClientSecret = UUID.randomUUID().toString();
@@ -263,5 +275,6 @@ class AuthzControllerNoOrganizzationAccessModeTest {
 
         assertEquals(uuidRandomForClientSecret, result.getResponse().getContentAsString());
     }
+    //endregion
 
 }

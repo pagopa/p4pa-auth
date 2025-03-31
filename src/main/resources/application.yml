@@ -1,75 +1,132 @@
+server:
+  http: "\${SERVER_PORT:8080}"
+
 spring:
-    application:
-        name: ${artifactId}
-        version: ${version}
-    jmx.enabled: true
-    cache:
-        type: redis
-    data:
-        mypay:
-            jdbc-url: "jdbc:postgresql://\${MYPAY_DB_HOST}:5432/mypay"
-            username: "\${MYPAY_DB_USER}"
-            password: "\${MYPAY_DB_PASSWORD}"
-            driverClassName: "org.postgresql.Driver"
-        mypivot:
-            jdbc-url: "jdbc:postgresql://\${MYPIVOT_DB_HOST}:5432/mypivot"
-            username: "\${MYPIVOT_DB_USER}"
-            password: "\${MYPIVOT_DB_PASSWORD}"
-            driverClassName: "org.postgresql.Driver"
-        redis:
-            host: "\${REDIS_HOST:localhost}"
-            port: "\${REDIS_PORT:6380}"
-            password: "\${REDIS_PASSWORD:}"
-            ssl.enabled: "\${REDIS_SSL_ENABLED:true}"
-        mongodb:
-            uri: "\${MONGODB_URI:mongodb://localhost:27017}"
-            database: "\${MONGODB_DBNAME:payhub}"
-            # custom configured properties
-            config:
-                connectionPool:
-                    maxSize: "\${MONGODB_CONNECTIONPOOL_MAX_SIZE:100}"
-                    minSize: "\${MONGODB_CONNECTIONPOOL_MIN_SIZE:0}"
-                    maxWaitTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_WAIT_MS:120000}"
-                    maxConnectionLifeTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_LIFE_MS:0}"
-                    maxConnectionIdleTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_IDLE_MS:120000}"
-                    maxConnecting: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTING:2}"
+  application:
+    name: ${artifactId}
+    version: ${version}
+  jmx.enabled: true
+  threads:
+    virtual:
+      enabled: "\${VIRTUAL_THREADS_ENABLED:true}"
+  cache:
+    type: redis
+  data:
+    redis:
+      host: "\${REDIS_HOST:localhost}"
+      port: "\${REDIS_PORT:6380}"
+      password: "\${REDIS_PASSWORD:}"
+      ssl.enabled: "\${REDIS_SSL_ENABLED:true}"
+    mongodb:
+      uri: "\${MONGODB_URI:mongodb://localhost:27017}"
+      database: "\${MONGODB_DBNAME:payhub}"
+      # custom configured properties
+      config:
+        connectionPool:
+          maxSize: "\${MONGODB_CONNECTIONPOOL_MAX_SIZE:100}"
+          minSize: "\${MONGODB_CONNECTIONPOOL_MIN_SIZE:0}"
+          maxWaitTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_WAIT_MS:120000}"
+          maxConnectionLifeTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_LIFE_MS:0}"
+          maxConnectionIdleTimeMS: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTION_IDLE_MS:120000}"
+          maxConnecting: "\${MONGODB_CONNECTIONPOOL_MAX_CONNECTING:2}"
 
 jwt:
-    audience: "\${JWT_TOKEN_AUDIENCE:application-audience}"
-    access-token:
-        expire-in: "\${JWT_TOKEN_EXPIRATION_SECONDS:3600}"
-        private-key: "\${JWT_TOKEN_PRIVATE_KEY:}"
-        public-key: "\${JWT_TOKEN_PUBLIC_KEY:}"
-    external-token:
-        base-url: "\${JWT_EXTERNAL_TOKEN_BASE_URL:https://auth.server.com}"
-        issuer: "\${JWT_EXTERNAL_TOKEN_ISS:externalauthentication-server-issuer}"
+  audience: "\${JWT_TOKEN_AUDIENCE:application-audience}"
+  access-token:
+    expire-in: "\${JWT_TOKEN_EXPIRATION_SECONDS:3600}"
+    private-key: "\${JWT_TOKEN_PRIVATE_KEY:}"
+    public-key: "\${JWT_TOKEN_PUBLIC_KEY:}"
+  external-token:
+    base-url: "\${JWT_EXTERNAL_TOKEN_BASE_URL:https://auth.server.com}"
+    issuer: "\${JWT_EXTERNAL_TOKEN_ISS:externalauthentication-server-issuer}"
 
 
 management:
-    endpoint:
-        health:
-            probes.enabled: true
-            group:
-                readiness.include: "*"
-                liveness.include: livenessState,diskSpace,ping
-    endpoints:
-        jmx:
-            exposure.include: "*"
-        web:
-            exposure.include: info, health
+  info:
+    build.enabled: true
+    java.enabled: true
+    git.enabled: true
+  endpoints:
+    jmx:
+      exposure.include: "*"
+    web:
+      exposure:
+        include: health, info, prometheus, metrics, caches
+      base-path: /actuator
+  endpoint:
+    health:
+      probes.enabled: true
+      logging.slow-indicator-threshold: "\${HEALTH_ACTUATOR_LOGGER_TIMEOUT_DURATION:PT1S}"
+      group:
+        readiness.include: "*"
+        liveness.include: livenessState,diskSpace,ping
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${artifactId}
+    export:
+      prometheus:
+        enabled: true
+        step: 1m
+        descriptions: true
+    enable:
+      jvm: true
+      process: true
+      system: true
+      http: true
+      logback: true
+
+logging:
+  level:
+    root: "\${LOG_LEVEL_ROOT:INFO}"
+    it.gov.pagopa: "\${LOG_LEVEL_PAGOPA:INFO}"
+    org.springframework: "\${LOG_LEVEL_SPRING:INFO}"
+    org.springframework.boot.availability: "\${LOG_LEVEL_SPRING_BOOT_AVAILABILITY:DEBUG}"
+    it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler: "\${LOGGING_LEVEL_API_REQUEST_EXCEPTION:INFO}"
+    org.springdoc.core.utils.SpringDocAnnotationsUtils: "\${LOG_LEVEL_SPRING_DOC:ERROR}"
+    PERFORMANCE_LOG: "\${LOG_LEVEL_PERFORMANCE_LOG:INFO}"
+    PERFORMANCE_LOG.API_REQUEST: "\${LOG_LEVEL_PERFORMANCE_LOG_API_REQUEST:\${logging.level.PERFORMANCE_LOG}}"
+    PERFORMANCE_LOG.REST_INVOKE: "\${LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE:\${logging.level.PERFORMANCE_LOG}}"
 
 app:
-    # If true, it will expect the presence of the access organization inside the ID Token.
-    # Thus it will register te relation between the operator and the relation with the provided roles.
-    # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
-    enable-access-organization-mode: "\${ACCESS_ORGANIZATION_MODE_ENABLED:true}"
+  # If true, it will expect the presence of the access organization inside the ID Token.
+  # Thus, it will register te relation between the operator and the relation with the provided roles.
+  # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
+  enable-access-organization-mode: "\${ACCESS_ORGANIZATION_MODE_ENABLED:true}"
 
-data-chiper:
-    p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
-    p4pa-auth-encrypt-psw: "\${DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW:PSW}"
+cache:
+  jwks:
+    size: "\${CACHE_JWKS_SIZE:10}"
+    expire-in: "\${CACHE_JWKS_MINUTES:60}"
+  organization:
+    size: "\${CACHE_ORGANIZATION_SIZE:100}"
+    expire-in: "\${CACHE_ORGANIZATION_MINUTES:60}"
+  broker:
+    size: "\${CACHE_BROKER_MAXIMUM_SIZE:100}"
+    expire-in: "\${CACHE_BROKER_MINUTES:60}"
+
+rest:
+  defaults:
+    connection-pool:
+      size: "\${DEFAULT_REST_CONNECTION_POOL_SIZE:10}"
+      size-per-route: "\${DEFAULT_REST_CONNECTION_POOL_SIZE_PER_ROUTE:5}"
+      time-to-live-minutes: "\${DEFAULT_REST_CONNECTION_POOL_TIME_TO_LIVE_MINUTES:10}"
+    timeout:
+      connect-millis: "\${DEFAULT_REST_TIMEOUT_CONNECT_MILLIS:120000}"
+      read-millis: "\${DEFAULT_REST_TIMEOUT_READ_MILLIS:120000}"
+  organization:
+    base-url: "\${ORGANIZATION_BASE_URL:}"
+    max-attempts: "\${ORGANIZATION_MAX_ATTEMPTS:3}" # It's counting also the first attempt
+    wait-time-millis: "\${ORGANIZATION_WAIT_TIME_MILLIS:500}"
+    print-body-when-error: "\${ORGANIZATION_PRINT_BODY_WHEN_ERROR:true}"
+
+data-cipher:
+  p4pa-auth-hash-key: "\${DATA_CIPHER_P4PA_AUTH_HASH_KEY:PEPPER}"
+  p4pa-auth-encrypt-psw: "\${DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW:PSW}"
 
 m2m:
-    piattaforma-unitaria-client-secret: "\${PIATTAFORMA_UNITARIA_CLIENT_SECRET:SECRET}"
+  piattaforma-unitaria-client-secret: "\${PIATTAFORMA_UNITARIA_CLIENT_SECRET:SECRET}"
 
 # list here the keys/values used to identify external apps
 # the key naming is mandatory to be the value of the organization IPA code

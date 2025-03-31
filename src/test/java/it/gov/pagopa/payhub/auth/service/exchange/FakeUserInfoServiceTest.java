@@ -30,6 +30,7 @@ class FakeUserInfoServiceTest {
 
     @Test
     void givenIamUserIdValidWhenBuildIamUserInfoFakeThenSuccess(){
+        // Given
         String iamUserId = "iam_userid";
         String subjectIssuer = "issuer";
         String mappedExternalUserId = "external_userid";
@@ -40,6 +41,7 @@ class FakeUserInfoServiceTest {
 
         IamUserInfoDTO iamUserInfoFakeExpected = IamUserInfoDTO.builder()
                 .userId(iamUserId)
+                .mappedExternalUserId(mappedExternalUserId)
                 .innerUserId("userid")
                 .name("fake")
                 .familyName("user")
@@ -49,9 +51,12 @@ class FakeUserInfoServiceTest {
 
         Mockito.when(externalUserIdObfuscatorServiceMock.obfuscate(iamUserId)).thenReturn(mappedExternalUserId);
         Mockito.when(usersRepositoryMock.findByMappedExternalUserId(mappedExternalUserId)).thenReturn(Optional.ofNullable(user));
-        IamUserInfoDTO iamUserInfoFake = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
 
-        Assertions.assertEquals(iamUserInfoFake, iamUserInfoFakeExpected);
+        // When
+        IamUserInfoDTO result = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
+
+        // Then
+        Assertions.assertEquals(iamUserInfoFakeExpected, result);
     }
 
     @Test

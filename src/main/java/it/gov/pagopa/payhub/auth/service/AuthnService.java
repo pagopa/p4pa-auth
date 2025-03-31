@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.model.generated.AccessToken;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
 
 public interface AuthnService {
 

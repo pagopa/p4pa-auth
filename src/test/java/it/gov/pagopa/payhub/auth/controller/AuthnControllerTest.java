@@ -8,17 +8,17 @@ import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
-import it.gov.pagopa.payhub.auth.service.a2a.legacy.JWTLegacyHandlerService;
-import it.gov.pagopa.payhub.model.generated.AccessToken;
-import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
-import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
+import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,16 +45,16 @@ class AuthnControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private AuthnService authnServiceMock;
 
-    @MockBean
+    @MockitoBean
     private ValidateTokenService validateTokenServiceMock;
 
-    @MockBean
+    @MockitoBean
     private JWTLegacyHandlerService jwtLegacyHandlerServiceMock;
 
-    @MockBean
+    @MockitoBean
     private AccessTokenBuilderService accessTokenBuilderServiceMock;
 
 //region desc=postToken tests
@@ -63,8 +63,10 @@ class AuthnControllerTest {
         MvcResult result =
                 invokePostTokenAndVerify(null, HttpStatus.OK, null);
 
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("{\"accessToken\":\"token\",\"tokenType\":\"bearer\",\"expiresIn\":0}", result.getResponse().getContentAsString());
+        Assertions.assertEquals("{\"access_token\":\"token\",\"token_type\":\"bearer\",\"expires_in\":0}", result.getResponse().getContentAsString());
     }
 
     @Test

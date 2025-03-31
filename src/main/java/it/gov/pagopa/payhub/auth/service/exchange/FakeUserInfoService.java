@@ -25,6 +25,7 @@ public class FakeUserInfoService {
         return IamUserInfoDTO.builder()
                 .userId(iamUserId)
                 .innerUserId(userInfo.getUserId())
+                .mappedExternalUserId(mappedExternalUserId)
                 .name("fake")
                 .familyName("user")
                 .fiscalCode(userInfo.getUserCode())

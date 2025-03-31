@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.auth.utils.Constants;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -25,6 +26,7 @@ public class MongoConfig {
     @ConfigurationProperties(prefix = "spring.data.mongodb.config")
     @Setter
     public static class MongoDbCustomProperties {
+        @NestedConfigurationProperty
         ConnectionPoolSettings connectionPool;
 
         @Setter

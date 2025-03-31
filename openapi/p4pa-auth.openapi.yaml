@@ -6,6 +6,19 @@ info:
 servers:
   - url: "http://localhost:8080/payhub"
 paths:
+  /.well-known/jwks.json:
+    get:
+      tags:
+        - wellKnown
+      operationId: jwks
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
   /auth/token:
     post:
       tags:
@@ -538,6 +551,7 @@ components:
         - email
         - issuer
         - organizations
+        - canManageUsers
       properties:
         userId:
           type: string
@@ -549,8 +563,6 @@ components:
           type: string
         name:
           type: string
-        email:
-          type: string
         issuer:
           type: string
         organizationAccess:
@@ -559,16 +571,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserOrganizationRoles'
+        brokerId:
+          type: integer
+          format: int64
+        brokerFiscalCode:
+          type: string
+        canManageUsers:
+          type: boolean
+        systemUser:
+          type: boolean
     UserOrganizationRoles:
       type: object
       required:
         - operatorId
+        - organizationId
         - organizationIpaCode
+        - organizationFiscalCode
         - roles
       properties:
         operatorId:
           type: string
+        organizationId:
+          type: integer
+          format: int64
         organizationIpaCode:
+          type: string
+        organizationFiscalCode:
           type: string
         email:
           type: string
@@ -646,7 +674,6 @@ components:
         - lastName
         - fiscalCode
         - roles
-        - organizationIpaCode
         - email
       properties:
         externalUserId:
@@ -656,8 +683,6 @@ components:
         lastName:
           type: string
         fiscalCode:
-          type: string
-        organizationIpaCode:
           type: string
         email:
           type: string
@@ -674,6 +699,7 @@ components:
           type: string
           enum:
             - AUTH_GENERIC_ERROR
+            - AUTH_NOT_FOUND
             - AUTH_USER_UNAUTHORIZED
             - invalid_request
             - invalid_client

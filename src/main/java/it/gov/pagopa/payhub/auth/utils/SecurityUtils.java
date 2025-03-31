@@ -1,14 +1,20 @@
 package it.gov.pagopa.payhub.auth.utils;
 
-import it.gov.pagopa.payhub.model.generated.UserInfo;
-import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
 public final class SecurityUtils {
     private SecurityUtils(){}
+
+    /** It will return user's session accessToken */
+    public static String getAccessToken() {
+        return (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    }
 
     /** It will return user's session data from ThreadLocal */
     public static UserInfo getPrincipal(){
@@ -34,5 +40,11 @@ public final class SecurityUtils {
         return getPrincipal().getOrganizations().stream()
             .flatMap(o -> o.getRoles().stream())
             .anyMatch(Constants.ROLE_ADMIN::equals);
+    }
+
+    public static String removePiiFromURI(URI uri){
+        return uri != null
+                ? uri.toString().replaceAll("=[^&]*", "=***")
+                : null;
     }
 }

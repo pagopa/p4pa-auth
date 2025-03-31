@@ -48,6 +48,11 @@ public class WebSecurityConfig {
                                 "/favicon.ico", "/error"
                         ).permitAll()
 
+                        // well-known
+                        .requestMatchers(
+                                "/payhub/.well-known/**"
+                        ).permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

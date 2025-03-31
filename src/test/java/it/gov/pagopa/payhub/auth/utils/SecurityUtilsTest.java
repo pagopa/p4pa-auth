@@ -1,13 +1,14 @@
 package it.gov.pagopa.payhub.auth.utils;
 
-import it.gov.pagopa.payhub.model.generated.UserInfo;
-import it.gov.pagopa.payhub.model.generated.UserOrganizationRoles;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,13 +18,26 @@ class SecurityUtilsTest {
     void testGetPrincipal() {
         // Given
         UserInfo expectedUserInfo = new UserInfo();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         UserInfo result = SecurityUtils.getPrincipal();
 
         // Then
         Assertions.assertSame(expectedUserInfo, result);
+    }
+
+    @Test
+    void testGetAccessToken() {
+        // Given
+        String expectedAccessToken = "TOKEN";
+        configureSecurityContext(null, expectedAccessToken);
+
+        // When
+        String result = SecurityUtils.getAccessToken();
+
+        // Then
+        Assertions.assertSame(expectedAccessToken, result);
     }
 
     @Test
@@ -42,7 +56,7 @@ class SecurityUtilsTest {
                                 .build())
                 )
                 .build();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         List<String> result1 = SecurityUtils.getPrincipalRoles("ORG");
@@ -68,7 +82,7 @@ class SecurityUtilsTest {
                                 .build())
                 )
                 .build();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         boolean result1 = SecurityUtils.isPrincipalAdmin("ORG");
@@ -94,14 +108,25 @@ class SecurityUtilsTest {
                     .build())
             )
             .build();
-        configureSecurityContext(expectedUserInfo);
+        configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
         boolean result = SecurityUtils.hasAdminRole();
         Assertions.assertTrue(result);
     }
 
-    private static void configureSecurityContext(UserInfo expectedUserInfo) {
-        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, null)));
+    private static void configureSecurityContext(UserInfo expectedUserInfo, String token) {
+        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, token)));
+    }
+
+    @Test
+    void givenUriWhenRemovePiiFromURIThenOk(){
+        String result = SecurityUtils.removePiiFromURI(URI.create("https://host/path?param1=PII&param2=noPII"));
+        Assertions.assertEquals("https://host/path?param1=***&param2=***", result);
+    }
+
+    @Test
+    void givenNullUriWhenRemovePiiFromURIThenOk(){
+        Assertions.assertNull(SecurityUtils.removePiiFromURI(null));
     }
 }

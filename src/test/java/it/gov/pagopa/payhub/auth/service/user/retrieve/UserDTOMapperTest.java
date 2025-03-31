@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.user.retrieve;
 
 import it.gov.pagopa.payhub.auth.model.User;
-import it.gov.pagopa.payhub.model.generated.UserDTO;
+import it.gov.pagopa.payhub.dto.generated.UserDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
