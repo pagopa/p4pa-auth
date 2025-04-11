@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.config;
+package it.gov.pagopa.payhub.auth.config.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

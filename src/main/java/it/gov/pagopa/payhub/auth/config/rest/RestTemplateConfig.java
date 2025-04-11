@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.config;
+package it.gov.pagopa.payhub.auth.config.rest;
 
 import it.gov.pagopa.payhub.auth.performancelogger.RestInvokePerformanceLogger;
 import it.gov.pagopa.payhub.auth.utils.HttpUtils;

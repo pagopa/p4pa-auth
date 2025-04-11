@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.organization.config;
 
-import it.gov.pagopa.payhub.auth.config.ApiClientConfig;
+import it.gov.pagopa.payhub.auth.config.rest.ApiClientConfig;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;

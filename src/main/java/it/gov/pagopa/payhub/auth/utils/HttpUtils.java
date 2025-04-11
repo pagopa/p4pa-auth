@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.utils;
 
-import it.gov.pagopa.payhub.auth.config.HttpClientConfig;
+import it.gov.pagopa.payhub.auth.config.rest.HttpClientConfig;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.organization.config;
 
-import it.gov.pagopa.payhub.auth.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.auth.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.p4pa_organization.controller.ApiClient;
 import it.gov.pagopa.pu.p4pa_organization.controller.BaseApi;
 import it.gov.pagopa.pu.p4pa_organization.controller.generated.BrokerEntityControllerApi;
