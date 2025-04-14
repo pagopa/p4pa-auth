@@ -188,7 +188,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
-          post("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
+          post("/payhub/oauth/clients/{organizationIpaCode}", organizationIpaCode)
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             .contentType(MediaType.APPLICATION_JSON)
             .content(String.valueOf((body)))
@@ -220,7 +220,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
                 .when(authzServiceMock).registerClient(organizationIpaCode, createClientRequest);
 
         MvcResult result = mockMvc.perform(
-            post("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
+            post("/payhub/oauth/clients/{organizationIpaCode}", organizationIpaCode)
               .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
               .contentType(MediaType.APPLICATION_JSON)
               .content(new Gson().toJson(createClientRequest))
@@ -268,7 +268,7 @@ class AuthzControllerNoOrganizzationAccessModeTest {
           .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);
 
         MvcResult result = mockMvc.perform(
-            get("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+            get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
               .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
           ).andExpect(status().isOk())
           .andReturn();

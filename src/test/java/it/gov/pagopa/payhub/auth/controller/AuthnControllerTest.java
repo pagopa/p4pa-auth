@@ -72,7 +72,7 @@ class AuthnControllerTest {
     @Test
     void givenRequestWithoutAuthTokenWhenPostTokenThenBadRequest() throws Exception {
         MvcResult result = mockMvc.perform(
-                post("/payhub/auth/token")
+                post("/payhub/oauth/token")
         ).andExpect(status().isBadRequest()).andReturn();
 
         AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
@@ -125,7 +125,7 @@ class AuthnControllerTest {
                 .when(authnServiceMock).postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
 
         MvcResult result = mockMvc.perform(
-                post("/payhub/auth/token")
+                post("/payhub/oauth/token")
                         .param("client_id", clientId)
                         .param("grant_type", grantType)
                         .param("subject_token", subjectToken)
@@ -152,7 +152,7 @@ class AuthnControllerTest {
     @Test
     void givenRequestWithoutAuthorizationWhenGetUserInfoThenForbidden() throws Exception {
         mockMvc.perform(
-                get("/payhub/auth/userinfo")
+                get("/payhub/oauth/userinfo")
         ).andExpect(status().isForbidden());
     }
 
@@ -172,7 +172,7 @@ class AuthnControllerTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
-                        get("/payhub/auth/userinfo")
+                        get("/payhub/oauth/userinfo")
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isOk())
                 .andExpect(content().json("{\"userId\":\"USERID\"}"));
@@ -187,7 +187,7 @@ class AuthnControllerTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
-                        get("/payhub/auth/userinfo")
+                        get("/payhub/oauth/userinfo")
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isOk())
                 .andExpect(content().json("{\"userId\":\"USERID\"}"));
@@ -199,7 +199,7 @@ class AuthnControllerTest {
                 .thenThrow(new InvalidAccessTokenException(""));
 
         mockMvc.perform(
-                get("/payhub/auth/userinfo")
+                get("/payhub/oauth/userinfo")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isForbidden());
     }
@@ -210,7 +210,7 @@ class AuthnControllerTest {
                 .thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(
-                get("/payhub/auth/userinfo")
+                get("/payhub/oauth/userinfo")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isForbidden());
     }
@@ -220,7 +220,7 @@ class AuthnControllerTest {
     @Test
     void givenNoClientIdWhenLogoutThenBadRequest() throws Exception {
         mockMvc.perform(
-                post("/payhub/auth/revoke")
+                post("/payhub/oauth/revoke")
                         .param("token", "token")
         ).andExpect(status().isBadRequest());
     }
@@ -228,7 +228,7 @@ class AuthnControllerTest {
     @Test
     void givenInvalidClientIdWhenLogoutThenBadRequest() throws Exception {
         mockMvc.perform(
-                post("/payhub/auth/revoke")
+                post("/payhub/oauth/revoke")
                         .param("token", "token")
         ).andExpect(status().isBadRequest());
     }
@@ -242,7 +242,7 @@ class AuthnControllerTest {
                 .when(authnServiceMock).logout(clientId, token);
 
         MvcResult result = mockMvc.perform(
-                post("/payhub/auth/revoke")
+                post("/payhub/oauth/revoke")
                         .param("client_id", clientId)
                         .param("token", token)
         ).andExpect(status().isUnauthorized()).andReturn();
@@ -262,7 +262,7 @@ class AuthnControllerTest {
         Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
 
         mockMvc.perform(
-            get("/payhub/auth/userinfo")
+            get("/payhub/oauth/userinfo")
               .header(HttpHeaders.AUTHORIZATION, "Bearer legacyAccessToken")
           ).andExpect(status().isOk())
           .andExpect(content().json("{\"userId\":\"USERID\"}"));
