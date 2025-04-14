@@ -165,7 +165,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -235,7 +235,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_2}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -305,7 +305,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -415,7 +415,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/userinfo",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -492,7 +492,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/userinfo/{{mappedExternalUserId}}",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/userinfo/{{mappedExternalUserId}}",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -838,7 +838,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/clients/IPA_TEST",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -890,7 +890,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/clients/IPA_TEST",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -929,7 +929,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST/{{clientId}}",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/clients/IPA_TEST/{{clientId}}",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -991,7 +991,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/clients/IPA_TEST",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/clients/IPA_TEST",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -1108,7 +1108,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -1150,7 +1150,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/userinfo",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -1205,7 +1205,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/token?client_id={{clientId}}&grant_type=client_credentials&scope=openid&client_secret={{clientSecret}}",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id={{clientId}}&grant_type=client_credentials&scope=openid&client_secret={{clientSecret}}",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -1285,7 +1285,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/userinfo",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -1353,7 +1353,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/userinfo/{{mappedExternalUserId}}",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/userinfo/{{mappedExternalUserId}}",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],
@@ -1396,7 +1396,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/auth/clients/{{organizationIpaCode}}/{{clientId}}",
+							"raw": "{{p4paAuthBaseUrl}}/oauth/clients/{{organizationIpaCode}}/{{clientId}}",
 							"host": [
 								"{{p4paAuthBaseUrl}}"
 							],

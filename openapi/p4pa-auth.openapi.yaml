@@ -19,7 +19,7 @@ paths:
             application/json:
               schema:
                 type: string
-  /auth/token:
+  /oauth/token:
     post:
       tags:
         - authn
@@ -88,7 +88,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
-  /auth/userinfo:
+  /oauth/userinfo:
     get:
       tags:
         - authn
@@ -110,7 +110,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
-  /auth/userinfo/{mappedExternalUserId}:
+  /oauth/userinfo/{mappedExternalUserId}:
     get:
       tags:
         - authz
@@ -138,7 +138,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
-  /auth/revoke:
+  /oauth/revoke:
     post:
       tags:
         - authn
@@ -166,7 +166,7 @@ paths:
           description: Invalid request
         '401':
           description: Invalid client_id
-  /auth/clients/{organizationIpaCode}:
+  /oauth/clients/{organizationIpaCode}:
     get:
       tags:
         - authz
@@ -229,7 +229,7 @@ paths:
           description: Conflict
         '429':
           description: Too Many Requests
-  /auth/clients/{organizationIpaCode}/{clientId}:
+  /oauth/clients/{organizationIpaCode}/{clientId}:
     delete:
       tags:
         - authz
