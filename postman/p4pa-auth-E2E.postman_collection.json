@@ -170,7 +170,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"token"
 							],
 							"query": [
@@ -240,7 +240,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"token"
 							],
 							"query": [
@@ -310,7 +310,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"token"
 							],
 							"query": [
@@ -420,7 +420,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"userinfo"
 							]
 						}
@@ -497,7 +497,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"userinfo",
 								"{{mappedExternalUserId}}"
 							]
@@ -843,7 +843,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"clients",
 								"IPA_TEST"
 							]
@@ -895,7 +895,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"clients",
 								"IPA_TEST"
 							]
@@ -934,7 +934,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"clients",
 								"IPA_TEST",
 								"{{clientId}}"
@@ -996,7 +996,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"clients",
 								"IPA_TEST"
 							]
@@ -1113,7 +1113,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"revoke"
 							],
 							"query": [
@@ -1155,7 +1155,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"userinfo"
 							]
 						}
@@ -1210,7 +1210,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"token"
 							],
 							"query": [
@@ -1290,7 +1290,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"userinfo"
 							]
 						}
@@ -1358,7 +1358,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"userinfo",
 								"{{mappedExternalUserId}}"
 							]
@@ -1401,7 +1401,7 @@
 								"{{p4paAuthBaseUrl}}"
 							],
 							"path": [
-								"auth",
+								"oauth",
 								"clients",
 								"{{organizationIpaCode}}",
 								"{{clientId}}"

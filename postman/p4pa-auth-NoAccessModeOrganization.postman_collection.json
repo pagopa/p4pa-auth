@@ -41,7 +41,7 @@
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"auth",
+						"oauth",
 						"token"
 					],
 					"query": [
@@ -108,7 +108,7 @@
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"auth",
+						"oauth",
 						"token"
 					],
 					"query": [
@@ -175,7 +175,7 @@
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"auth",
+						"oauth",
 						"token"
 					],
 					"query": [
@@ -280,7 +280,7 @@
 						"{{p4paAuthBaseUrl}}"
 					],
 					"path": [
-						"auth",
+						"oauth",
 						"userinfo"
 					]
 				}
