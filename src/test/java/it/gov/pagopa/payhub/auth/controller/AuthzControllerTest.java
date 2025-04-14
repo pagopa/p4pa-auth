@@ -297,7 +297,7 @@ class AuthzControllerTest {
 
         //Then
         mockMvc.perform(
-                get("/payhub/auth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
+                get("/payhub/oauth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             ).andExpect(status().isOk())
             .andExpect(content().json("{\"userId\":\"USERID\",\"mappedExternalUserId\":\"MAPPEDEXTERNALUSERID\",\"organizations\":[{\"organizationIpaCode\":\"ORG\",\"roles\":[\"ROLE_ADMIN\"]}]}"));
@@ -334,7 +334,7 @@ class AuthzControllerTest {
 
         //Then
         mockMvc.perform(
-                        get("/payhub/auth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
+                        get("/payhub/oauth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isOk())
                 .andExpect(content().json("{\"userId\":\"USERID\",\"mappedExternalUserId\":\"OTHERUSERID\"}"));
@@ -371,7 +371,7 @@ class AuthzControllerTest {
 
         //Then
         mockMvc.perform(
-                get("/payhub/auth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
+                get("/payhub/oauth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             ).andExpect(status().isUnauthorized());
     }
@@ -400,7 +400,7 @@ class AuthzControllerTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         MvcResult result = mockMvc.perform(
-            get("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+            get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
               .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
           ).andExpect(status().isOk())
           .andReturn();
@@ -426,7 +426,7 @@ class AuthzControllerTest {
 
         //Then
         mockMvc.perform(
-          get("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+          get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isUnauthorized());
     }
@@ -467,7 +467,7 @@ class AuthzControllerTest {
           .when(authzServiceMock).getClients(organizationIpaCode);
         //Then
         MvcResult result = mockMvc.perform(
-            get("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
+            get("/payhub/oauth/clients/{organizationIpaCode}", organizationIpaCode)
               .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
           ).andExpect(status().isOk())
           .andReturn();
@@ -494,7 +494,7 @@ class AuthzControllerTest {
 
         //Then
         mockMvc.perform(
-          get("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
+          get("/payhub/oauth/clients/{organizationIpaCode}", organizationIpaCode)
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isUnauthorized());
     }
@@ -519,7 +519,7 @@ class AuthzControllerTest {
                 .thenThrow(new M2MClientConflictException(""));
 
         mockMvc.perform(
-                post("/payhub/auth/clients/{organizationIpaCode}", organizationIpaCode)
+                post("/payhub/oauth/clients/{organizationIpaCode}", organizationIpaCode)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createClientRequest))
@@ -548,7 +548,7 @@ class AuthzControllerTest {
         willDoNothing().given(authzServiceMock).revokeClient(organizationIpaCode, clientId);
 
         mockMvc.perform(
-            delete("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+            delete("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
               .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
           ).andExpect(status().isOk())
           .andDo(print());
@@ -571,7 +571,7 @@ class AuthzControllerTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
         //Then
         mockMvc.perform(
-          delete("/payhub/auth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+          delete("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isUnauthorized());
     }
