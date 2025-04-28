@@ -90,6 +90,7 @@ logging:
     PERFORMANCE_LOG.REST_INVOKE: "\${LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE:\${logging.level.PERFORMANCE_LOG}}"
 
 app:
+  env: "\${ENV:DEV}"
   # If true, it will expect the presence of the access organization inside the ID Token.
   # Thus, it will register te relation between the operator and the relation with the provided roles.
   # If disabled, the admin should register the associations using the provided API (otherwise they will be disabled)
