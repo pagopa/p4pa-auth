@@ -46,6 +46,9 @@ management:
     build.enabled: true
     java.enabled: true
     git.enabled: true
+  observations:
+    http.server:
+      filter.order: -100
   endpoints:
     jmx:
       exposure.include: "*"
