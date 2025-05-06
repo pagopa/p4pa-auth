@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
@@ -38,6 +39,7 @@ class ExchangeTokenServiceTest {
     @BeforeEach
     void init(){
         service = new ExchangeTokenServiceImpl(
+                "DEV",
                 validateExternalTokenServiceMock,
                 accessTokenBuilderServiceMock,
                 tokenStoreServiceMock,
@@ -116,5 +118,34 @@ class ExchangeTokenServiceTest {
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
         Mockito.verifyNoInteractions(validateExternalTokenServiceMock, idTokenClaimsMapperMock, iamUserRegistrationServiceMock);
+    }
+
+    @Test
+    void givenNotAllowedEnvAndFakeTokenWhenPostTokenThenSkipFakeHandling() {
+        // Given
+        String clientId = "CLIENT_ID";
+        String subjectToken = "SUBJECT_TOKEN";
+        String subjectIssuer = "SUBJECT_ISSUER";
+        String subjectTokenType = "FAKE-AUTH";
+        String scope = "SCOPE";
+
+        InvalidTokenException expectedException = new InvalidTokenException("DUMMY");
+        Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
+                .thenThrow(expectedException);
+
+        service = new ExchangeTokenServiceImpl(
+                "PROD",
+                validateExternalTokenServiceMock,
+                accessTokenBuilderServiceMock,
+                tokenStoreServiceMock,
+                idTokenClaimsMapperMock,
+                iamUserRegistrationServiceMock,
+                fakeUserInfoServiceMock);
+
+        // When
+        InvalidTokenException result = Assertions.assertThrows(InvalidTokenException.class, () -> service.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope));
+
+        // Then
+        Assertions.assertSame(expectedException, result);
     }
 }
