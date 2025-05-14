@@ -2,12 +2,12 @@ import java.util.Objects
 
 plugins {
     java
-    id("org.springframework.boot") version "3.4.3"
+    id("org.springframework.boot") version "3.4.5"
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
-    id("org.sonarqube") version "6.0.1.5171"
-    id("com.github.ben-manes.versions") version "0.51.0"
-    id("org.openapi.generator") version "7.10.0"
+    id("org.sonarqube") version "6.1.0.5360"
+    id("com.github.ben-manes.versions") version "0.52.0"
+    id("org.openapi.generator") version "7.13.0"
     id("org.ajoberstar.grgit") version "5.3.0"
     id("com.gorylenko.gradle-git-properties") version "2.5.0"
 }
@@ -33,18 +33,18 @@ repositories {
     mavenCentral()
 }
 
-val springDocOpenApiVersion = "2.8.5"
+val springDocOpenApiVersion = "2.8.6"
 val janinoVersion = "3.1.12"
 val openApiToolsVersion = "0.2.6"
 val javaJwtVersion = "4.5.0"
 val jwksRsaVersion = "0.22.1"
-val nimbusJoseJwtVersion = "10.0.1"
+val nimbusJoseJwtVersion = "10.3"
 val jjwtVersion = "0.12.6"
-val wiremockVersion = "3.12.0"
+val wiremockVersion = "3.13.0"
 val bouncycastleVersion = "1.80"
-val micrometerVersion = "1.4.3"
+val micrometerVersion = "1.4.6"
 val caffeineVersion = "3.2.0"
-val httpClientVersion = "5.4.2"
+val httpClientVersion = "5.4.4"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -68,7 +68,9 @@ dependencies {
     implementation("com.auth0:java-jwt:$javaJwtVersion")
     implementation("com.auth0:jwks-rsa:$jwksRsaVersion")
     implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
-    implementation("io.jsonwebtoken:jjwt:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
     implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
 
     compileOnly("org.projectlombok:lombok")
