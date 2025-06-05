@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.security;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -63,10 +65,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-        } catch (InvalidAccessTokenException | InvalidTokenException e){
-            log.info("An invalid accessToken has been provided: " + e.getMessage());
         } catch (Exception e){
-            log.error("Something gone wrong while retrieving UserInfo", e);
+            if(e instanceof InvalidAccessTokenException || e instanceof InvalidTokenException || e instanceof TokenExpiredException){
+                log.info("An invalid accessToken has been provided: " + e.getMessage());
+                response.getWriter().write(e.getMessage());
+            } else {
+                log.error("Something gone wrong while validate accessToken", e);
+            }
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return;
         }
         filterChain.doFilter(request, response);
     }
