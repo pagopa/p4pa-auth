@@ -200,8 +200,9 @@ class AuthnControllerTest {
 
         mockMvc.perform(
                 get("/payhub/oauth/userinfo")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isForbidden());
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string(""));
     }
 
     @Test
@@ -212,7 +213,7 @@ class AuthnControllerTest {
         mockMvc.perform(
                 get("/payhub/oauth/userinfo")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isForbidden());
+        ).andExpect(status().isUnauthorized());
     }
 //endregion
 
