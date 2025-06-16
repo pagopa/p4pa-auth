@@ -10,9 +10,12 @@ See [PU Microservice Architecture](https://pagopa.atlassian.net/wiki/spaces/SPAC
 * To handle m2m clients;
 * To store users and roles.
 
-## 📄 APIs
+## 🌐 APIs
 See [OpenAPI](openapi/p4pa-auth.openapi.yaml), exposed through the following path:
 * `/swagger-ui/index.html`
+
+See [Postman collection](/postman/p4pa-auth-E2E.postman_collection.json) and [Postman Environment](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1094615081/Environment+collection+postman).
+
 
 ### 📌 Relevant APIs
 * `GET /payhub/.well-known/jwks.json`: JWKS containing public keys;
@@ -41,14 +44,14 @@ See [log configured pattern](/src/main/resources/logback-spring.xml).
 
 ## 🔗 Dependencies
 
-### 🖥️ Resources
+### 🗄️ Resources
 * Redis
 * MongoDB
 
 ### 🧩 Microservices
 * [p4pa-organization](https://github.com/pagopa/p4pa-organization): To retrieve organization info and add them to the user info.
 
-### 🌐 External
+### 🌍 External
 * External IAM: The IAM which will provide the id token used to authenticate users. 
 
 ## 🗃️ Entities handled
@@ -79,9 +82,9 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | LOG_LEVEL_PERFORMANCE_LOG_API_REQUEST | Level applied to [API Performance Log](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1540096383/Logging#2.2.2.1.-Log-di-perfomance-per-le-API)                            | INFO    |
 | LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE | Level applied to [REST invoke Performance Log](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1540096383/Logging#2.2.2.2.-Log-di-performance-per-i-servizi-REST-integrati) | INFO    |
 
-#### 🔃 Integrations
+#### 🔁 Integrations
 
-##### 💾Resources
+##### 🗄️ Resources
 | ENV                                           | DESCRIPTION                             | DEFAULT                   |
 |-----------------------------------------------|-----------------------------------------|---------------------------|
 | REDIS_HOST                                    | Redis server host                       | localhost                 |
@@ -123,7 +126,7 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | ORGANIZATION_WAIT_TIME_MILLIS      | Organization retry waiting time (milliseconds) | 500     |
 | ORGANIZATION_PRINT_BODY_WHEN_ERROR | To print body when an error occurs             | true    |
 
-##### 🌐 External services
+##### 🌍 External services
 | ENV                         | DESCRIPTION                                                                                               | DEFAULT |
 |-----------------------------|-----------------------------------------------------------------------------------------------------------|---------|
 | JWT_EXTERNAL_TOKEN_BASE_URL | External IAM base URL (it will be used to build the jwks url appending the path `/.well-known/jwks.json`) |https://auth.server.com|
@@ -169,9 +172,13 @@ Ensure the following tools are installed on your machine:
 
 ### 🧪 Test
 
+#### 📌 JUnit
 ```sh
 ./gradlew test
 ```
+
+#### 📌 Postman
+See [Postman collection](/postman/p4pa-auth-E2E.postman_collection.json) and [Postman Environment](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1094615081/Environment+collection+postman).
 
 ### 🚀 Run local
 
