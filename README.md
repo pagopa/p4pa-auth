@@ -52,7 +52,8 @@ See [log configured pattern](/src/main/resources/logback-spring.xml).
 * [p4pa-organization](https://github.com/pagopa/p4pa-organization): To retrieve organization info and add them to the user info.
 
 ### 🌍 External
-* External IAM: The IAM which will provide the id token used to authenticate users. 
+* External IAM - The IAM which will provide the id token used to authenticate users:
+  * [JWKS endpoint](https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets): Key sets to validate JWT signs.
 
 ## 🗃️ Entities handled
 * `users`: Users authenticated through the external IAM;
@@ -127,10 +128,10 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | ORGANIZATION_PRINT_BODY_WHEN_ERROR | To print body when an error occurs             | true    |
 
 ##### 🌍 External services
-| ENV                         | DESCRIPTION                                                                                               | DEFAULT |
-|-----------------------------|-----------------------------------------------------------------------------------------------------------|---------|
-| JWT_EXTERNAL_TOKEN_BASE_URL | External IAM base URL (it will be used to build the jwks url appending the path `/.well-known/jwks.json`) |https://auth.server.com|
-| JWT_EXTERNAL_TOKEN_ISS      | External IAM issuer claim value                                                                           |externalauthentication-server-issuer|
+| ENV                         | DESCRIPTION                                                                                               | DEFAULT                              |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------|--------------------------------------|
+| JWT_EXTERNAL_TOKEN_BASE_URL | External IAM base URL (it will be used to build the jwks url appending the path `/.well-known/jwks.json`) | https://auth.server.com              |
+| JWT_EXTERNAL_TOKEN_ISS      | External IAM issuer claim value                                                                           | externalauthentication-server-issuer |
 
 #### 💼 Business logic
 | ENV                              | DESCRIPTION                                                                                                                                                                                                                                                            | DEFAULT              |
