@@ -26,6 +26,10 @@ See [Postman collection](/postman/p4pa-auth-E2E.postman_collection.json) and [Po
 * `DELETE /payhub/oauth/clients/{organizationIpaCode}/{clientId}`: To delete an organization client;
 * `DELETE /actuator/caches/ACCESS_TOKEN`: To revoke all access tokens.
 
+### 📌 Common HTTP status returned:
+* `401`: Invalid access token provided, thus a new login is required;
+* `403`: Trying to access a not authorized resource.
+
 ## 🔎 Monitoring
 See available actuator endpoints through the following path:
 * `/actuator`
