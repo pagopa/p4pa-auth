@@ -2,13 +2,13 @@ import java.util.Objects
 
 plugins {
     java
-    id("org.springframework.boot") version "3.5.0"
+    id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
-    id("org.sonarqube") version "6.1.0.5360"
+    id("org.sonarqube") version "6.2.0.5505"
     id("com.github.ben-manes.versions") version "0.52.0"
     id("org.openapi.generator") version "7.13.0"
-    id("org.ajoberstar.grgit") version "5.3.0"
+    id("org.ajoberstar.grgit") version "5.3.2"
     id("com.gorylenko.gradle-git-properties") version "2.5.0"
 }
 
@@ -37,13 +37,13 @@ val springDocOpenApiVersion = "2.8.9"
 val janinoVersion = "3.1.12"
 val openApiToolsVersion = "0.2.6"
 val javaJwtVersion = "4.5.0"
-val jwksRsaVersion = "0.22.1"
+val jwksRsaVersion = "0.22.2"
 val nimbusJoseJwtVersion = "10.3"
 val jjwtVersion = "0.12.6"
-val wiremockVersion = "3.13.0"
+val wiremockVersion = "3.13.1"
 val bouncycastleVersion = "1.81"
 val micrometerVersion = "1.5.1"
-val caffeineVersion = "3.2.0"
+val caffeineVersion = "3.2.1"
 val httpClientVersion = "5.5"
 
 dependencies {
