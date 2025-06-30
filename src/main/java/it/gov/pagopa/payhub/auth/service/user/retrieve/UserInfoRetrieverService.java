@@ -8,9 +8,13 @@ import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
+import it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService;
 import it.gov.pagopa.payhub.auth.service.user.IamUserInfoDTO2UserInfoMapper;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserInfoRetrieverService {
@@ -45,16 +49,23 @@ public class UserInfoRetrieverService {
     }
 
     private IamUserInfoDTO findSystemIamUser(String mappedExternalUserId) {
-        return clientRepository.findById(Client2UserInfoMapper.extractClientId(mappedExternalUserId))
-                .map(clientMapper::mapToNoSecretDTO)
+        Optional<ClientNoSecretDTO> clientNoSecretDTO;
+        String clientId = Client2UserInfoMapper.extractClientId(mappedExternalUserId);
+        if(AuthorizeClientCredentialsRequestService.isPuSystemClientId(clientId)){
+            clientNoSecretDTO = Optional.of(AuthorizeClientCredentialsRequestService.puSystemClientId2ClientNoSecretDTO(clientId));
+        } else {
+            clientNoSecretDTO = clientRepository.findById(clientId)
+                    .map(clientMapper::mapToNoSecretDTO);
+        }
+        return clientNoSecretDTO
                 .map(client2UserInfoMapper)
-                .orElseThrow(() -> new UserNotFoundException("Cannot found client related to mappedExternalUserId:" + mappedExternalUserId));
+                .orElseThrow(() -> new UserNotFoundException("Cannot find client related to mappedExternalUserId:" + mappedExternalUserId));
     }
 
     private IamUserInfoDTO findIamUser(String mappedExternalUserId) {
         return usersRepository.findByMappedExternalUserId(mappedExternalUserId)
                 .map(this::user2IamUser)
-                .orElseThrow(() -> new UserNotFoundException("Cannot found user having mappedExternalId:" + mappedExternalUserId));
+                .orElseThrow(() -> new UserNotFoundException("Cannot find user having mappedExternalId:" + mappedExternalUserId));
     }
 
     private IamUserInfoDTO user2IamUser(User user) {

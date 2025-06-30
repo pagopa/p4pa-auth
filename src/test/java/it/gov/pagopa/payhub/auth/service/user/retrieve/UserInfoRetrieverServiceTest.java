@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
+import it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService;
 import it.gov.pagopa.payhub.auth.service.user.IamUserInfoDTO2UserInfoMapper;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
@@ -61,6 +62,30 @@ class UserInfoRetrieverServiceTest {
                 client2UserInfoMapperMock,
                 a2ALegacyClaims2UserInfoMapperMock,
                 iamUserInfoMapperMock);
+    }
+
+    //region system user
+    @Test
+    void givenPuSystemUserWhenFindByMappedExternalUserIdThenOk() {
+        // Given
+        String clientId = "piattaforma-unitaria_IPACODE";
+        String accessToken = "accessToken";
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        UserInfo expectedResult = new UserInfo();
+
+        ClientNoSecretDTO clientNoSecretDTO = AuthorizeClientCredentialsRequestService.puSystemClientId2ClientNoSecretDTO(clientId);
+
+        Mockito.when(client2UserInfoMapperMock.apply(clientNoSecretDTO))
+                .thenReturn(iamUserInfo);
+
+        Mockito.when(iamUserInfoMapperMock.apply(iamUserInfo, accessToken))
+                .thenReturn(expectedResult);
+
+        // When
+        UserInfo result = service.findByMappedExternalUserId("WS_USER-" + clientId, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
     }
 
     //region system user

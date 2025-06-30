@@ -28,7 +28,7 @@ public class AuthorizeClientCredentialsRequestService {
 	}
 
 	public ClientNoSecretDTO authorizeCredentials(String clientId, String clientSecret) {
-		if (clientId.startsWith(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)) {
+		if (isPuSystemClientId(clientId)) {
 			return authorizePiattaformaUnitariaCredentials(clientId, clientSecret);
 		}
 		return authorizeSilCredentials(clientId, clientSecret);
@@ -49,10 +49,18 @@ public class AuthorizeClientCredentialsRequestService {
 	private ClientNoSecretDTO authorizePiattaformaUnitariaCredentials(String clientId, String clientSecret) {
 		if (!clientSecret.equals(piattaformaUnitariaClientSecret))
 			throw new ClientUnauthorizedException("Unauthorized client for piattaforma-unitaria client-credentials");
+		return puSystemClientId2ClientNoSecretDTO(clientId);
+	}
+
+	public static boolean isPuSystemClientId(String clientId) {
+		return clientId.startsWith(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
+	}
+
+	public static ClientNoSecretDTO puSystemClientId2ClientNoSecretDTO(String clientId) {
 		return ClientNoSecretDTO.builder()
-			.clientId(clientId)
-			.clientName(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)
-			.organizationIpaCode(clientId.substring(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX.length()))
-			.build();
+				.clientId(clientId)
+				.clientName(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)
+				.organizationIpaCode(clientId.substring(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX.length()))
+				.build();
 	}
 }
