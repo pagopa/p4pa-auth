@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
+import it.gov.pagopa.payhub.auth.utils.PageUtils;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.dto.generated.*;
@@ -26,7 +27,7 @@ public class AuthzControllerImpl implements AuthzApi {
     public AuthzControllerImpl(AuthzService authzService,
         @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode) {
         this.authzService = authzService;
-        this.organizationAccessMode = organizationAccessMode;
+      this.organizationAccessMode = organizationAccessMode;
     }
 
     @Override
@@ -135,6 +136,26 @@ public class AuthzControllerImpl implements AuthzApi {
             throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
         }
         return ResponseEntity.ok(authzService.getClients(organizationIpaCode));
+    }
+
+    @Override
+    public ResponseEntity<ClientDTOPage> getClientsByFilters(String organizationIpaCode,
+        String clientId, String clientName, Integer page, Integer size, List<String> sort) {
+        log.info("Requesting clients by filters");
+
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
+        }
+
+        Page<ClientNoSecretDTO> clients = authzService.getClientsByFilters(clientId, clientName, null,
+            PageRequest.of(page, size, PageUtils.convertToSort(sort)));
+        return ResponseEntity.ok(ClientDTOPage.builder()
+            .content(clients.getContent())
+            .pageNo(page)
+            .pageSize(size)
+            .totalElements(clients.getNumberOfElements())
+            .totalPages(clients.getTotalPages())
+            .build());
     }
 
     @Override

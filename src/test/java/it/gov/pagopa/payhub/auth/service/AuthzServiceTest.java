@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.service;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
@@ -35,6 +36,9 @@ class AuthzServiceTest {
     private ClientService clientServiceMock;
 
     @Mock
+    private ClientRepository clientRepositoryMock;
+
+    @Mock
     private OperatorsRepository operatorsRepository;
 
     @Mock
@@ -50,7 +54,7 @@ class AuthzServiceTest {
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper);
+        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, clientRepositoryMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper);
     }
 
     @AfterEach

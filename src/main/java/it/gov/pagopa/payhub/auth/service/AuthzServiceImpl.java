@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
@@ -26,16 +27,19 @@ public class AuthzServiceImpl implements AuthzService {
 
     private final UserService userService;
     private final ClientService clientService;
+    private final ClientRepository clientRepository;
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
     private final UserDTOMapper userDTOMapper;
     private static final String MYPAYIAMISSUERS = "MYPAY";
 
-    public AuthzServiceImpl(UserService userService, ClientService clientService, UsersRepository usersRepository,
+    public AuthzServiceImpl(UserService userService, ClientService clientService,
+        ClientRepository clientRepository, UsersRepository usersRepository,
         OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper) {
         this.userService = userService;
         this.clientService = clientService;
+        this.clientRepository = clientRepository;
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.operatorDTOMapper = operatorDTOMapper;
@@ -112,5 +116,11 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public void revokeClient(String organizationIpaCode, String clientId) {
 	    clientService.revokeClient(organizationIpaCode, clientId);
+    }
+
+    @Override
+    public Page<ClientNoSecretDTO> getClientsByFilters(String clientId,
+        String clientName, String organizationIpaCode, Pageable pageRequest) {
+        return clientRepository.searchByFilters(clientId, clientName, organizationIpaCode, pageRequest);
     }
 }
