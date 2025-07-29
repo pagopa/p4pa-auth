@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -26,7 +27,7 @@ public class AuthzControllerImpl implements AuthzApi {
     public AuthzControllerImpl(AuthzService authzService,
         @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode) {
         this.authzService = authzService;
-        this.organizationAccessMode = organizationAccessMode;
+      this.organizationAccessMode = organizationAccessMode;
     }
 
     @Override
@@ -135,6 +136,26 @@ public class AuthzControllerImpl implements AuthzApi {
             throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
         }
         return ResponseEntity.ok(authzService.getClients(organizationIpaCode));
+    }
+
+    @Override
+    public ResponseEntity<ClientDTOPage> getClientsSearch(String organizationIpaCode,
+        String clientId, String clientName, Pageable pageable) {
+        log.info("Requesting clients by filters");
+
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
+        }
+
+        Page<ClientNoSecretDTO> clients = authzService.getClientsSearch(clientId, clientName, organizationIpaCode,
+            pageable);
+        return ResponseEntity.ok(ClientDTOPage.builder()
+            .content(clients.getContent())
+            .pageNo(pageable.getPageNumber())
+            .pageSize(pageable.getPageSize())
+            .totalElements(clients.getNumberOfElements())
+            .totalPages(clients.getTotalPages())
+            .build());
     }
 
     @Override
