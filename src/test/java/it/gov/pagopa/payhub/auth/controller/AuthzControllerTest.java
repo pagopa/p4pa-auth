@@ -611,4 +611,27 @@ class AuthzControllerTest {
             ).andExpect(status().isOk())
             .andExpect(content().json("{\"content\":[{\"organizationIpaCode\":\"IPACODE\"}],\"pageNo\":4,\"pageSize\":1,\"totalElements\":1,\"totalPages\":100}"));
     }
+
+    @Test
+    void givenUnauthorizedUserwhenGetClientByFiltersThenUnauthorized() throws Exception {
+        String organizationIpaCode = "IPACODE";
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(UserInfo.builder()
+                .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode(organizationIpaCode)
+                    .roles(List.of(Constants.ROLE_OPER))
+                    .build()))
+                .build());
+
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+
+        mockMvc.perform(
+                get("/payhub/oauth/clients/searchByFilters")
+                    .param("organizationIpaCode","IPACODE")
+                    .param("page", "4")
+                    .param("size", "1")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+            ).andExpect(status().isUnauthorized());
+    }
 }

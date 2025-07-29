@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.repository;
 
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
-import java.time.OffsetDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
