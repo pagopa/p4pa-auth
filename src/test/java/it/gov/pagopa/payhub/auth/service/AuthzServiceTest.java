@@ -308,7 +308,7 @@ class AuthzServiceTest {
         Mockito.when(clientRepositoryMock.searchByFilters(clientId,clientName,organizationIpaCode,pageRequest)).thenReturn(clientPage);
 
         // When
-        Page<ClientNoSecretDTO> result = service.getClientsByFilters(clientId, clientName, organizationIpaCode, pageRequest);
+        Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, clientName, organizationIpaCode, pageRequest);
 
         // Then
         Assertions.assertEquals(1, result.getTotalElements());

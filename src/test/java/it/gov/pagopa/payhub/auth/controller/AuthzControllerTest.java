@@ -599,7 +599,7 @@ class AuthzControllerTest {
             100
         );
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
-        Mockito.when(authzServiceMock.getClientsByFilters(null, null, organizationIpaCode, pageRequest))
+        Mockito.when(authzServiceMock.getClientsSearch(null, null, organizationIpaCode, pageRequest))
             .thenReturn(expectedResult);
 
         mockMvc.perform(

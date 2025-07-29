@@ -19,5 +19,5 @@ public interface AuthzService {
     String getClientSecret(String organizationIpaCode, String clientId);
 	  List<ClientNoSecretDTO> getClients(String organizationIpaCode);
     void revokeClient(String organizationIpaCode, String clientId);
-    Page<ClientNoSecretDTO> getClientsByFilters(String clientId, String clientName, String organizationIpaCode, Pageable pageRequest);
+    Page<ClientNoSecretDTO> getClientsSearch(String clientId, String clientName, String organizationIpaCode, Pageable pageRequest);
 }

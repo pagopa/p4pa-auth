@@ -233,11 +233,11 @@ paths:
           description: Conflict
         '429':
           description: Too Many Requests
-  /oauth/clients/searchByFilters:
+  /oauth/clients/search:
     get:
       tags:
         - authz
-      operationId: getClientsByFilters
+      operationId: getClientsSearch
       x-spring-paginated: true
       parameters:
         - name: organizationIpaCode
@@ -253,9 +253,27 @@ paths:
           in: query
           schema:
             type: string
-        - $ref: 'https://api.swaggerhub.com/apis/spring/pagination/1.0.0#/components/parameters/pageParam'
-        - $ref: 'https://api.swaggerhub.com/apis/spring/pagination/1.0.0#/components/parameters/sizeParam'
-        - $ref: 'https://api.swaggerhub.com/apis/spring/pagination/1.0.0#/components/parameters/sortParam'
+        - name: page
+          in: query
+          description : "Zero-based page index (0..N)"
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: size
+          in: query
+          description : "The size of the page to be returned"
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+        - name: sort
+          in: query
+          description: "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported."
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: OK

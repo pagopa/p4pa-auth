@@ -139,7 +139,7 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
-    public ResponseEntity<ClientDTOPage> getClientsByFilters(String organizationIpaCode,
+    public ResponseEntity<ClientDTOPage> getClientsSearch(String organizationIpaCode,
         String clientId, String clientName, Pageable pageable) {
         log.info("Requesting clients by filters");
 
@@ -147,7 +147,7 @@ public class AuthzControllerImpl implements AuthzApi {
             throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
         }
 
-        Page<ClientNoSecretDTO> clients = authzService.getClientsByFilters(clientId, clientName, organizationIpaCode,
+        Page<ClientNoSecretDTO> clients = authzService.getClientsSearch(clientId, clientName, organizationIpaCode,
             pageable);
         return ResponseEntity.ok(ClientDTOPage.builder()
             .content(clients.getContent())

@@ -119,7 +119,7 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public Page<ClientNoSecretDTO> getClientsByFilters(String clientId,
+    public Page<ClientNoSecretDTO> getClientsSearch(String clientId,
         String clientName, String organizationIpaCode, Pageable pageRequest) {
         return clientRepository.searchByFilters(clientId, clientName, organizationIpaCode, pageRequest);
     }
