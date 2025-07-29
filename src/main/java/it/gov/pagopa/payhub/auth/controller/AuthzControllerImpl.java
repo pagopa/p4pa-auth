@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
-import it.gov.pagopa.payhub.auth.utils.PageUtils;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
 import it.gov.pagopa.payhub.dto.generated.*;
@@ -10,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -140,19 +140,19 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<ClientDTOPage> getClientsByFilters(String organizationIpaCode,
-        String clientId, String clientName, Integer page, Integer size, List<String> sort) {
+        String clientId, String clientName, Pageable pageable) {
         log.info("Requesting clients by filters");
 
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
         }
 
-        Page<ClientNoSecretDTO> clients = authzService.getClientsByFilters(clientId, clientName, null,
-            PageRequest.of(page, size, PageUtils.convertToSort(sort)));
+        Page<ClientNoSecretDTO> clients = authzService.getClientsByFilters(clientId, clientName, organizationIpaCode,
+            pageable);
         return ResponseEntity.ok(ClientDTOPage.builder()
             .content(clients.getContent())
-            .pageNo(page)
-            .pageSize(size)
+            .pageNo(pageable.getPageNumber())
+            .pageSize(pageable.getPageSize())
             .totalElements(clients.getNumberOfElements())
             .totalPages(clients.getTotalPages())
             .build());
