@@ -287,4 +287,31 @@ class AuthzServiceTest {
         //Then
         Mockito.verify(clientServiceMock).revokeClient(organizationIpaCode, clientId);
     }
+
+    @Test
+    void whenGetClientByFiltersThenCallAutzhService(){
+        // Given
+        String clientId = "CLIENTID";
+        String clientName = "CLIENTNAME";
+        String organizationIpaCode = "IPACODE";
+
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        ClientNoSecretDTO clientNoSecretDTO = new ClientNoSecretDTO();
+        clientNoSecretDTO.setClientId(clientId);
+        clientNoSecretDTO.setClientName(clientName);
+        clientNoSecretDTO.setOrganizationIpaCode(organizationIpaCode);
+
+
+        Page<ClientNoSecretDTO> clientPage = new PageImpl<>(List.of(clientNoSecretDTO), pageRequest, 1);
+
+        Mockito.when(clientRepositoryMock.searchByFilters(clientId,clientName,organizationIpaCode,pageRequest)).thenReturn(clientPage);
+
+        // When
+        Page<ClientNoSecretDTO> result = service.getClientsByFilters(clientId, clientName, organizationIpaCode, pageRequest);
+
+        // Then
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals(clientNoSecretDTO, result.getContent().getFirst());
+    }
 }
