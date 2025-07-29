@@ -603,7 +603,7 @@ class AuthzControllerTest {
             .thenReturn(expectedResult);
 
         mockMvc.perform(
-                get("/payhub/oauth/clients/searchByFilters")
+                get("/payhub/oauth/clients/search")
                     .param("organizationIpaCode","IPACODE")
                     .param("page", "4")
                     .param("size", "1")
@@ -627,7 +627,7 @@ class AuthzControllerTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
-                get("/payhub/oauth/clients/searchByFilters")
+                get("/payhub/oauth/clients/search")
                     .param("organizationIpaCode","IPACODE")
                     .param("page", "4")
                     .param("size", "1")
