@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.auth.service;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
@@ -35,6 +36,9 @@ class AuthzServiceTest {
     private ClientService clientServiceMock;
 
     @Mock
+    private ClientRepository clientRepositoryMock;
+
+    @Mock
     private OperatorsRepository operatorsRepository;
 
     @Mock
@@ -50,7 +54,7 @@ class AuthzServiceTest {
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper);
+        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, clientRepositoryMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper);
     }
 
     @AfterEach
@@ -282,5 +286,32 @@ class AuthzServiceTest {
         service.revokeClient(organizationIpaCode, clientId);
         //Then
         Mockito.verify(clientServiceMock).revokeClient(organizationIpaCode, clientId);
+    }
+
+    @Test
+    void whenGetClientByFiltersThenCallAutzhService(){
+        // Given
+        String clientId = "CLIENTID";
+        String clientName = "CLIENTNAME";
+        String organizationIpaCode = "IPACODE";
+
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        ClientNoSecretDTO clientNoSecretDTO = new ClientNoSecretDTO();
+        clientNoSecretDTO.setClientId(clientId);
+        clientNoSecretDTO.setClientName(clientName);
+        clientNoSecretDTO.setOrganizationIpaCode(organizationIpaCode);
+
+
+        Page<ClientNoSecretDTO> clientPage = new PageImpl<>(List.of(clientNoSecretDTO), pageRequest, 1);
+
+        Mockito.when(clientRepositoryMock.searchByFilters(clientId,clientName,organizationIpaCode,pageRequest)).thenReturn(clientPage);
+
+        // When
+        Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, clientName, organizationIpaCode, pageRequest);
+
+        // Then
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals(clientNoSecretDTO, result.getContent().getFirst());
     }
 }
