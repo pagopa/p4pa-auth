@@ -16,7 +16,7 @@ public interface ClientRepository extends MongoRepository<Client, String> {
 	@Query(value = "{" +
 			"    $and: [" +
 			"        { $or: [{ $expr: { $eq: ['?0', 'null'] }}, { clientId: ?0 }] }," +
-			"        { $or: [{ $expr: { $eq: ['?1', 'null'] }}, { clientName: { $gte: ?1 } }] }," +
+			"        { $or: [{ $expr: { $eq: ['?1', 'null'] }}, { clientName: ?1 }] }," +
 			"        { $or: [{ $expr: { $eq: ['?2', 'null'] }}, { organizationIpaCode: ?2 }] }," +
 			"    ] }", fields = "{bodyCiphered:  0}")
 	Page<ClientNoSecretDTO> searchByFilters(
