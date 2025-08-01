@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
+import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
@@ -121,12 +122,14 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
-    public ResponseEntity<String> getClientSecret(String organizationIpaCode, String clientId) {
-        log.info("Retrieving clientSecret of client {} of orgIpaCode {}", clientId, organizationIpaCode);
+    public ResponseEntity<Client> getClient(String organizationIpaCode, String clientId) {
+        log.info("Retrieving client having ID {} and orgIpaCode {}", clientId, organizationIpaCode);
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
-            throw new UserUnauthorizedException("User not allowed to retrieve client secret");
+            throw new UserUnauthorizedException("User not allowed to retrieve client");
         }
-        return ResponseEntity.ok(authzService.getClientSecret(organizationIpaCode, clientId));
+        return authzService.getClient(organizationIpaCode, clientId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Override

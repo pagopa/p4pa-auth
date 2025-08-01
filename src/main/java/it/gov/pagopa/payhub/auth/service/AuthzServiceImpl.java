@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
+import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
@@ -104,8 +105,8 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public String getClientSecret(String organizationIpaCode, String clientId) {
-        return clientService.getClientSecret(organizationIpaCode, clientId);
+    public Optional<Client> getClient(String organizationIpaCode, String clientId) {
+        return clientService.getClient(organizationIpaCode, clientId);
     }
 
     @Override
