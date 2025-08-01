@@ -9,9 +9,13 @@ import java.util.Optional;
 
 public interface ClientService {
 
-	ClientDTO registerClient(String clientName, String organizationIpaCode);
-	String getClientSecret(String organizationIpaCode, String clientId);
-	List<ClientNoSecretDTO> getClients(String organizationIpaCode);
-	Optional<Client> getClientByClientId(String clientId);
-	void revokeClient(String organizationIpaCode, String clientId);
+    ClientDTO registerClient(String clientName, String organizationIpaCode);
+
+    Optional<Client> getClient(String organizationIpaCode, String clientId);
+
+    List<ClientNoSecretDTO> getClients(String organizationIpaCode);
+
+    Optional<Client> getClientByClientId(String clientId);
+
+    void revokeClient(String organizationIpaCode, String clientId);
 }

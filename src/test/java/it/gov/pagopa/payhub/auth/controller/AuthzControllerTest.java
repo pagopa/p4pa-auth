@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.M2MClientConflictException;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
+import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
@@ -32,8 +33,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.doReturn;
@@ -377,57 +379,75 @@ class AuthzControllerTest {
     }
     //end region
 
-//region getClientSecret tests
-    @Test
-    void givenAuthorizedUserWhenGetClientSecretThenOk() throws Exception {
-        String uuidRandomForClientSecret = UUID.randomUUID().toString();
-        String organizationIpaCode = "IPA_TEST_2";
-        String clientId = "CLIENTID";
+//region getClient tests
+@Test
+void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
+    String organizationIpaCode = "IPA_TEST_2";
+    String clientId = "CLIENTID";
+    String clientName = "Test Client";
+    byte[] clientSecret = "dummySecret".getBytes();
 
-        UserInfo expectedUser = UserInfo.builder()
-          .userId("USERID")
-          .organizationAccess(organizationIpaCode)
-          .organizations(List.of(UserOrganizationRoles.builder()
+    Client expectedClient = Client.builder()
+            .clientId(clientId)
+            .clientName(clientName)
             .organizationIpaCode(organizationIpaCode)
-            .roles(List.of(Constants.ROLE_ADMIN))
-            .build()))
-          .build();
+            .clientSecret(clientSecret)
+            .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(expectedUser);
-        doReturn(uuidRandomForClientSecret)
-          .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+    UserInfo expectedUser = UserInfo.builder()
+            .userId("USERID")
+            .organizationAccess(organizationIpaCode)
+            .organizations(List.of(UserOrganizationRoles.builder()
+                    .organizationIpaCode(organizationIpaCode)
+                    .roles(List.of(Constants.ROLE_ADMIN))
+                    .build()))
+            .build();
 
-        MvcResult result = mockMvc.perform(
-            get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
-              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-          ).andExpect(status().isOk())
-          .andReturn();
+    Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+            .thenReturn(expectedUser);
+    Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
-        assertEquals(uuidRandomForClientSecret, result.getResponse().getContentAsString());
-    }
+    Mockito.when(authzServiceMock.getClient(organizationIpaCode, clientId))
+            .thenReturn(Optional.of(expectedClient));
+
+    MvcResult result = mockMvc.perform(
+                    get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+            ).andExpect(status().isOk())
+            .andReturn();
+
+    String jsonResponse = result.getResponse().getContentAsString();
+
+    Client actualClient = objectMapper.readValue(jsonResponse, Client.class);
+
+    assertEquals(expectedClient.getClientId(), actualClient.getClientId());
+    assertEquals(expectedClient.getClientName(), actualClient.getClientName());
+    assertEquals(expectedClient.getOrganizationIpaCode(), actualClient.getOrganizationIpaCode());
+    assertArrayEquals(expectedClient.getClientSecret(), actualClient.getClientSecret());
+}
 
     @Test
-    void givenRequestUnauthorizedWhenGetClientSecretThenException() throws Exception {
-        //Given
+    void givenRequestUnauthorizedWhenGetClientThenException() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";
 
-        //When
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(UserInfo.builder()
-            .organizations(List.of(UserOrganizationRoles.builder()
-              .organizationIpaCode("ORG")
-              .roles(List.of(Constants.ROLE_OPER))
-              .build()))
-            .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        UserInfo unauthorizedUser = UserInfo.builder()
+                .userId("USERID")
+                .organizationAccess("ORG")
+                .organizations(List.of(UserOrganizationRoles.builder()
+                        .organizationIpaCode("ORG")
+                        .roles(List.of(Constants.ROLE_OPER))
+                        .build()))
+                .build();
 
-        //Then
+        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+                .thenReturn(unauthorizedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix())
+                .thenReturn("accessToken");
+
         mockMvc.perform(
-          get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isUnauthorized());
     }
 //end region

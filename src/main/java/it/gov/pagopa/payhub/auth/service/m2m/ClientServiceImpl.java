@@ -35,9 +35,9 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public String getClientSecret(String organizationIpaCode, String clientId) {
-		log.info("Retrieving client secret");
-		return clientRetrieverService.getClientSecret(organizationIpaCode, clientId);
+	public Optional<Client> getClient(String organizationIpaCode, String clientId) {
+		log.info("Retrieving client having organizationIpaCode {} and ID {}", organizationIpaCode, clientId);
+		return clientRetrieverService.getClient(organizationIpaCode, clientId);
 	}
 
 	@Override

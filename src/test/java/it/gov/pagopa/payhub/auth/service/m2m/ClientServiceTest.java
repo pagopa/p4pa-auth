@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.auth.service.m2m.revoke.ClientRemovalService;
 import it.gov.pagopa.payhub.dto.generated.ClientDTO;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class ClientServiceTest {
@@ -66,21 +67,28 @@ class ClientServiceTest {
 		// When
 		ClientDTO actualClientDTO = service.registerClient(clientName, organizationIpaCode);
 		// Then
-		Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+		assertEquals(expectedClientDTO, actualClientDTO);
 	}
 
 	@Test
-	void givenClientIdWhenGetEncryptedClientSecretThenGetClientSecret() {
-		// Given
+	void givenClientIdWhenGetClientThenReturnClient() {
 		String organizationIpaCode = "organizationIpaCode";
 		String clientId = "clientId";
-		String clientSecretMock = UUID.randomUUID().toString();
 
-		Mockito.when(clientRetrieverServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
-		//When
-		String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
-		// Then
-		Assertions.assertEquals(clientSecretMock, clientSecret);
+		Client expectedClient = Client.builder()
+				.clientId(clientId)
+				.clientName("Test Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("secret".getBytes())
+				.build();
+
+		Mockito.when(clientRetrieverServiceMock.getClient(organizationIpaCode, clientId))
+				.thenReturn(Optional.of(expectedClient));
+
+		Optional<Client> result = service.getClient(organizationIpaCode, clientId);
+
+		assertTrue(result.isPresent());
+		assertEquals(expectedClient, result.get());
 	}
 
 	@Test
@@ -106,7 +114,7 @@ class ClientServiceTest {
 		//When
 		List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
 		//Then
-		Assertions.assertEquals(List.of(dto1, dto2), result);
+		assertEquals(List.of(dto1, dto2), result);
 	}
 
 	@Test
@@ -119,7 +127,7 @@ class ClientServiceTest {
 		//When
 		Optional<Client> result = service.getClientByClientId(clientId);
 		// Then
-		Assertions.assertEquals(Optional.of(expectedClient), result);
+		assertEquals(Optional.of(expectedClient), result);
 	}
 
 	@Test

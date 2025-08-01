@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.auth.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
+import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
@@ -25,11 +27,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -244,12 +246,20 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     }
     //endregion
 
-    //region getClientSecret
+    //region getClient
     @Test
-    void givenAuthorizedUserWhenGetClientSecretThenOk() throws Exception {
-        String uuidRandomForClientSecret = UUID.randomUUID().toString();
+    void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";
+        String clientName = "Test Client";
+        byte[] clientSecret = "dummySecret".getBytes();
+
+        Client expectedClient = Client.builder()
+                .clientId(clientId)
+                .clientName(clientName)
+                .organizationIpaCode(organizationIpaCode)
+                .clientSecret(clientSecret)
+                .build();
 
         UserInfo expectedUser = UserInfo.builder()
           .userId("USERID")
@@ -264,8 +274,8 @@ class AuthzControllerNoOrganizzationAccessModeTest {
           .thenReturn(expectedUser);
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
-        doReturn(uuidRandomForClientSecret)
-          .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);
+        Mockito.when(authzServiceMock.getClient(organizationIpaCode, clientId))
+                .thenReturn(Optional.of(expectedClient));
 
         MvcResult result = mockMvc.perform(
             get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
@@ -273,7 +283,15 @@ class AuthzControllerNoOrganizzationAccessModeTest {
           ).andExpect(status().isOk())
           .andReturn();
 
-        assertEquals(uuidRandomForClientSecret, result.getResponse().getContentAsString());
+        String jsonResponse = result.getResponse().getContentAsString();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Client actualClient = objectMapper.readValue(jsonResponse, Client.class);
+
+        assertEquals(expectedClient.getClientId(), actualClient.getClientId());
+        assertEquals(expectedClient.getClientName(), actualClient.getClientName());
+        assertEquals(expectedClient.getOrganizationIpaCode(), actualClient.getOrganizationIpaCode());
+        assertArrayEquals(expectedClient.getClientSecret(), actualClient.getClientSecret());
     }
     //endregion
 
