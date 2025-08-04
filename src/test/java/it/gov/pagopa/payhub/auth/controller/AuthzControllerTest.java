@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.M2MClientConflictException;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
-import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.doReturn;
@@ -385,13 +383,13 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
     String organizationIpaCode = "IPA_TEST_2";
     String clientId = "CLIENTID";
     String clientName = "Test Client";
-    byte[] clientSecret = "dummySecret".getBytes();
+    String decryptedSecret = "decryptedSecret";
 
-    Client expectedClient = Client.builder()
+    ClientDTO expectedClientDTO = ClientDTO.builder()
             .clientId(clientId)
             .clientName(clientName)
             .organizationIpaCode(organizationIpaCode)
-            .clientSecret(clientSecret)
+            .clientSecret(decryptedSecret)
             .build();
 
     UserInfo expectedUser = UserInfo.builder()
@@ -403,12 +401,10 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
                     .build()))
             .build();
 
-    Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(expectedUser);
+    Mockito.when(authnServiceMock.getUserInfo("accessToken")).thenReturn(expectedUser);
     Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
-
     Mockito.when(authzServiceMock.getClient(organizationIpaCode, clientId))
-            .thenReturn(Optional.of(expectedClient));
+            .thenReturn(Optional.of(expectedClientDTO));
 
     MvcResult result = mockMvc.perform(
                     get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
@@ -418,12 +414,12 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
 
     String jsonResponse = result.getResponse().getContentAsString();
 
-    Client actualClient = objectMapper.readValue(jsonResponse, Client.class);
+    ClientDTO actualClientDTO = objectMapper.readValue(jsonResponse, ClientDTO.class);
 
-    assertEquals(expectedClient.getClientId(), actualClient.getClientId());
-    assertEquals(expectedClient.getClientName(), actualClient.getClientName());
-    assertEquals(expectedClient.getOrganizationIpaCode(), actualClient.getOrganizationIpaCode());
-    assertArrayEquals(expectedClient.getClientSecret(), actualClient.getClientSecret());
+    assertEquals(expectedClientDTO.getClientId(), actualClientDTO.getClientId());
+    assertEquals(expectedClientDTO.getClientName(), actualClientDTO.getClientName());
+    assertEquals(expectedClientDTO.getOrganizationIpaCode(), actualClientDTO.getOrganizationIpaCode());
+    assertEquals(expectedClientDTO.getClientSecret(), actualClientDTO.getClientSecret());
 }
 
     @Test

@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
-import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
@@ -257,20 +256,20 @@ class AuthzServiceTest {
         String organizationIpaCode = "organizationIpaCode";
         String clientId = "clientId";
 
-        Client expectedClient = Client.builder()
+        ClientDTO expectedClientDTO = ClientDTO.builder()
                 .clientId(clientId)
                 .clientName("Test Client")
                 .organizationIpaCode(organizationIpaCode)
-                .clientSecret("dummySecret".getBytes())
+                .clientSecret("decryptedSecret")
                 .build();
 
         Mockito.when(clientServiceMock.getClient(organizationIpaCode, clientId))
-                .thenReturn(Optional.of(expectedClient));
+                .thenReturn(Optional.of(expectedClientDTO));
 
-        Optional<Client> result = service.getClient(organizationIpaCode, clientId);
+        Optional<ClientDTO> result = service.getClient(organizationIpaCode, clientId);
 
         assertTrue(result.isPresent());
-        assertEquals(expectedClient, result.get());
+        assertEquals(expectedClientDTO, result.get());
     }
 
     @Test

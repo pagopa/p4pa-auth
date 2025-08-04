@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.dto.generated.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +24,7 @@ public interface AuthzService {
 
     ClientDTO registerClient(String organizationIpaCode, CreateClientRequest createClientRequest);
 
-    Optional<Client> getClient(String organizationIpaCode, String clientId);
+    Optional<ClientDTO> getClient(String organizationIpaCode, String clientId);
 
     List<ClientNoSecretDTO> getClients(String organizationIpaCode);
 

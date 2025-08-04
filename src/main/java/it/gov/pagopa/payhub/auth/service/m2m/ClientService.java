@@ -11,7 +11,7 @@ public interface ClientService {
 
     ClientDTO registerClient(String clientName, String organizationIpaCode);
 
-    Optional<Client> getClient(String organizationIpaCode, String clientId);
+    Optional<ClientDTO> getClient(String organizationIpaCode, String clientId);
 
     List<ClientNoSecretDTO> getClients(String organizationIpaCode);
 

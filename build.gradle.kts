@@ -163,9 +163,6 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     outputDir.set("$projectDir/build/generated")
     apiPackage.set("it.gov.pagopa.payhub.controller.generated")
     modelPackage.set("it.gov.pagopa.payhub.dto.generated")
-    typeMappings.set(mapOf(
-            "Client" to "it.gov.pagopa.payhub.auth.model.Client"
-    ))
     configOptions.set(mapOf(
         "dateLibrary" to "java8",
         "requestMappingMode" to "api_interface",
