@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
-import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
@@ -247,51 +246,48 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     //endregion
 
     //region getClient
-    @Test
     void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";
         String clientName = "Test Client";
-        byte[] clientSecret = "dummySecret".getBytes();
+        String decryptedSecret = "decryptedSecret";
 
-        Client expectedClient = Client.builder()
+        ClientDTO expectedClientDTO = ClientDTO.builder()
                 .clientId(clientId)
                 .clientName(clientName)
                 .organizationIpaCode(organizationIpaCode)
-                .clientSecret(clientSecret)
+                .clientSecret(decryptedSecret)
                 .build();
 
         UserInfo expectedUser = UserInfo.builder()
-          .userId("USERID")
-          .organizationAccess(organizationIpaCode)
-          .organizations(List.of(UserOrganizationRoles.builder()
-            .organizationIpaCode(organizationIpaCode)
-            .roles(List.of(Constants.ROLE_ADMIN))
-            .build()))
-          .build();
+                .userId("USERID")
+                .organizationAccess(organizationIpaCode)
+                .organizations(List.of(UserOrganizationRoles.builder()
+                        .organizationIpaCode(organizationIpaCode)
+                        .roles(List.of(Constants.ROLE_ADMIN))
+                        .build()))
+                .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(expectedUser);
+        Mockito.when(authnServiceMock.getUserInfo("accessToken")).thenReturn(expectedUser);
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
-
         Mockito.when(authzServiceMock.getClient(organizationIpaCode, clientId))
-                .thenReturn(Optional.of(expectedClient));
+                .thenReturn(Optional.of(expectedClientDTO));
 
         MvcResult result = mockMvc.perform(
-            get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
-              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-          ).andExpect(status().isOk())
-          .andReturn();
+                        get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                ).andExpect(status().isOk())
+                .andReturn();
 
         String jsonResponse = result.getResponse().getContentAsString();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Client actualClient = objectMapper.readValue(jsonResponse, Client.class);
+        ClientDTO actualClientDTO = objectMapper.readValue(jsonResponse, ClientDTO.class);
 
-        assertEquals(expectedClient.getClientId(), actualClient.getClientId());
-        assertEquals(expectedClient.getClientName(), actualClient.getClientName());
-        assertEquals(expectedClient.getOrganizationIpaCode(), actualClient.getOrganizationIpaCode());
-        assertArrayEquals(expectedClient.getClientSecret(), actualClient.getClientSecret());
+        assertEquals(expectedClientDTO.getClientId(), actualClientDTO.getClientId());
+        assertEquals(expectedClientDTO.getClientName(), actualClientDTO.getClientName());
+        assertEquals(expectedClientDTO.getOrganizationIpaCode(), actualClientDTO.getOrganizationIpaCode());
+        assertEquals(expectedClientDTO.getClientSecret(), actualClientDTO.getClientSecret());
     }
     //endregion
 

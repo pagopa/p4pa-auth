@@ -71,24 +71,32 @@ class ClientServiceTest {
 	}
 
 	@Test
-	void givenClientIdWhenGetClientThenReturnClient() {
+	void givenClientIdWhenGetClientThenReturnClientDTO() {
 		String organizationIpaCode = "organizationIpaCode";
 		String clientId = "clientId";
 
-		Client expectedClient = Client.builder()
+		Client client = Client.builder()
 				.clientId(clientId)
 				.clientName("Test Client")
 				.organizationIpaCode(organizationIpaCode)
 				.clientSecret("secret".getBytes())
 				.build();
 
-		Mockito.when(clientRetrieverServiceMock.getClient(organizationIpaCode, clientId))
-				.thenReturn(Optional.of(expectedClient));
+		ClientDTO expectedDto = ClientDTO.builder()
+				.clientId(clientId)
+				.clientName("Test Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("decryptedSecret")
+				.build();
 
-		Optional<Client> result = service.getClient(organizationIpaCode, clientId);
+		Mockito.when(clientRetrieverServiceMock.getClient(organizationIpaCode, clientId))
+				.thenReturn(Optional.of(client));
+		Mockito.when(clientMapperMock.mapToDTO(client)).thenReturn(expectedDto);
+
+		Optional<ClientDTO> result = service.getClient(organizationIpaCode, clientId);
 
 		assertTrue(result.isPresent());
-		assertEquals(expectedClient, result.get());
+		assertEquals(expectedDto, result.get());
 	}
 
 	@Test
