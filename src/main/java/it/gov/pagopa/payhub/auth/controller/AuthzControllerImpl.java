@@ -153,9 +153,9 @@ public class AuthzControllerImpl implements AuthzApi {
             pageable);
         return ResponseEntity.ok(ClientDTOPage.builder()
             .content(clients.getContent())
-            .pageNo(pageable.getPageNumber())
-            .pageSize(pageable.getPageSize())
-            .totalElements(clients.getNumberOfElements())
+            .pageNo(clients.getNumber())
+            .pageSize(clients.getSize())
+            .totalElements((int) clients.getTotalElements())
             .totalPages(clients.getTotalPages())
             .build());
     }
