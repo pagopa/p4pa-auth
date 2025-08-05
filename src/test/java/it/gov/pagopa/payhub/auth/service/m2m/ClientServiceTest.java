@@ -148,4 +148,33 @@ class ClientServiceTest {
 		//Then
 		Mockito.verify(clientRemovalServiceMock).revokeClient(organizationIpaCode, clientId);
 	}
+
+	@Test
+	void givenClientIdAndIpaCodeWhenGenerateClientSecretThenReturnClientDTO() {
+		String organizationIpaCode = "ORG123";
+		String clientId = "clientABC";
+
+		Client updatedClient = Client.builder()
+				.clientId(clientId)
+				.clientName("Updated Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("newEncryptedSecret".getBytes())
+				.build();
+
+		ClientDTO expectedDto = ClientDTO.builder()
+				.clientId(clientId)
+				.clientName("Updated Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("decryptedSecret")
+				.build();
+
+		Mockito.when(clientRetrieverServiceMock.generateClientSecret(organizationIpaCode, clientId))
+				.thenReturn(Optional.of(updatedClient));
+		Mockito.when(clientMapperMock.mapToDTO(updatedClient)).thenReturn(expectedDto);
+
+		Optional<ClientDTO> result = service.generateClientSecret(organizationIpaCode, clientId);
+
+		assertTrue(result.isPresent());
+		assertEquals(expectedDto, result.get());
+	}
 }

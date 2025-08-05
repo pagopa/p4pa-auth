@@ -31,4 +31,6 @@ public interface AuthzService {
     void revokeClient(String organizationIpaCode, String clientId);
 
     Page<ClientNoSecretDTO> getClientsSearch(String clientId, String clientName, String organizationIpaCode, Pageable pageRequest);
+
+    Optional<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId);
 }

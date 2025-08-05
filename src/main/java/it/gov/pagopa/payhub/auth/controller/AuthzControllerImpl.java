@@ -169,4 +169,15 @@ public class AuthzControllerImpl implements AuthzApi {
         authzService.revokeClient(organizationIpaCode, clientId);
         return ResponseEntity.ok(null);
     }
+
+    @Override
+    public ResponseEntity<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId) {
+        log.info("Generating clientSecret for client {} having orgIpaCode {}: ", clientId, organizationIpaCode);
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to generate new client secret");
+        }
+        return authzService.generateClientSecret(organizationIpaCode, clientId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

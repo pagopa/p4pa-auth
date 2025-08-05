@@ -123,4 +123,9 @@ public class AuthzServiceImpl implements AuthzService {
         String clientName, String organizationIpaCode, Pageable pageRequest) {
         return clientRepository.searchByFilters(clientId, clientName, organizationIpaCode, pageRequest);
     }
+
+    @Override
+    public Optional<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId) {
+        return clientService.generateClientSecret(organizationIpaCode, clientId);
+    }
 }
