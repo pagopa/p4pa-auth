@@ -292,7 +292,7 @@ paths:
         '429':
           description: Too Many Requests
   /oauth/clients/{organizationIpaCode}/{clientId}/client-secret:
-    post:
+    put:
       tags:
         - authz
       operationId: generateClientSecret
