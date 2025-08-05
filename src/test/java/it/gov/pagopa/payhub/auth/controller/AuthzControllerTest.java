@@ -594,7 +594,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
     //end region
 
     @Test
-    void givenAuthorizedUserwhenGetClientByFiltersThenOk() throws Exception {
+    void givenAuthorizedUserWhenGetClientByFiltersThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
 
         Pageable pageRequest = PageRequest.of(4, 1);
@@ -625,7 +625,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
                     .param("size", "1")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             ).andExpect(status().isOk())
-            .andExpect(content().json("{\"content\":[{\"organizationIpaCode\":\"IPACODE\"}],\"pageNo\":4,\"pageSize\":1,\"totalElements\":1,\"totalPages\":100}"));
+            .andExpect(content().json("{\"content\":[{\"organizationIpaCode\":\"IPACODE\"}],\"pageNo\":4,\"pageSize\":1,\"totalElements\":100,\"totalPages\":100}"));
     }
 
     @Test
