@@ -650,4 +650,70 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             ).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void givenAuthorizedUserWhenGenerateClientSecretThenReturnOk() throws Exception {
+        String organizationIpaCode = "IPA_TEST_2";
+        String clientId = "CLIENTID";
+        String clientName = "Test Client";
+        String generatedSecret = "newGeneratedSecret";
+
+        ClientDTO expectedClientDTO = ClientDTO.builder()
+                .clientId(clientId)
+                .clientName(clientName)
+                .organizationIpaCode(organizationIpaCode)
+                .clientSecret(generatedSecret)
+                .build();
+
+        UserInfo authorizedUser = UserInfo.builder()
+                .userId("USERID")
+                .organizationAccess(organizationIpaCode)
+                .organizations(List.of(UserOrganizationRoles.builder()
+                        .organizationIpaCode(organizationIpaCode)
+                        .roles(List.of(Constants.ROLE_ADMIN))
+                        .build()))
+                .build();
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken")).thenReturn(authorizedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        Mockito.when(authzServiceMock.generateClientSecret(organizationIpaCode, clientId))
+                .thenReturn(Optional.of(expectedClientDTO));
+
+        MvcResult result = mockMvc.perform(
+                        put("/payhub/oauth/clients/{organizationIpaCode}/{clientId}/client-secret", organizationIpaCode, clientId)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                ).andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = result.getResponse().getContentAsString();
+        ClientDTO actualClientDTO = objectMapper.readValue(jsonResponse, ClientDTO.class);
+
+        assertEquals(expectedClientDTO.getClientId(), actualClientDTO.getClientId());
+        assertEquals(expectedClientDTO.getClientName(), actualClientDTO.getClientName());
+        assertEquals(expectedClientDTO.getOrganizationIpaCode(), actualClientDTO.getOrganizationIpaCode());
+        assertEquals(expectedClientDTO.getClientSecret(), actualClientDTO.getClientSecret());
+    }
+
+    @Test
+    void givenUnauthorizedUserWhenGenerateClientSecretThenReturnUnauthorized() throws Exception {
+        String organizationIpaCode = "IPA_TEST_2";
+        String clientId = "CLIENTID";
+
+        UserInfo unauthorizedUser = UserInfo.builder()
+                .userId("USERID")
+                .organizationAccess("ORG")
+                .organizations(List.of(UserOrganizationRoles.builder()
+                        .organizationIpaCode("ORG")
+                        .roles(List.of(Constants.ROLE_OPER))
+                        .build()))
+                .build();
+
+        Mockito.when(authnServiceMock.getUserInfo("accessToken")).thenReturn(unauthorizedUser);
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+
+        mockMvc.perform(
+                put("/payhub/oauth/clients/{organizationIpaCode}/{clientId}/client-secret", organizationIpaCode, clientId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+        ).andExpect(status().isUnauthorized());
+    }
 }

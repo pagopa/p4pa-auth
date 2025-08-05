@@ -291,6 +291,43 @@ paths:
           description: ToS acceptance missing
         '429':
           description: Too Many Requests
+  /oauth/clients/{organizationIpaCode}/{clientId}/client-secret:
+    put:
+      tags:
+        - authz
+      operationId: generateClientSecret
+      parameters:
+        - name: organizationIpaCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDTO'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '412':
+          description: ToS acceptance missing
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
   /oauth/clients/{organizationIpaCode}/{clientId}:
     delete:
       tags:
@@ -355,7 +392,7 @@ paths:
         '429':
           description: Too Many Requests
         '500':
-          description: Bad Request
+          description: Internal Server Error
   /am/users:
     post:
       tags:

@@ -323,4 +323,25 @@ class AuthzServiceTest {
         assertEquals(1, result.getTotalElements());
         assertEquals(clientNoSecretDTO, result.getContent().getFirst());
     }
+
+    @Test
+    void givenClientIdWhenGenerateClientSecretThenInvokeClientService() {
+        String organizationIpaCode = "organizationIpaCode";
+        String clientId = "clientId";
+
+        ClientDTO expectedClientDTO = ClientDTO.builder()
+                .clientId(clientId)
+                .clientName("Test Client")
+                .organizationIpaCode(organizationIpaCode)
+                .clientSecret("generatedSecret")
+                .build();
+
+        Mockito.when(clientServiceMock.generateClientSecret(organizationIpaCode, clientId))
+                .thenReturn(Optional.of(expectedClientDTO));
+
+        Optional<ClientDTO> result = service.generateClientSecret(organizationIpaCode, clientId);
+
+        assertTrue(result.isPresent());
+        assertEquals(expectedClientDTO, result.get());
+    }
 }

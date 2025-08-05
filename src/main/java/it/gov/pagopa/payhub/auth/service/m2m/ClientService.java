@@ -18,4 +18,6 @@ public interface ClientService {
     Optional<Client> getClientByClientId(String clientId);
 
     void revokeClient(String organizationIpaCode, String clientId);
+
+    Optional<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId);
 }
