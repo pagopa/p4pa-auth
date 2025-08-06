@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthzControllerImpl implements AuthzApi {
 
-    private final String PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX;
+    private static final String PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX  = Client2UserInfoMapper.buildSystemMappedExternalUserId(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
 
     private final AuthzService authzService;
     private final boolean organizationAccessMode;
@@ -40,7 +40,6 @@ public class AuthzControllerImpl implements AuthzApi {
         @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode) {
         this.authzService = authzService;
         this.organizationAccessMode = organizationAccessMode;
-        PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX = Client2UserInfoMapper.buildSystemMappedExternalUserId(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
     }
 
     @Override
@@ -195,7 +194,7 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     private boolean canEditUsers(String externalUserId) {
-        return !organizationAccessMode || PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX.equals(externalUserId);
+        return !organizationAccessMode || externalUserId.startsWith(PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX);
     }
 
 }
