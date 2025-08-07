@@ -31,7 +31,7 @@ public class Client2UserInfoMapper implements Function<ClientNoSecretDTO, IamUse
 			.build();
 	}
 
-	private String buildSystemMappedExternalUserId(String clientId) {
+	public static String buildSystemMappedExternalUserId(String clientId) {
 		return WS_USER_PREFIX + clientId;
 	}
 

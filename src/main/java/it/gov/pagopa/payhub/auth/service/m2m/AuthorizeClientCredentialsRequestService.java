@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthorizeClientCredentialsRequestService {
 
-	private static final String PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX = "piattaforma-unitaria_";
+	public static final String PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX = "piattaforma-unitaria_";
 
 	private final ClientService clientService;
 	private final ClientMapper clientMapper;

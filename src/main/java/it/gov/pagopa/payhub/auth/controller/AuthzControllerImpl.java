@@ -1,10 +1,22 @@
 package it.gov.pagopa.payhub.auth.controller;
 
+import static it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService.PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX;
+
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
+import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
-import it.gov.pagopa.payhub.dto.generated.*;
+import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.ClientDTOPage;
+import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
+import it.gov.pagopa.payhub.dto.generated.CreateClientRequest;
+import it.gov.pagopa.payhub.dto.generated.CreateOperatorRequest;
+import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
+import it.gov.pagopa.payhub.dto.generated.OperatorsPage;
+import it.gov.pagopa.payhub.dto.generated.UserDTO;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -15,11 +27,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 public class AuthzControllerImpl implements AuthzApi {
+
+    private static final String PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX  = Client2UserInfoMapper.buildSystemMappedExternalUserId(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
 
     private final AuthzService authzService;
     private final boolean organizationAccessMode;
@@ -27,7 +39,7 @@ public class AuthzControllerImpl implements AuthzApi {
     public AuthzControllerImpl(AuthzService authzService,
         @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode) {
         this.authzService = authzService;
-      this.organizationAccessMode = organizationAccessMode;
+        this.organizationAccessMode = organizationAccessMode;
     }
 
     @Override
@@ -73,7 +85,7 @@ public class AuthzControllerImpl implements AuthzApi {
     public ResponseEntity<OperatorDTO> createOrganizationOperator(String organizationIpaCode,
         CreateOperatorRequest createOperatorRequest) {
         log.info("Adding operator to orgIpaCode {}: {}", organizationIpaCode, createOperatorRequest.getExternalUserId());
-        if(organizationAccessMode){
+        if(!canEditUsers(createOperatorRequest.getExternalUserId())){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
@@ -102,7 +114,7 @@ public class AuthzControllerImpl implements AuthzApi {
     @Override
     public ResponseEntity<UserDTO> createUser(UserDTO user) {
         log.info("Creating user {}", user.getExternalUserId());
-        if(organizationAccessMode){
+        if(!canEditUsers(user.getExternalUserId())){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
         if(!SecurityUtils.hasAdminRole()){
@@ -180,4 +192,9 @@ public class AuthzControllerImpl implements AuthzApi {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    private boolean canEditUsers(String externalUserId) {
+        return !organizationAccessMode || externalUserId.startsWith(PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX);
+    }
+
 }
