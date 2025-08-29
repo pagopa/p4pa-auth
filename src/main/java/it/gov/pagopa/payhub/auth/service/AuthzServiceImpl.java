@@ -104,8 +104,8 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public String getClientSecret(String organizationIpaCode, String clientId) {
-        return clientService.getClientSecret(organizationIpaCode, clientId);
+    public Optional<ClientDTO> getClient(String organizationIpaCode, String clientId) {
+        return clientService.getClient(organizationIpaCode, clientId);
     }
 
     @Override
@@ -122,5 +122,10 @@ public class AuthzServiceImpl implements AuthzService {
     public Page<ClientNoSecretDTO> getClientsSearch(String clientId,
         String clientName, String organizationIpaCode, Pageable pageRequest) {
         return clientRepository.searchByFilters(clientId, clientName, organizationIpaCode, pageRequest);
+    }
+
+    @Override
+    public Optional<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId) {
+        return clientService.generateClientSecret(organizationIpaCode, clientId);
     }
 }

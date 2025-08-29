@@ -1,12 +1,10 @@
 package it.gov.pagopa.payhub.auth.service.m2m.retrieve;
 
-import it.gov.pagopa.payhub.auth.exception.custom.ClientNotFoundException;
 import it.gov.pagopa.payhub.auth.mapper.ClientMapper;
 import it.gov.pagopa.payhub.auth.model.Client;
 import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.service.DataCipherService;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,55 +16,72 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(MockitoExtension.class)
 class ClientRetrieverServiceTest {
 	@Mock
 	private ClientRepository clientRepositoryMock;
 
 	@Mock
-	private DataCipherService dataCipherServiceMock;
+	private ClientMapper clientMapperMock;
 
 	@Mock
-	private ClientMapper clientMapperMock;
+	private DataCipherService dataCipherServiceMock;
 
 	@InjectMocks
 	private ClientRetrieverService service;
 
 	@Test
-	void givenGetClientIdWhenDecryptThenInvokeClientRetrieverService(){
-		// Given
-		String organizationIpaCode = "organizationIpaCode";
-		String clientName = "clientName";
-		String clientId = organizationIpaCode + clientName;
-		byte[] encryptedClientSecret = new byte[16];
-		new Random().nextBytes(encryptedClientSecret);
-		Client storedClient = new Client(clientId, clientName, organizationIpaCode, encryptedClientSecret);
-		String expectedClientSecretPlain = "expectedClientSecretPlain";
+	void givenValidClientIdAndMatchingOrganizationIpaCodeWhenGetClientThenReturnClient() {
+		String organizationIpaCode = "ORG123";
+		String clientId = "client-abc";
+		Client client = Client.builder()
+				.clientId(clientId)
+				.clientName("MyClient")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("secret".getBytes())
+				.build();
 
-		Mockito.when(clientRepositoryMock.findById(clientId)).thenReturn(Optional.of(storedClient));
-		Mockito.when(dataCipherServiceMock.decrypt(encryptedClientSecret)).thenReturn(expectedClientSecretPlain);
+		Mockito.when(clientRepositoryMock.findById(clientId))
+				.thenReturn(Optional.of(client));
 
-		// When
-		String result = service.getClientSecret(organizationIpaCode, clientId);
+		Optional<Client> result = service.getClient(organizationIpaCode, clientId);
 
-		// Then
-		Assertions.assertSame(expectedClientSecretPlain, result);
+		assertTrue(result.isPresent());
+		assertEquals(client, result.get());
 	}
 
 	@Test
-	void givenNotClientIdWhenDecryptThenClientNotFoundException(){
-		// Given
-		String organizationIpaCode = "organizationIpaCode";
-		String clientName = "clientName";
-		String clientId = organizationIpaCode + clientName;
-		byte[] encryptedClientSecret = new byte[16];
-		new Random().nextBytes(encryptedClientSecret);
-		Client storedClient = new Client(clientId, clientName, organizationIpaCode, encryptedClientSecret);
+	void givenValidClientIdButMismatchedOrganizationIpaCodeWhenGetClientThenReturnEmpty() {
+		String organizationIpaCode = "ORG123";
+		String clientId = "client-abc";
+		Client client = Client.builder()
+				.clientId(clientId)
+				.clientName("MyClient")
+				.organizationIpaCode("DIFFERENT_ORG")
+				.clientSecret("secret".getBytes())
+				.build();
 
-		Mockito.when(clientRepositoryMock.findById(storedClient.getClientId())).thenReturn(Optional.empty());
+		Mockito.when(clientRepositoryMock.findById(clientId))
+				.thenReturn(Optional.of(client));
 
-		// When, Then
-		Assertions.assertThrows(ClientNotFoundException.class, () -> service.getClientSecret(organizationIpaCode, clientId));
+		Optional<Client> result = service.getClient(organizationIpaCode, clientId);
+
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	void givenNonExistingClientIdWhenGetClientThenReturnEmpty() {
+		String organizationIpaCode = "ORG123";
+		String clientId = "client-xyz";
+
+		Mockito.when(clientRepositoryMock.findById(clientId))
+				.thenReturn(Optional.empty());
+
+		Optional<Client> result = service.getClient(organizationIpaCode, clientId);
+
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
@@ -101,7 +116,7 @@ class ClientRetrieverServiceTest {
 		List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
 
 		// Then
-		Assertions.assertEquals(List.of(expectedDto1, expectedDto2), result);
+		assertEquals(List.of(expectedDto1, expectedDto2), result);
 	}
 
 	@Test
@@ -120,6 +135,69 @@ class ClientRetrieverServiceTest {
 		Optional<Client> result = service.getClientByClientId(clientId);
 
 		// Then
-		Assertions.assertEquals(Optional.of(storedClient), result);
+		assertEquals(Optional.of(storedClient), result);
+	}
+
+	@Test
+	void givenValidClientIdAndMatchingIpaCodeWhenGenerateClientSecretThenEncryptAndSave() {
+		String clientId = "client123";
+		String organizationIpaCode = "ORG001";
+		byte[] encryptedSecret = "encrypted".getBytes();
+
+		Client existingClient = Client.builder()
+				.clientId(clientId)
+				.organizationIpaCode(organizationIpaCode)
+				.clientName("TestClient")
+				.clientSecret("old".getBytes())
+				.build();
+
+		Mockito.when(clientRepositoryMock.findById(clientId))
+				.thenReturn(Optional.of(existingClient));
+		Mockito.when(dataCipherServiceMock.encrypt(Mockito.anyString()))
+				.thenReturn(encryptedSecret);
+		Mockito.when(clientRepositoryMock.save(Mockito.any(Client.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+
+		Optional<Client> result = service.generateClientSecret(organizationIpaCode, clientId);
+
+		assertTrue(result.isPresent());
+		assertArrayEquals(encryptedSecret, result.get().getClientSecret());
+		Mockito.verify(clientRepositoryMock).save(Mockito.any(Client.class));
+		Mockito.verify(dataCipherServiceMock).encrypt(Mockito.anyString());
+	}
+
+	@Test
+	void givenNonExistingClientIdWhenGenerateClientSecretThenReturnEmpty() {
+		String clientId = "client404";
+		String organizationIpaCode = "ORG001";
+
+		Mockito.when(clientRepositoryMock.findById(clientId))
+				.thenReturn(Optional.empty());
+
+		Optional<Client> result = service.generateClientSecret(organizationIpaCode, clientId);
+
+		assertTrue(result.isEmpty());
+		Mockito.verifyNoInteractions(dataCipherServiceMock);
+	}
+
+	@Test
+	void givenMismatchedIpaCodeWhenGenerateClientSecretThenReturnEmpty() {
+		String clientId = "client123";
+		String requestedOrg = "ORG001";
+		String actualOrg = "DIFFERENT_ORG";
+
+		Client client = Client.builder()
+				.clientId(clientId)
+				.organizationIpaCode(actualOrg)
+				.clientSecret("old".getBytes())
+				.build();
+
+		Mockito.when(clientRepositoryMock.findById(clientId))
+				.thenReturn(Optional.of(client));
+
+		Optional<Client> result = service.generateClientSecret(requestedOrg, clientId);
+
+		assertTrue(result.isEmpty());
+		Mockito.verifyNoInteractions(dataCipherServiceMock);
 	}
 }

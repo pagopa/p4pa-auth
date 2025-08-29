@@ -34,11 +34,13 @@ public class ClientServiceImpl implements ClientService {
 		return clientMapper.mapToDTO(client);
 	}
 
-	@Override
-	public String getClientSecret(String organizationIpaCode, String clientId) {
-		log.info("Retrieving client secret");
-		return clientRetrieverService.getClientSecret(organizationIpaCode, clientId);
+	public Optional<ClientDTO> getClient(String organizationIpaCode, String clientId) {
+		log.info("Retrieving client having organizationIpaCode {} and ID {}", organizationIpaCode, clientId);
+
+		return clientRetrieverService.getClient(organizationIpaCode, clientId)
+				.map(clientMapper::mapToDTO);
 	}
+
 
 	@Override
 	public List<ClientNoSecretDTO> getClients(String organizationIpaCode) {
@@ -56,4 +58,10 @@ public class ClientServiceImpl implements ClientService {
 		clientRemovalService.revokeClient(organizationIpaCode, clientId);
 	}
 
+	@Override
+	public Optional<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId) {
+		log.info("Regenerating clientSecret for organizationIpaCode {} and ID {}", organizationIpaCode, clientId);
+		return clientRetrieverService.generateClientSecret(organizationIpaCode, clientId)
+				.map(clientMapper::mapToDTO);
+	}
 }

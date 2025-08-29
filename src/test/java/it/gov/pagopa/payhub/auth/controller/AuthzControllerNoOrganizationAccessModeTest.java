@@ -1,5 +1,13 @@
 package it.gov.pagopa.payhub.auth.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
@@ -10,35 +18,33 @@ import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.dto.generated.*;
+import it.gov.pagopa.payhub.dto.generated.ClientDTO;
+import it.gov.pagopa.payhub.dto.generated.CreateClientRequest;
+import it.gov.pagopa.payhub.dto.generated.CreateOperatorRequest;
+import it.gov.pagopa.payhub.dto.generated.UserDTO;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthzControllerImpl.class)
 @Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
 @TestPropertySource(properties = { "app.enable-access-organization-mode=false" })
-class AuthzControllerNoOrganizzationAccessModeTest {
+class AuthzControllerNoOrganizationAccessModeTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -244,36 +250,49 @@ class AuthzControllerNoOrganizzationAccessModeTest {
     }
     //endregion
 
-    //region getClientSecret
-    @Test
-    void givenAuthorizedUserWhenGetClientSecretThenOk() throws Exception {
-        String uuidRandomForClientSecret = UUID.randomUUID().toString();
+    //region getClient
+    void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";
+        String clientName = "Test Client";
+        String decryptedSecret = "decryptedSecret";
+
+        ClientDTO expectedClientDTO = ClientDTO.builder()
+                .clientId(clientId)
+                .clientName(clientName)
+                .organizationIpaCode(organizationIpaCode)
+                .clientSecret(decryptedSecret)
+                .build();
 
         UserInfo expectedUser = UserInfo.builder()
-          .userId("USERID")
-          .organizationAccess(organizationIpaCode)
-          .organizations(List.of(UserOrganizationRoles.builder()
-            .organizationIpaCode(organizationIpaCode)
-            .roles(List.of(Constants.ROLE_ADMIN))
-            .build()))
-          .build();
+                .userId("USERID")
+                .organizationAccess(organizationIpaCode)
+                .organizations(List.of(UserOrganizationRoles.builder()
+                        .organizationIpaCode(organizationIpaCode)
+                        .roles(List.of(Constants.ROLE_ADMIN))
+                        .build()))
+                .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(expectedUser);
+        Mockito.when(authnServiceMock.getUserInfo("accessToken")).thenReturn(expectedUser);
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
-
-        doReturn(uuidRandomForClientSecret)
-          .when(authzServiceMock).getClientSecret(organizationIpaCode, clientId);
+        Mockito.when(authzServiceMock.getClient(organizationIpaCode, clientId))
+                .thenReturn(Optional.of(expectedClientDTO));
 
         MvcResult result = mockMvc.perform(
-            get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
-              .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-          ).andExpect(status().isOk())
-          .andReturn();
+                        get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                ).andExpect(status().isOk())
+                .andReturn();
 
-        assertEquals(uuidRandomForClientSecret, result.getResponse().getContentAsString());
+        String jsonResponse = result.getResponse().getContentAsString();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClientDTO actualClientDTO = objectMapper.readValue(jsonResponse, ClientDTO.class);
+
+        assertEquals(expectedClientDTO.getClientId(), actualClientDTO.getClientId());
+        assertEquals(expectedClientDTO.getClientName(), actualClientDTO.getClientName());
+        assertEquals(expectedClientDTO.getOrganizationIpaCode(), actualClientDTO.getOrganizationIpaCode());
+        assertEquals(expectedClientDTO.getClientSecret(), actualClientDTO.getClientSecret());
     }
     //endregion
 

@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.auth.service.m2m.revoke.ClientRemovalService;
 import it.gov.pagopa.payhub.dto.generated.ClientDTO;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class ClientServiceTest {
@@ -66,21 +67,36 @@ class ClientServiceTest {
 		// When
 		ClientDTO actualClientDTO = service.registerClient(clientName, organizationIpaCode);
 		// Then
-		Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+		assertEquals(expectedClientDTO, actualClientDTO);
 	}
 
 	@Test
-	void givenClientIdWhenGetEncryptedClientSecretThenGetClientSecret() {
-		// Given
+	void givenClientIdWhenGetClientThenReturnClientDTO() {
 		String organizationIpaCode = "organizationIpaCode";
 		String clientId = "clientId";
-		String clientSecretMock = UUID.randomUUID().toString();
 
-		Mockito.when(clientRetrieverServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
-		//When
-		String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
-		// Then
-		Assertions.assertEquals(clientSecretMock, clientSecret);
+		Client client = Client.builder()
+				.clientId(clientId)
+				.clientName("Test Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("secret".getBytes())
+				.build();
+
+		ClientDTO expectedDto = ClientDTO.builder()
+				.clientId(clientId)
+				.clientName("Test Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("decryptedSecret")
+				.build();
+
+		Mockito.when(clientRetrieverServiceMock.getClient(organizationIpaCode, clientId))
+				.thenReturn(Optional.of(client));
+		Mockito.when(clientMapperMock.mapToDTO(client)).thenReturn(expectedDto);
+
+		Optional<ClientDTO> result = service.getClient(organizationIpaCode, clientId);
+
+		assertTrue(result.isPresent());
+		assertEquals(expectedDto, result.get());
 	}
 
 	@Test
@@ -106,7 +122,7 @@ class ClientServiceTest {
 		//When
 		List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
 		//Then
-		Assertions.assertEquals(List.of(dto1, dto2), result);
+		assertEquals(List.of(dto1, dto2), result);
 	}
 
 	@Test
@@ -119,7 +135,7 @@ class ClientServiceTest {
 		//When
 		Optional<Client> result = service.getClientByClientId(clientId);
 		// Then
-		Assertions.assertEquals(Optional.of(expectedClient), result);
+		assertEquals(Optional.of(expectedClient), result);
 	}
 
 	@Test
@@ -131,5 +147,34 @@ class ClientServiceTest {
 		service.revokeClient(organizationIpaCode, clientId);
 		//Then
 		Mockito.verify(clientRemovalServiceMock).revokeClient(organizationIpaCode, clientId);
+	}
+
+	@Test
+	void givenClientIdAndIpaCodeWhenGenerateClientSecretThenReturnClientDTO() {
+		String organizationIpaCode = "ORG123";
+		String clientId = "clientABC";
+
+		Client updatedClient = Client.builder()
+				.clientId(clientId)
+				.clientName("Updated Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("newEncryptedSecret".getBytes())
+				.build();
+
+		ClientDTO expectedDto = ClientDTO.builder()
+				.clientId(clientId)
+				.clientName("Updated Client")
+				.organizationIpaCode(organizationIpaCode)
+				.clientSecret("decryptedSecret")
+				.build();
+
+		Mockito.when(clientRetrieverServiceMock.generateClientSecret(organizationIpaCode, clientId))
+				.thenReturn(Optional.of(updatedClient));
+		Mockito.when(clientMapperMock.mapToDTO(updatedClient)).thenReturn(expectedDto);
+
+		Optional<ClientDTO> result = service.generateClientSecret(organizationIpaCode, clientId);
+
+		assertTrue(result.isPresent());
+		assertEquals(expectedDto, result.get());
 	}
 }
