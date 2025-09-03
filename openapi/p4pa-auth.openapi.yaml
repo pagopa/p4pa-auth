@@ -775,7 +775,6 @@ components:
         - externalUserId
         - firstName
         - lastName
-        - fiscalCode
         - roles
         - email
       properties:
