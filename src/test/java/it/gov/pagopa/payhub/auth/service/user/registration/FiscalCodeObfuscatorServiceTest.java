@@ -36,4 +36,10 @@ class FiscalCodeObfuscatorServiceTest {
         // Then
         Assertions.assertEquals("AXAAXA0XA00XXXXX", result);
     }
+
+    @Test
+    void givenNullOrEmptyWhenObfuscateThenNull(){
+        Assertions.assertNull(service.obfuscate(null));
+        Assertions.assertNull(service.obfuscate(""));
+    }
 }
