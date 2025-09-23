@@ -168,7 +168,7 @@ class AuthzControllerTest {
                                 .param("page", "4")
                                 .param("size", "1")
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-                ).andExpect(status().isUnauthorized());
+                ).andExpect(status().isForbidden());
     }
     //end region
     //region desc=getOrganizationOperator tests
@@ -380,7 +380,7 @@ class AuthzControllerTest {
         mockMvc.perform(
                 get("/payhub/oauth/userinfo/{mappedExternalUserId}", mappedExternalUserId)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-            ).andExpect(status().isUnauthorized());
+            ).andExpect(status().isForbidden());
     }
     //end region
 
@@ -451,7 +451,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         mockMvc.perform(
                 get("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 //end region
 
@@ -519,7 +519,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         mockMvc.perform(
           get("/payhub/oauth/clients/{organizationIpaCode}", organizationIpaCode)
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 //end region
 
@@ -596,7 +596,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         mockMvc.perform(
           delete("/payhub/oauth/clients/{organizationIpaCode}/{clientId}", organizationIpaCode, clientId)
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
     //end region
 
@@ -655,7 +655,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
                     .param("page", "4")
                     .param("size", "1")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-            ).andExpect(status().isUnauthorized());
+            ).andExpect(status().isForbidden());
     }
 
     @Test
@@ -721,6 +721,6 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         mockMvc.perform(
                 put("/payhub/oauth/clients/{organizationIpaCode}/{clientId}/client-secret", organizationIpaCode, clientId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 }
