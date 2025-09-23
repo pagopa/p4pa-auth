@@ -84,7 +84,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf((body)))
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 
     @Test
@@ -163,7 +163,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf((body)))
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 
     public static String buildCreateUserRequest() {
@@ -198,7 +198,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
             .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
             .contentType(MediaType.APPLICATION_JSON)
             .content(String.valueOf((body)))
-        ).andExpect(status().isUnauthorized());
+        ).andExpect(status().isForbidden());
     }
 
     @Test
@@ -251,6 +251,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
     //endregion
 
     //region getClient
+    @Test
     void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";

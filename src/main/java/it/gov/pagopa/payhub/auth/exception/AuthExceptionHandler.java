@@ -51,7 +51,7 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler({UserUnauthorizedException.class})
     public ResponseEntity<AuthErrorDTO> handleUserUnauthorizedException(RuntimeException ex, HttpServletRequest request) {
-        return handleException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.AUTH_USER_UNAUTHORIZED);
+        return handleException(ex, request, HttpStatus.FORBIDDEN, AuthErrorDTO.ErrorEnum.AUTH_USER_UNAUTHORIZED);
     }
 
     @ExceptionHandler({OperatorNotFoundException.class, ClientNotFoundException.class, UserNotFoundException.class})
