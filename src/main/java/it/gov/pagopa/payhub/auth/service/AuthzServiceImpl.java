@@ -12,6 +12,7 @@ import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.dto.generated.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -119,9 +120,12 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public Page<ClientNoSecretDTO> getClientsSearch(String clientId,
-        String clientName, String organizationIpaCode, Pageable pageRequest) {
-        return clientRepository.searchByFilters(clientId, clientName, organizationIpaCode, pageRequest);
+    public Page<ClientNoSecretDTO> getClientsSearch(String clientId, String clientName, String organizationIpaCode, Pageable pageRequest) {
+        if (StringUtils.isNotEmpty(clientName)) {
+            return clientRepository.searchByFiltersWithClientName(clientId, clientName, organizationIpaCode, pageRequest);
+        } else {
+            return clientRepository.searchByFilters(clientId, organizationIpaCode, pageRequest);
+        }
     }
 
     @Override

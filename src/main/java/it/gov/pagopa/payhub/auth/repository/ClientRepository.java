@@ -16,12 +16,23 @@ public interface ClientRepository extends MongoRepository<Client, String> {
 	@Query(value = "{" +
 			"    $and: [" +
 			"        { $or: [{ $expr: { $eq: ['?0', 'null'] }}, { clientId: ?0 }] }," +
-			"        { $or: [{ $expr: { $eq: ['?1', 'null'] }}, { clientName: ?1 }] }," +
+			"        { clientName: { $regex: ?1, $options: 'i' } }," +
 			"        { $or: [{ $expr: { $eq: ['?2', 'null'] }}, { organizationIpaCode: ?2 }] }," +
 			"    ] }", fields = "{bodyCiphered:  0}")
-	Page<ClientNoSecretDTO> searchByFilters(
+	Page<ClientNoSecretDTO> searchByFiltersWithClientName(
 			String clientId,
 			String clientName,
+			String organizationIpaCode,
+			Pageable pageable
+	);
+
+	@Query(value = "{" +
+			"  $and: [" +
+			"    { $or: [{ $expr: { $eq: ['?0', 'null'] }}, { clientId: ?0 }] }," +
+			"    { $or: [{ $expr: { $eq: ['?1', 'null'] }}, { organizationIpaCode: ?1 }] }" +
+			"  ] }", fields = "{ bodyCiphered: 0 }")
+	Page<ClientNoSecretDTO> searchByFilters(
+			String clientId,
 			String organizationIpaCode,
 			Pageable pageable
 	);

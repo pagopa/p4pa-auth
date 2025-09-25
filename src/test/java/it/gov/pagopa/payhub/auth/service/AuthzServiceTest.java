@@ -298,8 +298,7 @@ class AuthzServiceTest {
     }
 
     @Test
-    void whenGetClientByFiltersThenCallAutzhService(){
-        // Given
+    void givenClientNameWhenGetClientsSearchThenCallSearchByFiltersWithClientName(){
         String clientId = "CLIENTID";
         String clientName = "CLIENTNAME";
         String organizationIpaCode = "IPACODE";
@@ -311,17 +310,61 @@ class AuthzServiceTest {
         clientNoSecretDTO.setClientName(clientName);
         clientNoSecretDTO.setOrganizationIpaCode(organizationIpaCode);
 
-
         Page<ClientNoSecretDTO> clientPage = new PageImpl<>(List.of(clientNoSecretDTO), pageRequest, 1);
 
-        Mockito.when(clientRepositoryMock.searchByFilters(clientId,clientName,organizationIpaCode,pageRequest)).thenReturn(clientPage);
+        Mockito.when(clientRepositoryMock.searchByFiltersWithClientName(clientId,clientName,organizationIpaCode,pageRequest))
+                .thenReturn(clientPage);
 
-        // When
         Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, clientName, organizationIpaCode, pageRequest);
 
-        // Then
         assertEquals(1, result.getTotalElements());
         assertEquals(clientNoSecretDTO, result.getContent().getFirst());
+    }
+
+    @Test
+    void givenNullClientNameWhenGetClientsSearchThenCallSearchByFilters() {
+        String clientId = "CLIENTID";
+        String organizationIpaCode = "IPACODE";
+
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        ClientNoSecretDTO clientNoSecretDTO = new ClientNoSecretDTO();
+        clientNoSecretDTO.setClientId(clientId);
+        clientNoSecretDTO.setOrganizationIpaCode(organizationIpaCode);
+
+        Page<ClientNoSecretDTO> clientPage =
+                new PageImpl<>(List.of(clientNoSecretDTO), pageRequest, 1);
+
+        Mockito.when(clientRepositoryMock.searchByFilters(clientId, organizationIpaCode, pageRequest))
+                .thenReturn(clientPage);
+
+        Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, null, organizationIpaCode, pageRequest);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(clientNoSecretDTO, result.getContent().getFirst());
+    }
+
+    @Test
+    void givenEmptyClientNameWhenGetClientsSearchThenCallSearchByFilters() {
+        String clientId = "CLIENTID";
+        String clientName = "";
+        String organizationIpaCode = "IPACODE";
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        ClientNoSecretDTO dto = new ClientNoSecretDTO();
+        dto.setClientId(clientId);
+        dto.setClientName("ANY");
+        dto.setOrganizationIpaCode(organizationIpaCode);
+
+        Page<ClientNoSecretDTO> page = new PageImpl<>(List.of(dto), pageRequest, 1);
+
+        Mockito.when(clientRepositoryMock.searchByFilters(clientId, organizationIpaCode, pageRequest))
+                .thenReturn(page);
+
+        Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, clientName, organizationIpaCode, pageRequest);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(dto, result.getContent().getFirst());
     }
 
     @Test
