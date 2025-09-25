@@ -31,7 +31,7 @@ public interface ClientRepository extends MongoRepository<Client, String> {
 			"    { $or: [{ $expr: { $eq: ['?0', 'null'] }}, { clientId: ?0 }] }," +
 			"    { $or: [{ $expr: { $eq: ['?1', 'null'] }}, { organizationIpaCode: ?1 }] }" +
 			"  ] }", fields = "{ bodyCiphered: 0 }")
-	Page<ClientNoSecretDTO> searchByFiltersWithoutClientName(
+	Page<ClientNoSecretDTO> searchByFilters(
 			String clientId,
 			String organizationIpaCode,
 			Pageable pageable
