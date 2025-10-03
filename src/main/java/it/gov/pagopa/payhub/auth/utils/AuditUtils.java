@@ -4,10 +4,12 @@ import it.gov.pagopa.payhub.auth.dto.AuditLogDTO;
 import java.time.Instant;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class AuditUtils {
   private static final String VENDOR = "PagoPa";
   private static final String PRODUCT = "P4PA-AUTH";
@@ -37,7 +39,7 @@ public class AuditUtils {
           .collect(Collectors.joining(" "));
       extensions.append(customExtensions);
     }
-
+    log.info("Cef Message, Content: {}", header + extensions.toString().trim());
     return header + extensions.toString().trim();
   }
 }
