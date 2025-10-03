@@ -15,6 +15,6 @@ public class AuditLoggerServiceImpl implements AuditLoggerService {
       Map<String, String> label2value, String description) {
     AuditLogDTO event = new AuditLogDTO(auditEventType, mappedExternalUserId, label2value, description);
     String cefMessage = AuditUtils.format(event);
-    log.info("TEST STATICO STRINGA");
+    log.info(cefMessage);
   }
 }

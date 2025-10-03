@@ -39,7 +39,6 @@ public class AuditUtils {
           .collect(Collectors.joining(" "));
       extensions.append(customExtensions);
     }
-    log.info("Cef Message, Content: {}", header + extensions.toString().trim());
     return header + extensions.toString().trim();
   }
 }
