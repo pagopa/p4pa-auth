@@ -43,7 +43,7 @@
     </appender>
 
     <appender name="KAFKA_AUDIT" class="com.github.danielwegener.logback.kafka.KafkaAppender">
-        <encoder>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%msg%n</pattern>
         </encoder>
 
