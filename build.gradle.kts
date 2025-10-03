@@ -45,6 +45,7 @@ val bouncycastleVersion = "1.82"
 val micrometerVersion = "1.5.4"
 val caffeineVersion = "3.2.2"
 val httpClientVersion = "5.5"
+val kafkaAppender = "0.2.0-RC2"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -63,7 +64,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
-
+    implementation("com.github.danielwegener:logback-kafka-appender:$kafkaAppender")
     // validation token jwt
     implementation("com.auth0:java-jwt:$javaJwtVersion")
     implementation("com.auth0:jwks-rsa:$jwksRsaVersion")
