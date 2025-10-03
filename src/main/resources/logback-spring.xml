@@ -44,32 +44,23 @@
 
     <appender name="KAFKA_AUDIT" class="com.github.danielwegener.logback.kafka.KafkaAppender">
         <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN:%msg%n}</pattern>
+            <pattern>%msg%n</pattern>
         </encoder>
-        <topic>${KAFKA_APPENDER_TOPIC:p4pa-payhub-audit-evh}</topic>
-        <keyingStrategy
-          class="com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy"/>
-        <deliveryStrategy
-          class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy"/>
 
-        <producerConfig>bootstrap.servers=${KAFKA_APPENDER_BOOTSTRAP_SERVERS:p4pa-payhub-kafka-broker}
-        </producerConfig>
-        <producerConfig>metadata.max.age.ms=${KAFKA_APPENDER_METADATA_MAX_AGE_MS:-180000}
-        </producerConfig>
-        <producerConfig>connections.max.idle.ms=${KAFKA_APPENDER_CONN_MAX_IDLE_MS:-180000}
-        </producerConfig>
-        <producerConfig>retries=${KAFKA_APPENDER_RETRIES:-3}
-        </producerConfig>
-        <producerConfig>request.timeout.ms=${KAFKA_APPENDER_REQUEST_TIMEOUT_MS:-60000}
-        </producerConfig>
-        <producerConfig>security.protocol=${KAFKA_APPENDER_SECURITY_PROTOCOL:p4pa-payhub-security-protocol}
-        </producerConfig>
-        <producerConfig>sasl.mechanism=${KAFKA_APPENDER_SASL_MECHANISM:p4pa-payhub-sasl-mechanism}
-        </producerConfig>
-        <producerConfig>sasl.jaas.config=${KAFKA_APPENDER_SASL_JAAS_CONFIG:p4pa-payhub-audit-evh-producer-jaas-config}
-        </producerConfig>
-        <producerConfig>client.id=auth
-        </producerConfig>
+        <topic>${KAFKA_APPENDER_TOPIC:p4pa-payhub-audit-evh}</topic>
+
+        <producerConfig>bootstrap.servers=${KAFKA_APPENDER_BOOTSTRAP_SERVERS:p4pa-payhub-kafka-broker}</producerConfig>
+
+        <producerConfig>key.serializer=org.apache.kafka.common.serialization.StringSerializer</producerConfig>
+        <producerConfig>value.serializer=org.apache.kafka.common.serialization.StringSerializer</producerConfig>
+
+        <producerConfig>security.protocol=${KAFKA_APPENDER_SECURITY_PROTOCOL:p4pa-payhub-security-protocol}</producerConfig>
+        <producerConfig>sasl.mechanism=${KAFKA_APPENDER_SASL_MECHANISM:p4pa-payhub-sasl-mechanism}</producerConfig>
+        <producerConfig>sasl.jaas.config=${KAFKA_APPENDER_SASL_JAAS_CONFIG:p4pa-payhub-audit-evh-producer-jaas-config}</producerConfig>
+
+        <producerConfig>client.id=auth</producerConfig>
+        <producerConfig>retries=${KAFKA_APPENDER_RETRIES:-3}</producerConfig>
+        <producerConfig>request.timeout.ms=${KAFKA_APPENDER_REQUEST_TIMEOUT_MS:-60000}</producerConfig>
         <producerConfig>block.on.buffer.full=false</producerConfig>
     </appender>
 
