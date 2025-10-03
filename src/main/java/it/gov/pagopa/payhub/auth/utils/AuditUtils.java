@@ -27,13 +27,17 @@ public class AuditUtils {
 
     extensions.append("rt=").append(Instant.now().toString()).append(" "); // End Time/Real Time
     extensions.append("suser=").append(event.getMappedExternalUserId()).append(" "); // Source User
+    //test null?
     extensions.append("msg=").append(event.getDescription()).append(" "); // Message
 
     // Map label2value
-    String customExtensions = event.getLabel2value().entrySet().stream()
-        .map(e -> e.getKey() + "=" + e.getValue().replace(" ", "_"))
-        .collect(Collectors.joining(" "));
-    extensions.append(customExtensions);
+    if(event.getLabel2value()!=null){
+      String customExtensions = event.getLabel2value().entrySet().stream()
+          .map(e -> e.getKey() + "=" + e.getValue().replace(" ", "_"))
+          .collect(Collectors.joining(" "));
+      extensions.append(customExtensions);
+    }
+
     return header + extensions.toString().trim();
   }
 }
