@@ -69,13 +69,22 @@
             <logger name="KAFKA_LOGGER" level="INFO" additivity="false">
                 <appender-ref ref="AUDIT"/>
             </logger>
-        </then>
-    </if>
 
-    <logger name="AUDIT" additivity="false">
-        <appender-ref ref="AUDIT"/>
-        <appender-ref ref="KAFKA_AUDIT"/>
-    </logger>
+            <logger name="AUDIT" additivity="false">
+                <appender-ref ref="AUDIT"/>
+                <if condition='"TRUE".equalsIgnoreCase("${ENABLE_KAFKA_AUDIT_APPENDER}")'>
+                    <then>
+                        <appender-ref ref="KAFKA_AUDIT"/>
+                    </then>
+                </if>
+            </logger>
+        </then>
+        <else>
+            <logger name="AUDIT" additivity="false">
+                <appender-ref ref="AUDIT"/>
+            </logger>
+        </else>
+    </if>
 
     <root level="INFO">
         <appender-ref ref="ASYNC_STDOUT"/>
