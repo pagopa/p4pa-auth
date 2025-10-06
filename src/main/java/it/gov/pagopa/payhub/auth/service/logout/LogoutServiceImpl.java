@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service

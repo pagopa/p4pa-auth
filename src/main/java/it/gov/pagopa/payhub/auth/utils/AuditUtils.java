@@ -3,14 +3,14 @@ package it.gov.pagopa.payhub.auth.utils;
 import it.gov.pagopa.payhub.auth.dto.AuditLogDTO;
 import java.time.Instant;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
 @Slf4j
 public class AuditUtils {
+  private AuditUtils() {}
+
   private static final String VENDOR = "PagoPa";
   private static final String PRODUCT = "P4PA-AUTH";
   private static final String VERSION = "1.0";

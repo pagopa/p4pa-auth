@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 
 class AuditUtilsTest {
 
-  private final String VENDOR = "PagoPa";
-  private final String PRODUCT = "P4PA-AUTH";
-  private final String VERSION = "1.0";
+  private String VENDOR = "PagoPa";
+  private String PRODUCT = "P4PA-AUTH";
+  private String VERSION = "1.0";
 
   @Test
   void givenEventWhenFormatThenCefMessage() {
