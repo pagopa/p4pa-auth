@@ -10,10 +10,6 @@ import org.junit.jupiter.api.Test;
 
 class AuditUtilsTest {
 
-  private String VENDOR = "PagoPa";
-  private String PRODUCT = "P4PA-AUTH";
-  private String VERSION = "1.0";
-
   @Test
   void givenEventWhenFormatThenCefMessage() {
     // Given
@@ -27,7 +23,7 @@ class AuditUtilsTest {
     AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_SUCCESS, userId, labels, description);
 
     String expectedHeaderPrefix = String.format("CEF:0|%s|%s|%s|%s|%s|",
-        VENDOR, PRODUCT, VERSION, AuditEventType.LOGIN_SUCCESS.name(), description);
+        "PagoPa", "P4PA-AUTH", "1.0", AuditEventType.LOGIN_SUCCESS.name(), description);
 
     // When
     String cefMessage = AuditUtils.format(event);
