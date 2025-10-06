@@ -1,12 +1,15 @@
 package it.gov.pagopa.payhub.auth.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
+import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
@@ -29,13 +32,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuthExceptionHandler {
 
+    private final AuditLoggerService auditService;
+
+    public AuthExceptionHandler(AuditLoggerService auditService) {
+        this.auditService = auditService;
+    }
+
     @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class})
     public ResponseEntity<AuthErrorDTO> handleInvalidGrantError(RuntimeException ex, HttpServletRequest request) {
+        logAuditFailure(ex, request, "Unauthorized access or invalid token/grant type.");
         return handleException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
     }
 
     @ExceptionHandler({InvalidExchangeClientException.class, ClientUnauthorizedException.class})
     public ResponseEntity<AuthErrorDTO> handleInvalidClientError(RuntimeException ex, HttpServletRequest request) {
+        logAuditFailure(ex, request, "Client unauthorized or invalid client configuration.");
         return handleException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_CLIENT);
     }
 
@@ -154,6 +165,15 @@ public class AuthExceptionHandler {
                 return ex.getMessage();
             }
         }
+    }
+
+    private void logAuditFailure(RuntimeException ex, HttpServletRequest request, String baseDescription) {
+        String errorType = ex.getClass().getSimpleName();
+        auditService.log(
+            AuditEventType.LOGIN_FAILURE,
+            Map.of("error_type", errorType, "request_uri", request.getRequestURI()),
+            baseDescription + " Exception: " + ex.getMessage()
+        );
     }
 
     static String getRequestDetails(HttpServletRequest request) {
