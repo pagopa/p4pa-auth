@@ -31,12 +31,14 @@ class AuthnServiceTest {
     private UserService userServiceMock;
     @Mock
     private LogoutService logoutServiceMock;
+    @Mock
+    private AuditLoggerService auditServiceMock;
 
     private AuthnService service;
 
     @BeforeEach
     void init(){
-        service = new AuthnServiceImpl(clientCredentialService, exchangeTokenServiceMock, userServiceMock, logoutServiceMock);
+        service = new AuthnServiceImpl(clientCredentialService, exchangeTokenServiceMock, userServiceMock, logoutServiceMock, auditServiceMock);
     }
 
     @AfterEach

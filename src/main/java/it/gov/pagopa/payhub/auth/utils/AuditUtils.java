@@ -26,10 +26,8 @@ public class AuditUtils {
     );
 
     StringBuilder extensions = new StringBuilder();
-
     extensions.append("rt=").append(Instant.now().toString()).append(" "); // End Time/Real Time
     extensions.append("suser=").append(event.getMappedExternalUserId()).append(" "); // Source User
-    //test null?
     extensions.append("msg=").append(event.getDescription()).append(" "); // Message
 
     // Map label2value

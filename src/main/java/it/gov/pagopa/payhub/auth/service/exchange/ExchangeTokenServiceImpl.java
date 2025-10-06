@@ -2,8 +2,10 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
+import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
     private final IDTokenClaims2UserInfoMapper idTokenClaimsMapper;
     private final IamUserRegistrationService iamUserRegistrationService;
     private final FakeUserInfoService fakeUserInfoService;
+    private final AuditLoggerService auditService;
 
     public ExchangeTokenServiceImpl(
             @Value("${app.env}") String env,
@@ -36,7 +39,8 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
             AccessTokenBuilderService accessTokenBuilderService,
             TokenStoreService tokenStoreService,
             IDTokenClaims2UserInfoMapper idTokenClaimsMapper,
-            IamUserRegistrationService iamUserRegistrationService, FakeUserInfoService fakeUserInfoService) {
+            IamUserRegistrationService iamUserRegistrationService, FakeUserInfoService fakeUserInfoService,
+            AuditLoggerService auditService) {
         this.env = env;
         this.validateExternalTokenService = validateExternalTokenService;
         this.accessTokenBuilderService = accessTokenBuilderService;
@@ -44,6 +48,8 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         this.idTokenClaimsMapper = idTokenClaimsMapper;
         this.iamUserRegistrationService = iamUserRegistrationService;
         this.fakeUserInfoService = fakeUserInfoService;
+        this.auditService = auditService;
+
     }
 
     @Override
@@ -62,6 +68,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
+        auditService.log(AuditEventType.LOGIN_SUCCESS, iamUser.getMappedExternalUserId(), Map.of("scope",scope), "Login");
         return accessToken;
     }
 

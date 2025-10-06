@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 		AccessToken accessToken = accessTokenBuilderService.build(iamUser);
 		MDC.put("externalUserId", iamUser.getUserId());
 		tokenStoreService.save(accessToken.getAccessToken(), iamUser);
-		auditService.log(AuditEventType.LOGIN_SUCCESS, iamUser.getMappedExternalUserId(), null, "TEST login client credentials");
+		auditService.log(AuditEventType.LOGIN_SUCCESS, iamUser.getMappedExternalUserId(), Map.of("scope",scope), "Login client credentials");
 		return accessToken;
 	}
 
