@@ -31,7 +31,6 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
     private final IDTokenClaims2UserInfoMapper idTokenClaimsMapper;
     private final IamUserRegistrationService iamUserRegistrationService;
     private final FakeUserInfoService fakeUserInfoService;
-    private final AuditLoggerService auditService;
 
     public ExchangeTokenServiceImpl(
             @Value("${app.env}") String env,
@@ -39,8 +38,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
             AccessTokenBuilderService accessTokenBuilderService,
             TokenStoreService tokenStoreService,
             IDTokenClaims2UserInfoMapper idTokenClaimsMapper,
-            IamUserRegistrationService iamUserRegistrationService, FakeUserInfoService fakeUserInfoService,
-            AuditLoggerService auditService) {
+            IamUserRegistrationService iamUserRegistrationService, FakeUserInfoService fakeUserInfoService) {
         this.env = env;
         this.validateExternalTokenService = validateExternalTokenService;
         this.accessTokenBuilderService = accessTokenBuilderService;
@@ -48,8 +46,6 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         this.idTokenClaimsMapper = idTokenClaimsMapper;
         this.iamUserRegistrationService = iamUserRegistrationService;
         this.fakeUserInfoService = fakeUserInfoService;
-        this.auditService = auditService;
-
     }
 
     @Override
@@ -68,7 +64,6 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
-        auditService.log(AuditEventType.LOGIN_SUCCESS, Map.of("scope",scope), "Login");
         return accessToken;
     }
 

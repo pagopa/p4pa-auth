@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.service.m2m;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
-import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
@@ -28,8 +27,6 @@ class ClientCredentialsServiceTest {
 	private TokenStoreService tokenStoreServiceMock;
 	@Mock
 	private Client2UserInfoMapper client2UserInfoMapperMock;
-	@Mock
-	private AuditLoggerService auditLoggerServiceMock;
 
 	private ClientCredentialService service;
 
@@ -40,8 +37,7 @@ class ClientCredentialsServiceTest {
 			authorizeClientCredentialsRequestServiceMock,
 			accessTokenBuilderServiceMock,
 			tokenStoreServiceMock,
-			client2UserInfoMapperMock,
-			auditLoggerServiceMock
+			client2UserInfoMapperMock
 		);
 	}
 

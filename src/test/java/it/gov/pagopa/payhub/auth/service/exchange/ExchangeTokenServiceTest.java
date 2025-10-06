@@ -2,14 +2,11 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
-import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +33,6 @@ class ExchangeTokenServiceTest {
     private IamUserRegistrationService iamUserRegistrationServiceMock;
     @Mock
     private FakeUserInfoService fakeUserInfoServiceMock;
-    @Mock
-    private AuditLoggerService auditServiceMock;
 
     private ExchangeTokenService service;
 
@@ -50,8 +45,7 @@ class ExchangeTokenServiceTest {
                 tokenStoreServiceMock,
                 idTokenClaimsMapperMock,
                 iamUserRegistrationServiceMock, 
-                fakeUserInfoServiceMock,
-                auditServiceMock);
+                fakeUserInfoServiceMock);
     }
 
     @AfterEach
@@ -61,8 +55,7 @@ class ExchangeTokenServiceTest {
                 accessTokenBuilderServiceMock,
                 tokenStoreServiceMock,
                 idTokenClaimsMapperMock,
-                iamUserRegistrationServiceMock,
-                auditServiceMock
+                iamUserRegistrationServiceMock
         );
     }
 
@@ -97,7 +90,6 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(auditServiceMock).log(AuditEventType.LOGIN_SUCCESS, Map.of("scope",scope), "Login");
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
     }
@@ -148,8 +140,7 @@ class ExchangeTokenServiceTest {
                 tokenStoreServiceMock,
                 idTokenClaimsMapperMock,
                 iamUserRegistrationServiceMock,
-                fakeUserInfoServiceMock,
-                auditServiceMock);
+                fakeUserInfoServiceMock);
 
         // When
         InvalidTokenException result = Assertions.assertThrows(InvalidTokenException.class, () -> service.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope));
