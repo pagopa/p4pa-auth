@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class AuthnServiceImpl implements AuthnService {
 					case ValidateClientCredentialsService.ALLOWED_GRANT_TYPE -> clientCredentialService.postToken(clientId, scope, clientSecret);
 					default -> throw new InvalidGrantTypeException("Invalid grantType " + grantType);
 				};
-      auditService.log(AuditEventType.LOGIN_SUCCESS, null, "Authentication success");
+      auditService.log(AuditEventType.LOGIN_SUCCESS, Map.of("grantType",grantType), "Authentication success");
       return accessToken;
     }
 

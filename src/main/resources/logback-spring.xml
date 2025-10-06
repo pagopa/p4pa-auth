@@ -66,10 +66,6 @@
                 <appender-ref ref="SYNC_KAFKA_AUDIT"/>
             </appender>
 
-            <logger name="KAFKA_LOGGER" level="INFO" additivity="false">
-                <appender-ref ref="AUDIT"/>
-            </logger>
-
             <logger name="AUDIT" additivity="false">
                 <appender-ref ref="AUDIT"/>
                 <if condition='"TRUE".equalsIgnoreCase("${ENABLE_KAFKA_AUDIT_APPENDER}")'>

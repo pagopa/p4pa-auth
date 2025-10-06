@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +72,7 @@ class AuthnServiceTest {
 	      AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
 
         // Then
-        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, null,"Authentication success" );
+        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, Map.of("grantType",grantType),"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 
@@ -93,7 +94,7 @@ class AuthnServiceTest {
         AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
 
         // Then
-        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, null,"Authentication success" );
+        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, Map.of("grantType",grantType),"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 
