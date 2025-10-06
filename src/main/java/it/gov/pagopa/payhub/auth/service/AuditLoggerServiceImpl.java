@@ -9,7 +9,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j(topic = "KAFKA_LOGGER")
+@Slf4j(topic = "AUDIT")
 public class AuditLoggerServiceImpl implements AuditLoggerService {
   @Override
   public void log(AuditEventType auditEventType, Map<String, String> label2value, String description) {

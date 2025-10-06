@@ -44,13 +44,11 @@
 
     <if condition='"TRUE".equalsIgnoreCase("${ENABLE_AUDIT_APPENDER}")'>
         <then>
-            <appender name="KAFKA_AUDIT" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+            <appender name="SYNC_KAFKA_AUDIT" class="com.github.danielwegener.logback.kafka.KafkaAppender">
                 <encoder>
                     <pattern>%msg%n</pattern>
                 </encoder>
-
                 <topic>${KAFKA_AUDIT_TOPIC}</topic>
-
                 <producerConfig>bootstrap.servers=${KAFKA_BINDER_BROKER}</producerConfig>
                 <producerConfig>security.protocol=${KAFKA_CONFIG_SECURITY_PROTOCOL:-SASL_SSL}</producerConfig>
                 <producerConfig>sasl.mechanism=${KAFKA_CONFIG_SASL_MECHANISM:-PLAIN}</producerConfig>
@@ -61,19 +59,22 @@
                 <producerConfig>block.on.buffer.full=false</producerConfig>
             </appender>
 
+            <appender name="KAFKA_AUDIT" class="ch.qos.logback.classic.AsyncAppender">
+                <neverBlock>true</neverBlock>
+                <queueSize>20000</queueSize>
+                <discardingThreshold>0</discardingThreshold>
+                <appender-ref ref="SYNC_KAFKA_AUDIT"/>
+            </appender>
+
             <logger name="KAFKA_LOGGER" level="INFO" additivity="false">
-                <appender-ref ref="KAFKA_AUDIT"/>
+                <appender-ref ref="AUDIT"/>
             </logger>
         </then>
-        <else>
-            <logger name="KAFKA_LOGGER" level="INFO" additivity="false">
-                <appender-ref ref="ASYNC_STDOUT"/>
-            </logger>
-        </else>
     </if>
 
     <logger name="AUDIT" additivity="false">
         <appender-ref ref="AUDIT"/>
+        <appender-ref ref="KAFKA_AUDIT"/>
     </logger>
 
     <root level="INFO">
