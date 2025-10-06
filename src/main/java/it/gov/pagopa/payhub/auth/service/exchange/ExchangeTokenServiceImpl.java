@@ -68,7 +68,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
-        auditService.log(AuditEventType.LOGIN_SUCCESS, iamUser.getMappedExternalUserId(), Map.of("scope",scope), "Login");
+        auditService.log(AuditEventType.LOGIN_SUCCESS, Map.of("scope",scope), "Login");
         return accessToken;
     }
 

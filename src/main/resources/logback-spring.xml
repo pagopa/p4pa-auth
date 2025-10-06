@@ -42,7 +42,7 @@
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <if condition='"TRUE".equals("${ENABLE_AUDIT_APPENDER}")'>
+    <if condition='"TRUE".equalsIgnoreCase("${ENABLE_AUDIT_APPENDER}")'>
         <then>
             <appender name="KAFKA_AUDIT" class="com.github.danielwegener.logback.kafka.KafkaAppender">
                 <encoder>

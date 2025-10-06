@@ -47,7 +47,7 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 		AccessToken accessToken = accessTokenBuilderService.build(iamUser);
 		MDC.put("externalUserId", iamUser.getUserId());
 		tokenStoreService.save(accessToken.getAccessToken(), iamUser);
-		auditService.log(AuditEventType.LOGIN_SUCCESS, iamUser.getMappedExternalUserId(), Map.of("scope",scope), "Login client credentials");
+		auditService.log(AuditEventType.LOGIN_SUCCESS, Map.of("scope",scope), "Login client credentials");
 		return accessToken;
 	}
 

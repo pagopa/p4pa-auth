@@ -24,6 +24,6 @@ public class LogoutServiceImpl implements LogoutService {
     public void logout(String clientId, String token) {
         validateExternalTokenService.validateClient(clientId);
         tokenStoreService.delete(token);
-        auditService.log(AuditEventType.LOGOUT, clientId, null, "Logout");
+        auditService.log(AuditEventType.LOGOUT, null, "Logout");
     }
 }

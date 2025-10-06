@@ -19,6 +19,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
+import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
@@ -63,6 +64,9 @@ class AuthzControllerTest {
 
     @MockitoBean
     private AuthnService authnServiceMock;
+
+    @MockitoBean
+    private AuditLoggerService auditLoggerServiceMock;
 
     @MockitoBean
     private ValidateTokenService validateTokenServiceMock;

@@ -19,7 +19,6 @@ class AuditLoggerServiceImplTest {
   private AuditLoggerServiceImpl auditLoggerService;
 
   private final AuditEventType eventType = AuditEventType.LOGIN_SUCCESS;
-  private final String userId = "mappedExternalUserId";
   private final Map<String, String> labels = Map.of("ORGID", "1");
   private final String description = "Test Login";
   private final String expectedCefMessage = "CEF:TEST_MESSAGE";
@@ -36,7 +35,7 @@ class AuditLoggerServiceImplTest {
       mockedAuditUtils.when(() -> AuditUtils.format(any(AuditLogDTO.class)))
           .thenReturn(expectedCefMessage);
       // When
-      auditLoggerService.log(eventType, userId, labels, description);
+      auditLoggerService.log(eventType, labels, description);
       // Then
       mockedAuditUtils.verify(() -> AuditUtils.format(any(AuditLogDTO.class)), times(1));
     }
@@ -48,7 +47,7 @@ class AuditLoggerServiceImplTest {
       mockedAuditUtils.when(() -> AuditUtils.format(any(AuditLogDTO.class)))
           .thenReturn(expectedCefMessage);
       // When
-      auditLoggerService.log(eventType, userId, null, description);
+      auditLoggerService.log(eventType, null, description);
       // Then
       mockedAuditUtils.verify(() -> AuditUtils.format(any(AuditLogDTO.class)), times(1));
     }

@@ -23,7 +23,7 @@ class AuditUtilsTest {
     AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_SUCCESS, userId, labels, description);
 
     String expectedHeaderPrefix = String.format("CEF:0|%s|%s|%s|%s|%s|",
-        "PagoPa", "P4PA-AUTH", "1.0", AuditEventType.LOGIN_SUCCESS.name(), description);
+        "PiattaformaUnitaria", "P4PA-AUTH", "1.0", AuditEventType.LOGIN_SUCCESS.name(), description);
 
     // When
     String cefMessage = AuditUtils.format(event);

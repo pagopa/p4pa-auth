@@ -13,6 +13,7 @@ import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
+import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
@@ -57,6 +58,9 @@ class AuthzControllerNoOrganizationAccessModeTest {
 
     @MockitoBean
     private ValidateTokenService validateTokenServiceMock;
+
+    @MockitoBean
+    private AuditLoggerService auditLoggerServiceMock;
 
     @MockitoBean
     private JWTLegacyHandlerService jwtLegacyHandlerServiceMock;

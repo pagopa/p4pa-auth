@@ -97,7 +97,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(auditServiceMock).log(AuditEventType.LOGIN_SUCCESS, iamUserInfo.getMappedExternalUserId(), Map.of("scope",scope), "Login");
+        Mockito.verify(auditServiceMock).log(AuditEventType.LOGIN_SUCCESS, Map.of("scope",scope), "Login");
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
     }
