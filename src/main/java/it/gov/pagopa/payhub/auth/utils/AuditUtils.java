@@ -14,13 +14,12 @@ public class AuditUtils {
   private static final String VENDOR = "PagoPa";
   private static final String PRODUCT = "P4PA-AUTH";
   private static final String VERSION = "1.0";
-  private static final String DEVICE_VERSION = "1.0";
 
   public static String format(AuditLogDTO event) {
     String header = String.format("CEF:0|%s|%s|%s|%s|%s|",
         VENDOR,
         PRODUCT,
-        DEVICE_VERSION,
+        VERSION,
         event.getAuditEventType().name(), // signatureId
         event.getDescription().replace("|", "_")
     );
