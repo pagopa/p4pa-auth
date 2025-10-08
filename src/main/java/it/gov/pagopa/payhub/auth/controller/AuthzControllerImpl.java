@@ -1,22 +1,11 @@
 package it.gov.pagopa.payhub.auth.controller;
 
-import static it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService.PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX;
-
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
-import it.gov.pagopa.payhub.dto.generated.ClientDTO;
-import it.gov.pagopa.payhub.dto.generated.ClientDTOPage;
-import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
-import it.gov.pagopa.payhub.dto.generated.CreateClientRequest;
-import it.gov.pagopa.payhub.dto.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
-import it.gov.pagopa.payhub.dto.generated.OperatorsPage;
-import it.gov.pagopa.payhub.dto.generated.UserDTO;
-import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import java.util.List;
+import it.gov.pagopa.payhub.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -26,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+import static it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService.PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX;
 
 @Slf4j
 @RestController
@@ -62,7 +55,7 @@ public class AuthzControllerImpl implements AuthzApi {
                 .content(organizationOperators.getContent())
                 .pageNo(page)
                 .pageSize(size)
-                .totalElements(organizationOperators.getNumberOfElements())
+                .totalElements((int) organizationOperators.getTotalElements())
                 .totalPages(organizationOperators.getTotalPages())
                 .build());
     }
