@@ -30,7 +30,7 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 		this.accessTokenBuilderService = accessTokenBuilderService;
 		this.tokenStoreService = tokenStoreService;
 		this.client2UserInfoMapper = client2UserInfoMapper;
-	}
+  	}
 
 	@Override
 	public AccessToken postToken(String clientId, String scope, String clientSecret) {

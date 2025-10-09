@@ -37,7 +37,7 @@ class ClientCredentialsServiceTest {
 			authorizeClientCredentialsRequestServiceMock,
 			accessTokenBuilderServiceMock,
 			tokenStoreServiceMock,
-                client2UserInfoMapperMock
+					client2UserInfoMapperMock
 		);
 	}
 

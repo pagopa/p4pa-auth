@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidGrantTypeException;
 import it.gov.pagopa.payhub.auth.service.m2m.ClientCredentialService;
 import it.gov.pagopa.payhub.auth.service.m2m.ValidateClientCredentialsService;
@@ -9,6 +10,7 @@ import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,12 +33,14 @@ class AuthnServiceTest {
     private UserService userServiceMock;
     @Mock
     private LogoutService logoutServiceMock;
+    @Mock
+    private AuditLoggerService auditLoggerServiceMock;
 
     private AuthnService service;
 
     @BeforeEach
     void init(){
-        service = new AuthnServiceImpl(clientCredentialService, exchangeTokenServiceMock, userServiceMock, logoutServiceMock);
+        service = new AuthnServiceImpl(clientCredentialService, exchangeTokenServiceMock, userServiceMock, logoutServiceMock, auditLoggerServiceMock);
     }
 
     @AfterEach
@@ -68,6 +72,7 @@ class AuthnServiceTest {
 	      AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
 
         // Then
+        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, Map.of("grantType",grantType),"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 
@@ -89,6 +94,7 @@ class AuthnServiceTest {
         AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
 
         // Then
+        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, Map.of("grantType",grantType),"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 

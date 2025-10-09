@@ -4,12 +4,14 @@ import com.mongodb.MongoQueryException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteError;
+import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import org.bson.BsonDocument;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mongodb.UncategorizedMongoDbException;
@@ -38,7 +40,8 @@ import static org.mockito.Mockito.doThrow;
 class MongoTooManyRequestsExceptionHandlerTest {
     @Autowired
     private MockMvc mockMvc;
-
+    @MockitoBean
+    private AuditLoggerService auditLoggerServiceMock;
     @MockitoSpyBean
     private AuthExceptionHandlerTest.TestController testControllerSpy;
 
