@@ -291,8 +291,8 @@ paths:
           description: ToS acceptance missing
         '429':
           description: Too Many Requests
-  /oauth/clients/{organizationIpaCode}/{clientId}/client-secret:
-    put:
+  /oauth/clients/{organizationIpaCode}/{clientId}/generate:
+    post:
       tags:
         - authz
       operationId: generateClientSecret
