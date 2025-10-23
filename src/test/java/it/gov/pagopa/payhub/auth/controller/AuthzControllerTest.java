@@ -680,7 +680,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
                 .thenReturn(Optional.of(expectedClientDTO));
 
         MvcResult result = mockMvc.perform(
-                        put("/payhub/oauth/clients/{organizationIpaCode}/{clientId}/client-secret", organizationIpaCode, clientId)
+                        post("/payhub/oauth/clients/{organizationIpaCode}/{clientId}/generate", organizationIpaCode, clientId)
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 ).andExpect(status().isOk())
                 .andReturn();
@@ -712,7 +712,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
-                put("/payhub/oauth/clients/{organizationIpaCode}/{clientId}/client-secret", organizationIpaCode, clientId)
+                post("/payhub/oauth/clients/{organizationIpaCode}/{clientId}/generate", organizationIpaCode, clientId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isForbidden());
     }
