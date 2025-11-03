@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 *.tgz
 helm/charts
+dependency-license/*/*
 
 ### STS ###
 .apt_generated

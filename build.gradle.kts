@@ -1,4 +1,6 @@
 import java.util.Objects
+import com.github.jk1.license.render.*
+import com.github.jk1.license.filter.*
 
 plugins {
     java
@@ -10,6 +12,7 @@ plugins {
     id("org.openapi.generator") version "7.15.0"
     id("org.ajoberstar.grgit") version "5.3.2"
     id("com.gorylenko.gradle-git-properties") version "2.5.3"
+    id("com.github.jk1.dependency-license-report") version "3.0.1"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -26,6 +29,16 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+}
+
+licenseReport {
+//    renderers = arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
+    renderers = arrayOf(CsvReportRenderer())
+    outputDir = "$projectDir/dependency-license"
+    filters = arrayOf(SpdxLicenseBundleNormalizer())
+}
+tasks.build{
+    finalizedBy(tasks.generateLicenseReport)
 }
 
 
