@@ -88,6 +88,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
+  /oauth/limited-token:
+    post:
+      tags:
+        - authn
+      operationId: postTokenLimitedScope
+      security: [ ]
+      parameters:
+        - name: client_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: grant_type
+          in: query
+          required: true
+          schema:
+            enum: [
+              "urn:ietf:params:oauth:grant-type:token-exchange",
+              "client_credentials"
+            ]
+            type: string
+        - name: subject_token
+          description: "ID Token"
+          in: query
+          schema:
+            type: string
+        - name: subject_issuer
+          description: "Issuer del subject_token"
+          in: query
+          schema:
+            type: string
+        - name: subject_token_type
+          in: query
+          schema:
+            enum: [
+              "urn:ietf:params:oauth:token-type:jwt"
+            ]
+            type: string
+        - name: scope
+          in: query
+          required: true
+          schema:
+            enum: [
+              "openid"
+            ]
+            type: string
+        - name: client_secret
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '400':
+          description: Invalid request
+        '401':
+          description: Authentication failed
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthErrorDTO'
   /oauth/userinfo:
     get:
       tags:
