@@ -10,10 +10,7 @@ import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
-import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
-import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
+import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -162,7 +159,7 @@ class AuthnControllerTest {
 
     @Test
     void givenRequestWitAuthorizationWhenGetUserInfoThenOk() throws Exception {
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
                 .userId("USERID")
                 .organizationAccess("IPA_CODE")
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -185,7 +182,7 @@ class AuthnControllerTest {
     @Test
     void givenRequestWitAuthorizationAndNotOrganizationAccessWhenGetUserInfoThenOk() throws Exception {
         
-        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
+        UserInfo expectedUser = BaseUserInfo.builder().userId("USERID").build();
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
@@ -261,7 +258,7 @@ class AuthnControllerTest {
     @Test
     void givenM2MLegacyRequestWhenGetUserInfoThenOk() throws Exception {
 
-        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
+        UserInfo expectedUser = BaseUserInfo.builder().userId("USERID").build();
 
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
         Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);

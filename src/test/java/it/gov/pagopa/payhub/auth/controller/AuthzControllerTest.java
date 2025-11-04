@@ -73,7 +73,7 @@ class AuthzControllerTest {
         Pageable pageRequest = PageRequest.of(4, 1);
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-                .thenReturn(UserInfo.builder()
+                .thenReturn(BaseUserInfo.builder()
                         .organizations(List.of(UserOrganizationRoles.builder()
                                 .organizationIpaCode(organizationIpaCode)
                                 .roles(List.of(Constants.ROLE_ADMIN))
@@ -109,7 +109,7 @@ class AuthzControllerTest {
         String lastName = "LASTNAME";
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -148,7 +148,7 @@ class AuthzControllerTest {
         String organizationIpaCode = "IPACODE";
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-                .thenReturn(UserInfo.builder()
+                .thenReturn(BaseUserInfo.builder()
                         .organizations(List.of(UserOrganizationRoles.builder()
                                 .organizationIpaCode("ORG2")
                                 .roles(List.of(Constants.ROLE_ADMIN))
@@ -171,7 +171,7 @@ class AuthzControllerTest {
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -199,7 +199,7 @@ class AuthzControllerTest {
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -226,7 +226,7 @@ class AuthzControllerTest {
         String organizationIpaCode = "IPACODE";
         String body = AuthzControllerNoOrganizationAccessModeTest.buildCreateOperatorRequest();
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG2")
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -248,7 +248,7 @@ class AuthzControllerTest {
         String body = AuthzControllerNoOrganizationAccessModeTest.buildCreateUserRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG2")
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -270,7 +270,7 @@ class AuthzControllerTest {
         //Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
         String accessToken = "accessToken";
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
             .userId("USERID")
             .organizationAccess("IPA_CODE")
             .mappedExternalUserId(mappedExternalUserId)
@@ -281,7 +281,7 @@ class AuthzControllerTest {
             .build();
 
         Mockito.when(authnServiceMock.getUserInfo(accessToken))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .userId("USERID")
                 .mappedExternalUserId(mappedExternalUserId)
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -308,7 +308,7 @@ class AuthzControllerTest {
         //Given
         String mappedExternalUserId = "OTHERUSERID";
         String accessToken = "accessToken";
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
                 .userId("USERID")
                 .organizationAccess("IPA_CODE")
                 .mappedExternalUserId(mappedExternalUserId)
@@ -319,7 +319,7 @@ class AuthzControllerTest {
                 .build();
 
         Mockito.when(authnServiceMock.getUserInfo(accessToken))
-                .thenReturn(UserInfo.builder()
+                .thenReturn(BaseUserInfo.builder()
                         .mappedExternalUserId("LOGGEDUSERID")
                         .organizations(List.of(UserOrganizationRoles.builder()
                                 .organizationIpaCode("ORG")
@@ -345,7 +345,7 @@ class AuthzControllerTest {
         //Given
         String mappedExternalUserId = "OTHEREXTERNALUSERID";
         String accessToken = "accessToken";
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
             .userId("USERID")
             .organizationAccess("IPA_CODE")
             .mappedExternalUserId(mappedExternalUserId)
@@ -356,7 +356,7 @@ class AuthzControllerTest {
             .build();
 
         Mockito.when(authnServiceMock.getUserInfo(accessToken))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .mappedExternalUserId("EXTERNALUSERID")
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG")
@@ -392,7 +392,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
             .clientSecret(decryptedSecret)
             .build();
 
-    UserInfo expectedUser = UserInfo.builder()
+    UserInfo expectedUser = BaseUserInfo.builder()
             .userId("USERID")
             .organizationAccess(organizationIpaCode)
             .organizations(List.of(UserOrganizationRoles.builder()
@@ -427,7 +427,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";
 
-        UserInfo unauthorizedUser = UserInfo.builder()
+        UserInfo unauthorizedUser = BaseUserInfo.builder()
                 .userId("USERID")
                 .organizationAccess("ORG")
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -455,7 +455,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientName1 = "SERVICE_001";
         String clientName2 = "SERVICE_002";
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
           .userId("USERID")
           .organizationAccess(organizationIpaCode)
           .organizations(List.of(UserOrganizationRoles.builder()
@@ -500,7 +500,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
 
         //When
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(UserInfo.builder()
+          .thenReturn(BaseUserInfo.builder()
             .organizations(List.of(UserOrganizationRoles.builder()
               .organizationIpaCode("ORG")
               .roles(List.of(Constants.ROLE_OPER))
@@ -522,7 +522,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-                .thenReturn(UserInfo.builder()
+                .thenReturn(BaseUserInfo.builder()
                         .organizations(List.of(UserOrganizationRoles.builder()
                                 .organizationIpaCode(organizationIpaCode)
                                 .roles(List.of(Constants.ROLE_ADMIN))
@@ -549,7 +549,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";
 
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
           .userId("USERID")
           .organizationAccess(organizationIpaCode)
           .organizations(List.of(UserOrganizationRoles.builder()
@@ -578,7 +578,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
 
         //When
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(UserInfo.builder()
+          .thenReturn(BaseUserInfo.builder()
             .organizations(List.of(UserOrganizationRoles.builder()
               .organizationIpaCode("ORG")
               .roles(List.of(Constants.ROLE_OPER))
@@ -600,7 +600,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         Pageable pageRequest = PageRequest.of(4, 1);
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -633,7 +633,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_OPER))
@@ -665,7 +665,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
                 .clientSecret(generatedSecret)
                 .build();
 
-        UserInfo authorizedUser = UserInfo.builder()
+        UserInfo authorizedUser = BaseUserInfo.builder()
                 .userId("USERID")
                 .organizationAccess(organizationIpaCode)
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -699,7 +699,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
         String organizationIpaCode = "IPA_TEST_2";
         String clientId = "CLIENTID";
 
-        UserInfo unauthorizedUser = UserInfo.builder()
+        UserInfo unauthorizedUser = BaseUserInfo.builder()
                 .userId("USERID")
                 .organizationAccess("ORG")
                 .organizations(List.of(UserOrganizationRoles.builder()

@@ -8,6 +8,8 @@ import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.utils.Constants;
+import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
+import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
@@ -15,10 +17,7 @@ import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper {
@@ -51,7 +50,8 @@ public class IamUserInfoDTO2UserInfoMapper {
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
         Optional<Organization> organization = retrieveOrganization(organizationIpaCode, accessToken);
-        UserInfo userInfo = UserInfo.builder()
+        UserInfo userInfo = BaseUserInfo.builder()
+                .traceId(UUID.randomUUID().toString()) // @TODO: identify from where to grab this
                 .systemUser(true)
                 .userId(iamUserInfoDTO.getInnerUserId())
                 .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
@@ -77,7 +77,7 @@ public class IamUserInfoDTO2UserInfoMapper {
     private UserInfo userInfoMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
 
-        UserInfo userInfo = UserInfo.builder()
+        UserInfo userInfo = BaseUserInfo.builder()
                 .systemUser(false)
                 .userId(iamUserInfoDTO.getInnerUserId())
                 .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
@@ -100,11 +100,13 @@ public class IamUserInfoDTO2UserInfoMapper {
                         .toList())
                 .build();
 
-        if (iamUserInfoDTO.getOrganizationAccess() != null) {
-            userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
+        if (iamUserInfoDTO.getOrganizationAccess() != null && userInfo instanceof BaseUserInfo base) {
+            base.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
-        userInfo.setCanManageUsers(!organizationAccessMode);
+        if (userInfo instanceof BaseUserInfo base) {
+            base.setCanManageUsers(!organizationAccessMode);
+        }
         return userInfo;
     }
 
@@ -130,11 +132,11 @@ public class IamUserInfoDTO2UserInfoMapper {
     }
 
     private void setBrokerInfo(UserInfo userInfo, IamUserInfoDTO iamUserInfo, String accessToken) {
-        Broker brokerInfo = getSessionBroker(iamUserInfo, userInfo.getOrganizations(), accessToken);
+        Broker brokerInfo = getSessionBroker(iamUserInfo, SecurityUtils.getOrganizations(userInfo), accessToken);
 
-        if (brokerInfo != null) {
-            userInfo.setBrokerId(brokerInfo.getBrokerId());
-            userInfo.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
+        if (brokerInfo != null && userInfo instanceof BaseUserInfo base) {
+            base.setBrokerId(brokerInfo.getBrokerId());
+            base.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
         }
     }
 

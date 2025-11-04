@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.utils;
 
+import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +18,7 @@ class SecurityUtilsTest {
     @Test
     void testGetPrincipal() {
         // Given
-        UserInfo expectedUserInfo = new UserInfo();
+        UserInfo expectedUserInfo = new BaseUserInfo();
         configureSecurityContext(expectedUserInfo, "TOKEN");
 
         // When
@@ -44,7 +45,7 @@ class SecurityUtilsTest {
     void testGetPrincipalRoles() {
         // Given
         List<String> expectedRoles = List.of("ROLE");
-        UserInfo expectedUserInfo = UserInfo.builder()
+        UserInfo expectedUserInfo = BaseUserInfo.builder()
                 .organizations(List.of(
                         UserOrganizationRoles.builder()
                                 .organizationIpaCode("ORG")
@@ -70,7 +71,7 @@ class SecurityUtilsTest {
     @Test
     void testIsPrincipalAdmin() {
         // Given
-        UserInfo expectedUserInfo = UserInfo.builder()
+        UserInfo expectedUserInfo = BaseUserInfo.builder()
                 .organizations(List.of(
                         UserOrganizationRoles.builder()
                                 .organizationIpaCode("ORG")
@@ -96,7 +97,7 @@ class SecurityUtilsTest {
     @Test
     void testHasAdminRole() {
         // Given
-        UserInfo expectedUserInfo = UserInfo.builder()
+        UserInfo expectedUserInfo = BaseUserInfo.builder()
             .organizations(List.of(
                 UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG")

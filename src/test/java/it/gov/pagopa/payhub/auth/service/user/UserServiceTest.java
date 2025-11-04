@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationS
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
+import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
@@ -84,7 +85,7 @@ class UserServiceTest {
         String accessToken = "accessToken";
 
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
-        UserInfo expectedUserInfo = new UserInfo();
+        UserInfo expectedUserInfo = new BaseUserInfo();
         Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(iamUserInfo);
         Mockito.when(userInfoMapperMock.apply(iamUserInfo, accessToken)).thenReturn(expectedUserInfo);
 
@@ -155,7 +156,7 @@ class UserServiceTest {
         // Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
         String accessToken = "ACCESSTOKEN";
-        UserInfo expectedResult = new UserInfo();
+        UserInfo expectedResult = new BaseUserInfo();
 
         Mockito.when(userInfoRetrieverServiceMock.findByMappedExternalUserId(mappedExternalUserId, accessToken))
                 .thenReturn(expectedResult);

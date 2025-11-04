@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
+import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
@@ -83,7 +84,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .email("EMAIL")
                 .build());
 
-        UserInfo expected = UserInfo.builder()
+        UserInfo expected = BaseUserInfo.builder()
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -126,7 +127,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result);
-        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
+        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
     @Test
@@ -149,7 +150,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .build())
                 .build();
 
-        UserInfo expected = UserInfo.builder()
+        UserInfo expected = BaseUserInfo.builder()
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -184,7 +185,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result);
-        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
+        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
     @Test
@@ -210,7 +211,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .email("EMAIL")
                 .build());
 
-        UserInfo expected = UserInfo.builder()
+        UserInfo expected = BaseUserInfo.builder()
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -252,7 +253,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result, "organizationAccess");
-        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
+        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
     @Test
@@ -275,7 +276,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .build())
                 .build();
 
-        UserInfo expected = UserInfo.builder()
+        UserInfo expected = BaseUserInfo.builder()
                 .systemUser(true)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -316,7 +317,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result);
-        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
+        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
 

@@ -19,12 +19,8 @@ import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.dto.generated.ClientDTO;
-import it.gov.pagopa.payhub.dto.generated.CreateClientRequest;
-import it.gov.pagopa.payhub.dto.generated.CreateOperatorRequest;
-import it.gov.pagopa.payhub.dto.generated.UserDTO;
-import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
+import it.gov.pagopa.payhub.dto.generated.*;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,7 +71,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateOperatorRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG2")
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -97,7 +93,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateOperatorRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -133,7 +129,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateUserRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -154,7 +150,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateUserRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(UserInfo.builder()
+            .thenReturn(BaseUserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
                     .roles(List.of(Constants.ROLE_OPER))
@@ -189,7 +185,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         Gson gson = new Gson();
         String body = gson.toJson(request);
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(UserInfo.builder()
+          .thenReturn(BaseUserInfo.builder()
             .organizations(List.of(UserOrganizationRoles.builder()
               .organizationIpaCode("ORG2")
               .roles(List.of(Constants.ROLE_OPER))
@@ -213,7 +209,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String organizationIpaCode = "IPA_TEST_2";
         CreateClientRequest createClientRequest = buildCreateClientRequest();
 
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
           .userId("USERID")
           .organizationAccess(organizationIpaCode)
           .organizations(List.of(UserOrganizationRoles.builder()
@@ -269,7 +265,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
                 .clientSecret(decryptedSecret)
                 .build();
 
-        UserInfo expectedUser = UserInfo.builder()
+        UserInfo expectedUser = BaseUserInfo.builder()
                 .userId("USERID")
                 .organizationAccess(organizationIpaCode)
                 .organizations(List.of(UserOrganizationRoles.builder()

@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationS
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
+import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
         UserInfo result = userInfoMapper.apply(userInfo, accessToken);
 
-        log.debug("User info retrieved successfully with brokerId: {}", result.getBrokerId());
+        log.debug("User info retrieved successfully with brokerId: {}", SecurityUtils.getBrokerId(result));
 
         return result;
     }

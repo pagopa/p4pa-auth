@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
 import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -118,7 +119,7 @@ class AuthnServiceTest {
     void whenGetUserInfoThenCallUserService(){
         // Given
         String accessToken = "accessToken";
-        UserInfo expectedResult = new UserInfo();
+        UserInfo expectedResult = new BaseUserInfo();
         Mockito.when(userServiceMock.getUserInfo(accessToken))
                 .thenReturn(expectedResult);
 

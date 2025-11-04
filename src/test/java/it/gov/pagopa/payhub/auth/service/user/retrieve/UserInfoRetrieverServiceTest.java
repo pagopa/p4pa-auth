@@ -11,6 +11,7 @@ import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService;
 import it.gov.pagopa.payhub.auth.service.user.IamUserInfoDTO2UserInfoMapper;
+import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
@@ -71,7 +72,7 @@ class UserInfoRetrieverServiceTest {
         String clientId = "piattaforma-unitaria_IPACODE";
         String accessToken = "accessToken";
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
-        UserInfo expectedResult = new UserInfo();
+        UserInfo expectedResult = new BaseUserInfo();
 
         ClientNoSecretDTO clientNoSecretDTO = AuthorizeClientCredentialsRequestService.puSystemClientId2ClientNoSecretDTO(clientId);
 
@@ -97,7 +98,7 @@ class UserInfoRetrieverServiceTest {
         Client client = new Client();
         ClientNoSecretDTO clientNoSecretDTO = new ClientNoSecretDTO();
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
-        UserInfo expectedResult = new UserInfo();
+        UserInfo expectedResult = new BaseUserInfo();
 
         Mockito.when(clientRepositoryMock.findById(clientId))
                 .thenReturn(Optional.of(client));
@@ -136,7 +137,7 @@ class UserInfoRetrieverServiceTest {
         // Given
         String orgIpaCode = "ORGIPACODE";
         String accessToken = "ACCESSTOKEN";
-        UserInfo expectedResult = new UserInfo();
+        UserInfo expectedResult = new BaseUserInfo();
 
         Mockito.when(a2ALegacyClaims2UserInfoMapperMock.map(orgIpaCode))
                 .thenReturn(expectedResult);
@@ -155,7 +156,7 @@ class UserInfoRetrieverServiceTest {
         // Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
         String accessToken = "accessToken";
-        UserInfo expectedResult = new UserInfo();
+        UserInfo expectedResult = new BaseUserInfo();
 
         User user = User.builder()
                 .iamIssuer("IAMISSUER")

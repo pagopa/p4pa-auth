@@ -239,7 +239,7 @@ class AuthzServiceTest {
         //Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
         String accessToken = "ACCESSTOKEN";
-        UserInfo expectedUserInfo = new UserInfo();
+        UserInfo expectedUserInfo = new BaseUserInfo();
 
         Mockito.when(userServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken))
           .thenReturn(expectedUserInfo);

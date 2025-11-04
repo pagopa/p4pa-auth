@@ -88,56 +88,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
-  /oauth/limited-token:
+  /oauth/token/limited:
     post:
       tags:
         - authn
-      operationId: postTokenLimitedScope
+      operationId: postLimitedToken
       security: [ ]
-      parameters:
-        - name: client_id
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: grant_type
-          in: query
-          required: true
-          schema:
-            enum: [
-              "urn:ietf:params:oauth:grant-type:token-exchange",
-              "client_credentials"
-            ]
-            type: string
-        - name: subject_token
-          description: "ID Token"
-          in: query
-          schema:
-            type: string
-        - name: subject_issuer
-          description: "Issuer del subject_token"
-          in: query
-          schema:
-            type: string
-        - name: subject_token_type
-          in: query
-          schema:
-            enum: [
-              "urn:ietf:params:oauth:token-type:jwt"
-            ]
-            type: string
-        - name: scope
-          in: query
-          required: true
-          schema:
-            enum: [
-              "openid"
-            ]
-            type: string
-        - name: client_secret
-          in: query
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LimitedTokenRequest'
       responses:
         '200':
           description: OK
@@ -149,6 +110,10 @@ paths:
           description: Invalid request
         '401':
           description: Authentication failed
+        '403':
+          description: Forbidden
+        '409':
+          description: Conflict
         '429':
           description: Too Many Requests
         '500':
@@ -645,6 +610,27 @@ components:
       type: http
       scheme: bearer
   schemas:
+    LimitedTokenRequest:
+      type: object
+      required:
+        - organizationId
+        - app
+        - resource
+      properties:
+        organizationId:
+          type: integer
+          format: int64
+        app:
+          type: string
+        resource:
+          type: string
+        resourceId:
+          type: string
+        expireInSeconds:
+          type: integer
+          format: int64
+        singleUsage:
+          type: boolean
     AccessToken:
       type: object
       required:
@@ -712,7 +698,7 @@ components:
           type: string
         fiscalCode:
           type: string
-    UserInfo:
+    BaseUserInfo:
       type: object
       required:
         - userId
@@ -724,6 +710,8 @@ components:
         - issuer
         - organizations
         - canManageUsers
+        - traceId
+        - _type
       properties:
         userId:
           type: string
@@ -752,6 +740,10 @@ components:
           type: boolean
         systemUser:
           type: boolean
+        traceId:
+          type: string
+        _type:
+          type: string
     UserOrganizationRoles:
       type: object
       required:
@@ -910,3 +902,38 @@ components:
           type: integer
           format: int32
           description: "Number of total pages"
+    UserInfoLimitedScope:
+      type: object
+      required:
+        - resource
+      allOf:
+        - $ref: '#/components/schemas/BaseUserInfo'
+      properties:
+        resource:
+          $ref: '#/components/schemas/LimitedScopeResource'
+    LimitedScopeResource:
+      type: object
+      required:
+        - app
+        - organization
+        - resource
+        - resourceId
+        - singleUsage
+      properties:
+        app:
+          type: string
+        organization:
+          $ref: '#/components/schemas/UserOrganizationRoles'
+        resource:
+          type: string
+        resourceId:
+          type: string
+        singleUsage:
+          type: boolean
+    UserInfo:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/BaseUserInfo'
+        - $ref: '#/components/schemas/UserInfoLimitedScope'
+      discriminator:
+        propertyName: _type
