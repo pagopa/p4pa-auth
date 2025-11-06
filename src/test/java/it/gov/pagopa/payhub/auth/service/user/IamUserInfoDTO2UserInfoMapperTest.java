@@ -63,6 +63,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
                 .innerUserId(userId)
@@ -85,6 +86,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build());
 
         UserInfo expected = BaseUserInfo.builder()
+                .traceId("traceId")
+                .type(BaseUserInfo.class.getSimpleName())
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -136,6 +139,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
                 .innerUserId(userId)
@@ -151,6 +155,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build();
 
         UserInfo expected = BaseUserInfo.builder()
+                .type(BaseUserInfo.class.getSimpleName())
+                .traceId("traceId")
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -194,6 +200,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
                 .innerUserId(userId)
@@ -212,6 +219,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build());
 
         UserInfo expected = BaseUserInfo.builder()
+                .type(BaseUserInfo.class.getSimpleName())
+                .traceId("traceId")
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -262,6 +271,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .traceId("traceId")
                 .systemUser(Boolean.TRUE)
                 .userId("EXTERNALUSERID")
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -277,6 +287,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build();
 
         UserInfo expected = BaseUserInfo.builder()
+                .type(BaseUserInfo.class.getSimpleName())
+                .traceId("traceId")
                 .systemUser(true)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")

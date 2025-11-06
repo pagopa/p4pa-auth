@@ -78,6 +78,9 @@ public class AccessTokenBuilderService {
         if(iamUserInfoDTO.getOrganizationAccess()!=null){
             jwtBuilder.withClaim("organizationIpaCode", iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
+        if (iamUserInfoDTO.getScope() != null &&  !iamUserInfoDTO.getScope().isEmpty()) {
+            jwtBuilder.withClaim("scope", iamUserInfoDTO.getScope());
+        }
         String token = jwtBuilder
                 .sign(algorithm);
         return new AccessToken(token, tokenType, expireIn);

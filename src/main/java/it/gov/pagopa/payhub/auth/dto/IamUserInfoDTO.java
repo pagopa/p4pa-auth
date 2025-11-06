@@ -10,19 +10,20 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class IamUserInfoDTO {
+    private String traceId;
+    private String userId;
+    private String fiscalCode;
+    private String familyName;
+    private String name;
+    private String issuer;
+    private IamUserOrganizationRolesDTO organizationAccess;
+    private String scope;
 
-  private String userId;
-  private String fiscalCode;
-  private String familyName;
-  private String name;
-  private String issuer;
-  private IamUserOrganizationRolesDTO organizationAccess;
+      // field calculated upon registration
+      private String innerUserId;
+      private String mappedExternalUserId;
 
-  // field calculated upon registration
-  private String innerUserId;
-  private String mappedExternalUserId;
-
-  // field to check if it is a real user or a machine/system user
-  private boolean systemUser;
+      // field to check if it is a real user or a machine/system user
+      private boolean systemUser;
 }
 

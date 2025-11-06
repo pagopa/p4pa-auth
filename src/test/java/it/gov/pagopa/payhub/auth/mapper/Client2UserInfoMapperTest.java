@@ -45,6 +45,6 @@ class Client2UserInfoMapperTest {
 		IamUserInfoDTO result = mapper.apply(clientDTO);
 		//Then
 		Assertions.assertEquals(iamUserInfoDTO,	result);
-		TestUtils.checkNotNullFields(result);
+		TestUtils.checkNotNullFields(result, "traceId", "scope");
 	}
 }

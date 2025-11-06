@@ -2,16 +2,15 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidGrantTypeException;
-import it.gov.pagopa.payhub.auth.service.m2m.ClientCredentialService;
-import it.gov.pagopa.payhub.auth.service.m2m.ValidateClientCredentialsService;
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
 import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
+import it.gov.pagopa.payhub.auth.service.m2m.ClientCredentialService;
+import it.gov.pagopa.payhub.auth.service.m2m.ValidateClientCredentialsService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -36,12 +37,14 @@ class AuthnServiceTest {
     private LogoutService logoutServiceMock;
     @Mock
     private AuditLoggerService auditLoggerServiceMock;
+    @Mock
+    private LimitedTokenService limitedTokenServiceMock;
 
     private AuthnService service;
 
     @BeforeEach
     void init(){
-        service = new AuthnServiceImpl(clientCredentialService, exchangeTokenServiceMock, userServiceMock, logoutServiceMock, auditLoggerServiceMock);
+        service = new AuthnServiceImpl(clientCredentialService, exchangeTokenServiceMock, userServiceMock, logoutServiceMock, auditLoggerServiceMock, limitedTokenServiceMock);
     }
 
     @AfterEach

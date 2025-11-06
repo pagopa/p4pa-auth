@@ -2,17 +2,19 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidGrantTypeException;
-import it.gov.pagopa.payhub.auth.service.m2m.ClientCredentialService;
-import it.gov.pagopa.payhub.auth.service.m2m.ValidateClientCredentialsService;
 import it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
 import it.gov.pagopa.payhub.auth.service.logout.LogoutService;
+import it.gov.pagopa.payhub.auth.service.m2m.ClientCredentialService;
+import it.gov.pagopa.payhub.auth.service.m2m.ValidateClientCredentialsService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.LimitedTokenRequest;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -22,14 +24,22 @@ public class AuthnServiceImpl implements AuthnService {
     private final UserService userService;
     private final LogoutService logoutService;
     private final AuditLoggerService auditService;
+    private final LimitedTokenService limitedTokenService;
 
-    public AuthnServiceImpl(ClientCredentialService clientCredentialService, ExchangeTokenService exchangeTokenService, UserService userService, LogoutService logoutService,
-        AuditLoggerService auditService) {
+    public AuthnServiceImpl(
+            ClientCredentialService clientCredentialService,
+            ExchangeTokenService exchangeTokenService,
+            UserService userService,
+            LogoutService logoutService,
+            AuditLoggerService auditService,
+            LimitedTokenService limitedTokenService
+    ) {
 	    this.clientCredentialService = clientCredentialService;
 	    this.exchangeTokenService = exchangeTokenService;
       this.userService = userService;
       this.logoutService = logoutService;
       this.auditService = auditService;
+      this.limitedTokenService = limitedTokenService;
     }
 
     @Override
@@ -51,5 +61,10 @@ public class AuthnServiceImpl implements AuthnService {
     @Override
     public void logout(String clientId, String token) {
         logoutService.logout(clientId, token);
+    }
+
+    @Override
+    public AccessToken postLimitedToken(LimitedTokenRequest request) {
+        return this.limitedTokenService.build(request);
     }
 }
