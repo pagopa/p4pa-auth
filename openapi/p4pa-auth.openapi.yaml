@@ -811,6 +811,8 @@ components:
         error_description:
           type: string
           x-field-extra-annotation: "@com.fasterxml.jackson.annotation.JsonProperty(\"error_description\")"
+        traceId:
+          type: string
     ClientDTOPage:
       type: object
       required:
