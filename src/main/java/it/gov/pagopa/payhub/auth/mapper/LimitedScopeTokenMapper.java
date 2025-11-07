@@ -22,7 +22,7 @@ public class LimitedScopeTokenMapper {
             LimitedTokenRequest request
     ) {
         UserOrganizationRoles organization = userInfo.getOrganizations().stream()
-                .filter(org -> request.getOrganizationId() == org.getOrganizationId())
+                .filter(org -> org.getOrganizationId().equals(request.getOrganizationId()))
                 .findFirst().orElse(null);
 
         return IamUserInfoDTO.builder()

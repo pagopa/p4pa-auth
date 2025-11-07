@@ -9,7 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -97,6 +97,11 @@ public class AuthExceptionHandler {
             }
         }
         return handleException(ex, request, httpStatus, errorCode);
+    }
+
+    @ExceptionHandler({InvalidScopedAccessTokenRequest.class})
+    public ResponseEntity<AuthErrorDTO> handleInvalidScopedAccessTokenRequest(Exception ex, HttpServletRequest request) {
+        return handleException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
     }
 
     @ExceptionHandler({RuntimeException.class})
