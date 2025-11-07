@@ -1,11 +1,5 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.mockStatic;
-
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidScopedAccessTokenRequest;
 import it.gov.pagopa.payhub.auth.mapper.LimitedScopeTokenMapper;
@@ -22,6 +16,10 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LimitedTokenServiceImplTest {

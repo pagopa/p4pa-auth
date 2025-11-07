@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
@@ -379,11 +380,11 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
-        Assertions.assertTrue(result instanceof it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope);
+        Assertions.assertInstanceOf(UserInfoLimitedScope.class, result);
         it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope limited = (it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope) result;
         Assertions.assertEquals(it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope.class.getSimpleName(), limited.getType());
         Assertions.assertEquals("traceId", limited.getTraceId());
-        Assertions.assertTrue(Boolean.TRUE.equals(limited.getSystemUser()));
+        Assertions.assertEquals(Boolean.TRUE, limited.getSystemUser());
         Assertions.assertEquals(userId, limited.getUserId());
         Assertions.assertEquals("MAPPEDEXTERNALUSERID", limited.getMappedExternalUserId());
         Assertions.assertEquals("FISCALCODE", limited.getFiscalCode());
@@ -438,11 +439,11 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
-        Assertions.assertTrue(result instanceof it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope);
+        Assertions.assertInstanceOf(UserInfoLimitedScope.class, result);
         it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope limited = (it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope) result;
         Assertions.assertEquals(it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope.class.getSimpleName(), limited.getType());
         Assertions.assertEquals("traceId", limited.getTraceId());
-        Assertions.assertFalse(Boolean.TRUE.equals(limited.getSystemUser()));
+        Assertions.assertNotEquals(Boolean.TRUE, limited.getSystemUser());
         Assertions.assertEquals(userId, limited.getUserId());
         Assertions.assertEquals("MAPPEDEXTERNALUSERID", limited.getMappedExternalUserId());
         Assertions.assertEquals("FISCALCODE", limited.getFiscalCode());
