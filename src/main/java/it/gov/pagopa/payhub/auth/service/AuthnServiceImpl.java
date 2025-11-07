@@ -65,6 +65,6 @@ public class AuthnServiceImpl implements AuthnService {
 
     @Override
     public AccessToken postLimitedToken(LimitedTokenRequest request) {
-        return this.limitedTokenService.build(request);
+        return this.limitedTokenService.generate(request);
     }
 }

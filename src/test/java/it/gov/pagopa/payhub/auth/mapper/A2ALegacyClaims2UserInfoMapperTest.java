@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +17,7 @@ class A2ALegacyClaims2UserInfoMapperTest {
 		//Given
 		String prefix = "A2A-";
 		String ipaCode = "ipaCode";
-		UserInfo expected = BaseUserInfo.builder()
+		UserInfo expected = UserInfo.builder()
 			.systemUser(true)
 			.issuer(ipaCode)
 			.userId(prefix + ipaCode)

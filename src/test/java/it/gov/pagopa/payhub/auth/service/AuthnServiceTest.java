@@ -9,7 +9,6 @@ import it.gov.pagopa.payhub.auth.service.m2m.ClientCredentialService;
 import it.gov.pagopa.payhub.auth.service.m2m.ValidateClientCredentialsService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -122,7 +121,7 @@ class AuthnServiceTest {
     void whenGetUserInfoThenCallUserService(){
         // Given
         String accessToken = "accessToken";
-        UserInfo expectedResult = new BaseUserInfo();
+        UserInfo expectedResult = new UserInfo();
         Mockito.when(userServiceMock.getUserInfo(accessToken))
                 .thenReturn(expectedResult);
 

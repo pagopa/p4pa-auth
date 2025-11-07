@@ -65,8 +65,7 @@ public class AuthzControllerImpl implements AuthzApi {
         log.info("Requesting UserInfo of mappedExternalUserId {}", mappedExternalUserId);
         String accessToken = SecurityUtils.getAccessToken();
         UserInfo loggedUser = SecurityUtils.getPrincipal();
-        String loggedExternalUserId = SecurityUtils.getMappedExternalUserId(loggedUser);
-        if(loggedExternalUserId != null && loggedExternalUserId.equals(mappedExternalUserId)){
+        if(loggedUser.getMappedExternalUserId().equals(mappedExternalUserId)){
             return ResponseEntity.ok(loggedUser);
         }
         if(!SecurityUtils.hasAdminRole()){

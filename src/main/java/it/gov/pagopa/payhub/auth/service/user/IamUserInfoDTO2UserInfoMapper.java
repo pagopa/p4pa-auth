@@ -8,8 +8,9 @@ import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
-import it.gov.pagopa.payhub.dto.generated.*;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
+import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,21 +43,6 @@ public class IamUserInfoDTO2UserInfoMapper {
     }
 
     public UserInfo apply(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
-        if (iamUserInfoDTO.getScope() != null) {
-            return this.applyLimitedUserInfo(iamUserInfoDTO, accessToken);
-        }
-
-        return this.applyBaseUserInfo(iamUserInfoDTO, accessToken);
-    }
-
-    private UserInfo applyLimitedUserInfo(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
-        if (iamUserInfoDTO.isSystemUser()) {
-            return limitedSystemUserMapper(iamUserInfoDTO, accessToken);
-        }
-        return limitedUserInfoMapper(iamUserInfoDTO, accessToken);
-    }
-
-    private UserInfo applyBaseUserInfo(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         if (iamUserInfoDTO.isSystemUser()) {
             return systemUserMapper(iamUserInfoDTO, accessToken);
         }
@@ -66,27 +52,47 @@ public class IamUserInfoDTO2UserInfoMapper {
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
         Optional<Organization> organization = retrieveOrganization(organizationIpaCode, accessToken);
-        BaseUserInfo userInfo = BaseUserInfo.builder()
-                .type(BaseUserInfo.class.getSimpleName())
-                .traceId(iamUserInfoDTO.getTraceId()) // @TODO: identify from where to grab this
-                .systemUser(true)
-                .userId(iamUserInfoDTO.getInnerUserId())
-                .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                .familyName(iamUserInfoDTO.getFamilyName())
-                .name(iamUserInfoDTO.getName())
-                .issuer(iamUserInfoDTO.getIssuer())
-                .organizationAccess(organizationIpaCode)
-                .canManageUsers(false)
-                .organizations(Collections.singletonList(UserOrganizationRoles.builder()
-                        .operatorId(iamUserInfoDTO.getInnerUserId())
-                        .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
-                        .organizationIpaCode(organizationIpaCode)
-                        .organizationFiscalCode(organization.map(Organization::getOrgFiscalCode).orElse(null))
-                        .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-                        .email(organization.map(Organization::getOrgEmail).orElse(null))
-                        .build()))
-                .build();
+        UserInfo userInfo;
+
+        if (
+            iamUserInfoDTO.getType() != null
+            && UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfoDTO.getType())
+        ) {
+            userInfo = UserInfoLimitedScope.builder()
+                    .type(iamUserInfoDTO.getType())
+                    .traceId(iamUserInfoDTO.getTraceId())
+                    .systemUser(true)
+                    .userId(iamUserInfoDTO.getInnerUserId())
+                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
+                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
+                    .familyName(iamUserInfoDTO.getFamilyName())
+                    .canManageUsers(false)
+                    .resource(iamUserInfoDTO.getResource())
+                    .build();
+        } else {
+            userInfo = UserInfo.builder()
+                    .type(iamUserInfoDTO.getType())
+                    .traceId(iamUserInfoDTO.getTraceId())
+                    .systemUser(true)
+                    .userId(iamUserInfoDTO.getInnerUserId())
+                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
+                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
+                    .familyName(iamUserInfoDTO.getFamilyName())
+                    .name(iamUserInfoDTO.getName())
+                    .issuer(iamUserInfoDTO.getIssuer())
+                    .organizationAccess(organizationIpaCode)
+                    .canManageUsers(false)
+                    .organizations(Collections.singletonList(UserOrganizationRoles.builder()
+                            .operatorId(iamUserInfoDTO.getInnerUserId())
+                            .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
+                            .organizationIpaCode(organizationIpaCode)
+                            .organizationFiscalCode(organization.map(Organization::getOrgFiscalCode).orElse(null))
+                            .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+                            .email(organization.map(Organization::getOrgEmail).orElse(null))
+                            .build()))
+                    .build();
+        }
+
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         return userInfo;
     }
@@ -94,115 +100,54 @@ public class IamUserInfoDTO2UserInfoMapper {
     private UserInfo userInfoMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
 
-        BaseUserInfo userInfo = BaseUserInfo.builder()
-                .type(BaseUserInfo.class.getSimpleName())
-                .traceId(iamUserInfoDTO.getTraceId()) // @TODO: identify from where to grab this
-                .systemUser(false)
-                .userId(iamUserInfoDTO.getInnerUserId())
-                .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                .familyName(iamUserInfoDTO.getFamilyName())
-                .name(iamUserInfoDTO.getName())
-                .issuer(iamUserInfoDTO.getIssuer())
-                .organizations(userRoles.stream()
-                        .map(r -> {
-                            Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
-                            return (UserOrganizationRoles) UserOrganizationRoles.builder()
-                                    .operatorId(r.getOperatorId())
-                                    .organizationId(organizationOpt.map(Organization::getOrganizationId).orElse(null))
-                                    .organizationIpaCode(r.getOrganizationIpaCode())
-                                    .organizationFiscalCode(organizationOpt.map(Organization::getOrgFiscalCode).orElse(null))
-                                    .roles(new ArrayList<>(r.getRoles()))
-                                    .email(r.getEmail())
-                                    .build();
-                        })
-                        .toList())
-                .build();
+        UserInfo userInfo;
 
-        if (iamUserInfoDTO.getOrganizationAccess() != null) {
-            userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
-        }
-        setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
-        userInfo.setCanManageUsers(!organizationAccessMode);
-
-        return userInfo;
-    }
-
-    private UserInfo limitedSystemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
-        String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
-        Optional<Organization> organization = retrieveOrganization(organizationIpaCode, accessToken);
-        UserInfoLimitedScope userInfo = UserInfoLimitedScope.builder()
-                .type(UserInfoLimitedScope.class.getSimpleName())
-                .traceId(iamUserInfoDTO.getTraceId()) // @TODO: identify from where to grab this
-                .systemUser(true)
-                .userId(iamUserInfoDTO.getInnerUserId())
-                .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                .familyName(iamUserInfoDTO.getFamilyName())
-                .name(iamUserInfoDTO.getName())
-                .issuer(iamUserInfoDTO.getIssuer())
-                .organizationAccess(organizationIpaCode)
-                .canManageUsers(false)
-                .organizations(Collections.emptyList()) // @TODO: is this correct?
-                .resource(LimitedScopeResource.builder()
-                        .app(iamUserInfoDTO.getScope())
-                        .resource(null) // @TODO: how to retrieve this info?
-                        .resourceId(null) // @TODO: how to retrieve this info?
-                        .singleUsage(false) // @TODO: how to retrieve this info?
-                        .organization(UserOrganizationRoles.builder()
-                                .operatorId(iamUserInfoDTO.getInnerUserId())
-                                .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
-                                .organizationIpaCode(organizationIpaCode)
-                                .organizationFiscalCode(organization.map(Organization::getOrgFiscalCode).orElse(null))
-                                .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-                                .email(organization.map(Organization::getOrgEmail).orElse(null))
-                                .build())
-                        .build())
-                .build();
-        setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
-        return userInfo;
-    }
-
-    private UserInfo limitedUserInfoMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
-        List<Operator> userRoles = operatorsRepository.findAllByUserId(iamUserInfoDTO.getInnerUserId());
-        UserOrganizationRoles organizationRole = userRoles.stream().map(r -> {
-            Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
-            return (UserOrganizationRoles) UserOrganizationRoles.builder()
-                    .operatorId(r.getOperatorId())
-                    .organizationId(organizationOpt.map(Organization::getOrganizationId).orElse(null))
-                    .organizationIpaCode(r.getOrganizationIpaCode())
-                    .organizationFiscalCode(organizationOpt.map(Organization::getOrgFiscalCode).orElse(null))
-                    .roles(new ArrayList<>(r.getRoles()))
-                    .email(r.getEmail())
+        if (
+                iamUserInfoDTO.getType() != null
+                        && UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfoDTO.getType())
+        ) {
+            userInfo = UserInfoLimitedScope.builder()
+                    .type(iamUserInfoDTO.getType())
+                    .traceId(iamUserInfoDTO.getTraceId())
+                    .systemUser(false)
+                    .userId(iamUserInfoDTO.getInnerUserId())
+                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
+                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
+                    .familyName(iamUserInfoDTO.getFamilyName())
+                    .resource(iamUserInfoDTO.getResource())
                     .build();
-        }).findFirst().orElseThrow();
-
-        UserInfoLimitedScope userInfo = UserInfoLimitedScope.builder()
-                .type(UserInfoLimitedScope.class.getSimpleName())
-                .traceId(iamUserInfoDTO.getTraceId()) // @TODO: identify from where to grab this
-                .systemUser(false)
-                .userId(iamUserInfoDTO.getInnerUserId())
-                .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                .familyName(iamUserInfoDTO.getFamilyName())
-                .name(iamUserInfoDTO.getName())
-                .issuer(iamUserInfoDTO.getIssuer())
-                .organizations(Collections.emptyList()) // @TODO: is this correct?
-                .resource(LimitedScopeResource.builder()
-                        .app(iamUserInfoDTO.getScope())
-                        .resource(null) // @TODO: how to retrieve this info?
-                        .resourceId(null) // @TODO: how to retrieve this info?
-                        .singleUsage(false) // @TODO: how to retrieve this info?
-                        .organization(organizationRole)
-                        .build())
-                .build();
+        } else {
+            userInfo = UserInfo.builder()
+                    .type(iamUserInfoDTO.getType())
+                    .traceId(iamUserInfoDTO.getTraceId())
+                    .systemUser(false)
+                    .userId(iamUserInfoDTO.getInnerUserId())
+                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
+                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
+                    .familyName(iamUserInfoDTO.getFamilyName())
+                    .name(iamUserInfoDTO.getName())
+                    .issuer(iamUserInfoDTO.getIssuer())
+                    .organizations(userRoles.stream()
+                            .map(r -> {
+                                Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
+                                return (UserOrganizationRoles) UserOrganizationRoles.builder()
+                                        .operatorId(r.getOperatorId())
+                                        .organizationId(organizationOpt.map(Organization::getOrganizationId).orElse(null))
+                                        .organizationIpaCode(r.getOrganizationIpaCode())
+                                        .organizationFiscalCode(organizationOpt.map(Organization::getOrgFiscalCode).orElse(null))
+                                        .roles(new ArrayList<>(r.getRoles()))
+                                        .email(r.getEmail())
+                                        .build();
+                            })
+                            .toList())
+                    .build();
+        }
 
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
             userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
-
         return userInfo;
     }
 
@@ -228,11 +173,18 @@ public class IamUserInfoDTO2UserInfoMapper {
     }
 
     private void setBrokerInfo(UserInfo userInfo, IamUserInfoDTO iamUserInfo, String accessToken) {
-        Broker brokerInfo = getSessionBroker(iamUserInfo, SecurityUtils.getOrganizations(userInfo), accessToken);
+        List<UserOrganizationRoles> userOrganizations;
 
-        if (brokerInfo != null && userInfo instanceof BaseUserInfo base) {
-            base.setBrokerId(brokerInfo.getBrokerId());
-            base.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
+        if (UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfo.getType())) {
+            userOrganizations = List.of(iamUserInfo.getResource().getOrganization());
+        } else {
+            userOrganizations = userInfo.getOrganizations();
+        }
+        Broker brokerInfo = getSessionBroker(iamUserInfo, userOrganizations, accessToken);
+
+        if (brokerInfo != null) {
+            userInfo.setBrokerId(brokerInfo.getBrokerId());
+            userInfo.setBrokerFiscalCode(brokerInfo.getBrokerFiscalCode());
         }
     }
 

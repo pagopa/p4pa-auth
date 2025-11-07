@@ -7,10 +7,7 @@ import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
-import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,7 +28,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -56,27 +52,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(authorization)) {
                 String token = authorization.replace("Bearer ", "");
                 UserInfo userInfo = validateToken(token);
-                String mappedExternalUserId;
-                String organizationAccess;
-                List<UserOrganizationRoles> organizations;
-                if (userInfo instanceof BaseUserInfo base) {
-                    mappedExternalUserId = base.getMappedExternalUserId();
-                    organizationAccess = base.getOrganizationAccess();
-                    organizations = base.getOrganizations();
-                } else if (userInfo instanceof UserInfoLimitedScope limited) {
-                    mappedExternalUserId = limited.getMappedExternalUserId();
-                    organizationAccess = limited.getOrganizationAccess();
-                    organizations = limited.getOrganizations();
-                } else {
-                    mappedExternalUserId = null;
-                    organizationAccess = null;
-                    organizations = List.of();
-                }
-                MDC.put("externalUserId", mappedExternalUserId);
+                MDC.put("externalUserId", userInfo.getMappedExternalUserId());
                 Collection<? extends GrantedAuthority> authorities = null;
-                if (organizationAccess != null) {
-                    authorities = organizations.stream()
-                            .filter(o -> organizationAccess.equals(o.getOrganizationIpaCode()))
+                if (userInfo.getOrganizationAccess() != null) {
+                    authorities = userInfo.getOrganizations().stream()
+                            .filter(o -> userInfo.getOrganizationAccess().equals(o.getOrganizationIpaCode()))
                             .flatMap(r -> r.getRoles().stream())
                             .map(SimpleGrantedAuthority::new)
                             .toList();

@@ -1,30 +1,14 @@
 package it.gov.pagopa.payhub.auth.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
-import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
-import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
-import it.gov.pagopa.payhub.auth.service.AuthnService;
-import it.gov.pagopa.payhub.auth.service.AuthzService;
-import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
+import it.gov.pagopa.payhub.auth.service.*;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.*;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,6 +21,18 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthzControllerImpl.class)
 @Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
@@ -71,7 +67,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateOperatorRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(BaseUserInfo.builder()
+            .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG2")
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -93,7 +89,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateOperatorRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(BaseUserInfo.builder()
+            .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -129,7 +125,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateUserRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(BaseUserInfo.builder()
+            .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
                     .roles(List.of(Constants.ROLE_ADMIN))
@@ -150,7 +146,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String body = buildCreateUserRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-            .thenReturn(BaseUserInfo.builder()
+            .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
                     .roles(List.of(Constants.ROLE_OPER))
@@ -185,7 +181,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         Gson gson = new Gson();
         String body = gson.toJson(request);
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
-          .thenReturn(BaseUserInfo.builder()
+          .thenReturn(UserInfo.builder()
             .organizations(List.of(UserOrganizationRoles.builder()
               .organizationIpaCode("ORG2")
               .roles(List.of(Constants.ROLE_OPER))
@@ -209,7 +205,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String organizationIpaCode = "IPA_TEST_2";
         CreateClientRequest createClientRequest = buildCreateClientRequest();
 
-        UserInfo expectedUser = BaseUserInfo.builder()
+        UserInfo expectedUser = UserInfo.builder()
           .userId("USERID")
           .organizationAccess(organizationIpaCode)
           .organizations(List.of(UserOrganizationRoles.builder()
@@ -265,7 +261,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
                 .clientSecret(decryptedSecret)
                 .build();
 
-        UserInfo expectedUser = BaseUserInfo.builder()
+        UserInfo expectedUser = UserInfo.builder()
                 .userId("USERID")
                 .organizationAccess(organizationIpaCode)
                 .organizations(List.of(UserOrganizationRoles.builder()

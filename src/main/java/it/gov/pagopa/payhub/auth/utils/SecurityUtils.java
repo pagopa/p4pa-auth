@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.auth.utils;
 
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -25,7 +23,7 @@ public final class SecurityUtils {
 
     /** It will return user's session roles on requested organization IPA code retrieving it from ThreadLocal */
     public static List<String> getPrincipalRoles(String organizationIpaCode){
-        return getOrganizations(getPrincipal()).stream()
+        return getPrincipal().getOrganizations().stream()
                 .filter(o -> organizationIpaCode.equals(o.getOrganizationIpaCode()))
                 .findFirst()
                 .map(UserOrganizationRoles::getRoles)
@@ -39,7 +37,7 @@ public final class SecurityUtils {
 
     /** It will return true if the user has at least a ROLE_ADMIN on one of organization retrieving it from ThreadLocal */
     public static boolean hasAdminRole() {
-        return getOrganizations(getPrincipal()).stream()
+        return getPrincipal().getOrganizations().stream()
             .flatMap(o -> o.getRoles().stream())
             .anyMatch(Constants.ROLE_ADMIN::equals);
     }
@@ -48,29 +46,5 @@ public final class SecurityUtils {
         return uri != null
                 ? uri.toString().replaceAll("=[^&]*", "=***")
                 : null;
-    }
-
-    public static List<UserOrganizationRoles> getOrganizations(UserInfo userInfo){
-        return switch (userInfo) {
-            case BaseUserInfo base -> base.getOrganizations();
-            case UserInfoLimitedScope limited -> limited.getOrganizations();
-            default -> List.of();
-        };
-    }
-
-    public static String getMappedExternalUserId(UserInfo userInfo){
-        return switch (userInfo) {
-            case BaseUserInfo base -> base.getMappedExternalUserId();
-            case UserInfoLimitedScope limited -> limited.getMappedExternalUserId();
-            default -> null;
-        };
-    }
-
-    public static Long getBrokerId(UserInfo userInfo){
-        return switch (userInfo) {
-            case BaseUserInfo base -> base.getBrokerId();
-            case UserInfoLimitedScope limited -> limited.getBrokerId();
-            default -> null;
-        };
     }
 }

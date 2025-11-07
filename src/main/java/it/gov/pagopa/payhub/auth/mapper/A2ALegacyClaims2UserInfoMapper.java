@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.utils.Constants;
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ public class A2ALegacyClaims2UserInfoMapper {
 	private static final String A2A_PREFIX = "A2A-";
 
 	public UserInfo map(String ipaCode) {
-		return BaseUserInfo.builder()
+		return UserInfo.builder()
 			.systemUser(true)
 			.issuer(ipaCode)
 			.userId(A2A_PREFIX + ipaCode)

@@ -1,57 +1,42 @@
 package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
-import it.gov.pagopa.payhub.dto.generated.LimitedScopeResource;
-import it.gov.pagopa.payhub.dto.generated.LimitedTokenRequest;
-import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
+import it.gov.pagopa.payhub.dto.generated.*;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LimitedScopeTokenMapper {
 
-    public UserInfoLimitedScope mapBaseUserInfoToLimitedScope(BaseUserInfo baseUserInfo, LimitedTokenRequest request) {
-        return UserInfoLimitedScope.builder()
-        		.resource(mapRequestToLimitedScope(request))
-        		.userId(baseUserInfo.getUserId())
-        		.mappedExternalUserId(baseUserInfo.getMappedExternalUserId())
-        		.fiscalCode(baseUserInfo.getFiscalCode())
-        		.familyName(baseUserInfo.getFamilyName())
-        		.name(baseUserInfo.getName())
-        		.issuer(baseUserInfo.getIssuer())
-        		.organizationAccess(baseUserInfo.getOrganizationAccess())
-        		.organizations(baseUserInfo.getOrganizations())
-        		.brokerId(baseUserInfo.getBrokerId())
-        		.brokerFiscalCode(baseUserInfo.getBrokerFiscalCode())
-        		.canManageUsers(baseUserInfo.getCanManageUsers())
-        		.systemUser(baseUserInfo.getSystemUser())
-        		.traceId(baseUserInfo.getTraceId())
-        		.type(baseUserInfo.getType())
-        		.build();
-    }
-
-    public LimitedScopeResource mapRequestToLimitedScope(LimitedTokenRequest request) {
+    public LimitedScopeResource mapRequestToLimitedScopeResource(LimitedTokenRequest request, UserOrganizationRoles organization) {
         return LimitedScopeResource.builder()
         		.app(request.getApp())
-        		.organization(null)
+        		.organization(organization)
         		.resource(request.getResource())
         		.resourceId(request.getResourceId())
         		.singleUsage(request.getSingleUsage())
         		.build();
     }
 
-    public IamUserInfoDTO mapBaseUserInfoToIamUserInfoDTO(BaseUserInfo baseUserInfo, String scope) {
+    public IamUserInfoDTO mapBaseUserInfoToIamUserInfoDTO(
+            UserInfo userInfo,
+            LimitedTokenRequest request
+    ) {
+        UserOrganizationRoles organization = userInfo.getOrganizations().stream()
+                .filter(org -> request.getOrganizationId() == org.getOrganizationId())
+                .findFirst().orElse(null);
+
         return IamUserInfoDTO.builder()
-        		.traceId(baseUserInfo.getTraceId())
-        		.userId(baseUserInfo.getUserId())
-        		.fiscalCode(baseUserInfo.getFiscalCode())
-        		.familyName(baseUserInfo.getFamilyName())
-        		.name(baseUserInfo.getName())
-        		.issuer(baseUserInfo.getIssuer())
-        		.scope(scope)
-        		.innerUserId(baseUserInfo.getUserId())
-        		.mappedExternalUserId(baseUserInfo.getMappedExternalUserId())
-        		.systemUser(Boolean.TRUE.equals(baseUserInfo.getSystemUser()))
+                .type(UserInfoLimitedScope.class.getSimpleName())
+        		.traceId(userInfo.getTraceId())
+        		.userId(userInfo.getUserId())
+        		.fiscalCode(userInfo.getFiscalCode())
+        		.familyName(userInfo.getFamilyName())
+        		.name(userInfo.getName())
+        		.issuer(userInfo.getIssuer())
+                .resource(this.mapRequestToLimitedScopeResource(request, organization))
+        		.innerUserId(userInfo.getUserId())
+        		.mappedExternalUserId(userInfo.getMappedExternalUserId())
+        		.systemUser(Boolean.TRUE.equals(userInfo.getSystemUser()))
         		.build();
     }
 

@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.mapper.A2ALegacyClaims2UserInfoMapper;
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,7 +37,7 @@ class JWTLegacyHandlerServiceTest {
 		Pair<String, Map<String, Claim>> immutablePairClaims = createJWKClaims();
 		Mockito.when(validateJWTLegacyServiceMock.validate(token)).thenReturn(immutablePairClaims);
 
-		UserInfo userInfo = new BaseUserInfo();
+		UserInfo userInfo = new UserInfo();
 		Mockito.when(a2ALegacyClaims2UserInfoMapperMock.map("subject")).thenReturn(userInfo);
 		//When
 		UserInfo result = service.handleLegacyToken(token);

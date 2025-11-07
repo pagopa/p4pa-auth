@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
-import it.gov.pagopa.payhub.dto.generated.BaseUserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
@@ -63,6 +62,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
@@ -85,9 +85,9 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .email("EMAIL")
                 .build());
 
-        UserInfo expected = BaseUserInfo.builder()
+        UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
                 .traceId("traceId")
-                .type(BaseUserInfo.class.getSimpleName())
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -130,7 +130,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result);
-        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
+        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
     @Test
@@ -139,6 +139,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
@@ -154,8 +155,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .build())
                 .build();
 
-        UserInfo expected = BaseUserInfo.builder()
-                .type(BaseUserInfo.class.getSimpleName())
+        UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
                 .traceId("traceId")
                 .systemUser(false)
                 .userId(userId)
@@ -191,7 +192,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result);
-        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
+        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
     @Test
@@ -200,6 +201,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
@@ -218,8 +220,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .email("EMAIL")
                 .build());
 
-        UserInfo expected = BaseUserInfo.builder()
-                .type(BaseUserInfo.class.getSimpleName())
+        UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
                 .traceId("traceId")
                 .systemUser(false)
                 .userId(userId)
@@ -262,7 +264,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result, "organizationAccess");
-        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
+        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
     @Test
@@ -271,6 +273,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .traceId("traceId")
                 .systemUser(Boolean.TRUE)
                 .userId("EXTERNALUSERID")
@@ -286,8 +289,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .build())
                 .build();
 
-        UserInfo expected = BaseUserInfo.builder()
-                .type(BaseUserInfo.class.getSimpleName())
+        UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
                 .traceId("traceId")
                 .systemUser(true)
                 .userId(userId)
@@ -329,7 +332,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(expected, result);
 
         TestUtils.checkNotNullFields(result);
-        ((BaseUserInfo) result).getOrganizations().forEach(TestUtils::checkNotNullFields);
+        result.getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
 

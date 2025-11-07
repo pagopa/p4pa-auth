@@ -3,7 +3,9 @@ package it.gov.pagopa.payhub.auth.mapper;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.utils.Constants;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -16,6 +18,8 @@ public class Client2UserInfoMapper implements Function<ClientNoSecretDTO, IamUse
 	@Override
 	public IamUserInfoDTO apply(ClientNoSecretDTO clientDTO) {
 		return IamUserInfoDTO.builder()
+            .type(UserInfo.class.getSimpleName())
+            .traceId(Utilities.getTraceId())
 			.systemUser(true)
 			.issuer(clientDTO.getOrganizationIpaCode())
 			.userId(clientDTO.getClientId())

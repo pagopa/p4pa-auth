@@ -698,7 +698,7 @@ components:
           type: string
         fiscalCode:
           type: string
-    BaseUserInfo:
+    UserInfo:
       type: object
       required:
         - userId
@@ -712,6 +712,10 @@ components:
         - canManageUsers
         - traceId
         - _type
+      discriminator:
+        propertyName: _type
+        mapping:
+          Limited: '#/components/schemas/UserInfoLimitedScope'
       properties:
         userId:
           type: string
@@ -907,7 +911,7 @@ components:
       required:
         - resource
       allOf:
-        - $ref: '#/components/schemas/BaseUserInfo'
+        - $ref: '#/components/schemas/UserInfo'
       properties:
         resource:
           $ref: '#/components/schemas/LimitedScopeResource'
@@ -930,10 +934,3 @@ components:
           type: string
         singleUsage:
           type: boolean
-    UserInfo:
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/BaseUserInfo'
-        - $ref: '#/components/schemas/UserInfoLimitedScope'
-      discriminator:
-        propertyName: _type

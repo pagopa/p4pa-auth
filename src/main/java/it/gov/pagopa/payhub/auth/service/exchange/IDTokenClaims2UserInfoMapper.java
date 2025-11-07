@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
     public IamUserInfoDTO apply(Map<String, Claim> claims) {
         try {
             return IamUserInfoDTO.builder()
+                    .type(UserInfo.class.getSimpleName())
                     .issuer(claims.get(Claims.ISSUER).asString())
                     .userId(claims.get("uid").asString())
                     .name(claims.get("name").asString())

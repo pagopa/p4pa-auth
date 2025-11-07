@@ -10,16 +10,19 @@ import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
-import it.gov.pagopa.payhub.dto.generated.*;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
+import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -159,7 +162,7 @@ class AuthnControllerTest {
 
     @Test
     void givenRequestWitAuthorizationWhenGetUserInfoThenOk() throws Exception {
-        UserInfo expectedUser = BaseUserInfo.builder()
+        UserInfo expectedUser = UserInfo.builder()
                 .userId("USERID")
                 .organizationAccess("IPA_CODE")
                 .organizations(List.of(UserOrganizationRoles.builder()
@@ -182,7 +185,7 @@ class AuthnControllerTest {
     @Test
     void givenRequestWitAuthorizationAndNotOrganizationAccessWhenGetUserInfoThenOk() throws Exception {
         
-        UserInfo expectedUser = BaseUserInfo.builder().userId("USERID").build();
+        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
@@ -258,7 +261,7 @@ class AuthnControllerTest {
     @Test
     void givenM2MLegacyRequestWhenGetUserInfoThenOk() throws Exception {
 
-        UserInfo expectedUser = BaseUserInfo.builder().userId("USERID").build();
+        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
         Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
