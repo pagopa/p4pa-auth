@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -117,7 +118,7 @@ public class AuthExceptionHandler {
         return ResponseEntity
                 .status(httpStatus)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new AuthErrorDTO(errorEnum, message));
+                .body(new AuthErrorDTO(errorEnum, message, Utilities.getTraceId()));
     }
 
     private static void logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {
