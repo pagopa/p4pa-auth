@@ -68,6 +68,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                     .familyName(iamUserInfoDTO.getFamilyName())
                     .name(iamUserInfoDTO.getName())
                     .issuer(iamUserInfoDTO.getIssuer())
+                    .organizations(Collections.emptyList())
                     .canManageUsers(false)
                     .resource(iamUserInfoDTO.getResource())
                     .build();
@@ -118,6 +119,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                     .familyName(iamUserInfoDTO.getFamilyName())
                     .name(iamUserInfoDTO.getName())
                     .issuer(iamUserInfoDTO.getIssuer())
+                    .organizations(Collections.emptyList())
                     .resource(iamUserInfoDTO.getResource())
                     .build();
         } else {
