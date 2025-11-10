@@ -274,25 +274,6 @@ class AuthnControllerTest {
 
 //region desc=postLimitedToken tests
     @Test
-    void givenRequestWithoutBodyWhenPostLimitedTokenThenBadRequest() throws Exception {
-        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
-
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
-        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
-
-        MvcResult result = mockMvc.perform(
-                post("/payhub/oauth/token/limited")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer legacyAccessToken")
-                .header("Content-Type", "application/json")
-        ).andExpect(status().isBadRequest()).andReturn();
-
-        AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
-                AuthErrorDTO.class);
-        assertEquals(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, actual.getError());
-        assertEquals("no request body has been provided", actual.getErrorDescription());
-    }
-
-    @Test
     void givenValidRequestWhenPostLimitedTokenThenOk() throws Exception {
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 

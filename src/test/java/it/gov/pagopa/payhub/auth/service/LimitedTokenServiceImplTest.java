@@ -77,6 +77,7 @@ class LimitedTokenServiceImplTest {
         .resourceId("P-123")
         .singleUsage(Boolean.FALSE)
         .organizationId(22L)
+        .expireInSeconds(3600L)
         .build();
 
     UserInfo baseUser = UserInfo.builder()
@@ -98,7 +99,7 @@ class LimitedTokenServiceImplTest {
       mockedSecurityUtils.when(SecurityUtils::getPrincipal).thenReturn(baseUser);
 
       when(limitedScopeTokenMapper.mapBaseUserInfoToIamUserInfoDTO(baseUser, request)).thenReturn(iamUser);
-      when(accessTokenBuilderService.build(iamUser)).thenReturn(expectedToken);
+      when(accessTokenBuilderService.build(iamUser, 3600)).thenReturn(expectedToken);
 
       // When
       AccessToken result = service.generate(request);
@@ -115,7 +116,7 @@ class LimitedTokenServiceImplTest {
 
       // Then
       verify(limitedScopeTokenMapper, times(1)).mapBaseUserInfoToIamUserInfoDTO(baseUser, request);
-      verify(accessTokenBuilderService, times(1)).build(iamUser);
+      verify(accessTokenBuilderService, times(1)).build(iamUser, 3600);
       verifyNoMoreInteractions(limitedScopeTokenMapper, accessTokenBuilderService, tokenStoreService);
     }
   }

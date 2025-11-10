@@ -59,44 +59,30 @@ public class IamUserInfoDTO2UserInfoMapper {
             && UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfoDTO.getType())
         ) {
             userInfo = UserInfoLimitedScope.builder()
-                    .type(iamUserInfoDTO.getType())
-                    .traceId(iamUserInfoDTO.getTraceId())
-                    .systemUser(true)
-                    .userId(iamUserInfoDTO.getInnerUserId())
-                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                    .familyName(iamUserInfoDTO.getFamilyName())
-                    .name(iamUserInfoDTO.getName())
-                    .issuer(iamUserInfoDTO.getIssuer())
                     .organizations(Collections.emptyList())
-                    .canManageUsers(false)
+                    .canManageUsers(false) // system user => false (as before)
                     .resource(iamUserInfoDTO.getResource())
                     .build();
         } else {
             userInfo = UserInfo.builder()
-                    .type(iamUserInfoDTO.getType())
-                    .traceId(iamUserInfoDTO.getTraceId())
-                    .systemUser(true)
-                    .userId(iamUserInfoDTO.getInnerUserId())
-                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                    .familyName(iamUserInfoDTO.getFamilyName())
-                    .name(iamUserInfoDTO.getName())
-                    .issuer(iamUserInfoDTO.getIssuer())
                     .organizationAccess(organizationIpaCode)
-                    .canManageUsers(false)
-                    .organizations(Collections.singletonList(UserOrganizationRoles.builder()
-                            .operatorId(iamUserInfoDTO.getInnerUserId())
-                            .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
-                            .organizationIpaCode(organizationIpaCode)
-                            .organizationFiscalCode(organization.map(Organization::getOrgFiscalCode).orElse(null))
-                            .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-                            .email(organization.map(Organization::getOrgEmail).orElse(null))
-                            .build()))
+                    .canManageUsers(false) // system user => false (as before)
+                    .organizations(Collections.singletonList(
+                            UserOrganizationRoles.builder()
+                                    .operatorId(iamUserInfoDTO.getInnerUserId())
+                                    .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
+                                    .organizationIpaCode(organizationIpaCode)
+                                    .organizationFiscalCode(organization.map(Organization::getOrgFiscalCode).orElse(null))
+                                    .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+                                    .email(organization.map(Organization::getOrgEmail).orElse(null))
+                                    .build()))
                     .build();
         }
 
+        setCommonFieldsForSystemUser(userInfo, iamUserInfoDTO);
+
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
+
         return userInfo;
     }
 
@@ -110,29 +96,11 @@ public class IamUserInfoDTO2UserInfoMapper {
                         && UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfoDTO.getType())
         ) {
             userInfo = UserInfoLimitedScope.builder()
-                    .type(iamUserInfoDTO.getType())
-                    .traceId(iamUserInfoDTO.getTraceId())
-                    .systemUser(false)
-                    .userId(iamUserInfoDTO.getInnerUserId())
-                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                    .familyName(iamUserInfoDTO.getFamilyName())
-                    .name(iamUserInfoDTO.getName())
-                    .issuer(iamUserInfoDTO.getIssuer())
                     .organizations(Collections.emptyList())
                     .resource(iamUserInfoDTO.getResource())
                     .build();
         } else {
             userInfo = UserInfo.builder()
-                    .type(iamUserInfoDTO.getType())
-                    .traceId(iamUserInfoDTO.getTraceId())
-                    .systemUser(false)
-                    .userId(iamUserInfoDTO.getInnerUserId())
-                    .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
-                    .fiscalCode(iamUserInfoDTO.getFiscalCode())
-                    .familyName(iamUserInfoDTO.getFamilyName())
-                    .name(iamUserInfoDTO.getName())
-                    .issuer(iamUserInfoDTO.getIssuer())
                     .organizations(userRoles.stream()
                             .map(r -> {
                                 Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
@@ -149,12 +117,38 @@ public class IamUserInfoDTO2UserInfoMapper {
                     .build();
         }
 
+        setCommonFieldsForStandardUser(userInfo, iamUserInfoDTO);
+
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
             userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
         return userInfo;
+    }
+
+    private void setCommonFieldsForSystemUser(UserInfo target, IamUserInfoDTO dto) {
+        target.setType(dto.getType());
+        target.setTraceId(dto.getTraceId());
+        target.setSystemUser(true);
+        target.setUserId(dto.getInnerUserId());
+        target.setMappedExternalUserId(dto.getMappedExternalUserId());
+        target.setFiscalCode(dto.getFiscalCode());
+        target.setFamilyName(dto.getFamilyName());
+        target.setName(dto.getName());
+        target.setIssuer(dto.getIssuer());
+    }
+
+    private void setCommonFieldsForStandardUser(UserInfo target, IamUserInfoDTO dto) {
+        target.setType(dto.getType());
+        target.setTraceId(dto.getTraceId());
+        target.setSystemUser(false);
+        target.setUserId(dto.getInnerUserId());
+        target.setMappedExternalUserId(dto.getMappedExternalUserId());
+        target.setFiscalCode(dto.getFiscalCode());
+        target.setFamilyName(dto.getFamilyName());
+        target.setName(dto.getName());
+        target.setIssuer(dto.getIssuer());
     }
 
     private Optional<Organization> retrieveOrganization(String organizationIpaCode, String accessToken) {

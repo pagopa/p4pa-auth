@@ -63,6 +63,10 @@ public class AccessTokenBuilderService {
     }
 
     public AccessToken build(IamUserInfoDTO iamUserInfoDTO) {
+        return build(iamUserInfoDTO, expireIn);
+    }
+
+    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam) {
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(HeaderParams.KEY_ID, kid);
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -74,7 +78,7 @@ public class AccessTokenBuilderService {
                 .withJWTId(UUID.randomUUID().toString())
                 .withSubject(iamUserInfoDTO.getMappedExternalUserId())
                 .withIssuedAt(Instant.now())
-                .withExpiresAt(Instant.now().plusSeconds(expireIn));
+                .withExpiresAt(Instant.now().plusSeconds(expireInParam == null ? expireIn : expireInParam));
         if(iamUserInfoDTO.getOrganizationAccess()!=null){
             jwtBuilder.withClaim("organizationIpaCode", iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
         }
