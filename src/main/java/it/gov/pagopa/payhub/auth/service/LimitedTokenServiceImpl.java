@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidScopedAccessTokenRequest;
+import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.LimitedScopeTokenMapper;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
@@ -30,11 +31,19 @@ public class LimitedTokenServiceImpl implements LimitedTokenService {
             throw new InvalidScopedAccessTokenRequest("Session token is already scoped");
         }
 
+        validateOrganization(userInfo, request.getOrganizationId());
+
         IamUserInfoDTO iamUser = limitedScopeTokenMapper.mapBaseUserInfoToIamUserInfoDTO(userInfo, request);
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         MDC.put("externalUserId", iamUser.getMappedExternalUserId());
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
 
         return accessToken;
+    }
+
+    private void validateOrganization(UserInfo userInfo, Long organizationId) {
+        userInfo.getOrganizations().stream()
+            .filter(org -> org.getOrganizationId().equals(organizationId))
+            .findFirst().orElseThrow(() -> new UserUnauthorizedException("User not allowed on organization"));
     }
 }

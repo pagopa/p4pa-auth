@@ -2,12 +2,10 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidScopedAccessTokenRequest;
+import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.mapper.LimitedScopeTokenMapper;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
-import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import it.gov.pagopa.payhub.dto.generated.LimitedTokenRequest;
-import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
+import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,6 +81,7 @@ class LimitedTokenServiceImplTest {
 
     UserInfo baseUser = UserInfo.builder()
         .userId("user-123")
+        .organizations(List.of(UserOrganizationRoles.builder().organizationId(22L).build()))
         .traceId("trace-abc")
         .build();
 
@@ -118,4 +119,32 @@ class LimitedTokenServiceImplTest {
       verifyNoMoreInteractions(limitedScopeTokenMapper, accessTokenBuilderService, tokenStoreService);
     }
   }
+
+    @Test
+    void givenInvalidOrganizationWhenGenerateThenThrowUserNotAuthorizedException() {
+        // Given
+        LimitedTokenRequest request = LimitedTokenRequest.builder()
+                .app("app")
+                .resource("RES")
+                .resourceId("RES-ID")
+                .singleUsage(Boolean.TRUE)
+                .organizationId(10L)
+                .build();
+
+        UserInfo userInfo = UserInfo.builder()
+                .userId("u1")
+                .organizations(List.of(UserOrganizationRoles.builder().organizationId(5L).build()))
+                .build();
+
+        try (MockedStatic<SecurityUtils> mockedSecurityUtils = mockStatic(SecurityUtils.class)) {
+            mockedSecurityUtils.when(SecurityUtils::getPrincipal).thenReturn(userInfo);
+
+            // When
+            // Then
+            assertThrows(UserUnauthorizedException.class, () -> service.generate(request));
+
+            // Then
+            verifyNoInteractions(limitedScopeTokenMapper, accessTokenBuilderService, tokenStoreService);
+        }
+    }
 }
