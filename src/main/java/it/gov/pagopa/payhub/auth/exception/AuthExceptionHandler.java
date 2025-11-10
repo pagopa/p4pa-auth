@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -112,7 +113,7 @@ public class AuthExceptionHandler {
         return ResponseEntity
                 .status(httpStatus)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new AuthErrorDTO(errorEnum, message));
+                .body(new AuthErrorDTO(errorEnum, message, Utilities.getTraceId()));
     }
 
     private static void logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {
