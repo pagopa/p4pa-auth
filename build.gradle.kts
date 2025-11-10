@@ -32,9 +32,8 @@ configurations {
 }
 
 licenseReport {
-//    renderers = arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
-    renderers = arrayOf(CsvReportRenderer())
-    outputDir = "$projectDir/dependency-license"
+    renderers = arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
+    outputDir = "$projectDir/dependency-licenses"
     filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
 tasks.build{
