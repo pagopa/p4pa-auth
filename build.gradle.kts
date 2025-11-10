@@ -39,7 +39,7 @@ licenseReport {
     outputDir = "$projectDir/dependency-licenses"
     filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
-tasks.build{
+tasks.classes {
     finalizedBy(tasks.generateLicenseReport)
 }
 
