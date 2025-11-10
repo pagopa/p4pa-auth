@@ -196,3 +196,8 @@ See [Postman collection](/postman/p4pa-auth-E2E.postman_collection.json) and [Po
 docker build -t <APP_NAME> .
 docker run --env-file <ENV_FILE> <APP_NAME>
 ```
+
+### ⚖️ Generate dependencies licenses
+```sh
+./gradlew generateLicenseReport
+```
