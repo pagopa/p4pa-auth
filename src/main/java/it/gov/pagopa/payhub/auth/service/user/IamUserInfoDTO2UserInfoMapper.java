@@ -66,6 +66,8 @@ public class IamUserInfoDTO2UserInfoMapper {
                     .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
                     .fiscalCode(iamUserInfoDTO.getFiscalCode())
                     .familyName(iamUserInfoDTO.getFamilyName())
+                    .name(iamUserInfoDTO.getName())
+                    .issuer(iamUserInfoDTO.getIssuer())
                     .canManageUsers(false)
                     .resource(iamUserInfoDTO.getResource())
                     .build();
@@ -114,6 +116,8 @@ public class IamUserInfoDTO2UserInfoMapper {
                     .mappedExternalUserId(iamUserInfoDTO.getMappedExternalUserId())
                     .fiscalCode(iamUserInfoDTO.getFiscalCode())
                     .familyName(iamUserInfoDTO.getFamilyName())
+                    .name(iamUserInfoDTO.getName())
+                    .issuer(iamUserInfoDTO.getIssuer())
                     .resource(iamUserInfoDTO.getResource())
                     .build();
         } else {

@@ -59,7 +59,8 @@ class LimitedTokenServiceImplTest {
     try (MockedStatic<SecurityUtils> mockedSecurityUtils = mockStatic(SecurityUtils.class)) {
       mockedSecurityUtils.when(SecurityUtils::getPrincipal).thenReturn(limitedUser);
 
-      // When / Then
+      // When
+      // Then
       assertThrows(InvalidScopedAccessTokenRequest.class, () -> service.generate(request));
 
       // Then
@@ -69,6 +70,7 @@ class LimitedTokenServiceImplTest {
 
   @Test
   void givenBaseUserInfoPrincipalWhenGenerateThenBuildSaveReturnTokenAndPutExternalUserIdInMDC() {
+    // Given
     LimitedTokenRequest request = LimitedTokenRequest.builder()
         .app("app-x")
         .resource("PAYMENT")
@@ -97,15 +99,20 @@ class LimitedTokenServiceImplTest {
       when(limitedScopeTokenMapper.mapBaseUserInfoToIamUserInfoDTO(baseUser, request)).thenReturn(iamUser);
       when(accessTokenBuilderService.build(iamUser)).thenReturn(expectedToken);
 
+      // When
       AccessToken result = service.generate(request);
 
+      // Then
       assertEquals(expectedToken, result);
+      // Then
       // verify saving to store with the token string and user info
       verify(tokenStoreService, times(1)).save(expectedToken.getAccessToken(), iamUser);
 
+      // Then
       // Verify that MDC has been populated with external user id
       assertEquals("ext-999", MDC.get("externalUserId"));
 
+      // Then
       verify(limitedScopeTokenMapper, times(1)).mapBaseUserInfoToIamUserInfoDTO(baseUser, request);
       verify(accessTokenBuilderService, times(1)).build(iamUser);
       verifyNoMoreInteractions(limitedScopeTokenMapper, accessTokenBuilderService, tokenStoreService);
