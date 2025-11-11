@@ -395,6 +395,11 @@
 									"\r",
 									"    pm.expect(recognizedOrganizations).to.eq(3)\r",
 									"\r",
+									"    const firstOrg = jsonResponse.organizations[0]\r",
+									"\r",
+									"    pm.collectionVariables.set(\"selectedOrganizationId\",firstOrg.organizationId)\r",
+									"    pm.collectionVariables.set(\"selectedOrganizationName\",firstOrg.organizationIpaCode)\r",
+									"\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -470,7 +475,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"organizationId\": 2,\n  \"app\": \"test\",\n  \"resource\": \"resource\",\n  \"resourceId\": \"resourceId\",\n  \"expireInSeconds\": 14400,\n  \"singleUsage\": false\n}",
+							"raw": "{\n  \"organizationId\": {{selectedOrganizationId}},\n  \"app\": \"test\",\n  \"resource\": \"resource\",\n  \"resourceId\": \"resourceId\",\n  \"expireInSeconds\": 14400,\n  \"singleUsage\": false\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -558,6 +563,9 @@
 									"pm.test(\"Auth - 01.getUserInfo limited - Verify response body\", function () {",
 									"    let jsonResponse = pm.response.json();",
 									"",
+									"    const selectedOrgId = pm.collectionVariables.get(\"selectedOrganizationId\");",
+									"    const selectedOrgName = pm.collectionVariables.get(\"selectedOrganizationName\");",
+									"",
 									"    pm.expect(jsonResponse).have.property(\"_type\").to.eq(\"Limited\")",
 									"    pm.expect(jsonResponse).have.property(\"userId\")",
 									"    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")",
@@ -582,9 +590,11 @@
 									"",
 									"    pm.expect(jsonResponse.resource).to.have.property(\"organization\").that.is.an(\"object\");",
 									"",
+									"",
+									"",
 									"    pm.expect(jsonResponse.resource.organization).to.have.property(\"operatorId\").that.is.a(\"string\");",
-									"    pm.expect(jsonResponse.resource.organization).to.have.property(\"organizationId\").to.eq(2)",
-									"    pm.expect(jsonResponse.resource.organization).to.have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")",
+									"    pm.expect(jsonResponse.resource.organization).to.have.property(\"organizationId\").to.eq(selectedOrgId)",
+									"    pm.expect(jsonResponse.resource.organization).to.have.property(\"organizationIpaCode\").to.eq(selectedOrgName)",
 									"    pm.expect(jsonResponse.resource.organization).to.have.property(\"organizationFiscalCode\").that.is.a(\"string\");",
 									"    pm.expect(jsonResponse.resource.organization).to.have.property(\"email\").that.is.a(\"string\");",
 									"",
@@ -1693,6 +1703,14 @@
 		},
 		{
 			"key": "accessTokenLimited",
+			"value": ""
+		},
+		{
+			"key": "selectedOrganizationId",
+			"value": ""
+		},
+		{
+			"key": "selectedOrganizationName",
 			"value": ""
 		}
 	]
