@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
+import it.gov.pagopa.payhub.auth.utils.UtilitiesTest;
 import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -20,12 +21,12 @@ class Client2UserInfoMapperTest {
 
     @BeforeEach
     void setUp() {
-        MDC.put("traceId", "traceId");
+        UtilitiesTest.setTraceId("traceId");
     }
 
     @AfterEach
     void tearDown() {
-        MDC.clear();
+        UtilitiesTest.clearTraceIdContext();
     }
 
 	@Test
