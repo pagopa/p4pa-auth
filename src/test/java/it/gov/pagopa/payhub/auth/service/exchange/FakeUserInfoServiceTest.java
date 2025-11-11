@@ -40,6 +40,7 @@ class FakeUserInfoServiceTest {
                 .build();
 
         IamUserInfoDTO iamUserInfoFakeExpected = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .userId(iamUserId)
                 .mappedExternalUserId(mappedExternalUserId)
                 .innerUserId("userid")

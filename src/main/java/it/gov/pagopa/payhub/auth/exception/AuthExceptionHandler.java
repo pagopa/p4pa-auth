@@ -100,6 +100,11 @@ public class AuthExceptionHandler {
         return handleException(ex, request, httpStatus, errorCode);
     }
 
+    @ExceptionHandler({InvalidScopedAccessTokenRequest.class})
+    public ResponseEntity<AuthErrorDTO> handleInvalidScopedAccessTokenRequest(Exception ex, HttpServletRequest request) {
+        return handleException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
+    }
+
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<AuthErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
         return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);

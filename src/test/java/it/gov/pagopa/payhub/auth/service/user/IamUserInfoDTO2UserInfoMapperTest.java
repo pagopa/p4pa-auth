@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
@@ -62,6 +63,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
                 .innerUserId(userId)
@@ -84,6 +87,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build());
 
         UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -135,6 +140,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
                 .innerUserId(userId)
@@ -150,6 +157,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build();
 
         UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -193,6 +202,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(false)
                 .userId("EXTERNALUSERID")
                 .innerUserId(userId)
@@ -211,6 +222,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build());
 
         UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(false)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -261,6 +274,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(Boolean.TRUE)
                 .userId("EXTERNALUSERID")
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -276,6 +291,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build();
 
         UserInfo expected = UserInfo.builder()
+                .type("UserInfo")
+                .traceId("traceId")
                 .systemUser(true)
                 .userId(userId)
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
@@ -319,5 +336,123 @@ class IamUserInfoDTO2UserInfoMapperTest {
         result.getOrganizations().forEach(TestUtils::checkNotNullFields);
     }
 
+
+    @Test
+    void givenLimitedScopeSystemUserWhenApplyThenOk() {
+        String accessToken = "sampleAccessToken";
+        String userId = "INNERUSERID";
+
+        // Build LimitedScope resource with organization ipa code used to resolve broker
+        UserOrganizationRoles org = UserOrganizationRoles.builder()
+                .organizationIpaCode("ORG")
+                .build();
+        it.gov.pagopa.payhub.dto.generated.LimitedScopeResource resource = it.gov.pagopa.payhub.dto.generated.LimitedScopeResource.builder()
+                .app("APP")
+                .organization(org)
+                .resource("RES")
+                .resourceId("RID")
+                .singleUsage(false)
+                .build();
+
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type(it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope.class.getSimpleName())
+                .traceId("traceId")
+                .systemUser(true)
+                .userId("EXTERNALUSERID")
+                .innerUserId(userId)
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
+                .fiscalCode("FISCALCODE")
+                .familyName("FAMILYNAME")
+                .organizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG").build())
+                .resource(resource)
+                .build();
+
+        Organization mockOrganization = new Organization();
+        mockOrganization.setBrokerId(1L);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+                .thenReturn(mockOrganization);
+
+        Broker mockBroker = new Broker();
+        mockBroker.setBrokerId(1L);
+        mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+                .thenReturn(mockBroker);
+
+        UserInfo result = mapper.apply(iamUserInfo, accessToken);
+
+        Assertions.assertInstanceOf(UserInfoLimitedScope.class, result);
+        it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope limited = (it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope) result;
+        Assertions.assertEquals(it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope.class.getSimpleName(), limited.getType());
+        Assertions.assertEquals("traceId", limited.getTraceId());
+        Assertions.assertEquals(Boolean.TRUE, limited.getSystemUser());
+        Assertions.assertEquals(userId, limited.getUserId());
+        Assertions.assertEquals("MAPPEDEXTERNALUSERID", limited.getMappedExternalUserId());
+        Assertions.assertEquals("FISCALCODE", limited.getFiscalCode());
+        Assertions.assertEquals("FAMILYNAME", limited.getFamilyName());
+        Assertions.assertEquals(resource, limited.getResource());
+        Assertions.assertEquals(false, limited.getCanManageUsers());
+        Assertions.assertEquals(1L, limited.getBrokerId());
+        Assertions.assertEquals("BROKERFISCALCODE", limited.getBrokerFiscalCode());
+    }
+
+    @Test
+    void givenLimitedScopeUserWhenApplyThenOk() {
+        String accessToken = "sampleAccessToken";
+        String userId = "INNERUSERID";
+
+        // operatorsRepository is invoked before branching in user path
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(Collections.emptyList());
+
+        UserOrganizationRoles org = UserOrganizationRoles.builder()
+                .organizationIpaCode("ORG")
+                .build();
+        it.gov.pagopa.payhub.dto.generated.LimitedScopeResource resource = it.gov.pagopa.payhub.dto.generated.LimitedScopeResource.builder()
+                .app("APP")
+                .organization(org)
+                .resource("RES")
+                .resourceId("RID")
+                .singleUsage(true)
+                .build();
+
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type(it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope.class.getSimpleName())
+                .traceId("traceId")
+                .systemUser(false)
+                .userId("EXTERNALUSERID")
+                .innerUserId(userId)
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
+                .fiscalCode("FISCALCODE")
+                .familyName("FAMILYNAME")
+                .resource(resource)
+                .build();
+
+        Organization mockOrganization = new Organization();
+        mockOrganization.setBrokerId(1L);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+                .thenReturn(mockOrganization);
+
+        Broker mockBroker = new Broker();
+        mockBroker.setBrokerId(1L);
+        mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+                .thenReturn(mockBroker);
+
+        UserInfo result = mapper.apply(iamUserInfo, accessToken);
+
+        Assertions.assertInstanceOf(UserInfoLimitedScope.class, result);
+        it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope limited = (it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope) result;
+        Assertions.assertEquals(it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope.class.getSimpleName(), limited.getType());
+        Assertions.assertEquals("traceId", limited.getTraceId());
+        Assertions.assertNotEquals(Boolean.TRUE, limited.getSystemUser());
+        Assertions.assertEquals(userId, limited.getUserId());
+        Assertions.assertEquals("MAPPEDEXTERNALUSERID", limited.getMappedExternalUserId());
+        Assertions.assertEquals("FISCALCODE", limited.getFiscalCode());
+        Assertions.assertEquals("FAMILYNAME", limited.getFamilyName());
+        Assertions.assertEquals(resource, limited.getResource());
+        // organizationAccessMode is false in this test, so canManageUsers should be true for non-system users
+        Assertions.assertEquals(true, limited.getCanManageUsers());
+        Assertions.assertEquals(1L, limited.getBrokerId());
+        Assertions.assertEquals("BROKERFISCALCODE", limited.getBrokerFiscalCode());
+    }
 
 }
