@@ -633,6 +633,154 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "01.postTokenLimited.singleUsage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Auth - 01.postTokenLimited single usage - Responses with 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Auth - 01.postTokenLimited single usage - Verify response body\", function () {",
+									"    let jsonResponse = pm.response.json();",
+									"    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");",
+									"    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);",
+									"    pm.expect(jsonResponse).have.property(\"access_token\");",
+									"",
+									"    pm.collectionVariables.set(\"accessTokenLimited\", jsonResponse.access_token)",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"organizationId\": {{selectedOrganizationId}},\n  \"app\": \"test\",\n  \"resource\": \"resource\",\n  \"resourceId\": \"resourceId\",\n  \"expireInSeconds\": 14400,\n  \"singleUsage\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{p4paAuthBaseUrl}}/oauth/token/limited",
+							"host": [
+								"{{p4paAuthBaseUrl}}"
+							],
+							"path": [
+								"oauth",
+								"token",
+								"limited"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "01.getUserInfo.limited_singleUsage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Auth - 01.getUserInfo limited single usage - Responses with 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenLimited}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
+							"host": [
+								"{{p4paAuthBaseUrl}}"
+							],
+							"path": [
+								"oauth",
+								"userinfo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "01.getUserInfo.limited_singleUsage 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Auth - 01.getUserInfo limited single usage second time - Responses with 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenLimited}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
+							"host": [
+								"{{p4paAuthBaseUrl}}"
+							],
+							"path": [
+								"oauth",
+								"userinfo"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
