@@ -93,7 +93,6 @@ paths:
       tags:
         - authn
       operationId: postLimitedToken
-      security: [ ]
       requestBody:
         required: true
         content:
