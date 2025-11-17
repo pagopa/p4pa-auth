@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
         UserInfo result = userInfoMapper.apply(userInfo, accessToken);
 
-        if (result instanceof UserInfoLimitedScope resultScoped && resultScoped.getResource().getSingleUsage()) {
+        if (result instanceof UserInfoLimitedScope resultScoped && Boolean.TRUE.equals(resultScoped.getResource().getSingleUsage())) {
             tokenStoreService.delete(accessToken);
         }
 

@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Collections;
 import java.util.Set;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -190,5 +191,25 @@ class UserServiceTest {
         // Then
         Assertions.assertSame(expectedUserInfo, result);
         verify(tokenStoreServiceMock).delete(accessToken);
+    }
+
+    @Test
+    void givenAccessTokenLimitedNullSingleUsageWhenGetUserInfoThenOk() {
+        // Given
+        String accessToken = "accessToken";
+
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        UserInfoLimitedScope expectedUserInfo = new UserInfoLimitedScope();
+        expectedUserInfo.setResource(LimitedScopeResource.builder()
+                .build());
+        Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(iamUserInfo);
+        Mockito.when(userInfoMapperMock.apply(iamUserInfo, accessToken)).thenReturn(expectedUserInfo);
+
+        // When
+        UserInfo result = service.getUserInfo(accessToken);
+
+        // Then
+        Assertions.assertSame(expectedUserInfo, result);
+        verify(tokenStoreServiceMock, never()).delete(accessToken);
     }
 }
