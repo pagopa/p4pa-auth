@@ -88,6 +88,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthErrorDTO'
+  /oauth/token/limited:
+    post:
+      tags:
+        - authn
+      operationId: postLimitedToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LimitedTokenRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '400':
+          description: Invalid request
+        '401':
+          description: Authentication failed
+        '403':
+          description: Forbidden
+        '409':
+          description: Conflict
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthErrorDTO'
   /oauth/userinfo:
     get:
       tags:
@@ -576,6 +610,27 @@ components:
       type: http
       scheme: bearer
   schemas:
+    LimitedTokenRequest:
+      type: object
+      required:
+        - organizationId
+        - app
+        - resource
+      properties:
+        organizationId:
+          type: integer
+          format: int64
+        app:
+          type: string
+        resource:
+          type: string
+        resourceId:
+          type: string
+        expireInSeconds:
+          type: integer
+          format: int64
+        singleUsage:
+          type: boolean
     AccessToken:
       type: object
       required:
@@ -655,6 +710,12 @@ components:
         - issuer
         - organizations
         - canManageUsers
+        - traceId
+        - _type
+      discriminator:
+        propertyName: _type
+        mapping:
+          Limited: '#/components/schemas/UserInfoLimitedScope'
       properties:
         userId:
           type: string
@@ -683,6 +744,10 @@ components:
           type: boolean
         systemUser:
           type: boolean
+        traceId:
+          type: string
+        _type:
+          type: string
     UserOrganizationRoles:
       type: object
       required:
@@ -811,6 +876,8 @@ components:
         error_description:
           type: string
           x-field-extra-annotation: "@com.fasterxml.jackson.annotation.JsonProperty(\"error_description\")"
+        traceId:
+          type: string
     ClientDTOPage:
       type: object
       required:
@@ -841,3 +908,31 @@ components:
           type: integer
           format: int32
           description: "Number of total pages"
+    UserInfoLimitedScope:
+      type: object
+      required:
+        - resource
+      allOf:
+        - $ref: '#/components/schemas/UserInfo'
+      properties:
+        resource:
+          $ref: '#/components/schemas/LimitedScopeResource'
+    LimitedScopeResource:
+      type: object
+      required:
+        - app
+        - organization
+        - resource
+        - resourceId
+        - singleUsage
+      properties:
+        app:
+          type: string
+        organization:
+          $ref: '#/components/schemas/UserOrganizationRoles'
+        resource:
+          type: string
+        resourceId:
+          type: string
+        singleUsage:
+          type: boolean

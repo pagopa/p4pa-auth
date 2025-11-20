@@ -70,6 +70,7 @@ public class UserInfoRetrieverService {
 
     private IamUserInfoDTO user2IamUser(User user) {
         return IamUserInfoDTO.builder()
+                .type(UserInfo.class.getSimpleName())
                 .issuer(user.getIamIssuer())
                 .systemUser(false)
                 .userId(user.getUserId())

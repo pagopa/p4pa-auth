@@ -167,6 +167,7 @@ class UserInfoRetrieverServiceTest {
                 .lastName("LASTNAME")
                 .build();
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .issuer("IAMISSUER")
                 .userId("USERID")
                 .innerUserId("USERID")

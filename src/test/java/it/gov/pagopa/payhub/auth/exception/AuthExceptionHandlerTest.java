@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
+import it.gov.pagopa.payhub.auth.utils.UtilitiesTest;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -16,6 +17,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +92,16 @@ class AuthExceptionHandlerTest {
         private LocalDateTime dateTimeField;
     }
 
+    private final String traceId = "TRACEID";
+    @BeforeEach
+    void setTraceId(){
+        UtilitiesTest.setTraceId(traceId);
+    }
+    @AfterEach
+    void clearTraceId(){
+        UtilitiesTest.clearTraceIdContext();
+    }
+
     private ResultActions performRequest(String data, MediaType accept) throws Exception {
         return performRequest(data, accept, objectMapper.writeValueAsString(AuthExceptionHandlerTest.BODY));
     }
@@ -114,7 +127,8 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_grant"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
 
     }
 
@@ -125,7 +139,8 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_grant"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
 
     }
 
@@ -135,7 +150,8 @@ class AuthExceptionHandlerTest {
         performRequest(null, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request parameter 'data' for method parameter type String is not present"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request parameter 'data' for method parameter type String is not present"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
 
     }
 
@@ -146,7 +162,8 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     @Test
@@ -157,7 +174,8 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     @Test
@@ -165,7 +183,8 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.parseMediaType("application/hal+json"))
                 .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No acceptable representation"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No acceptable representation"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     @Test
@@ -173,7 +192,8 @@ class AuthExceptionHandlerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/NOTEXISTENTURL"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_NOT_FOUND"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No static resource NOTEXISTENTURL."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No static resource NOTEXISTENTURL."))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     @Test
@@ -181,7 +201,8 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON, null)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request body is missing"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Required request body is missing"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     @Test
@@ -190,7 +211,8 @@ class AuthExceptionHandlerTest {
                 "{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}")
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     @Test
@@ -199,7 +221,8 @@ class AuthExceptionHandlerTest {
                 "{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}")
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     @Test
@@ -210,7 +233,8 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("500 INTERNAL_SERVER_ERROR \"Error\""));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("500 INTERNAL_SERVER_ERROR \"Error\""))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
     private final ConstraintViolationException constraintViolationException = new ConstraintViolationException("Error", Set.of(ConstraintViolationImpl.forParameterValidation(
@@ -223,6 +247,7 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Invalid request content. fieldName: resolved message"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Invalid request content. fieldName: resolved message"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 }

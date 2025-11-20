@@ -1,4 +1,6 @@
 import java.util.Objects
+import com.github.jk1.license.render.*
+import com.github.jk1.license.filter.*
 
 plugins {
     java
@@ -10,6 +12,7 @@ plugins {
     id("org.openapi.generator") version "7.15.0"
     id("org.ajoberstar.grgit") version "5.3.2"
     id("com.gorylenko.gradle-git-properties") version "2.5.3"
+    id("com.github.jk1.dependency-license-report") version "3.0.1"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -26,6 +29,18 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+    compileClasspath {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
+licenseReport {
+    renderers = arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
+    outputDir = "$projectDir/dependency-licenses"
+    filters = arrayOf(SpdxLicenseBundleNormalizer())
+}
+tasks.classes {
+    finalizedBy(tasks.generateLicenseReport)
 }
 
 
@@ -46,6 +61,7 @@ val micrometerVersion = "1.5.4"
 val caffeineVersion = "3.2.2"
 val httpClientVersion = "5.5"
 val kafkaAppender = "0.2.0-RC2"
+val commonsLang3Version = "3.19.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -59,7 +75,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion") {
+        exclude(group = "org.apache.commons", module = "commons-lang3")
+    }
+    implementation("org.apache.commons:commons-lang3:${commonsLang3Version}")
     implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
@@ -121,12 +140,6 @@ tasks {
         filesMatching("**/application.yml") {
             expand(projectInfo)
         }
-    }
-}
-
-configurations {
-    compileClasspath {
-        resolutionStrategy.activateDependencyLocking()
     }
 }
 

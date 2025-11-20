@@ -11,6 +11,7 @@ import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetri
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,11 +54,16 @@ public class UserServiceImpl implements UserService {
     public UserInfo getUserInfo(String accessToken) {
         log.debug("Retrieving user info");
         IamUserInfoDTO userInfo = tokenStoreService.load(accessToken);
+
         if (userInfo == null) {
             throw new InvalidAccessTokenException("AccessToken not found");
         }
 
         UserInfo result = userInfoMapper.apply(userInfo, accessToken);
+
+        if (result instanceof UserInfoLimitedScope resultScoped && Boolean.TRUE.equals(resultScoped.getResource().getSingleUsage())) {
+            tokenStoreService.delete(accessToken);
+        }
 
         log.debug("User info retrieved successfully with brokerId: {}", result.getBrokerId());
 

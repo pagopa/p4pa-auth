@@ -10,19 +10,17 @@ import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
-import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
-import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
+import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -273,4 +271,34 @@ class AuthnControllerTest {
           .andExpect(content().json("{\"userId\":\"USERID\"}"));
     }
 //end region
+
+//region desc=postLimitedToken tests
+    @Test
+    void givenValidRequestWhenPostLimitedTokenThenOk() throws Exception {
+        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
+
+        LimitedTokenRequest request = new LimitedTokenRequest();
+        request.setOrganizationId(1L);
+        request.setApp("APP");
+        request.setResource("RESOURCE");
+        request.setResourceId("RES_ID");
+
+        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
+
+        Mockito.when(authnServiceMock.postLimitedToken(Mockito.any(LimitedTokenRequest.class)))
+                .thenReturn(new AccessToken("token", "bearer", 0));
+
+        MvcResult result = mockMvc.perform(
+                        post("/payhub/oauth/token/limited")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer legacyAccessToken")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertEquals("{\"access_token\":\"token\",\"token_type\":\"bearer\",\"expires_in\":0}", result.getResponse().getContentAsString());
+    }
+//endregion
 }

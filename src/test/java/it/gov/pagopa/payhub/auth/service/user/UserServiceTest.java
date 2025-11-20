@@ -9,8 +9,10 @@ import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationS
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
+import it.gov.pagopa.payhub.dto.generated.LimitedScopeResource;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +28,9 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.Set;
+
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -75,7 +80,7 @@ class UserServiceTest {
         // When, Then
         Assertions.assertThrows(InvalidAccessTokenException.class, () -> service.getUserInfo(accessToken));
 
-        Mockito.verify(tokenStoreServiceMock).load(accessToken);
+        verify(tokenStoreServiceMock).load(accessToken);
     }
 
     @Test
@@ -165,5 +170,46 @@ class UserServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenAccessTokenLimitedSingleUsageWhenGetUserInfoThenOk() {
+        // Given
+        String accessToken = "accessToken";
+
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        UserInfoLimitedScope expectedUserInfo = new UserInfoLimitedScope();
+        expectedUserInfo.setResource(LimitedScopeResource.builder()
+                .singleUsage(Boolean.TRUE)
+                .build());
+        Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(iamUserInfo);
+        Mockito.when(userInfoMapperMock.apply(iamUserInfo, accessToken)).thenReturn(expectedUserInfo);
+
+        // When
+        UserInfo result = service.getUserInfo(accessToken);
+
+        // Then
+        Assertions.assertSame(expectedUserInfo, result);
+        verify(tokenStoreServiceMock).delete(accessToken);
+    }
+
+    @Test
+    void givenAccessTokenLimitedNullSingleUsageWhenGetUserInfoThenOk() {
+        // Given
+        String accessToken = "accessToken";
+
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        UserInfoLimitedScope expectedUserInfo = new UserInfoLimitedScope();
+        expectedUserInfo.setResource(LimitedScopeResource.builder()
+                .build());
+        Mockito.when(tokenStoreServiceMock.load(accessToken)).thenReturn(iamUserInfo);
+        Mockito.when(userInfoMapperMock.apply(iamUserInfo, accessToken)).thenReturn(expectedUserInfo);
+
+        // When
+        UserInfo result = service.getUserInfo(accessToken);
+
+        // Then
+        Assertions.assertSame(expectedUserInfo, result);
+        verify(tokenStoreServiceMock, never()).delete(accessToken);
     }
 }

@@ -36,6 +36,7 @@ class IDTokenClaims2UserInfoMapperTest {
         // Given
         init(isOrganizationAccess);
         IamUserInfoDTO expectedUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .userId("e1d9c534-86a9-4039-80da-8aa7a33ac9e7")
                 .name("demo")
                 .familyName("demosurname")
@@ -71,6 +72,7 @@ class IDTokenClaims2UserInfoMapperTest {
         // Given
         init(false);
         IamUserInfoDTO expectedUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .userId("e1d9c534-86a9-4039-80da-8aa7a33ac9e7")
                 .name("demo")
                 .familyName("demosurname")
