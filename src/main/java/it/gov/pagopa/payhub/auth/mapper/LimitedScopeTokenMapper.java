@@ -14,6 +14,7 @@ public class LimitedScopeTokenMapper {
         		.resource(request.getResource())
         		.resourceId(request.getResourceId())
         		.singleUsage(request.getSingleUsage())
+						.sessionData(request.getSessionData())
         		.build();
     }
 

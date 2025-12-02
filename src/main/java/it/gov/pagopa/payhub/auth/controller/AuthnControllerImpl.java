@@ -35,12 +35,13 @@ public class AuthnControllerImpl implements AuthnApi {
     @Override
     public ResponseEntity<Void> logout(String clientId, String token) {
         authnService.logout(clientId, token);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<AccessToken> postLimitedToken(LimitedTokenRequest limitedTokenRequest) {
-        log.info("POST Limited token request: organizationId={}, app={}, resource={}, resourceId={}", limitedTokenRequest.getOrganizationId(), limitedTokenRequest.getApp(), limitedTokenRequest.getResource(), limitedTokenRequest.getResourceId());
+        log.info("POST Limited token request: organizationId={}, app={}, resource={}, resourceId={}, sessionData={}", limitedTokenRequest.getOrganizationId(), limitedTokenRequest.getApp(),
+            limitedTokenRequest.getResource(), limitedTokenRequest.getResourceId(), limitedTokenRequest.getSessionData());
         AccessToken accessToken = authnService.postLimitedToken(limitedTokenRequest);
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }

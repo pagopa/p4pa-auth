@@ -631,6 +631,9 @@ components:
           format: int64
         singleUsage:
           type: boolean
+        sessionData:
+          type: object
+          additionalProperties: true
     AccessToken:
       type: object
       required:
@@ -936,3 +939,6 @@ components:
           type: string
         singleUsage:
           type: boolean
+        sessionData:
+          type: object
+          additionalProperties: true
