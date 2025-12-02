@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "3c9bea49-1b4b-4a1f-a58f-3aa14049ac06",
+		"_postman_id": "206816f6-3514-4ee8-b169-0cf06fa6ee06",
 		"name": "p4pa-auth-E2E",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "15747968",
-		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-3c9bea49-1b4b-4a1f-a58f-3aa14049ac06?action=share&source=collection_link&creator=15747968"
+		"_exporter_id": "28798913"
 	},
 	"item": [
 		{
@@ -475,7 +474,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"organizationId\": {{selectedOrganizationId}},\n  \"app\": \"test\",\n  \"resource\": \"resource\",\n  \"resourceId\": \"resourceId\",\n  \"expireInSeconds\": 14400,\n  \"singleUsage\": false\n}",
+							"raw": "{\n  \"organizationId\": {{selectedOrganizationId}},\n  \"app\": \"test\",\n  \"resource\": \"resource\",\n  \"resourceId\": \"resourceId\",\n  \"expireInSeconds\": 14400,\n  \"singleUsage\": false,\n  \"sessionData\": {\n    \"{{sessionDataKey1}}\": \"{{sessionDataValue1}}\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -483,9 +482,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{p4paAuthBaseUrl}}/oauth/token/limited",
+							"raw": "{{p4paAuthInnerBaseUrl}}/oauth/token/limited",
 							"host": [
-								"{{p4paAuthBaseUrl}}"
+								"{{p4paAuthInnerBaseUrl}}"
 							],
 							"path": [
 								"oauth",
@@ -587,6 +586,11 @@
 									"    pm.expect(jsonResponse.resource).to.have.property(\"resource\").to.eq(\"resource\")",
 									"    pm.expect(jsonResponse.resource).to.have.property(\"resourceId\").to.eq(\"resourceId\")",
 									"    pm.expect(jsonResponse.resource).to.have.property(\"singleUsage\").to.eq(false);",
+									"    pm.expect(jsonResponse.resource).to.have.property(\"sessionData\");",
+									"",
+									"    const sessionDataKey1 = pm.collectionVariables.get(\"sessionDataKey1\");",
+									"    const sessionDataValue1 = pm.collectionVariables.get(\"sessionDataValue1\");",
+									"    pm.expect(jsonResponse.resource.sessionData).to.have.property(sessionDataKey1).to.eq(sessionDataValue1);",
 									"",
 									"    pm.expect(jsonResponse.resource).to.have.property(\"organization\").that.is.an(\"object\");",
 									"",
@@ -1860,6 +1864,16 @@
 		{
 			"key": "selectedOrganizationName",
 			"value": ""
+		},
+		{
+			"key": "sessionDataKey1",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "sessionDataValue1",
+			"value": "",
+			"type": "default"
 		}
 	]
 }
