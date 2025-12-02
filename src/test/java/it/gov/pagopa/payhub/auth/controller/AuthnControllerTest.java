@@ -232,6 +232,20 @@ class AuthnControllerTest {
 
 //region desc=logout tests
     @Test
+    void givenCompleteRequestWhenLogoutThenOk() throws Exception {
+        String clientId = "CLIENTID";
+        String token = "TOKEN";
+
+        Mockito.doNothing().when(authnServiceMock).logout(clientId, token);
+
+        mockMvc.perform(
+            post("/payhub/oauth/revoke")
+                .param("client_id", clientId)
+                .param("token", token)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
     void givenNoClientIdWhenLogoutThenBadRequest() throws Exception {
         mockMvc.perform(
                 post("/payhub/oauth/revoke")
