@@ -474,7 +474,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"organizationId\": {{selectedOrganizationId}},\n  \"app\": \"test\",\n  \"resource\": \"resource\",\n  \"resourceId\": \"resourceId\",\n  \"expireInSeconds\": 14400,\n  \"singleUsage\": false,\n  \"sessionData\": {\n    \"{{sessionDataKey1}}\": \"{{sessionDataValue1}}\"\n  }\n}",
+							"raw": "{\n  \"organizationId\": {{selectedOrganizationId}},\n  \"app\": \"test\",\n  \"resource\": \"resource\",\n  \"resourceId\": \"resourceId\",\n  \"expireInSeconds\": 14400,\n  \"singleUsage\": false,\n  \"sessionData\": {\n    \"checkoutUrl\": \"https://www.google.com\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1810,6 +1810,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					"var moment = require('moment');",
 					"",
@@ -1822,6 +1823,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -1864,16 +1866,6 @@
 		{
 			"key": "selectedOrganizationName",
 			"value": ""
-		},
-		{
-			"key": "sessionDataKey1",
-			"value": "",
-			"type": "default"
-		},
-		{
-			"key": "sessionDataValue1",
-			"value": "",
-			"type": "default"
 		}
 	]
 }
