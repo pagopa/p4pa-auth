@@ -19,6 +19,7 @@ import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -57,16 +58,25 @@ public class AuthnServiceImpl implements AuthnService {
             case ValidateClientCredentialsService.ALLOWED_GRANT_TYPE -> clientCredentialService.postToken(clientId, scope, clientSecret);
             default -> throw new InvalidGrantTypeException("Invalid grantType " + grantType);
         };
-        DecodedJWT jwt = JWT.decode(accessToken.getAccessToken());
-        Claim organizationIpaCode = jwt.getClaims().get("organizationIpaCode");
-        Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode.asString(), accessToken.getAccessToken());
-        Map<String, String> label2value = Map.ofEntries(
-                Map.entry("grantType", grantType),
-                Map.entry("organizationId", String.valueOf(organization.getOrganizationId())),
-                Map.entry("organizationName", organization.getOrgName())
-        );
+        Map<String, String> label2value = new HashMap<>();
+        label2value.put("grantType", grantType);
+        addOrganizationUserInfo(label2value, accessToken);
         auditService.log(AuditEventType.LOGIN_SUCCESS, label2value, "Authentication success");
         return accessToken;
+    }
+
+    private void addOrganizationUserInfo(Map<String, String> label2value, AccessToken accessToken) {
+        DecodedJWT jwt = JWT.decode(accessToken.getAccessToken());
+        Claim organizationIpaCode = jwt.getClaims().get("organizationIpaCode");
+        if (organizationIpaCode == null) {
+            return;
+        }
+        Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode.asString(), accessToken.getAccessToken());
+        if(organization==null) {
+            return;
+        }
+        label2value.put("organizationId", String.valueOf(organization.getOrganizationId()));
+        label2value.put("organizationName", organization.getOrgName());
     }
 
     @Override
