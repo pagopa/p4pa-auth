@@ -67,7 +67,7 @@ public class AuthnServiceImpl implements AuthnService {
 
     private void addOrganizationUserInfo(Map<String, String> label2value, AccessToken accessToken) {
         DecodedJWT jwt = JWT.decode(accessToken.getAccessToken());
-        Claim organizationIpaCode = jwt.getClaims().get(AccessTokenBuilderService.ORGANIZATION_IPA_CODE_CLAIM);
+        Claim organizationIpaCode = jwt.getClaims().get(AccessTokenBuilderService.CLAIM_ORGANIZATION_IPA_CODE);
         if (organizationIpaCode == null) {
             return;
         }
