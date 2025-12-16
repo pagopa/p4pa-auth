@@ -7,6 +7,8 @@ import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import java.util.Collections;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class AuditUtilsTest {
 
@@ -58,46 +60,23 @@ class AuditUtilsTest {
     assertTrue(cefMessage.lastIndexOf(" ") < cefMessage.lastIndexOf(description));
   }
 
-  @Test
-  void givenPipeWhenFormatThenVerifyEscapePipeInDescription() {
+  @ParameterizedTest
+  @CsvSource({
+          "|, \\|, |",
+          "\\, \\\\, \\\\",
+          "=, =, \\="
+  })
+  void givenCharToEscapeWhenFormatThenVerifyEscapeCharInDescription(char charToEscape, String expectedCharInHeader, String expectedCharInExtension) {
     // Given
-    String description = "Error | Timeout";
+    String description = String.format("Error %c Timeout", charToEscape);
     AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_FAILURE, "user", Collections.emptyMap(), description);
 
     // When
     String cefMessage = AuditUtils.format(event);
 
     // Then
-    assertTrue(cefMessage.contains("LOGIN_FAILURE|Error \\| Timeout"));
-    assertTrue(cefMessage.contains("msg=Error | Timeout"));
-  }
-
-  @Test
-  void givenBackslashWhenFormatThenVerifyEscapeBackslashInDescription() {
-    // Given
-    String description = "Error \\ Timeout";
-    AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_FAILURE, "user", Collections.emptyMap(), description);
-
-    // When
-    String cefMessage = AuditUtils.format(event);
-
-    // Then
-    assertTrue(cefMessage.contains("LOGIN_FAILURE|Error \\\\ Timeout"));
-    assertTrue(cefMessage.contains("msg=Error \\\\ Timeout"));
-  }
-
-  @Test
-  void givenEqualWhenFormatThenVerifyEscapeEqualInDescriptionAndInMappedExternalUserId() {
-    // Given
-    String description = "Error = Timeout";
-    AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_FAILURE, "user", Collections.emptyMap(), description);
-
-    // When
-    String cefMessage = AuditUtils.format(event);
-
-    // Then
-    assertTrue(cefMessage.contains("LOGIN_FAILURE|Error = Timeout"));
-    assertTrue(cefMessage.contains("msg=Error \\= Timeout"));
+    assertTrue(cefMessage.contains(String.format("LOGIN_FAILURE|Error %s Timeout", expectedCharInHeader)));
+    assertTrue(cefMessage.contains(String.format("msg=Error %s Timeout", expectedCharInExtension)));
   }
 
 }
