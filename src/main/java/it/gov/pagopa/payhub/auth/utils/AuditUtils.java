@@ -25,6 +25,7 @@ public final class AuditUtils {
     extensions.append("rt=").append(Instant.now().toString()).append(" "); // End Time/Real Time
     extensions.append("suser=").append(escapeCefExtensionField(event.getMappedExternalUserId())).append(" "); // Source User
     extensions.append("msg=").append(escapeCefExtensionField(event.getDescription())).append(" "); // Message
+    extensions.append("traceId=").append(event.getTraceId()).append(" ");
 
     // Map label2value
     if(event.getLabel2value()!=null){
