@@ -22,8 +22,8 @@ class AuditUtilsTest {
 
     AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_SUCCESS, userId, labels, description);
 
-    String expectedHeaderPrefix = String.format("CEF:0|%s|%s|%s|%s|%s|",
-        "PiattaformaUnitaria", "P4PA-AUTH", "1.0", AuditEventType.LOGIN_SUCCESS.name(), description);
+    String expectedHeaderPrefix = String.format("CEF:0|%s|%s|%s|%s|%s|%s|",
+        "PiattaformaUnitaria", "P4PA-AUTH", "1.0", AuditEventType.LOGIN_SUCCESS.name(), description, 0);
 
     // When
     String cefMessage = AuditUtils.format(event);
@@ -68,8 +68,36 @@ class AuditUtilsTest {
     String cefMessage = AuditUtils.format(event);
 
     // Then
-    assertTrue(cefMessage.contains("LOGIN_FAILURE|Error _ Timeout"));
+    assertTrue(cefMessage.contains("LOGIN_FAILURE|Error \\| Timeout"));
     assertTrue(cefMessage.contains("msg=Error | Timeout"));
+  }
+
+  @Test
+  void givenBackslashWhenFormatThenVerifyEscapeBackslashInDescription() {
+    // Given
+    String description = "Error \\ Timeout";
+    AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_FAILURE, "user", Collections.emptyMap(), description);
+
+    // When
+    String cefMessage = AuditUtils.format(event);
+
+    // Then
+    assertTrue(cefMessage.contains("LOGIN_FAILURE|Error \\\\ Timeout"));
+    assertTrue(cefMessage.contains("msg=Error \\\\ Timeout"));
+  }
+
+  @Test
+  void givenEqualWhenFormatThenVerifyEscapeEqualInDescriptionAndInMappedExternalUserId() {
+    // Given
+    String description = "Error = Timeout";
+    AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_FAILURE, "user", Collections.emptyMap(), description);
+
+    // When
+    String cefMessage = AuditUtils.format(event);
+
+    // Then
+    assertTrue(cefMessage.contains("LOGIN_FAILURE|Error = Timeout"));
+    assertTrue(cefMessage.contains("msg=Error \\= Timeout"));
   }
 
 }
