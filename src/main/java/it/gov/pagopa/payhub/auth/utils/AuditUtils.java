@@ -38,12 +38,18 @@ public final class AuditUtils {
   }
 
   private static String escapeCefHeaderField(String cefHeaderField) {
+    if(cefHeaderField==null) {
+      return null;
+    }
     return cefHeaderField
             .replace("\\", "\\\\")
             .replace("|", "\\|");
   }
 
   private static String escapeCefExtensionField(String cefExtensionField) {
+    if(cefExtensionField==null) {
+      return null;
+    }
     return cefExtensionField
             .replace("\\", "\\\\")
             .replace("=", "\\=");
