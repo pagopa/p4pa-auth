@@ -35,7 +35,7 @@ class OffsetDateTimeToLocalDateTimeDeserializerTest {
     OffsetDateTime offsetDateTime = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
     JsonParser parser = Mockito.mock(JsonParser.class);
     Mockito.when(parser.getValueAsString())
-            .thenReturn(offsetDateTime.toString());
+      .thenReturn(offsetDateTime.toString());
 
     // When
     LocalDateTime result = deserializer.deserialize(parser, null);

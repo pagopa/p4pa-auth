@@ -22,8 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -49,7 +49,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
 @ExtendWith({SpringExtension.class})
-@WebMvcTest(value = {AuthExceptionHandlerTest.TestController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(value = {AuthExceptionHandlerTest.TestController.class})
+@AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {
         AuthExceptionHandlerTest.TestController.class,
         AuthExceptionHandler.class,
@@ -192,7 +193,7 @@ class AuthExceptionHandlerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/NOTEXISTENTURL"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_NOT_FOUND"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No static resource NOTEXISTENTURL."))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("No static resource NOTEXISTENTURL for request '/NOTEXISTENTURL'."))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
