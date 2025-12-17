@@ -116,8 +116,33 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
+<td><a href='https://developers.google.com/protocol-buffers/'>com.google.protobuf:protobuf-java</a></td>
+<td>4.32.0</td>
+<td><a href='https://opensource.org/licenses/BSD-3-Clause'>BSD-3-Clause</a></td>
+</tr>
+<tr>
 <td><a href='https://connect2id.com'>com.nimbusds:nimbus-jose-jwt</a></td>
 <td>10.6</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://square.github.io/okhttp/'>com.squareup.okhttp3:okhttp</a></td>
+<td>5.2.1</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://square.github.io/okhttp/'>com.squareup.okhttp3:okhttp-jvm</a></td>
+<td>5.2.1</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/square/okio/'>com.squareup.okio:okio</a></td>
+<td>3.16.1</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/square/okio/'>com.squareup.okio:okio-jvm</a></td>
+<td>3.16.1</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -167,6 +192,11 @@
 </tr>
 <tr>
 <td><a href='https://github.com/micrometer-metrics/micrometer'>io.micrometer:micrometer-observation</a></td>
+<td>1.16.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/micrometer-metrics/micrometer'>io.micrometer:micrometer-registry-otlp</a></td>
 <td>1.16.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
@@ -246,6 +276,26 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
+<td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-exporter-common</a></td>
+<td>1.55.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-exporter-otlp</a></td>
+<td>1.55.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-exporter-otlp-common</a></td>
+<td>1.55.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-exporter-sender-okhttp</a></td>
+<td>1.55.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
 <td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-extension-trace-propagators</a></td>
 <td>1.55.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
@@ -257,6 +307,11 @@
 </tr>
 <tr>
 <td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-sdk-common</a></td>
+<td>1.55.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi</a></td>
 <td>1.55.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
@@ -273,6 +328,11 @@
 <tr>
 <td><a href='https://github.com/open-telemetry/opentelemetry-java'>io.opentelemetry:opentelemetry-sdk-trace</a></td>
 <td>1.55.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://github.com/open-telemetry/opentelemetry-proto-java'>io.opentelemetry.proto:opentelemetry-proto</a></td>
+<td>1.8.0-alpha</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -433,6 +493,16 @@
 <tr>
 <td><a href='http://www.jboss.org'>org.jboss.logging:jboss-logging</a></td>
 <td>3.6.1.Final</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='http://www.jetbrains.org'>org.jetbrains:annotations</a></td>
+<td>13.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://kotlinlang.org/'>org.jetbrains.kotlin:kotlin-stdlib</a></td>
+<td>2.2.21</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -621,12 +691,27 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
+<td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-micrometer-tracing</a></td>
+<td>4.0.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-micrometer-tracing-opentelemetry</a></td>
+<td>4.0.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
 <td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-mongodb</a></td>
 <td>4.0.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
 <td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-netty</a></td>
+<td>4.0.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-opentelemetry</a></td>
 <td>4.0.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
@@ -692,6 +777,11 @@
 </tr>
 <tr>
 <td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-starter-mongodb</a></td>
+<td>4.0.0</td>
+<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-starter-opentelemetry</a></td>
 <td>4.0.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>

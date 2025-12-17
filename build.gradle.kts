@@ -65,6 +65,7 @@ val lz4JavaVersion = "1.10.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
+  implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
