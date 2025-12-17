@@ -128,7 +128,7 @@ public class AccessTokenBuilderServiceTest {
                 om.writeValueAsString(om.readValue(
                 """
                 {
-                    "kid": "25cad9db-0022-3b87-a70a-f2da27217c88",
+                    "kid": "539deaa5-0ead-32d8-99a7-706d9d8a7994",
                     "kty": "RSA",
                     "alg": "RS512",
                     "use": "sign",

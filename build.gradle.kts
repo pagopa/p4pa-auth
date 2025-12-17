@@ -61,6 +61,7 @@ val caffeineVersion = "3.2.3"
 val httpClientVersion = "5.5.1"
 val kafkaAppender = "0.2.0-RC2"
 val commonsLang3Version = "3.20.0"
+val lz4JavaVersion = "1.10.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -82,7 +83,10 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
-    implementation("com.github.danielwegener:logback-kafka-appender:$kafkaAppender")
+    implementation("com.github.danielwegener:logback-kafka-appender:$kafkaAppender") {
+        exclude(group = "org.lz4", module = "lz4-java")
+    }
+    implementation("at.yawk.lz4:lz4-java:$lz4JavaVersion")
     // validation token jwt
     implementation("com.auth0:java-jwt:$javaJwtVersion")
     implementation("com.auth0:jwks-rsa:$jwksRsaVersion")
