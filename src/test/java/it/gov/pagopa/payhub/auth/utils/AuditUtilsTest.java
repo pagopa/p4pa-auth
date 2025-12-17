@@ -82,4 +82,27 @@ class AuditUtilsTest {
     assertTrue(cefMessage.contains(String.format("msg=Error %s Timeout", expectedCharInExtension)));
   }
 
+  @Test
+  void givenNullHeaderFieldAndExtensionFieldWhenFormatThenVerify() {
+    // Given
+    String userId = "user";
+    String traceId = "traceId";
+    String description = null;
+
+    AuditLogDTO event = new AuditLogDTO(AuditEventType.LOGIN_SUCCESS, userId, null, description, traceId);
+
+    String expectedHeaderPrefix = String.format("CEF:0|%s|%s|%s|%s|%s|%s|",
+            "PiattaformaUnitaria", "P4PA-AUTH", "1.0", AuditEventType.LOGIN_SUCCESS.name(), description, 0);
+
+    // When
+    String cefMessage = AuditUtils.format(event);
+
+    // Then
+    assertNotNull(cefMessage);
+    assertTrue(cefMessage.startsWith(expectedHeaderPrefix));
+    String expectedEnd = String.format("suser=%s msg=%s traceId=%s", userId, description, traceId);
+    assertTrue(cefMessage.endsWith(expectedEnd));
+    assertTrue(cefMessage.lastIndexOf(" ") < cefMessage.lastIndexOf(traceId));
+  }
+
 }
