@@ -16,4 +16,5 @@ public class AuditLogDTO {
   private String mappedExternalUserId;
   private Map<String, String> label2value;
   private String description;
+  private String traceId;
 }
