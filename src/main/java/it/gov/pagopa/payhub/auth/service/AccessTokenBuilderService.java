@@ -92,7 +92,7 @@ public class AccessTokenBuilderService {
     }
 
     public String getHeaderPrefix() {
-        var prefix = String.format("{\"kid\":\"%s\"", kid);
+        String prefix = String.format("{\"kid\":\"%s\"", kid);
         return Base64.getEncoder().encodeToString(prefix.getBytes());
     }
 
