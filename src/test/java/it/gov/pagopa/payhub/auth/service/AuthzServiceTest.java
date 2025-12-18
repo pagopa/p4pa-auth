@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.auth.service.user.registration.ExternalUserIdObfuscatorService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.dto.generated.*;
@@ -45,6 +46,9 @@ class AuthzServiceTest {
     private ClientRepository clientRepositoryMock;
 
     @Mock
+    private ExternalUserIdObfuscatorService externalUserIdObfuscatorService;
+
+    @Mock
     private OperatorsRepository operatorsRepository;
 
     @Mock
@@ -60,7 +64,16 @@ class AuthzServiceTest {
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, clientRepositoryMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper);
+        service = new AuthzServiceImpl(
+                userServiceMock,
+                clientServiceMock,
+                clientRepositoryMock,
+                externalUserIdObfuscatorService,
+                usersRepository,
+                operatorsRepository,
+                operatorDTOMapper,
+                userDTOMapper
+        );
     }
 
     @AfterEach
@@ -134,6 +147,24 @@ class AuthzServiceTest {
         service.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
         //Then
         Mockito.verify(operatorsRepository).deleteOrganizationOperator(organizationIpaCode,mappedExternalUserId);
+    }
+
+    @Test
+    void whenDeleteOrganizationOperatorByExternalUserIdThenVerifyDelete() {
+        String organizationIpaCode = "IPACODE";
+        String externalUserId = "externalUserId";
+
+        String mappedExternalUserId = "mappedExternalUserId";
+
+        Mockito.when(externalUserIdObfuscatorService.obfuscate(externalUserId))
+                .thenReturn(mappedExternalUserId);
+
+        //When
+        service.deleteOrganizationOperatorByExternalUserId(organizationIpaCode, externalUserId);
+
+        //Then
+        Mockito.verify(externalUserIdObfuscatorService).obfuscate(externalUserId);
+        Mockito.verify(operatorsRepository).deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
     }
 
     @Test

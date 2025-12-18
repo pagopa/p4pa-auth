@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
 import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.auth.service.user.registration.ExternalUserIdObfuscatorService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.dto.generated.*;
@@ -29,18 +30,21 @@ public class AuthzServiceImpl implements AuthzService {
     private final UserService userService;
     private final ClientService clientService;
     private final ClientRepository clientRepository;
+    private final ExternalUserIdObfuscatorService externalUserIdObfuscatorService;
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
     private final UserDTOMapper userDTOMapper;
+
     private static final String MYPAYIAMISSUERS = "MYPAY";
 
     public AuthzServiceImpl(UserService userService, ClientService clientService,
-        ClientRepository clientRepository, UsersRepository usersRepository,
+        ClientRepository clientRepository, ExternalUserIdObfuscatorService externalUserIdObfuscatorService, UsersRepository usersRepository,
         OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper) {
         this.userService = userService;
         this.clientService = clientService;
         this.clientRepository = clientRepository;
+        this.externalUserIdObfuscatorService = externalUserIdObfuscatorService;
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.operatorDTOMapper = operatorDTOMapper;
@@ -77,6 +81,14 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public void deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
         operatorsRepository.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
+    }
+
+    @Override
+    public void deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String externalUserId) {
+        operatorsRepository.deleteOrganizationOperator(
+                organizationIpaCode,
+                externalUserIdObfuscatorService.obfuscate(externalUserId)
+        );
     }
 
     @Override
