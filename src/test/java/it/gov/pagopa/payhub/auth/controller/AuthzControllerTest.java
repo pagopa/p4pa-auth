@@ -227,7 +227,8 @@ class AuthzControllerTest {
         String body = AuthzControllerNoOrganizationAccessModeTest.buildCreateOperatorRequest();
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
-                .organizations(List.of(UserOrganizationRoles.builder()
+                    .mappedExternalUserId("ABCDEF12A01A111U")
+                    .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG2")
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
