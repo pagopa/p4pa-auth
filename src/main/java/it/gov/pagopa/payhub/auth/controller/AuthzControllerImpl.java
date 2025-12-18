@@ -78,6 +78,12 @@ public class AuthzControllerImpl implements AuthzApi {
     public ResponseEntity<OperatorDTO> createOrganizationOperator(String organizationIpaCode,
         CreateOperatorRequest createOperatorRequest) {
         log.info("Adding operator to orgIpaCode {}: {}", organizationIpaCode, createOperatorRequest.getExternalUserId());
+
+        // TODO: remove following lines
+        UserInfo loggedUser = SecurityUtils.getPrincipal();
+        log.info(loggedUser.getMappedExternalUserId());
+        //
+
         if(!canEditUsers(createOperatorRequest.getExternalUserId())){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
