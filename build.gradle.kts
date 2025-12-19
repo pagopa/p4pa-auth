@@ -81,7 +81,6 @@ dependencies {
     }
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
     implementation("org.codehaus.janino:janino:$janinoVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
     implementation("com.github.danielwegener:logback-kafka-appender:$kafkaAppender") {
