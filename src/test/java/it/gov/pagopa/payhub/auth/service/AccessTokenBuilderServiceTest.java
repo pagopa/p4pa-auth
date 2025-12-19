@@ -14,6 +14,7 @@ import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Base64;
 import java.util.regex.Pattern;
@@ -68,7 +69,7 @@ public class AccessTokenBuilderServiceTest {
 
     @BeforeEach
     void init() {
-        DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new ObjectMapper());
+        DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new JsonMapper());
         accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService);
     }
 
