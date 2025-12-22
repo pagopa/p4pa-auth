@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.config;
 
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
+import org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class MongoConfig {
 
     @Configuration
-    @ConfigurationProperties(prefix = "spring.data.mongodb.config")
+    @ConfigurationProperties(prefix = "spring.mongodb.config")
     @Setter
     public static class MongoDbCustomProperties {
         @NestedConfigurationProperty
