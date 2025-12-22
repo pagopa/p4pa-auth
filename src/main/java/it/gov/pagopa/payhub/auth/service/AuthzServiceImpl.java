@@ -37,6 +37,7 @@ public class AuthzServiceImpl implements AuthzService {
     private final UserDTOMapper userDTOMapper;
 
     private static final String MYPAYIAMISSUERS = "MYPAY";
+    private static final String PUIAMISSUERS = "PU";
 
     public AuthzServiceImpl(UserService userService, ClientService clientService,
         ClientRepository clientRepository, ExternalUserIdObfuscatorService externalUserIdObfuscatorService, UsersRepository usersRepository,
@@ -94,7 +95,7 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest) {
         User user = userService.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
-            MYPAYIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName());
+                PUIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName());
         Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getEmail());
         return operatorDTOMapper.apply(user,operator);
     }
