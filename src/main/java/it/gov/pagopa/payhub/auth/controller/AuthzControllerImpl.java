@@ -100,7 +100,7 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String externalUserId) {
+    public ResponseEntity<Void> deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String xExternalUserId) {
         if(!canEditUsers(SecurityUtils.getPrincipal().getMappedExternalUserId())){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
@@ -109,7 +109,7 @@ public class AuthzControllerImpl implements AuthzApi {
             throw new UserUnauthorizedException("User not allowed to delete operator");
         }
 
-        authzService.deleteOrganizationOperatorByExternalUserId(organizationIpaCode, externalUserId);
+        authzService.deleteOrganizationOperatorByExternalUserId(organizationIpaCode, xExternalUserId);
 
         return ResponseEntity.ok(null);
     }

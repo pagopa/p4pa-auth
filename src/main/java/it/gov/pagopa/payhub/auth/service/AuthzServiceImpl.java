@@ -85,7 +85,7 @@ public class AuthzServiceImpl implements AuthzService {
 
     @Override
     public void deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String externalUserId) {
-        operatorsRepository.deleteOrganizationOperator(
+        this.deleteOrganizationOperator(
                 organizationIpaCode,
                 externalUserIdObfuscatorService.obfuscate(externalUserId)
         );

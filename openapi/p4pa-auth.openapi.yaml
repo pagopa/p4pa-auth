@@ -613,8 +613,9 @@ paths:
           required: true
           schema:
             type: string
-        - name: externalUserId
+        - name: X-externalUserId
           in: header
+          description: The IAM User ID
           required: true
           schema:
             type: string

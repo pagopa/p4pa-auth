@@ -738,7 +738,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
 
         mockMvc.perform(
                 delete("/payhub/am/operators/{organizationIpaCode}/byExternalUserId", organizationIpaCode)
-                        .header("externalUserId", externalUserId)
+                        .header("X-externalUserId", externalUserId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isNotImplemented());
     }
@@ -764,7 +764,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
 
         mockMvc.perform(
                 delete("/payhub/am/operators/{organizationIpaCode}/byExternalUserId", organizationIpaCode)
-                        .header("externalUserId", externalUserId)
+                        .header("X-externalUserId", externalUserId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isOk());
     }
@@ -788,7 +788,7 @@ void givenAuthorizedUserWhenGetClientThenOk() throws Exception {
 
         mockMvc.perform(
                 delete("/payhub/am/operators/{organizationIpaCode}/byExternalUserId", organizationIpaCode)
-                        .header("externalUserId", externalUserId)
+                        .header("X-externalUserId", externalUserId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isForbidden());
     }
