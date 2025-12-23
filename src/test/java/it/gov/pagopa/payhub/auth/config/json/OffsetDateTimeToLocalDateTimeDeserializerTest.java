@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.config.json;
 
 import com.fasterxml.jackson.core.JsonParser;
+import it.gov.pagopa.payhub.auth.utils.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +27,7 @@ class OffsetDateTimeToLocalDateTimeDeserializerTest {
     LocalDateTime result = deserializer.deserialize(parser, null);
 
     // Then
-    Assertions.assertEquals(offsetDateTime.toLocalDateTime(), result);
+    Assertions.assertEquals(offsetDateTime.atZoneSameInstant(Constants.ZONEID).toLocalDateTime(), result);
   }
 
   @Test
@@ -35,13 +36,13 @@ class OffsetDateTimeToLocalDateTimeDeserializerTest {
     OffsetDateTime offsetDateTime = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
     JsonParser parser = Mockito.mock(JsonParser.class);
     Mockito.when(parser.getValueAsString())
-            .thenReturn(offsetDateTime.toString());
+      .thenReturn(offsetDateTime.toString());
 
     // When
     LocalDateTime result = deserializer.deserialize(parser, null);
 
     // Then
-    Assertions.assertEquals(offsetDateTime.toLocalDateTime(), result);
+    Assertions.assertEquals(offsetDateTime.atZoneSameInstant(Constants.ZONEID).toLocalDateTime(), result);
   }
 
   @Test

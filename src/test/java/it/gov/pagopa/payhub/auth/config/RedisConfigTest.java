@@ -1,15 +1,15 @@
 package it.gov.pagopa.payhub.auth.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
+import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import tools.jackson.databind.json.JsonMapper;
 
 class RedisConfigTest {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper jsonMapper = new JsonMapper();
     private static final RedisConfig redisConfig = new RedisConfig();
 
     @Test
@@ -18,7 +18,7 @@ class RedisConfigTest {
         int expirationSeconds = 10;
 
         // When
-        RedisCacheManagerBuilderCustomizer result = redisConfig.redisCacheManagerBuilderCustomizer(objectMapper, expirationSeconds);
+        RedisCacheManagerBuilderCustomizer result = redisConfig.redisCacheManagerBuilderCustomizer(jsonMapper, expirationSeconds);
 
         // Then
         Assertions.assertNotNull(result);

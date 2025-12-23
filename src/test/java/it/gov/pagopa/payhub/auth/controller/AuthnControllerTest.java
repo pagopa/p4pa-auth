@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeClientException;
@@ -36,7 +37,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(AuthnControllerImpl.class)
-@Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class})
+@Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class, JsonConfig.class})
 class AuthnControllerTest {
 
     @Autowired
@@ -79,7 +80,7 @@ class AuthnControllerTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("{\"access_token\":\"token\",\"token_type\":\"bearer\",\"expires_in\":0}", result.getResponse().getContentAsString());
+        Assertions.assertEquals("{\"access_token\":\"token\",\"expires_in\":0,\"token_type\":\"bearer\"}", result.getResponse().getContentAsString());
     }
 
     @Test
@@ -324,7 +325,7 @@ class AuthnControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assertions.assertEquals("{\"access_token\":\"token\",\"token_type\":\"bearer\",\"expires_in\":0}", result.getResponse().getContentAsString());
+        Assertions.assertEquals("{\"access_token\":\"token\",\"expires_in\":0,\"token_type\":\"bearer\"}", result.getResponse().getContentAsString());
     }
 //endregion
 }

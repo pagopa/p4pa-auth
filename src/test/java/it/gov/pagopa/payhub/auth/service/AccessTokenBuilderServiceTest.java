@@ -14,6 +14,7 @@ import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Base64;
 import java.util.regex.Pattern;
@@ -68,7 +69,7 @@ public class AccessTokenBuilderServiceTest {
 
     @BeforeEach
     void init() {
-        DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new ObjectMapper());
+        DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new JsonMapper());
         accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService);
     }
 
@@ -93,7 +94,7 @@ public class AccessTokenBuilderServiceTest {
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
         String decodedPrefix = new String(Base64.getDecoder().decode(prefix));
 
-        Assertions.assertEquals(decodedPrefix + ",\"typ\":\"at+JWT\",\"alg\":\"RS512\"}", decodedHeader);
+        Assertions.assertEquals(decodedPrefix + ",\"typ\":\"JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
@@ -128,7 +129,7 @@ public class AccessTokenBuilderServiceTest {
                 om.writeValueAsString(om.readValue(
                 """
                 {
-                    "kid": "25cad9db-0022-3b87-a70a-f2da27217c88",
+                    "kid": "539deaa5-0ead-32d8-99a7-706d9d8a7994",
                     "kty": "RSA",
                     "alg": "RS512",
                     "use": "sign",

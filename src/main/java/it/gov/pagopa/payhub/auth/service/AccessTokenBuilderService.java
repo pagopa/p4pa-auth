@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @Service
 public class AccessTokenBuilderService {
-    public static final String ACCESS_TOKEN_TYPE = "at+JWT";
+    public static final String ACCESS_TOKEN_TYPE = "JWT";
     public static final String CLAIM_ORGANIZATION_IPA_CODE = "organizationIpaCode";
     private final String allowedAudience;
     private final int expireIn;
@@ -42,7 +42,7 @@ public class AccessTokenBuilderService {
             @Value("${jwt.access-token.public-key}") String publicKey, DataCipherService dataCipherService) {
         this.allowedAudience = allowedAudience;
         this.expireIn = expireIn;
-        byte[] hashed = dataCipherService.hash(publicKey);
+        byte[] hashed = dataCipherService.hash(publicKey.replace("\n", ""));
         this.kid = UUID.nameUUIDFromBytes(hashed).toString();
 
         try {
@@ -92,7 +92,7 @@ public class AccessTokenBuilderService {
     }
 
     public String getHeaderPrefix() {
-        var prefix = String.format("{\"kid\":\"%s\"", kid);
+        String prefix = String.format("{\"kid\":\"%s\"", kid);
         return Base64.getEncoder().encodeToString(prefix.getBytes());
     }
 

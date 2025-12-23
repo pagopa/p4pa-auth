@@ -1,27 +1,28 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.utils.AESUtils;
 import it.gov.pagopa.payhub.auth.utils.HashAlgorithm;
-import java.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
+
+import java.util.Base64;
 
 @Service
 public class DataCipherService {
 
   private final String encryptPsw;
   private final HashAlgorithm hashAlgorithm;
-  private final ObjectMapper objectMapper;
+  private final JsonMapper jsonMapper;
 
   public DataCipherService(
     @Value("${data-cipher.p4pa-auth-encrypt-psw}") String encryptPsw,
     @Value("${data-cipher.p4pa-auth-hash-key}") String hashPepper,
-    ObjectMapper objectMapper
+    JsonMapper jsonMapper
   ) {
     this.encryptPsw = encryptPsw;
-    this.objectMapper = objectMapper;
+    this.jsonMapper = jsonMapper;
 
     hashAlgorithm = new HashAlgorithm("SHA-256", Base64.getDecoder().decode(hashPepper));
   }
@@ -36,16 +37,16 @@ public class DataCipherService {
 
   public <T> byte[] encryptObj(T obj){
     try {
-      return encrypt(objectMapper.writeValueAsString(obj));
-    } catch (JsonProcessingException e) {
+      return encrypt(jsonMapper.writeValueAsString(obj));
+    } catch (JacksonException e) {
       throw new IllegalStateException("Cannot serialize object as JSON", e);
     }
   }
 
   public <T> T decryptObj(byte[] cipherData, Class<T> clazz) {
     try {
-      return objectMapper.readValue(decrypt(cipherData), clazz);
-    } catch (JsonProcessingException e) {
+      return jsonMapper.readValue(decrypt(cipherData), clazz);
+    } catch (JacksonException e) {
       throw new IllegalStateException("Cannot deserialize object as JSON", e);
     }
   }
