@@ -4,7 +4,7 @@ import org.slf4j.MDC;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class Utilities {
     private Utilities() {}
@@ -15,7 +15,7 @@ public class Utilities {
 
     public static OffsetDateTime localDatetimeToOffsetDateTime(LocalDateTime localDateTime) {
         return localDateTime != null
-            ? localDateTime.atOffset(ZoneId.systemDefault().getRules().getOffset(localDateTime))
+            ? ZonedDateTime.of(localDateTime, Constants.ZONEID).toOffsetDateTime()
             : null;
     }
 }
