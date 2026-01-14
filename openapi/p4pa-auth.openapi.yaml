@@ -867,6 +867,9 @@ components:
           type: string
         email:
           type: string
+        lastLogin:
+          type: string
+          format: date-time
     CreateOperatorRequest:
       type: object
       required:
