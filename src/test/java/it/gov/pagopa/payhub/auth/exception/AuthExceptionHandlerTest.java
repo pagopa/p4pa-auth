@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
+import it.gov.pagopa.payhub.auth.utils.TestUtils;
 import it.gov.pagopa.payhub.auth.utils.UtilitiesTest;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
@@ -79,6 +80,11 @@ class AuthExceptionHandlerTest {
         String testEndpoint(@RequestParam(DATA) String data, @Valid @RequestBody TestRequestBody body) {
             return "OK";
         }
+    }
+
+    @BeforeEach
+    void init() {
+      TestUtils.clearDefaultTimezone();
     }
 
     @Data

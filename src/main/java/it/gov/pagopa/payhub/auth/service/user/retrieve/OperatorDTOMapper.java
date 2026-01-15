@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.user.retrieve;
 
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +14,17 @@ public class OperatorDTOMapper implements BiFunction<User, Operator, OperatorDTO
     @Override
     public OperatorDTO apply(User user, Operator operator) {
         return OperatorDTO.builder()
-                .userId(user.getUserId())
-                .mappedExternalUserId(user.getMappedExternalUserId())
-                .userCode(user.getUserCode())
-                .operatorId(operator.getOperatorId())
-                .roles(new ArrayList<>(operator.getRoles()))
-                .organizationIpaCode(operator.getOrganizationIpaCode())
-                .fiscalCode(user.getFiscalCode())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(operator.getEmail())
-                .build();
+            .userId(user.getUserId())
+            .mappedExternalUserId(user.getMappedExternalUserId())
+            .userCode(user.getUserCode())
+            .operatorId(operator.getOperatorId())
+            .roles(new ArrayList<>(operator.getRoles()))
+            .organizationIpaCode(operator.getOrganizationIpaCode())
+            .fiscalCode(user.getFiscalCode())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .email(operator.getEmail())
+            .lastLogin(Utilities.localDatetimeToOffsetDateTime(user.getLastLogin()))
+            .build();
     }
 }
