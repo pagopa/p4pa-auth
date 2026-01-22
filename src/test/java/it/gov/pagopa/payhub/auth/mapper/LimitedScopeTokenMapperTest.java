@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
+import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.Assertions;
@@ -14,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class LimitedScopeTokenMapperTest {
@@ -60,7 +63,7 @@ class LimitedScopeTokenMapperTest {
         LimitedScopeResource actual = mapper.mapRequestToLimitedScopeResource(request, organization);
 
         // Then
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -79,6 +82,8 @@ class LimitedScopeTokenMapperTest {
 
         UserOrganizationRoles matchingOrg = UserOrganizationRoles.builder()
                 .organizationId(organizationId)
+                .organizationIpaCode("IPA_CODE")
+                .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                 .build();
 
         List<UserOrganizationRoles> orgs = Arrays.asList(
@@ -119,7 +124,7 @@ class LimitedScopeTokenMapperTest {
                 .innerUserId(userInfo.getUserId())
                 .mappedExternalUserId(userInfo.getMappedExternalUserId())
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
-                        .organizationIpaCode(userInfo.getFiscalCode())
+                        .organizationIpaCode("IPA_CODE")
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                         .build())
                 .systemUser(true)
@@ -129,7 +134,7 @@ class LimitedScopeTokenMapperTest {
         IamUserInfoDTO actual = mapper.mapBaseUserInfoToIamUserInfoDTO(userInfo, request);
 
         // Then
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -164,37 +169,10 @@ class LimitedScopeTokenMapperTest {
                 .organizations(orgs)
                 .build();
 
-        LimitedScopeResource expectedResource = LimitedScopeResource.builder()
-                .app(request.getApp())
-                .organization(null) // no matching org
-                .resource(request.getResource())
-                .resourceId(request.getResourceId())
-                .singleUsage(request.getSingleUsage())
-                .sessionData(Map.of("checkoutUrl", "http://www.test.com"))
-                .build();
-
-        IamUserInfoDTO expected = IamUserInfoDTO.builder()
-                .type(UserInfoLimitedScope.class.getSimpleName())
-                .traceId(userInfo.getTraceId())
-                .userId(userInfo.getUserId())
-                .fiscalCode(userInfo.getFiscalCode())
-                .familyName(userInfo.getFamilyName())
-                .name(userInfo.getName())
-                .issuer(userInfo.getIssuer())
-                .resource(expectedResource)
-                .innerUserId(userInfo.getUserId())
-                .mappedExternalUserId(userInfo.getMappedExternalUserId())
-                .organizationAccess(IamUserOrganizationRolesDTO.builder()
-                        .organizationIpaCode(userInfo.getFiscalCode())
-                        .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-                        .build())
-                .systemUser(false)
-                .build();
-
         // When
-        IamUserInfoDTO actual = mapper.mapBaseUserInfoToIamUserInfoDTO(userInfo, request);
+        UserUnauthorizedException invalidOrganizationAccessDataException = Assertions.assertThrows(UserUnauthorizedException.class,
+                () -> mapper.mapBaseUserInfoToIamUserInfoDTO(userInfo, request));
 
-        // Then
-        Assertions.assertEquals(expected, actual);
+        assertEquals("User not allowed on organization 999", invalidOrganizationAccessDataException.getMessage());
     }
 }

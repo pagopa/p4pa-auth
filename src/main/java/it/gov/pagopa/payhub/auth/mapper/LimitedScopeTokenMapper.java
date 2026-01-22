@@ -2,11 +2,9 @@ package it.gov.pagopa.payhub.auth.mapper;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
-import it.gov.pagopa.payhub.auth.utils.Constants;
+import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
 import it.gov.pagopa.payhub.dto.generated.*;
 import org.springframework.stereotype.Component;
-
-import java.util.Collections;
 
 @Component
 public class LimitedScopeTokenMapper {
@@ -28,7 +26,8 @@ public class LimitedScopeTokenMapper {
     ) {
         UserOrganizationRoles organization = userInfo.getOrganizations().stream()
                 .filter(org -> org.getOrganizationId().equals(request.getOrganizationId()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElseThrow(() -> new UserUnauthorizedException("User not allowed on organization " + request.getOrganizationId()));
 
         return IamUserInfoDTO.builder()
                 .type(UserInfoLimitedScope.class.getSimpleName())
@@ -42,8 +41,8 @@ public class LimitedScopeTokenMapper {
                 .innerUserId(userInfo.getUserId())
                 .mappedExternalUserId(userInfo.getMappedExternalUserId())
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
-                        .organizationIpaCode(userInfo.getFiscalCode())
-                        .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+                        .organizationIpaCode(organization.getOrganizationIpaCode())
+                        .roles(organization.getRoles())
                         .build())
                 .systemUser(Boolean.TRUE.equals(userInfo.getSystemUser()))
                 .build();
