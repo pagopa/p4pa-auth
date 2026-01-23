@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.HttpHostConnectException;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -27,6 +28,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DatabindException;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -35,6 +37,8 @@ import java.util.stream.Collectors;
 public class AuthExceptionHandler {
 
     private final AuditLoggerService auditService;
+
+    private static final String ERROR_MESSAGE_FORMAT = "[%s] %s";
 
     public AuthExceptionHandler(AuditLoggerService auditService) {
         this.auditService = auditService;
@@ -88,10 +92,10 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler({ServletException.class, ErrorResponseException.class})
     public ResponseEntity<AuthErrorDTO> handleServletException(Exception ex, HttpServletRequest request) {
-        HttpStatusCode httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         AuthErrorDTO.ErrorEnum errorCode = AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR;
         if (ex instanceof ErrorResponse errorResponse) {
-            httpStatus = errorResponse.getStatusCode();
+            httpStatus = HttpStatus.valueOf((errorResponse.getStatusCode().value()));
             if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
                 errorCode = AuthErrorDTO.ErrorEnum.AUTH_NOT_FOUND;
             } else if (httpStatus.is4xxClientError()) {
@@ -111,10 +115,13 @@ public class AuthExceptionHandler {
         return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
     }
 
-    static ResponseEntity<AuthErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
+    static ResponseEntity<AuthErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, AuthErrorDTO.ErrorEnum errorEnum) {
         logException(ex, request, httpStatus);
 
-        String message = buildReturnedMessage(ex);
+        String message = Optional.of(request.getRequestURI())
+                .filter(path -> path.contains("/crud/"))
+                .map(path -> buildCrudErrorMessage(path, httpStatus, ex))
+                .orElseGet(() -> buildReturnedMessage(ex));
 
         return ResponseEntity
                 .status(httpStatus)
@@ -142,36 +149,49 @@ public class AuthExceptionHandler {
         switch (ex) {
             case HttpMessageNotReadableException httpMessageNotReadableException -> {
                 if (httpMessageNotReadableException.getCause() instanceof DatabindException jsonMappingException) {
-                    return "Cannot parse body. " +
+                    return String.format(ERROR_MESSAGE_FORMAT, AuthErrorDTO.ErrorEnum.AUTH_BAD_REQUEST.name(),
+                            "Cannot parse body. " +
                             jsonMappingException.getPath().stream()
                                     .map(JacksonException.Reference::getPropertyName)
                                     .collect(Collectors.joining(".")) +
-                            ": " + jsonMappingException.getOriginalMessage();
+                            ": " + jsonMappingException.getOriginalMessage());
                 }
                 return "Required request body is missing";
             }
             case MethodArgumentNotValidException methodArgumentNotValidException -> {
-                return "Invalid request content." +
+                return String.format(ERROR_MESSAGE_FORMAT, AuthErrorDTO.ErrorEnum.INVALID_REQUEST.name(),
+                        "Invalid request content." +
                         methodArgumentNotValidException.getBindingResult()
                                 .getAllErrors().stream()
                                 .map(e -> " " +
                                         (e instanceof FieldError fieldError ? fieldError.getField() : e.getObjectName()) +
                                         ": " + e.getDefaultMessage())
                                 .sorted()
-                                .collect(Collectors.joining(";"));
+                                .collect(Collectors.joining(";")));
             }
             case ConstraintViolationException constraintViolationException -> {
-                return "Invalid request content." +
+                return String.format(ERROR_MESSAGE_FORMAT, AuthErrorDTO.ErrorEnum.INVALID_REQUEST.name(),
+                        "Invalid request content." +
                         constraintViolationException.getConstraintViolations()
                                 .stream()
                                 .map(e -> " " + e.getPropertyPath() + ": " + e.getMessage())
                                 .sorted()
-                                .collect(Collectors.joining(";"));
+                                .collect(Collectors.joining(";")));
             }
             default -> {
+                if (ex.getCause() instanceof HttpHostConnectException) {
+                    return String.format(ERROR_MESSAGE_FORMAT, "AUTH_CONNECTION_ERROR",
+                            ex.getMessage());
+                }
                 return ex.getMessage();
             }
         }
+    }
+
+    private static String buildCrudErrorMessage(String requestPath, HttpStatus httpStatus, Exception ex) {
+        String entity = requestPath.split("/crud/")[1].split("/")[0].replaceAll("s$", "");
+        String entityCode = entity.replace("-", "_").toUpperCase();
+        return String.format(ERROR_MESSAGE_FORMAT, entityCode + "_" + httpStatus.name(), ex.getMessage());
     }
 
     private void logAuditFailure(RuntimeException ex, HttpServletRequest request, String baseDescription) {

@@ -35,7 +35,7 @@ public class A2AClientLegacyPropConfig {
 			KeyFactory kf = KeyFactory.getInstance("RSA");
 			return kf.generatePublic(publicKeyX509);
 		} catch (Exception e){
-			throw new InvalidTokenException("invalid public key for: " + keyName);
+			throw new InvalidTokenException("[INVALID_PUBLIC_KEY] invalid public key for: " + keyName);
 		}
 	}
 }

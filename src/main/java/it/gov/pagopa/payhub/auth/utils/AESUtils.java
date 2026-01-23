@@ -85,7 +85,7 @@ public class AESUtils {
 		try {
 			return cipher.doFinal(encryptedByte);
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new IllegalStateException("Cannot execute cipher op", e);
+			throw new IllegalStateException("[CIPHERING_ERROR] Cannot execute cipher op", e);
 		}
 	}
 
@@ -96,7 +96,7 @@ public class AESUtils {
 			return cipher;
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
 		         | InvalidAlgorithmParameterException e) {
-			throw new IllegalStateException("Cannot initialize cipher data", e);
+			throw new IllegalStateException("[CIPHERING_ERROR] Cannot initialize cipher data", e);
 		}
 	}
 
