@@ -149,7 +149,7 @@ public class AuthExceptionHandler {
         switch (ex) {
             case HttpMessageNotReadableException httpMessageNotReadableException -> {
                 if (httpMessageNotReadableException.getCause() instanceof DatabindException jsonMappingException) {
-                    return String.format(ERROR_MESSAGE_FORMAT, AuthErrorDTO.ErrorEnum.AUTH_BAD_REQUEST.name(),
+                    return String.format(ERROR_MESSAGE_FORMAT, AuthErrorDTO.ErrorEnum.INVALID_REQUEST.name(),
                             "Cannot parse body. " +
                             jsonMappingException.getPath().stream()
                                     .map(JacksonException.Reference::getPropertyName)
