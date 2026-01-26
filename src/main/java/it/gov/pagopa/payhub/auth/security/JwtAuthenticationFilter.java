@@ -68,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e){
             if(e instanceof InvalidAccessTokenException || e instanceof InvalidTokenException || e instanceof TokenExpiredException){
                 log.info("An invalid accessToken has been provided: " + e.getMessage());
-                response.getWriter().write(e.getMessage());
+                response.getWriter().write("[INVALID_TOKEN] "+e.getMessage());
             } else {
                 log.error("Something gone wrong while validate accessToken", e);
             }

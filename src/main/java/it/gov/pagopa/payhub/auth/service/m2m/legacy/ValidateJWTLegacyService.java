@@ -37,18 +37,18 @@ public class ValidateJWTLegacyService {
 
 	private void validateM2MType(Map<String, Claim> claims){
 		if (!TOKEN_TYPE_A2A.equals(claims.get("type").asString()))
-			throw new InvalidTokenException("Invalid token type");
+			throw new InvalidTokenException("[INVALID_TOKEN_TYPE] Invalid token type");
 	}
 
 	private void validateClaims(Map<String, Claim> claims) {
 		if (claims.get(RegisteredClaims.ISSUED_AT).asInstant().isAfter(Instant.now())) {
-			throw new InvalidTokenException("Invalid field iat");
+			throw new InvalidTokenException("[INVALID_TOKEN_IAT] Invalid field iat");
 		}
 		if (claims.get(RegisteredClaims.EXPIRES_AT).asInstant().isBefore(Instant.now())) {
-			throw new InvalidTokenException("Invalid field exp");
+			throw new InvalidTokenException("[INVALID_TOKEN_EXP] Invalid field exp");
 		}
 		if (StringUtils.isBlank(claims.get(RegisteredClaims.JWT_ID).asString())) {
-			throw new InvalidTokenException("Invalid field jti");
+			throw new InvalidTokenException("[INVALID_TOKEN_JTI] Invalid field jti");
 		}
 	}
 
@@ -62,6 +62,6 @@ public class ValidateJWTLegacyService {
 				log.debug("continue cycling - validation failed with entry {}", entry.getKey());
 			}
 		}
-		throw new InvalidTokenException("Invalid token for A2A call");
+		throw new InvalidTokenException("[INVALID_A2A_TOKEN] Invalid token for A2A call");
 	}
 }

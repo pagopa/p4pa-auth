@@ -37,7 +37,7 @@ public class ClientRegistrationService {
 		try{
 			return clientRepository.insert(client);
 		} catch (DuplicateKeyException e){
-			throw new M2MClientConflictException("Client with name " + clientName + " already exists under organization " + organizationIpaCode);
+			throw new M2MClientConflictException("[CLIENT_CONFLICT] Client with name " + clientName + " already exists under organization " + organizationIpaCode);
 		}
 	}
 }

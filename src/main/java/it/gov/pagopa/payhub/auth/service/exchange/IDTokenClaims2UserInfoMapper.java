@@ -38,7 +38,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
                     .organizationAccess(buildUserOrganizationRoles(claims))
                     .build();
         } catch (Exception e){
-            throw new InvalidTokenException("Unexpected IDToken structure", e);
+            throw new InvalidTokenException("[INVALID_TOKEN] Unexpected IDToken structure", e);
         }
     }
 
@@ -46,7 +46,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
         Claim organization = claims.get("organization");
         if(organization==null){
             if(organizationAccessMode){
-                throw new InvalidOrganizationAccessDataException("No organizationAccess information");
+                throw new InvalidOrganizationAccessDataException("[ORGANIZATION_ACCESS_NOT_FOUND] No organizationAccess information");
             } else {
                 return null;
             }
@@ -72,7 +72,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
             out = List.of();
         }
         if(out.isEmpty()){
-            throw new InvalidTokenException("No organization roles provided");
+            throw new InvalidTokenException("[ROLES_NOT_FOUND] No organization roles provided");
         } else {
             return out;
         }

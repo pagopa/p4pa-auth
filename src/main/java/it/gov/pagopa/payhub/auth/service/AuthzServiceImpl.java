@@ -73,9 +73,9 @@ public class AuthzServiceImpl implements AuthzService {
     public OperatorDTO getOrganizationOperator(String organizationIpaCode,
         String mappedExternalUserId) {
         User user = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
-            .orElseThrow(() -> new UserNotFoundException("User with this mappedExternalUserId not found"));
+            .orElseThrow(() -> new UserNotFoundException("[USER_NOT_FOUND] User with this mappedExternalUserId not found"));
         Operator operator = operatorsRepository.findById(user.getUserId()+organizationIpaCode)
-            .orElseThrow(() -> new OperatorNotFoundException("Operator with this userId "+ user.getUserId()+organizationIpaCode + "not found"));
+            .orElseThrow(() -> new OperatorNotFoundException("[OPERATOR_NOT_FOUND] Operator with this userId "+ user.getUserId()+organizationIpaCode + "not found"));
         return operatorDTOMapper.apply(user,operator);
     }
 

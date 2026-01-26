@@ -76,7 +76,7 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JwkException | JWTVerificationException ex) {
-            throw new InvalidTokenException("The token is not valid: " + ex.getMessage(), ex);
+            throw new InvalidTokenException("[INVALID_TOKEN] The token is not valid: " + ex.getMessage(), ex);
         }
     }
 
@@ -96,7 +96,7 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {
-            throw new InvalidTokenException("The internal token is not valid");
+            throw new InvalidTokenException("[INVALID_TOKEN] The internal token is not valid");
         }
     }
 
@@ -121,7 +121,7 @@ public class JWTValidator {
         } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
             throw new TokenExpiredException(e.getMessage());
         } catch (JWTVerificationException ex) {
-            throw new InvalidTokenException("The legacy token is not valid");
+            throw new InvalidTokenException("[INVALID_TOKEN] The legacy token is not valid");
         }
     }
 }

@@ -46,41 +46,41 @@ public class ValidateExternalTokenService {
 
     public void validateClient(String clientId) {
         if (!ALLOWED_CLIENT_ID.equals(clientId)){
-            throw new InvalidExchangeClientException("Invalid clientId " + clientId);
+            throw new InvalidExchangeClientException("[INVALID_CLIENT_ID] Invalid clientId " + clientId);
         }
     }
 
     private void validateProtocolConfiguration(String subjectTokenType, String scope) {
         if (!StringUtils.hasText(subjectTokenType)) {
-            throw new InvalidExchangeRequestException("subjectTokenType is mandatory with token-exchange grant type");
+            throw new InvalidExchangeRequestException("[INVALID_CLIENT_ID] subjectTokenType is mandatory with token-exchange grant type");
         }
         if (!ALLOWED_SUBJECT_TOKEN_TYPE.equals(subjectTokenType)){
-            throw new InvalidTokenException("Invalid subjectTokenType " + subjectTokenType);
+            throw new InvalidTokenException("[INVALID_SUBJECT_TOKEN_TYPE] Invalid subjectTokenType " + subjectTokenType);
         }
         if (!ALLOWED_SCOPE.equals(scope)){
-            throw new InvalidExchangeRequestException("Invalid scope " + scope);
+            throw new InvalidExchangeRequestException("[INVALID_SCOPE] Invalid scope " + scope);
         }
     }
 
     private void validateSubjectTokenIssuer(String subjectIssuer) {
         if (!StringUtils.hasText(subjectIssuer)) {
-            throw new InvalidExchangeRequestException("subjectIssuer is mandatory with token-exchange grant type");
+            throw new InvalidExchangeRequestException("[INVALID_SUBJECT_ISSUER] subjectIssuer is mandatory with token-exchange grant type");
         }
         if (!allowedIssuer.equals(subjectIssuer)){
-            throw new InvalidTokenIssuerException("Invalid subjectIssuer " + subjectIssuer);
+            throw new InvalidTokenIssuerException("[INVALID_SUBJECT_ISSUER] Invalid subjectIssuer " + subjectIssuer);
         }
     }
 
     private Map<String, Claim> validateSubjectToken(String subjectToken) {
         if (!StringUtils.hasText(subjectToken)) {
-            throw new InvalidExchangeRequestException("subjectToken is mandatory with token-exchange grant type");
+            throw new InvalidExchangeRequestException("[INVALID_SUBJECT_TOKEN] subjectToken is mandatory with token-exchange grant type");
         }
         Map<String, Claim> claims = jwtValidator.validate(subjectToken, urlJwkProvider);
         if (!allowedAudience.equals(claims.get(Claims.AUDIENCE).asString())){
-            throw new InvalidTokenException("Invalid audience: " + allowedAudience);
+            throw new InvalidTokenException("[INVALID_AUDIENCE] Invalid audience: " + allowedAudience);
         }
         if (!allowedIssuer.equals(claims.get(Claims.ISSUER).asString())){
-            throw new InvalidTokenException("Invalid issuer: " + allowedIssuer);
+            throw new InvalidTokenException("[INVALID_ISSUER] Invalid issuer: " + allowedIssuer);
         }
         return claims;
     }

@@ -39,7 +39,7 @@ public class DataCipherService {
     try {
       return encrypt(jsonMapper.writeValueAsString(obj));
     } catch (JacksonException e) {
-      throw new IllegalStateException("Cannot serialize object as JSON", e);
+      throw new IllegalStateException("[JSON_SERIALIZATION_ERROR] Cannot serialize object as JSON", e);
     }
   }
 
@@ -47,7 +47,7 @@ public class DataCipherService {
     try {
       return jsonMapper.readValue(decrypt(cipherData), clazz);
     } catch (JacksonException e) {
-      throw new IllegalStateException("Cannot deserialize object as JSON", e);
+      throw new IllegalStateException("[JSON_DESERIALIZATION_ERROR] Cannot deserialize object as JSON", e);
     }
   }
 

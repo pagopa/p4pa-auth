@@ -43,12 +43,12 @@ public class AuthorizeClientCredentialsRequestService {
 				}
 				return clientMapper.mapToNoSecretDTO(c);
             })
-			.orElseThrow(() -> new ClientUnauthorizedException("Unauthorized client with client-credentials grant type"));
+			.orElseThrow(() -> new ClientUnauthorizedException("[CLIENT_UNAUTHORIZED] Unauthorized client with client-credentials grant type"));
 	}
 
 	private ClientNoSecretDTO authorizePiattaformaUnitariaCredentials(String clientId, String clientSecret) {
 		if (!clientSecret.equals(piattaformaUnitariaClientSecret))
-			throw new ClientUnauthorizedException("Unauthorized client for piattaforma-unitaria client-credentials");
+			throw new ClientUnauthorizedException("[CLIENT_UNAUTHORIZED] Unauthorized client for piattaforma-unitaria client-credentials");
 		return puSystemClientId2ClientNoSecretDTO(clientId);
 	}
 

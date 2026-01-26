@@ -59,13 +59,13 @@ public class UserInfoRetrieverService {
         }
         return clientNoSecretDTO
                 .map(client2UserInfoMapper)
-                .orElseThrow(() -> new UserNotFoundException("Cannot find client related to mappedExternalUserId:" + mappedExternalUserId));
+                .orElseThrow(() -> new UserNotFoundException("[CLIENT_NOT_FOUND] Cannot find client related to mappedExternalUserId:" + mappedExternalUserId));
     }
 
     private IamUserInfoDTO findIamUser(String mappedExternalUserId) {
         return usersRepository.findByMappedExternalUserId(mappedExternalUserId)
                 .map(this::user2IamUser)
-                .orElseThrow(() -> new UserNotFoundException("Cannot find user having mappedExternalId:" + mappedExternalUserId));
+                .orElseThrow(() -> new UserNotFoundException("[USER_NOT_FOUND] Cannot find user having mappedExternalId:" + mappedExternalUserId));
     }
 
     private IamUserInfoDTO user2IamUser(User user) {
