@@ -26,10 +26,11 @@ public class AESUtils {
 	private static final int KEY_LENGTH = 256;
 	private static final int ITERATION_COUNT = 65536;
 	private static final Charset UTF_8 = StandardCharsets.UTF_8;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-	public static byte[] getRandomNonce(int length) {
+    private static byte[] getRandomNonce(int length) {
 		byte[] nonce = new byte[length];
-		new SecureRandom().nextBytes(nonce);
+        SECURE_RANDOM.nextBytes(nonce);
 		return nonce;
 	}
 
