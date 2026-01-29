@@ -35,10 +35,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
@@ -50,10 +47,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
 @ExtendWith({SpringExtension.class})
-@WebMvcTest(value = {AuthExceptionHandlerTest.TestController.class})
+@WebMvcTest(value = {AuthExceptionHandlerTest.TestController.class,
+        AuthExceptionHandlerTest.TestCrudController.class})
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {
         AuthExceptionHandlerTest.TestController.class,
+        AuthExceptionHandlerTest.TestCrudController.class,
         AuthExceptionHandler.class,
         MongoTooManyRequestsExceptionHandler.class,
         JsonConfig.class})
@@ -71,6 +70,8 @@ class AuthExceptionHandlerTest {
     @MockitoSpyBean
     private TestController testControllerSpy;
     @MockitoSpyBean
+    private TestCrudController testCrudControllerSpy;
+    @MockitoSpyBean
     private RequestMappingHandlerAdapter requestMappingHandlerAdapterSpy;
 
     @RestController
@@ -78,6 +79,15 @@ class AuthExceptionHandlerTest {
     static class TestController {
         @PostMapping(value = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
         String testEndpoint(@RequestParam(DATA) String data, @Valid @RequestBody TestRequestBody body) {
+            return "OK";
+        }
+    }
+
+    @RestController
+    @Slf4j
+    static class TestCrudController {
+        @GetMapping(value = "/crud/p4pa-auth/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+        String testCrudEndpoint(@PathVariable("id") Long id) {
             return "OK";
         }
     }
@@ -218,7 +228,7 @@ class AuthExceptionHandlerTest {
                 "{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}")
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("[INVALID_REQUEST] Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
@@ -228,7 +238,7 @@ class AuthExceptionHandlerTest {
                 "{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}")
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("[INVALID_REQUEST] Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
@@ -254,7 +264,20 @@ class AuthExceptionHandlerTest {
         performRequest(DATA, MediaType.APPLICATION_JSON)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Invalid request content. fieldName: resolved message"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("[INVALID_REQUEST] Invalid request content. fieldName: resolved message"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+    }
+
+    @Test
+    void handleCrudInvalidTokenException() throws Exception {
+        Long id = -12L;
+        doThrow(new InvalidTokenException("Error")).when(testCrudControllerSpy).testCrudEndpoint(id);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/crud/p4pa-auth/-12"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_grant"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("[P4PA_AUTH_UNAUTHORIZED] Error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+
     }
 }

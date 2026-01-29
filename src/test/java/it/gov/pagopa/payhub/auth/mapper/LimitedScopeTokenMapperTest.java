@@ -173,6 +173,6 @@ class LimitedScopeTokenMapperTest {
         UserUnauthorizedException invalidOrganizationAccessDataException = Assertions.assertThrows(UserUnauthorizedException.class,
                 () -> mapper.mapBaseUserInfoToIamUserInfoDTO(userInfo, request));
 
-        assertEquals("User not allowed on organization 999", invalidOrganizationAccessDataException.getMessage());
+        assertEquals("[USER_UNAUTHORIZED] User not allowed on organization 999", invalidOrganizationAccessDataException.getMessage());
     }
 }

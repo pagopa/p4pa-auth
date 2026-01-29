@@ -35,7 +35,7 @@ public class MongoTooManyRequestsExceptionHandler {
     }
 
     private ResponseEntity<AuthErrorDTO> handleRequestRateTooLargeException(Exception ex, HttpServletRequest request, Long retryAfterMs) {
-        String message = ex.getMessage();
+        String message = "[TOO_MANY_REQUESTS] "+ex.getMessage();
 
         log.info(
                 "A MongoQueryException (RequestRateTooLarge) occurred handling request {}: HttpStatus 429 - {}",

@@ -31,7 +31,7 @@ public class IamUserRegistrationService {
 
         if (organizationAccessMode) {
             if (CollectionUtils.isEmpty(userInfo.getOrganizationAccess().getRoles())) {
-                throw new InvalidOrganizationAccessDataException("No roles configured for organizationAccess " + userInfo.getOrganizationAccess());
+                throw new InvalidOrganizationAccessDataException("[ROLES_NOT_FOUND] No roles configured for organizationAccess " + userInfo.getOrganizationAccess());
             }
 
             userService.registerOperator(user.getUserId(), userInfo.getOrganizationAccess().getOrganizationIpaCode(),

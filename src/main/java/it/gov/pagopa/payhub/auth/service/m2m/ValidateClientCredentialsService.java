@@ -19,13 +19,13 @@ public class ValidateClientCredentialsService {
 
 	private void validateProtocolConfiguration(String scope) {
 		if (!ALLOWED_SCOPE.equals(scope)){
-			throw new InvalidExchangeRequestException("Invalid scope " + scope);
+			throw new InvalidExchangeRequestException("[INVALID_SCOPE] Invalid scope " + scope);
 		}
 	}
 
 	private void validateClientSecret(String clientSecret) {
 		if (!StringUtils.hasText(clientSecret)) {
-			throw new InvalidExchangeRequestException("clientSecret is mandatory with client-credentials grant type");
+			throw new InvalidExchangeRequestException("[INVALID_CLIENT_SECRET] clientSecret is mandatory with client-credentials grant type");
 		}
 	}
 

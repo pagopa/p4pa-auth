@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         IamUserInfoDTO userInfo = tokenStoreService.load(accessToken);
 
         if (userInfo == null) {
-            throw new InvalidAccessTokenException("AccessToken not found");
+            throw new InvalidAccessTokenException("[INVALID_TOKEN] AccessToken not found");
         }
 
         UserInfo result = userInfoMapper.apply(userInfo, accessToken);

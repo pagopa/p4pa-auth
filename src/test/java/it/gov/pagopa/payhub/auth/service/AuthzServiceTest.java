@@ -201,7 +201,7 @@ class AuthzServiceTest {
         OperatorNotFoundException exception = Assertions.assertThrows(OperatorNotFoundException.class, () ->
             service.getOrganizationOperator(organizationIpaCode, mappedExternalUserId));
 
-        assertEquals("Operator with this userId "+ user.getUserId()+organizationIpaCode + "not found", exception.getMessage());
+        assertEquals("[OPERATOR_NOT_FOUND] Operator with this userId "+ user.getUserId()+organizationIpaCode + "not found", exception.getMessage());
 
     }
 
