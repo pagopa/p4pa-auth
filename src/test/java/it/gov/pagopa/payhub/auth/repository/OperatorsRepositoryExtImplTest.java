@@ -20,9 +20,6 @@ import java.util.Set;
 @ExtendWith(MockitoExtension.class)
 class OperatorsRepositoryExtImplTest extends BaseMongoRepositoryTest {
 
-    @Mock
-    private MongoTemplate mongoTemplateMock;
-
     private OperatorsRepositoryExt repository;
 
     @BeforeEach
