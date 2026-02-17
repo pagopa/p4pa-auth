@@ -25,6 +25,11 @@ abstract class BaseMongoRepositoryTest {
     @Mock
     protected MongoTemplate mongoTemplateMock;
 
+    @AfterEach
+    void verifyNoMoreInteractionsSuper() {
+        Mockito.verifyNoMoreInteractions(mongoTemplateMock);
+    }
+
     /**
      * it will assert the right configuration of mongo update operation.<BR />In case of mongoTemplateMock configuration on tests, it will be necessary the usage of the Mockito.do().when() form
      */
@@ -57,7 +62,7 @@ abstract class BaseMongoRepositoryTest {
     private void verifySetTechFieldsOnDocumentUpdateConfiguration(Consumer<MongoTemplate> updateMethodCheck) {
         try {
             updateMethodCheck.accept(Mockito.verify(mongoTemplateMock));
-        } catch (WantedButNotInvoked e){
+        } catch (WantedButNotInvoked e) {
             // Not invoked exception not interested
         } catch (Throwable e) {
             Assertions.fail("Tech fields not set! Has BaseEntityListener.setTechFieldsOnDocumentUpdate been called on configured Update object?");
