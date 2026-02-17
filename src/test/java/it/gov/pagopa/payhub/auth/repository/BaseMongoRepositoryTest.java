@@ -59,6 +59,8 @@ abstract class BaseMongoRepositoryTest {
             updateMethodCheck.accept(Mockito.verify(mongoTemplateMock));
         } catch (WantedButNotInvoked e){
             // Not invoked exception not interested
+        } catch (Throwable e) {
+            Assertions.fail("Tech fields not set! Has BaseEntityListener.setTechFieldsOnDocumentUpdate been called on configured Update object?");
         }
     }
 
