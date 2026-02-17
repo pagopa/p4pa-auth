@@ -23,6 +23,14 @@ public class SecurityUtilsTest {
         clearSecurityContext();
     }
 
+    public static void configureSecurityContext(UserInfo expectedUserInfo, String token) {
+        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, token)));
+    }
+
+    public static void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     void testGetPrincipal() {
         // Given
@@ -47,6 +55,15 @@ public class SecurityUtilsTest {
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
+    }
+
+    @Test
+    void givenNullContextWhenGetAccessTokenThenReturnNull() {
+        // When
+        String result = SecurityUtils.getAccessToken();
+
+        // Then
+        Assertions.assertNull(result);
     }
 
     @Test
@@ -124,12 +141,13 @@ public class SecurityUtilsTest {
         Assertions.assertTrue(result);
     }
 
-    public static void configureSecurityContext(UserInfo expectedUserInfo, String token) {
-        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, token)));
-    }
+    @Test
+    void givenNullContextWhenHasAdminRoleThenReturnFalse() {
+        // When
+        boolean result = SecurityUtils.hasAdminRole();
 
-    public static void clearSecurityContext() {
-        SecurityContextHolder.clearContext();
+        // Then
+        Assertions.assertFalse(result);
     }
 
     @Test
