@@ -2,17 +2,34 @@ package it.gov.pagopa.payhub.auth.utils;
 
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
-class SecurityUtilsTest {
+public class SecurityUtilsTest {
+
+    @AfterEach
+    void clear() {
+        clearSecurityContext();
+    }
+
+    public static void configureSecurityContext(UserInfo expectedUserInfo, String token) {
+        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, token)));
+    }
+
+    public static void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     void testGetPrincipal() {
@@ -38,6 +55,15 @@ class SecurityUtilsTest {
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
+    }
+
+    @Test
+    void givenNullContextWhenGetAccessTokenThenReturnNull() {
+        // When
+        String result = SecurityUtils.getAccessToken();
+
+        // Then
+        Assertions.assertNull(result);
     }
 
     @Test
@@ -115,8 +141,13 @@ class SecurityUtilsTest {
         Assertions.assertTrue(result);
     }
 
-    private static void configureSecurityContext(UserInfo expectedUserInfo, String token) {
-        SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(expectedUserInfo, token)));
+    @Test
+    void givenNullContextWhenHasAdminRoleThenReturnFalse() {
+        // When
+        boolean result = SecurityUtils.hasAdminRole();
+
+        // Then
+        Assertions.assertFalse(result);
     }
 
     @Test
@@ -129,4 +160,75 @@ class SecurityUtilsTest {
     void givenNullUriWhenRemovePiiFromURIThenOk(){
         Assertions.assertNull(SecurityUtils.removePiiFromURI(null));
     }
+
+    //region test getCurrentUserExternalId
+    @Test
+    void givenJwtWhenGetCurrentUserExternalIdThenReturnPrincipalName(){
+        // Given
+        String principalName = "PRINCIPALNAME";
+        UserInfo loggedUser = new UserInfo();
+        loggedUser.setMappedExternalUserId(principalName);
+        configureSecurityContext(loggedUser, "token");
+
+        // When
+        String result = SecurityUtils.getCurrentUserExternalId();
+
+        // Then
+        Assertions.assertSame(principalName, result);
+    }
+
+    @Test
+    void givenPuSystemUserAndUserIdProvidedWhenGetCurrentUserExternalIdThenReturnUserId(){
+        // Given
+        String expectedUserId = "USERID";
+        String principalName = SecurityUtils.SYSTEM_USERID_PREFIX + "ORGIPACODE";
+        UserInfo loggedUser = new UserInfo();
+        loggedUser.setMappedExternalUserId(principalName);
+        configureSecurityContext(loggedUser, "token");
+        configureXUserIdHeader(expectedUserId);
+
+        // When
+        String result = SecurityUtils.getCurrentUserExternalId();
+
+        // Then
+        Assertions.assertSame(expectedUserId, result);
+    }
+
+    public static void configureXUserIdHeader(String expectedUserId) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(SecurityUtils.HEADER_USER_ID, expectedUserId);
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+    }
+
+    @Test
+    void givenPuSystemUserAndNotUserIdProvidedWhenGetCurrentUserExternalIdThenReturnUserId(){
+        // Given
+        String principalName = SecurityUtils.SYSTEM_USERID_PREFIX + "ORGIPACODE";
+        UserInfo loggedUser = new UserInfo();
+        loggedUser.setMappedExternalUserId(principalName);
+        configureSecurityContext(loggedUser, "token");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(new MockHttpServletRequest()));
+
+        // When
+        String result = SecurityUtils.getCurrentUserExternalId();
+
+        // Then
+        Assertions.assertSame(principalName, result);
+    }
+
+    @Test
+    void givenPuSystemUserAndNotHttpContextWhenGetCurrentUserExternalIdThenReturnUserId(){
+        // Given
+        String principalName = SecurityUtils.SYSTEM_USERID_PREFIX + "ORGIPACODE";
+        UserInfo loggedUser = new UserInfo();
+        loggedUser.setMappedExternalUserId(principalName);
+        configureSecurityContext(loggedUser, "token");
+
+        // When
+        String result = SecurityUtils.getCurrentUserExternalId();
+
+        // Then
+        Assertions.assertSame(principalName, result);
+    }
+//endregion
 }
