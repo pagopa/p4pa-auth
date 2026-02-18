@@ -7,10 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -18,10 +16,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
-class OperatorsRepositoryExtImplTest {
-
-    @Mock
-    private MongoTemplate mongoTemplateMock;
+class OperatorsRepositoryExtImplTest extends BaseMongoRepositoryTest {
 
     private OperatorsRepositoryExt repository;
 
@@ -38,23 +33,26 @@ class OperatorsRepositoryExtImplTest {
     @Test
     void whenRegisterUserThenReturnStoredUser() {
         // Given
-        String userId="USERID";
-        String organizationIpaCode="ORGANIZATIONIPACODE";
+        String userId = "USERID";
+        String organizationIpaCode = "ORGANIZATIONIPACODE";
         String email = "EMAIL";
         Set<String> roles = Set.of("ROLE");
         Operator storedOperator = new Operator();
 
-        Mockito.when(mongoTemplateMock.findAndModify(
-                Mockito.eq(Query.query(Criteria
-                        .where(Operator.Fields.operatorId).is(userId+organizationIpaCode))),
-                Mockito.eq(new Update()
-                        .set(Operator.Fields.userId, userId)
-                        .set(Operator.Fields.organizationIpaCode, organizationIpaCode)
-                        .set(Operator.Fields.email, email)
-                        .set(Operator.Fields.roles, roles)),
-                Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),
-                Mockito.eq(Operator.class)
-        )).thenReturn(storedOperator);
+        Mockito.doReturn(storedOperator)
+                .when(mongoTemplateMock)
+                .findAndModify(
+                        Mockito.eq(Query.query(Criteria
+                                .where(Operator.Fields.operatorId).is(userId + organizationIpaCode))),
+                        Mockito.argThat(argSetTechFieldsOnDocumentUpdateInvoke(new Update()
+                                .set(Operator.Fields.userId, userId)
+                                .set(Operator.Fields.organizationIpaCode, organizationIpaCode)
+                                .set(Operator.Fields.email, email)
+                                .set(Operator.Fields.roles, roles)
+                        )),
+                        Mockito.argThat(opt -> opt.isReturnNew() && opt.isUpsert() && !opt.isRemove()),
+                        Mockito.eq(Operator.class)
+                );
 
         // When
         Operator result = repository.registerOperator(userId, organizationIpaCode, email, roles);
@@ -74,17 +72,17 @@ class OperatorsRepositoryExtImplTest {
         user.setUserId(userId);
 
         Mockito.when(mongoTemplateMock.findOne(
-            Query.query(Criteria.where(User.Fields.mappedExternalUserId).is(mappedExternalUserId)),
-            User.class)).thenReturn(user);
+                Query.query(Criteria.where(User.Fields.mappedExternalUserId).is(mappedExternalUserId)),
+                User.class)).thenReturn(user);
 
         // When
         repository.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
 
         // Then
         Mockito.verify(mongoTemplateMock).remove(
-            Query.query(Criteria
-                .where(Operator.Fields.organizationIpaCode).is(organizationIpaCode)
-                .and(Operator.Fields.userId).is(userId)),
-            Operator.class);
+                Query.query(Criteria
+                        .where(Operator.Fields.organizationIpaCode).is(organizationIpaCode)
+                        .and(Operator.Fields.userId).is(userId)),
+                Operator.class);
     }
 }

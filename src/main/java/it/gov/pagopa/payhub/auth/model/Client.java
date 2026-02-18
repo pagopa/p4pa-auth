@@ -1,9 +1,6 @@
 package it.gov.pagopa.payhub.auth.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,7 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Builder
 @FieldNameConstants
-public class Client {
+@EqualsAndHashCode(callSuper = false)
+public class Client extends BaseEntity {
 
 	@Id
 	private String clientId;

@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 import static it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService.PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX;
 
@@ -65,7 +66,7 @@ public class AuthzControllerImpl implements AuthzApi {
         log.info("Requesting UserInfo of mappedExternalUserId {}", mappedExternalUserId);
         String accessToken = SecurityUtils.getAccessToken();
         UserInfo loggedUser = SecurityUtils.getPrincipal();
-        if(loggedUser.getMappedExternalUserId().equals(mappedExternalUserId)){
+        if(Objects.equals(loggedUser.getMappedExternalUserId(), mappedExternalUserId)){
             return ResponseEntity.ok(loggedUser);
         }
         if(!SecurityUtils.hasAdminRole()){
@@ -79,7 +80,7 @@ public class AuthzControllerImpl implements AuthzApi {
         CreateOperatorRequest createOperatorRequest) {
         log.info("Adding operator to orgIpaCode {}: {}", organizationIpaCode, createOperatorRequest.getExternalUserId());
 
-        if(!canEditUsers(SecurityUtils.getPrincipal().getMappedExternalUserId())){
+        if(!canEditUsers()){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
@@ -101,7 +102,7 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<Void> deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String xExternalUserId) {
-        if(!canEditUsers(SecurityUtils.getPrincipal().getMappedExternalUserId())){
+        if(!canEditUsers()){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
 
@@ -123,7 +124,7 @@ public class AuthzControllerImpl implements AuthzApi {
     @Override
     public ResponseEntity<UserDTO> createUser(UserDTO user) {
         log.info("Creating user {}", user.getExternalUserId());
-        if(!canEditUsers(user.getExternalUserId())){
+        if(!canEditUsers()){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
         if(!SecurityUtils.hasAdminRole()){
@@ -202,8 +203,9 @@ public class AuthzControllerImpl implements AuthzApi {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    private boolean canEditUsers(String mappedExternalUserId) {
-        return !organizationAccessMode || mappedExternalUserId.startsWith(PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX);
+    private boolean canEditUsers() {
+        String currentUserExternalId = SecurityUtils.getCurrentUserExternalId();
+        return !organizationAccessMode || (currentUserExternalId != null && currentUserExternalId.startsWith(PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX));
     }
 
 }
