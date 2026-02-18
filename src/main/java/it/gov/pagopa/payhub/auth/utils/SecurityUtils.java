@@ -36,8 +36,8 @@ public final class SecurityUtils {
     /** It will return user's session data from ThreadLocal */
     public static UserInfo getPrincipal(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication!=null) {
-            return (UserInfo) authentication.getPrincipal();
+        if(authentication!=null && authentication.getPrincipal() instanceof UserInfo userInfo) {
+            return userInfo;
         } else {
             return null;
         }
