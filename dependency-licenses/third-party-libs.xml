@@ -42,7 +42,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson-bom'>com.fasterxml.jackson:jackson-bom</a></td>
-<td>2.20.2</td>
+<td>2.21.1</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -52,7 +52,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson-core'>com.fasterxml.jackson.core:jackson-core</a></td>
-<td>2.20.2</td>
+<td>2.21.1</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -907,12 +907,12 @@
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson-bom'>tools.jackson:jackson-bom</a></td>
-<td>3.0.4</td>
+<td>3.1.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson-core'>tools.jackson.core:jackson-core</a></td>
-<td>3.0.4</td>
+<td>3.1.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
