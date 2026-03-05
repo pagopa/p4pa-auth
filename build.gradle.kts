@@ -61,6 +61,7 @@ val bouncycastleVersion = "1.83"
 val micrometerVersion = "1.6.3"
 val caffeineVersion = "3.2.3"
 val httpClientVersion = "5.6"
+val httpCoreVersion = "5.4.1"
 val kafkaAppender = "0.2.0-RC2"
 val commonsLang3Version = "3.20.0"
 val lz4JavaVersion = "1.10.4"
@@ -89,6 +90,7 @@ dependencies {
     implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
+  implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
     implementation("com.github.danielwegener:logback-kafka-appender:$kafkaAppender") {
         exclude(group = "org.lz4", module = "lz4-java")
     }
