@@ -9,6 +9,7 @@ on:
       - main
     paths:
       - 'openapi/p4pa-auth.openapi.yaml'
+  workflow_dispatch:
 
 permissions:
   packages: write
