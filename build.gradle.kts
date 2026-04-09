@@ -66,6 +66,9 @@ val kafkaAppender = "0.2.0-RC2"
 val commonsLang3Version = "3.20.0"
 val lz4JavaVersion = "1.10.4"
 
+// fix cve
+val jackson3CoreVersion = "3.1.1"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
@@ -99,6 +102,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
     implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
+
+    // CVE fix
+    implementation("tools.jackson.core:jackson-core:$jackson3CoreVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
