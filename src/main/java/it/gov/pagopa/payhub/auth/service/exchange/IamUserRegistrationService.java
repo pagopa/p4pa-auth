@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -31,7 +32,7 @@ public class IamUserRegistrationService {
 
         if (organizationAccessMode) {
             if (CollectionUtils.isEmpty(userInfo.getOrganizationAccess().getRoles())) {
-                throw new InvalidOrganizationAccessDataException("[ROLES_NOT_FOUND] No roles configured for organizationAccess " + userInfo.getOrganizationAccess());
+                throw new InvalidOrganizationAccessDataException(ErrorCodeConstants.ERROR_CODES_ROLES_NOT_FOUND, "No roles configured for organizationAccess " + userInfo.getOrganizationAccess());
             }
 
             userService.registerOperator(user.getUserId(), userInfo.getOrganizationAccess().getOrganizationIpaCode(),

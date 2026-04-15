@@ -72,7 +72,8 @@ class FakeUserInfoServiceTest {
         UserNotFoundException exception = Assertions.assertThrows(UserNotFoundException.class, () ->
                 fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer));
 
-        Assertions.assertEquals("[USER_NOT_FOUND] User with this mappedExternalUserId not found", exception.getMessage());
+        Assertions.assertEquals("USER_NOT_FOUND",exception.getCode());
+        Assertions.assertEquals("User with this mappedExternalUserId not found", exception.getMessage());
 
     }
 }

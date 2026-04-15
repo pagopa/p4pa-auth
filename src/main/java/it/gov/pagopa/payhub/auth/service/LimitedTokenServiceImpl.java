@@ -28,7 +28,7 @@ public class LimitedTokenServiceImpl implements LimitedTokenService {
         UserInfo userInfo = SecurityUtils.getPrincipal();
 
         if (userInfo instanceof UserInfoLimitedScope) {
-            throw new InvalidScopedAccessTokenRequest("[INVALID_TOKEN] Session token is already scoped");
+            throw new InvalidScopedAccessTokenRequest("Session token is already scoped");
         }
 
         validateOrganization(userInfo, request.getOrganizationId());
@@ -47,6 +47,6 @@ public class LimitedTokenServiceImpl implements LimitedTokenService {
     private void validateOrganization(UserInfo userInfo, Long organizationId) {
         userInfo.getOrganizations().stream()
             .filter(org -> org.getOrganizationId().equals(organizationId))
-            .findFirst().orElseThrow(() -> new UserUnauthorizedException("[USER_UNAUTHORIZED] User not allowed on organization"));
+            .findFirst().orElseThrow(() -> new UserUnauthorizedException("User not allowed on organization"));
     }
 }

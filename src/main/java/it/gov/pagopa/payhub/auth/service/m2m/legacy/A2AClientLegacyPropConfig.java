@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.m2m.legacy;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class A2AClientLegacyPropConfig {
 			KeyFactory kf = KeyFactory.getInstance("RSA");
 			return kf.generatePublic(publicKeyX509);
 		} catch (Exception e){
-			throw new InvalidTokenException("[INVALID_PUBLIC_KEY] invalid public key for: " + keyName);
+			throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_PUBLIC_KEY, "invalid public key for: " + keyName);
 		}
 	}
 }

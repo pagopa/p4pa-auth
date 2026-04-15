@@ -27,7 +27,7 @@ public class LimitedScopeTokenMapper {
         UserOrganizationRoles organization = userInfo.getOrganizations().stream()
                 .filter(org -> org.getOrganizationId().equals(request.getOrganizationId()))
                 .findFirst()
-                .orElseThrow(() -> new UserUnauthorizedException("[USER_UNAUTHORIZED] User not allowed on organization " + request.getOrganizationId()));
+                .orElseThrow(() -> new UserUnauthorizedException("User not allowed on organization " + request.getOrganizationId()));
 
         return IamUserInfoDTO.builder()
                 .type(UserInfoLimitedScope.class.getSimpleName())

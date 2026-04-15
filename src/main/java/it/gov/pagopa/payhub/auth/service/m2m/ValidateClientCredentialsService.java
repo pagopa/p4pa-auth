@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.m2m;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeRequestException;
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,13 +20,13 @@ public class ValidateClientCredentialsService {
 
 	private void validateProtocolConfiguration(String scope) {
 		if (!ALLOWED_SCOPE.equals(scope)){
-			throw new InvalidExchangeRequestException("[INVALID_SCOPE] Invalid scope " + scope);
+			throw new InvalidExchangeRequestException(ErrorCodeConstants.ERROR_CODE_INVALID_SCOPE, "Invalid scope " + scope);
 		}
 	}
 
 	private void validateClientSecret(String clientSecret) {
 		if (!StringUtils.hasText(clientSecret)) {
-			throw new InvalidExchangeRequestException("[INVALID_CLIENT_SECRET] clientSecret is mandatory with client-credentials grant type");
+			throw new InvalidExchangeRequestException(ErrorCodeConstants.ERROR_CODE_INVALID_CLIENT_SECRET, "clientSecret is mandatory with client-credentials grant type");
 		}
 	}
 

@@ -129,7 +129,7 @@ class ExchangeTokenServiceTest {
         String subjectTokenType = "FAKE-AUTH";
         String scope = "SCOPE";
 
-        InvalidTokenException expectedException = new InvalidTokenException("DUMMY");
+        InvalidTokenException expectedException = new InvalidTokenException("ERRORCODE", "DUMMY");
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenThrow(expectedException);
 

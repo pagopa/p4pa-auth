@@ -56,7 +56,7 @@ public class AuthnServiceImpl implements AuthnService {
         AccessToken accessToken = switch (grantType) {
             case ValidateExternalTokenService.ALLOWED_GRANT_TYPE -> exchangeTokenService.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
             case ValidateClientCredentialsService.ALLOWED_GRANT_TYPE -> clientCredentialService.postToken(clientId, scope, clientSecret);
-            default -> throw new InvalidGrantTypeException("[INVALID_GRANT_TYPE] Invalid grantType " + grantType);
+            default -> throw new InvalidGrantTypeException("Invalid grantType " + grantType);
         };
         Map<String, String> label2value = new HashMap<>();
         label2value.put("grantType", grantType);

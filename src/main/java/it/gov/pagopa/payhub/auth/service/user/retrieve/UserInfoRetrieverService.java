@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.user.retrieve;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.exception.custom.ClientNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.mapper.A2ALegacyClaims2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
@@ -59,13 +60,13 @@ public class UserInfoRetrieverService {
         }
         return clientNoSecretDTO
                 .map(client2UserInfoMapper)
-                .orElseThrow(() -> new UserNotFoundException("[CLIENT_NOT_FOUND] Cannot find client related to mappedExternalUserId:" + mappedExternalUserId));
+                .orElseThrow(() -> new ClientNotFoundException("Cannot find client related to mappedExternalUserId:" + mappedExternalUserId));
     }
 
     private IamUserInfoDTO findIamUser(String mappedExternalUserId) {
         return usersRepository.findByMappedExternalUserId(mappedExternalUserId)
                 .map(this::user2IamUser)
-                .orElseThrow(() -> new UserNotFoundException("[USER_NOT_FOUND] Cannot find user having mappedExternalId:" + mappedExternalUserId));
+                .orElseThrow(() -> new UserNotFoundException("Cannot find user having mappedExternalId:" + mappedExternalUserId));
     }
 
     private IamUserInfoDTO user2IamUser(User user) {
