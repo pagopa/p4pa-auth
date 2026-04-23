@@ -1,7 +1,10 @@
 package it.gov.pagopa.payhub.auth.exception.custom;
 
-public class UserNotFoundException extends RuntimeException {
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+
+public class UserNotFoundException extends BaseBusinessException {
+
     public UserNotFoundException(String message) {
-        super(message);
+        super(ErrorCodeConstants.ERROR_CODE_USER_NOT_FOUND, message);
     }
 }

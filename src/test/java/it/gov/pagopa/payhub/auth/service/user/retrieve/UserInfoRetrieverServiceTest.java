@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.user.retrieve;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.exception.custom.ClientNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.mapper.A2ALegacyClaims2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
@@ -117,7 +118,7 @@ class UserInfoRetrieverServiceTest {
     }
 
     @Test
-    void givenNotExistentSystemUserWhenFindByMappedExternalUserIdThenUserNotFoundException() {
+    void givenNotExistentSystemUserWhenFindByMappedExternalUserIdThenClientNotFoundException() {
         // Given
         String clientId = "CLIENTID";
         String accessToken = "accessToken";
@@ -126,7 +127,7 @@ class UserInfoRetrieverServiceTest {
                 .thenReturn(Optional.empty());
 
         // When
-        Assertions.assertThrows(UserNotFoundException.class, () -> service.findByMappedExternalUserId("WS_USER-" + clientId, accessToken));
+        Assertions.assertThrows(ClientNotFoundException.class, () -> service.findByMappedExternalUserId("WS_USER-" + clientId, accessToken));
     }
 //endregion
 

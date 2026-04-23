@@ -22,7 +22,7 @@ public class FakeUserInfoService {
     public IamUserInfoDTO buildIamUserInfoFake(String iamUserId, String subjectIssuer) {
         String mappedExternalUserId = externalUserIdObfuscatorService.obfuscate(iamUserId);
         User userInfo = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
-                .orElseThrow(() -> new UserNotFoundException("[USER_NOT_FOUND] User with this mappedExternalUserId not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with this mappedExternalUserId not found"));
         return IamUserInfoDTO.builder()
                 .type(UserInfo.class.getSimpleName())
                 .userId(iamUserId)

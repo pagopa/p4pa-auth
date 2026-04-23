@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
                     .organizationAccess(buildUserOrganizationRoles(claims))
                     .build();
         } catch (Exception e){
-            throw new InvalidTokenException("[INVALID_TOKEN] Unexpected IDToken structure", e);
+            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "Unexpected IDToken structure", e);
         }
     }
 
@@ -46,7 +47,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
         Claim organization = claims.get("organization");
         if(organization==null){
             if(organizationAccessMode){
-                throw new InvalidOrganizationAccessDataException("[ORGANIZATION_ACCESS_NOT_FOUND] No organizationAccess information");
+                throw new InvalidOrganizationAccessDataException(ErrorCodeConstants.ERROR_CODES_ORGANIZATION_ACCESS_NOT_FOUND, "No organizationAccess information");
             } else {
                 return null;
             }
@@ -72,7 +73,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
             out = List.of();
         }
         if(out.isEmpty()){
-            throw new InvalidTokenException("[ROLES_NOT_FOUND] No organization roles provided");
+            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODES_ROLES_NOT_FOUND, "No organization roles provided");
         } else {
             return out;
         }

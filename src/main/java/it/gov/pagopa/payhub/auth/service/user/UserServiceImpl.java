@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.service.user.registration.OperatorRegistrationS
 import it.gov.pagopa.payhub.auth.service.user.registration.UserRegistrationService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OrganizationOperatorRetrieverService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserInfoRetrieverService;
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
 import it.gov.pagopa.payhub.dto.generated.OperatorDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
         IamUserInfoDTO userInfo = tokenStoreService.load(accessToken);
 
         if (userInfo == null) {
-            throw new InvalidAccessTokenException("[INVALID_TOKEN] AccessToken not found");
+            throw new InvalidAccessTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "AccessToken not found");
         }
 
         UserInfo result = userInfoMapper.apply(userInfo, accessToken);

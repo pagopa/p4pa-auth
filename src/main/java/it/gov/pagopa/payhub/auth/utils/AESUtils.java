@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.auth.utils;
 
+import it.gov.pagopa.payhub.auth.exception.custom.IllegalStateBusinessException;
+
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
@@ -86,7 +88,7 @@ public class AESUtils {
 		try {
 			return cipher.doFinal(encryptedByte);
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new IllegalStateException("[CIPHERING_ERROR] Cannot execute cipher op", e);
+			throw new IllegalStateBusinessException("CIPHERING_ERROR", "Cannot execute cipher op", e);
 		}
 	}
 
@@ -97,7 +99,7 @@ public class AESUtils {
 			return cipher;
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
 		         | InvalidAlgorithmParameterException e) {
-			throw new IllegalStateException("[CIPHERING_ERROR] Cannot initialize cipher data", e);
+			throw new IllegalStateBusinessException("CIPHERING_ERROR", "Cannot initialize cipher data", e);
 		}
 	}
 

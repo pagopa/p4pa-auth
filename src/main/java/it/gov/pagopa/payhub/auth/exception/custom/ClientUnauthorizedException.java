@@ -1,7 +1,10 @@
 package it.gov.pagopa.payhub.auth.exception.custom;
 
-public class ClientUnauthorizedException extends RuntimeException {
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+
+public class ClientUnauthorizedException extends BaseBusinessException {
+
     public ClientUnauthorizedException(String message){
-        super(message);
+        super(ErrorCodeConstants.ERROR_CODE_CLIENT_UNAUTHORIZED, message);
     }
 }

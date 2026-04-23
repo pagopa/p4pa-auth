@@ -35,7 +35,7 @@ class LogoutServiceTest {
         String clientId = "clientId";
         String token = "token";
 
-        InvalidExchangeClientException expectedException = new InvalidExchangeClientException("");
+        InvalidExchangeClientException expectedException = new InvalidExchangeClientException("ERRORCODE", "");
         Mockito.doThrow(expectedException)
                         .when(validateExternalTokenServiceMock).validateClient(clientId);
 
