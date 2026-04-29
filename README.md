@@ -2,7 +2,9 @@
 
 This application belong to the **inbound/outbound** tier of the **Piattaforma Unitaria** product.
 
-See [PU Microservice Architecture](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1405845916/Architettura+microservizi) for more details.
+See [PU Microservice Architecture](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Architettura_microservizi.pdf) for more details.
+
+See [p4pa-doc](https://github.com/pagopa/p4pa-doc) for further documentation.
 
 ## 🧱 Role
 
