@@ -1,23 +1,31 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import it.gov.pagopa.payhub.auth.exception.custom.UserUnauthorizedException;
+import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.service.AuthzService;
 import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import it.gov.pagopa.payhub.controller.generated.AuthzApi;
-import it.gov.pagopa.payhub.model.generated.*;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
+import it.gov.pagopa.payhub.dto.generated.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
+import static it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService.PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX;
+
+@Slf4j
 @RestController
 public class AuthzControllerImpl implements AuthzApi {
+
+    private static final String PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX  = Client2UserInfoMapper.buildSystemMappedExternalUserId(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
 
     private final AuthzService authzService;
     private final boolean organizationAccessMode;
@@ -30,6 +38,7 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<OperatorsPage> getOrganizationOperators(String organizationIpaCode, String fiscalCode, String firstName, String lastName, Integer page, Integer size) {
+        log.info("Requesting organization operators of orgIpaCode {}", organizationIpaCode);
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to retrieve the operator list for organization " + organizationIpaCode);
         }
@@ -47,24 +56,31 @@ public class AuthzControllerImpl implements AuthzApi {
                 .content(organizationOperators.getContent())
                 .pageNo(page)
                 .pageSize(size)
-                .totalElements(organizationOperators.getNumberOfElements())
+                .totalElements((int) organizationOperators.getTotalElements())
                 .totalPages(organizationOperators.getTotalPages())
                 .build());
     }
 
     @Override
     public ResponseEntity<UserInfo> getUserInfoFromMappedExternaUserId(String mappedExternalUserId) {
-        if(!SecurityUtils.hasAdminRole()
-            && !mappedExternalUserId.equals(SecurityUtils.getPrincipal().getMappedExternalUserId())){
+        log.info("Requesting UserInfo of mappedExternalUserId {}", mappedExternalUserId);
+        String accessToken = SecurityUtils.getAccessToken();
+        UserInfo loggedUser = SecurityUtils.getPrincipal();
+        if(Objects.equals(loggedUser.getMappedExternalUserId(), mappedExternalUserId)){
+            return ResponseEntity.ok(loggedUser);
+        }
+        if(!SecurityUtils.hasAdminRole()){
             throw new UserUnauthorizedException("User not allowed to retrieve these information");
         }
-        return ResponseEntity.ok(authzService.getUserInfoFromMappedExternalUserId(mappedExternalUserId));
+        return ResponseEntity.ok(authzService.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken));
     }
 
     @Override
     public ResponseEntity<OperatorDTO> createOrganizationOperator(String organizationIpaCode,
         CreateOperatorRequest createOperatorRequest) {
-        if(organizationAccessMode){
+        log.info("Adding operator to orgIpaCode {}: {}", organizationIpaCode, createOperatorRequest.getExternalUserId());
+
+        if(!canEditUsers()){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
@@ -76,6 +92,7 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<Void> deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
+        log.info("Deleting operator to orgIpaCode {}: {}", organizationIpaCode, mappedExternalUserId);
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to delete operator with mappedExternalUserId " + mappedExternalUserId);
         }
@@ -84,13 +101,30 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
+    public ResponseEntity<Void> deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String xExternalUserId) {
+        if(!canEditUsers()){
+            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        }
+
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to delete operator");
+        }
+
+        authzService.deleteOrganizationOperatorByExternalUserId(organizationIpaCode, xExternalUserId);
+
+        return ResponseEntity.ok(null);
+    }
+
+    @Override
     public ResponseEntity<OperatorDTO> getOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
+        log.info("Retrieving operator of orgIpaCode {}: {}", organizationIpaCode, mappedExternalUserId);
         return ResponseEntity.ok(authzService.getOrganizationOperator(organizationIpaCode, mappedExternalUserId));
     }
 
     @Override
     public ResponseEntity<UserDTO> createUser(UserDTO user) {
-        if(organizationAccessMode){
+        log.info("Creating user {}", user.getExternalUserId());
+        if(!canEditUsers()){
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         }
         if(!SecurityUtils.hasAdminRole()){
@@ -101,6 +135,7 @@ public class AuthzControllerImpl implements AuthzApi {
 
     @Override
     public ResponseEntity<ClientDTO> registerClient(String organizationIpaCode, CreateClientRequest createClientRequest) {
+        log.info("Creating client on orgIpaCode {}: {}", organizationIpaCode, createClientRequest.getClientName());
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to create client");
         }
@@ -108,15 +143,19 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
-    public ResponseEntity<String> getClientSecret(String organizationIpaCode, String clientId) {
+    public ResponseEntity<ClientDTO> getClient(String organizationIpaCode, String clientId) {
+        log.info("Retrieving client having ID {} and orgIpaCode {}", clientId, organizationIpaCode);
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
-            throw new UserUnauthorizedException("User not allowed to retrieve client secret");
+            throw new UserUnauthorizedException("User not allowed to retrieve client");
         }
-        return ResponseEntity.ok(authzService.getClientSecret(organizationIpaCode, clientId));
+        return authzService.getClient(organizationIpaCode, clientId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Override
     public ResponseEntity<List<ClientNoSecretDTO>> getClients(String organizationIpaCode) {
+        log.info("Retrieving clients of orgIpaCode {}", organizationIpaCode);
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
         }
@@ -124,11 +163,49 @@ public class AuthzControllerImpl implements AuthzApi {
     }
 
     @Override
+    public ResponseEntity<ClientDTOPage> getClientsSearch(String organizationIpaCode,
+        String clientId, String clientName, Pageable pageable) {
+        log.info("Requesting clients by filters");
+
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to retrieve the list of clients");
+        }
+
+        Page<ClientNoSecretDTO> clients = authzService.getClientsSearch(clientId, clientName, organizationIpaCode,
+            pageable);
+        return ResponseEntity.ok(ClientDTOPage.builder()
+            .content(clients.getContent())
+            .pageNo(clients.getNumber())
+            .pageSize(clients.getSize())
+            .totalElements((int) clients.getTotalElements())
+            .totalPages(clients.getTotalPages())
+            .build());
+    }
+
+    @Override
     public ResponseEntity<Void> revokeClient(String organizationIpaCode, String clientId) {
+        log.info("Deleting client on orgIpaCode {}: {}", organizationIpaCode, clientId);
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to delete client with clientId " + clientId);
         }
         authzService.revokeClient(organizationIpaCode, clientId);
         return ResponseEntity.ok(null);
     }
+
+    @Override
+    public ResponseEntity<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId) {
+        log.info("Generating clientSecret for client {} having orgIpaCode {}: ", clientId, organizationIpaCode);
+        if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
+            throw new UserUnauthorizedException("User not allowed to generate new client secret");
+        }
+        return authzService.generateClientSecret(organizationIpaCode, clientId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    private boolean canEditUsers() {
+        String currentUserExternalId = SecurityUtils.getCurrentUserExternalId();
+        return !organizationAccessMode || (currentUserExternalId != null && currentUserExternalId.startsWith(PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX));
+    }
+
 }

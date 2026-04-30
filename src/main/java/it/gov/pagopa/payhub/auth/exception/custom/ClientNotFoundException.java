@@ -1,8 +1,10 @@
 package it.gov.pagopa.payhub.auth.exception.custom;
 
-public class ClientNotFoundException extends RuntimeException {
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+
+public class ClientNotFoundException extends BaseBusinessException {
 
 	public ClientNotFoundException(String message) {
-		super(message);
+		super(ErrorCodeConstants.ERROR_CODE_CLIENT_NOT_FOUND, message);
 	}
 }

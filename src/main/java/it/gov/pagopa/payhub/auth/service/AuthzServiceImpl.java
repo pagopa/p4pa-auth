@@ -4,47 +4,52 @@ import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
-import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
+import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
-import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
+import it.gov.pagopa.payhub.auth.service.user.registration.ExternalUserIdObfuscatorService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
-import it.gov.pagopa.payhub.model.generated.*;
-import it.gov.pagopa.payhub.model.generated.UserInfo;
-import jakarta.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import it.gov.pagopa.payhub.dto.generated.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AuthzServiceImpl implements AuthzService {
 
     private final UserService userService;
     private final ClientService clientService;
+    private final ClientRepository clientRepository;
+    private final ExternalUserIdObfuscatorService externalUserIdObfuscatorService;
     private final UsersRepository usersRepository;
     private final OperatorsRepository operatorsRepository;
     private final OperatorDTOMapper operatorDTOMapper;
     private final UserDTOMapper userDTOMapper;
-    private final Operator2UserInfoMapper operator2UserInfoMapper;
-    private static final String MYPAYIAMISSUERS = "MYPAY";
 
-    public AuthzServiceImpl(UserService userService, ClientService clientService, UsersRepository usersRepository,
-        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper,
-        Operator2UserInfoMapper operator2UserInfoMapper) {
+    private static final String MYPAYIAMISSUERS = "MYPAY";
+    private static final String PUIAMISSUERS = "PU";
+
+    public AuthzServiceImpl(UserService userService, ClientService clientService,
+        ClientRepository clientRepository, ExternalUserIdObfuscatorService externalUserIdObfuscatorService, UsersRepository usersRepository,
+        OperatorsRepository operatorsRepository, OperatorDTOMapper operatorDTOMapper, UserDTOMapper userDTOMapper) {
         this.userService = userService;
         this.clientService = clientService;
+        this.clientRepository = clientRepository;
+        this.externalUserIdObfuscatorService = externalUserIdObfuscatorService;
         this.usersRepository = usersRepository;
         this.operatorsRepository = operatorsRepository;
         this.operatorDTOMapper = operatorDTOMapper;
         this.userDTOMapper = userDTOMapper;
-        this.operator2UserInfoMapper = operator2UserInfoMapper;
     }
 
     @Override
@@ -75,15 +80,22 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    @Transactional
     public void deleteOrganizationOperator(String organizationIpaCode, String mappedExternalUserId) {
         operatorsRepository.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
     }
 
     @Override
+    public void deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String externalUserId) {
+        this.deleteOrganizationOperator(
+                organizationIpaCode,
+                externalUserIdObfuscatorService.obfuscate(externalUserId)
+        );
+    }
+
+    @Override
     public OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest) {
         User user = userService.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
-            MYPAYIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName());
+                PUIAMISSUERS, createOperatorRequest.getFirstName(), createOperatorRequest.getLastName());
         Operator operator = userService.registerOperator(user.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles()), createOperatorRequest.getEmail());
         return operatorDTOMapper.apply(user,operator);
     }
@@ -96,11 +108,8 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId) {
-        User user = usersRepository.findByMappedExternalUserId(mappedExternalUserId)
-            .orElseThrow(() -> new UserNotFoundException("Cannot found user having mappedExternalId:"+ mappedExternalUserId));
-        List<Operator> operators = operatorsRepository.findAllByUserId(user.getUserId());
-        return operator2UserInfoMapper.apply(user, operators);
+    public UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId, String accessToken) {
+        return userService.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken);
     }
 
     @Override
@@ -109,8 +118,8 @@ public class AuthzServiceImpl implements AuthzService {
     }
 
     @Override
-    public String getClientSecret(String organizationIpaCode, String clientId) {
-        return clientService.getClientSecret(organizationIpaCode, clientId);
+    public Optional<ClientDTO> getClient(String organizationIpaCode, String clientId) {
+        return clientService.getClient(organizationIpaCode, clientId);
     }
 
     @Override
@@ -121,5 +130,19 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public void revokeClient(String organizationIpaCode, String clientId) {
 	    clientService.revokeClient(organizationIpaCode, clientId);
+    }
+
+    @Override
+    public Page<ClientNoSecretDTO> getClientsSearch(String clientId, String clientName, String organizationIpaCode, Pageable pageRequest) {
+        if (StringUtils.isNotEmpty(clientName)) {
+            return clientRepository.searchByFiltersWithClientName(clientId, clientName, organizationIpaCode, pageRequest);
+        } else {
+            return clientRepository.searchByFilters(clientId, organizationIpaCode, pageRequest);
+        }
+    }
+
+    @Override
+    public Optional<ClientDTO> generateClientSecret(String organizationIpaCode, String clientId) {
+        return clientService.generateClientSecret(organizationIpaCode, clientId);
     }
 }

@@ -1,7 +1,10 @@
 package it.gov.pagopa.payhub.auth.exception.custom;
 
-public class OperatorNotFoundException extends RuntimeException {
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+
+public class OperatorNotFoundException extends BaseBusinessException {
+
     public OperatorNotFoundException(String message) {
-        super(message);
+        super(ErrorCodeConstants.ERROR_CODE_OPERATOR_NOT_FOUND, message);
     }
 }

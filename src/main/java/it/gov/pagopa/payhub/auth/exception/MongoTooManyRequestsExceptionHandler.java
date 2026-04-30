@@ -1,8 +1,10 @@
 package it.gov.pagopa.payhub.auth.exception;
 
-import it.gov.pagopa.payhub.model.generated.AuthErrorDTO;
+import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.regex.Pattern;
 
 @RestControllerAdvice
 @Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class MongoTooManyRequestsExceptionHandler {
     private static final Pattern RETRY_AFTER_MS_PATTERN = Pattern.compile("RetryAfterMs=(\\d+)");
 
@@ -27,12 +30,12 @@ public class MongoTooManyRequestsExceptionHandler {
             Long retryAfterMs = getRetryAfterMs(ex);
             return handleRequestRateTooLargeException(ex, request, retryAfterMs);
         } else {
-            return AuthExceptionHandler.handleAuthErrorException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
+            return AuthExceptionHandler.handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
         }
     }
 
     private ResponseEntity<AuthErrorDTO> handleRequestRateTooLargeException(Exception ex, HttpServletRequest request, Long retryAfterMs) {
-        String message = ex.getMessage();
+        String message = "[TOO_MANY_REQUESTS] "+ex.getMessage();
 
         log.info(
                 "A MongoQueryException (RequestRateTooLarge) occurred handling request {}: HttpStatus 429 - {}",

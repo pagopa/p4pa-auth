@@ -1,19 +1,17 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
-import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.repository.ClientRepository;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.payhub.auth.repository.UsersRepository;
-import it.gov.pagopa.payhub.auth.service.a2a.ClientService;
+import it.gov.pagopa.payhub.auth.service.m2m.ClientService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
-import it.gov.pagopa.payhub.auth.service.user.retrieve.Operator2UserInfoMapper;
+import it.gov.pagopa.payhub.auth.service.user.registration.ExternalUserIdObfuscatorService;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.OperatorDTOMapper;
 import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
-import it.gov.pagopa.payhub.model.generated.*;
-import java.util.HashSet;
-import java.util.Optional;
+import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +25,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class AuthzServiceTest {
@@ -37,6 +41,12 @@ class AuthzServiceTest {
 
     @Mock
     private ClientService clientServiceMock;
+
+    @Mock
+    private ClientRepository clientRepositoryMock;
+
+    @Mock
+    private ExternalUserIdObfuscatorService externalUserIdObfuscatorService;
 
     @Mock
     private OperatorsRepository operatorsRepository;
@@ -50,14 +60,20 @@ class AuthzServiceTest {
     @Mock
     private UserDTOMapper userDTOMapper;
 
-    @Mock
-    private Operator2UserInfoMapper operator2UserInfoMapper;
-
     private AuthzService service;
 
     @BeforeEach
     void init(){
-        service = new AuthzServiceImpl(userServiceMock, clientServiceMock, usersRepository, operatorsRepository, operatorDTOMapper, userDTOMapper, operator2UserInfoMapper);
+        service = new AuthzServiceImpl(
+                userServiceMock,
+                clientServiceMock,
+                clientRepositoryMock,
+                externalUserIdObfuscatorService,
+                usersRepository,
+                operatorsRepository,
+                operatorDTOMapper,
+                userDTOMapper
+        );
     }
 
     @AfterEach
@@ -118,8 +134,8 @@ class AuthzServiceTest {
         Page<OperatorDTO> result = service.getOrganizationOperators(organizationIpaCode, fiscalCode, firstName, lastName, pageRequest);
 
         // Then
-        Assertions.assertEquals(1, result.getTotalElements());
-        Assertions.assertEquals(operatorDTO, result.getContent().get(0));
+        assertEquals(1, result.getTotalElements());
+        assertEquals(operatorDTO, result.getContent().getFirst());
     }
 
     @Test
@@ -131,6 +147,24 @@ class AuthzServiceTest {
         service.deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
         //Then
         Mockito.verify(operatorsRepository).deleteOrganizationOperator(organizationIpaCode,mappedExternalUserId);
+    }
+
+    @Test
+    void whenDeleteOrganizationOperatorByExternalUserIdThenVerifyDelete() {
+        String organizationIpaCode = "IPACODE";
+        String externalUserId = "externalUserId";
+
+        String mappedExternalUserId = "mappedExternalUserId";
+
+        Mockito.when(externalUserIdObfuscatorService.obfuscate(externalUserId))
+                .thenReturn(mappedExternalUserId);
+
+        //When
+        service.deleteOrganizationOperatorByExternalUserId(organizationIpaCode, externalUserId);
+
+        //Then
+        Mockito.verify(externalUserIdObfuscatorService).obfuscate(externalUserId);
+        Mockito.verify(operatorsRepository).deleteOrganizationOperator(organizationIpaCode, mappedExternalUserId);
     }
 
     @Test
@@ -167,7 +201,8 @@ class AuthzServiceTest {
         OperatorNotFoundException exception = Assertions.assertThrows(OperatorNotFoundException.class, () ->
             service.getOrganizationOperator(organizationIpaCode, mappedExternalUserId));
 
-        Assertions.assertEquals("Operator with this userId "+ user.getUserId()+organizationIpaCode + "not found", exception.getMessage());
+        assertEquals("OPERATOR_NOT_FOUND",exception.getCode());
+        assertEquals("Operator with this userId "+ user.getUserId()+organizationIpaCode + "not found", exception.getMessage());
 
     }
 
@@ -187,14 +222,14 @@ class AuthzServiceTest {
         OperatorDTO expectedOperatorDTO = new OperatorDTO();
 
         Mockito.when(userServiceMock.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
-            "MYPAY", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName())).thenReturn(mockUser);
+            "PU", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName())).thenReturn(mockUser);
         Mockito.when(userServiceMock.registerOperator(mockUser.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles())
                     , createOperatorRequest.getEmail())).thenReturn(mockOperator);
         Mockito.when(operatorDTOMapper.apply(mockUser, mockOperator)).thenReturn(expectedOperatorDTO);
 
         OperatorDTO actualOperatorDTO = service.createOrganizationOperator(organizationIpaCode, createOperatorRequest);
 
-        Assertions.assertEquals(expectedOperatorDTO, actualOperatorDTO);
+        assertEquals(expectedOperatorDTO, actualOperatorDTO);
     }
 
     @Test
@@ -215,7 +250,7 @@ class AuthzServiceTest {
         UserDTO actualUserDTO = service.createUser(expectedUser);
 
         // Then
-        Assertions.assertEquals(expectedUser, actualUserDTO);
+        assertEquals(expectedUser, actualUserDTO);
     }
 
     @Test
@@ -231,58 +266,45 @@ class AuthzServiceTest {
         //When
         ClientDTO actualClientDTO = service.registerClient(organizationIpaCode, createClientRequest);
         //Then
-        Assertions.assertEquals(expectedClientDTO, actualClientDTO);
+        assertEquals(expectedClientDTO, actualClientDTO);
     }
 
     @Test
     void whenGetUserInfoFromMappedExternalUserIdThenGetUserInfo() {
         //Given
         String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
-        User userMock = new User();
-        userMock.setUserId("1");
-        List<Operator> operators = List.of(new Operator());
+        String accessToken = "ACCESSTOKEN";
         UserInfo expectedUserInfo = new UserInfo();
 
-        Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId))
-          .thenReturn(Optional.of(userMock));
-        Mockito.when(operatorsRepository.findAllByUserId(userMock.getUserId())).thenReturn(operators);
-        Mockito.when(operator2UserInfoMapper.apply(userMock, operators)).thenReturn(expectedUserInfo);
+        Mockito.when(userServiceMock.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken))
+          .thenReturn(expectedUserInfo);
 
         //When
-        UserInfo result = service.getUserInfoFromMappedExternalUserId(mappedExternalUserId);
+        UserInfo result = service.getUserInfoFromMappedExternalUserId(mappedExternalUserId, accessToken);
 
         //Then
-        Assertions.assertEquals(expectedUserInfo, result);
+        assertEquals(expectedUserInfo, result);
     }
 
     @Test
-    void whenGetUserInfoFromMappedExternalUserIdThenUserNotFound() {
-        //Given
-        String mappedExternalUserId = "MAPPEDEXTERNALUSERID";
-        Mockito.when(usersRepository.findByMappedExternalUserId(mappedExternalUserId))
-          .thenReturn(Optional.empty());
-
-        //When
-        Exception exception = Assertions.assertThrows(UserNotFoundException.class, () -> {
-            service.getUserInfoFromMappedExternalUserId(mappedExternalUserId);
-        });
-        //Then
-        Assertions.assertTrue(exception.getMessage().contains("Cannot found user having mappedExternalId:" + mappedExternalUserId));
-    }
-
-    @Test
-    void givenClientIdWhenGetClientSecretThenInvokeClientService() {
-        //Given
+    void givenClientIdWhenGetClientThenInvokeClientService() {
         String organizationIpaCode = "organizationIpaCode";
         String clientId = "clientId";
-        String clientSecretMock = UUID.randomUUID().toString();
 
-        Mockito.when(clientServiceMock.getClientSecret(organizationIpaCode, clientId)).thenReturn(clientSecretMock);
+        ClientDTO expectedClientDTO = ClientDTO.builder()
+                .clientId(clientId)
+                .clientName("Test Client")
+                .organizationIpaCode(organizationIpaCode)
+                .clientSecret("decryptedSecret")
+                .build();
 
-        //When
-        String clientSecret = service.getClientSecret(organizationIpaCode, clientId);
-        //Then
-        Assertions.assertEquals(clientSecretMock, clientSecret);
+        Mockito.when(clientServiceMock.getClient(organizationIpaCode, clientId))
+                .thenReturn(Optional.of(expectedClientDTO));
+
+        Optional<ClientDTO> result = service.getClient(organizationIpaCode, clientId);
+
+        assertTrue(result.isPresent());
+        assertEquals(expectedClientDTO, result.get());
     }
 
     @Test
@@ -296,7 +318,7 @@ class AuthzServiceTest {
         //When
         List<ClientNoSecretDTO> result = service.getClients(organizationIpaCode);
         //Then
-        Assertions.assertEquals(expectedDTOList, result);
+        assertEquals(expectedDTOList, result);
     }
 
     @Test
@@ -308,5 +330,96 @@ class AuthzServiceTest {
         service.revokeClient(organizationIpaCode, clientId);
         //Then
         Mockito.verify(clientServiceMock).revokeClient(organizationIpaCode, clientId);
+    }
+
+    @Test
+    void givenClientNameWhenGetClientsSearchThenCallSearchByFiltersWithClientName(){
+        String clientId = "CLIENTID";
+        String clientName = "CLIENTNAME";
+        String organizationIpaCode = "IPACODE";
+
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        ClientNoSecretDTO clientNoSecretDTO = new ClientNoSecretDTO();
+        clientNoSecretDTO.setClientId(clientId);
+        clientNoSecretDTO.setClientName(clientName);
+        clientNoSecretDTO.setOrganizationIpaCode(organizationIpaCode);
+
+        Page<ClientNoSecretDTO> clientPage = new PageImpl<>(List.of(clientNoSecretDTO), pageRequest, 1);
+
+        Mockito.when(clientRepositoryMock.searchByFiltersWithClientName(clientId,clientName,organizationIpaCode,pageRequest))
+                .thenReturn(clientPage);
+
+        Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, clientName, organizationIpaCode, pageRequest);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(clientNoSecretDTO, result.getContent().getFirst());
+    }
+
+    @Test
+    void givenNullClientNameWhenGetClientsSearchThenCallSearchByFilters() {
+        String clientId = "CLIENTID";
+        String organizationIpaCode = "IPACODE";
+
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        ClientNoSecretDTO clientNoSecretDTO = new ClientNoSecretDTO();
+        clientNoSecretDTO.setClientId(clientId);
+        clientNoSecretDTO.setOrganizationIpaCode(organizationIpaCode);
+
+        Page<ClientNoSecretDTO> clientPage =
+                new PageImpl<>(List.of(clientNoSecretDTO), pageRequest, 1);
+
+        Mockito.when(clientRepositoryMock.searchByFilters(clientId, organizationIpaCode, pageRequest))
+                .thenReturn(clientPage);
+
+        Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, null, organizationIpaCode, pageRequest);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(clientNoSecretDTO, result.getContent().getFirst());
+    }
+
+    @Test
+    void givenEmptyClientNameWhenGetClientsSearchThenCallSearchByFilters() {
+        String clientId = "CLIENTID";
+        String clientName = "";
+        String organizationIpaCode = "IPACODE";
+        Pageable pageRequest = PageRequest.of(0, 1);
+
+        ClientNoSecretDTO dto = new ClientNoSecretDTO();
+        dto.setClientId(clientId);
+        dto.setClientName("ANY");
+        dto.setOrganizationIpaCode(organizationIpaCode);
+
+        Page<ClientNoSecretDTO> page = new PageImpl<>(List.of(dto), pageRequest, 1);
+
+        Mockito.when(clientRepositoryMock.searchByFilters(clientId, organizationIpaCode, pageRequest))
+                .thenReturn(page);
+
+        Page<ClientNoSecretDTO> result = service.getClientsSearch(clientId, clientName, organizationIpaCode, pageRequest);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(dto, result.getContent().getFirst());
+    }
+
+    @Test
+    void givenClientIdWhenGenerateClientSecretThenInvokeClientService() {
+        String organizationIpaCode = "organizationIpaCode";
+        String clientId = "clientId";
+
+        ClientDTO expectedClientDTO = ClientDTO.builder()
+                .clientId(clientId)
+                .clientName("Test Client")
+                .organizationIpaCode(organizationIpaCode)
+                .clientSecret("generatedSecret")
+                .build();
+
+        Mockito.when(clientServiceMock.generateClientSecret(organizationIpaCode, clientId))
+                .thenReturn(Optional.of(expectedClientDTO));
+
+        Optional<ClientDTO> result = service.generateClientSecret(organizationIpaCode, clientId);
+
+        assertTrue(result.isPresent());
+        assertEquals(expectedClientDTO, result.get());
     }
 }

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.logout;
 
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeClientException;
+import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
 import org.junit.jupiter.api.Assertions;
@@ -18,12 +19,14 @@ class LogoutServiceTest {
     private ValidateExternalTokenService validateExternalTokenServiceMock;
     @Mock
     private TokenStoreService tokenStoreServiceMock;
+    @Mock
+    private AuditLoggerService auditServiceMock;
 
     private LogoutService service;
 
     @BeforeEach
     void init(){
-        service = new LogoutServiceImpl(validateExternalTokenServiceMock, tokenStoreServiceMock);
+        service = new LogoutServiceImpl(validateExternalTokenServiceMock, tokenStoreServiceMock, auditServiceMock);
     }
 
     @Test
@@ -32,7 +35,7 @@ class LogoutServiceTest {
         String clientId = "clientId";
         String token = "token";
 
-        InvalidExchangeClientException expectedException = new InvalidExchangeClientException("");
+        InvalidExchangeClientException expectedException = new InvalidExchangeClientException("ERRORCODE", "");
         Mockito.doThrow(expectedException)
                         .when(validateExternalTokenServiceMock).validateClient(clientId);
 

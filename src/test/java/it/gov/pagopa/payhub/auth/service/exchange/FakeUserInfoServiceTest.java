@@ -30,6 +30,7 @@ class FakeUserInfoServiceTest {
 
     @Test
     void givenIamUserIdValidWhenBuildIamUserInfoFakeThenSuccess(){
+        // Given
         String iamUserId = "iam_userid";
         String subjectIssuer = "issuer";
         String mappedExternalUserId = "external_userid";
@@ -39,7 +40,9 @@ class FakeUserInfoServiceTest {
                 .build();
 
         IamUserInfoDTO iamUserInfoFakeExpected = IamUserInfoDTO.builder()
+                .type("UserInfo")
                 .userId(iamUserId)
+                .mappedExternalUserId(mappedExternalUserId)
                 .innerUserId("userid")
                 .name("fake")
                 .familyName("user")
@@ -49,9 +52,12 @@ class FakeUserInfoServiceTest {
 
         Mockito.when(externalUserIdObfuscatorServiceMock.obfuscate(iamUserId)).thenReturn(mappedExternalUserId);
         Mockito.when(usersRepositoryMock.findByMappedExternalUserId(mappedExternalUserId)).thenReturn(Optional.ofNullable(user));
-        IamUserInfoDTO iamUserInfoFake = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
 
-        Assertions.assertEquals(iamUserInfoFake, iamUserInfoFakeExpected);
+        // When
+        IamUserInfoDTO result = fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer);
+
+        // Then
+        Assertions.assertEquals(iamUserInfoFakeExpected, result);
     }
 
     @Test
@@ -66,6 +72,7 @@ class FakeUserInfoServiceTest {
         UserNotFoundException exception = Assertions.assertThrows(UserNotFoundException.class, () ->
                 fakeUserInfoService.buildIamUserInfoFake(iamUserId, subjectIssuer));
 
+        Assertions.assertEquals("USER_NOT_FOUND",exception.getCode());
         Assertions.assertEquals("User with this mappedExternalUserId not found", exception.getMessage());
 
     }

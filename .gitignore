@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 *.tgz
 helm/charts
+dependency-licenses/*/*
 
 ### STS ###
 .apt_generated
@@ -39,6 +40,6 @@ out/
 .vscode/
 
 ### Terraform ###
-**/.terraform/*
+.github/terraform/.terraform/*
 *.tfstate
 *.tfstate.*

@@ -39,13 +39,18 @@ public class WebSecurityConfig {
 
                         // Application endpoints
                         .requestMatchers(
-                                "/payhub/auth/token",
-                                "/payhub/auth/revoke"
+                                "/payhub/oauth/token",
+                                "/payhub/oauth/revoke"
                         ).permitAll()
 
                         // WebMVC
                         .requestMatchers(
                                 "/favicon.ico", "/error"
+                        ).permitAll()
+
+                        // well-known
+                        .requestMatchers(
+                                "/payhub/.well-known/**"
                         ).permitAll()
 
                         .anyRequest().authenticated()

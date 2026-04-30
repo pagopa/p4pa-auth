@@ -1,35 +1,34 @@
 package it.gov.pagopa.payhub.auth.config;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * The Class SwaggerConfig.
  */
 @Configuration
+@OpenAPIDefinition(
+        info = @io.swagger.v3.oas.annotations.info.Info(
+                title = "${spring.application.name}",
+                version = "${spring.application.version}",
+                description = "Api and Models"
+        ),
+        security = @SecurityRequirement(name = "BearerAuth")
+)
+@SecurityScheme(
+        name = "BearerAuth",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer"
+)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SwaggerConfig {
-
-    /** The title. */
-    @Value("${swagger.title:${spring.application.name}}")
-    private String title;
-
-    /** The description. */
-    @Value("${swagger.description:Api and Models}")
-    private String description;
-
-    /** The version. */
-    @Value("${swagger.version:${spring.application.version}}")
-    private String version;
-
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI().components(new Components()).info(new Info()
-                .title(title)
-                .description(description)
-                .version(version));
+    static {
+        io.swagger.v3.core.jackson.ModelResolver.enumsAsRef = true;
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
-@CacheConfig(cacheNames = RedisConfig.CACHE_NAME_ACCESS_TOKEN)
+@CacheConfig(cacheNames = RedisConfig.CACHE_NAME_ACCESS_TOKEN, cacheManager = "redisCacheManager")
 class TokenStoreServiceImpl implements  TokenStoreService{
     @Override
     @CachePut(key = "#accessToken")

@@ -2,9 +2,14 @@ package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.HeaderParams;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import io.jsonwebtoken.security.Jwks;
+import io.jsonwebtoken.security.PublicJwk;
+import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
-import it.gov.pagopa.payhub.model.generated.AccessToken;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,50 +26,74 @@ import java.util.UUID;
 
 @Service
 public class AccessTokenBuilderService {
-	public static final String ACCESS_TOKEN_TYPE = "at+JWT";
-	private final String allowedAudience;
-	private final int expireIn;
-	private final RSAPublicKey rsaPublicKey;
-	private final RSAPrivateKey rsaPrivateKey;
-	private final String kid;
+    public static final String ACCESS_TOKEN_TYPE = "JWT";
+    public static final String CLAIM_ORGANIZATION_IPA_CODE = "organizationIpaCode";
+    private final String allowedAudience;
+    private final int expireIn;
+    private final Algorithm algorithm;
+    private final String kid;
+    @Getter
+    private final PublicJwk<?> jwk;
 
-	public AccessTokenBuilderService(
-		@Value("${jwt.audience}") String allowedAudience,
-		@Value("${jwt.access-token.expire-in}") int expireIn,
-		@Value("${jwt.access-token.private-key}") String privateKey,
-		@Value("${jwt.access-token.public-key}") String publicKey, DataCipherService dataCipherService) {
-		this.allowedAudience = allowedAudience;
-		this.expireIn = expireIn;
-		byte[] hashed = dataCipherService.hash(publicKey);
-		this.kid = UUID.nameUUIDFromBytes(hashed).toString();
+    public AccessTokenBuilderService(
+            @Value("${jwt.audience}") String allowedAudience,
+            @Value("${jwt.access-token.expire-in}") int expireIn,
+            @Value("${jwt.access-token.private-key}") String privateKey,
+            @Value("${jwt.access-token.public-key}") String publicKey, DataCipherService dataCipherService) {
+        this.allowedAudience = allowedAudience;
+        this.expireIn = expireIn;
+        byte[] hashed = dataCipherService.hash(publicKey.replace("\n", ""));
+        this.kid = UUID.nameUUIDFromBytes(hashed).toString();
 
-		try {
-			rsaPrivateKey = CertUtils.pemKey2PrivateKey(privateKey);
-			rsaPublicKey = CertUtils.pemPub2PublicKey(publicKey);
-		} catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
-			throw new IllegalStateException("Cannot load private and/or public key", e);
-		}
-	}
+        try {
+            RSAPrivateKey rsaPrivateKey = CertUtils.pemKey2PrivateKey(privateKey);
+            RSAPublicKey rsaPublicKey = CertUtils.pemPub2PublicKey(publicKey);
 
-	public AccessToken build(){
-		Algorithm algorithm = Algorithm.RSA512(rsaPublicKey, rsaPrivateKey);
-		Map<String, Object> headerClaims = new HashMap<>();
-		headerClaims.put(HeaderParams.KEY_ID, kid);
-		headerClaims.put("typ", ACCESS_TOKEN_TYPE);
-		String tokenType = "bearer";
-		String token = JWT.create()
-  		.withHeader(headerClaims)
-			.withClaim("typ", tokenType)
-			.withIssuer(allowedAudience)
-			.withJWTId(UUID.randomUUID().toString())
-			.withIssuedAt(Instant.now())
-			.withExpiresAt(Instant.now().plusSeconds(expireIn))
-			.sign(algorithm);
-		return new AccessToken(token, tokenType, expireIn);
-	}
+            algorithm = Algorithm.RSA512(rsaPublicKey, rsaPrivateKey);
 
-	public String getHeaderPrefix() {
-		var prefix = String.format("{\"kid\":\"%s\"", kid);
-		return Base64.getEncoder().encodeToString(prefix.getBytes());
-	}
+            jwk = Jwks.builder()
+                    .id(kid)
+                    .algorithm(algorithm.getName())
+                    .key(rsaPublicKey)
+                    .publicKeyUse("sign")
+                    .build();
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
+            throw new IllegalStateException("Cannot load private and/or public key", e);
+        }
+
+    }
+
+    public AccessToken build(IamUserInfoDTO iamUserInfoDTO) {
+        return build(iamUserInfoDTO, expireIn);
+    }
+
+    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam) {
+        Map<String, Object> headerClaims = new HashMap<>();
+        headerClaims.put(HeaderParams.KEY_ID, kid);
+        headerClaims.put("typ", ACCESS_TOKEN_TYPE);
+        String tokenType = "bearer";
+        JWTCreator.Builder jwtBuilder = JWT.create()
+                .withHeader(headerClaims)
+                .withClaim("typ", tokenType)
+                .withIssuer(allowedAudience)
+                .withJWTId(UUID.randomUUID().toString())
+                .withSubject(iamUserInfoDTO.getMappedExternalUserId())
+                .withIssuedAt(Instant.now())
+                .withExpiresAt(Instant.now().plusSeconds(expireInParam == null ? expireIn : expireInParam));
+        if(iamUserInfoDTO.getOrganizationAccess()!=null){
+            jwtBuilder.withClaim(CLAIM_ORGANIZATION_IPA_CODE, iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
+        }
+        if (iamUserInfoDTO.getResource() != null) {
+            jwtBuilder.withClaim("scope", iamUserInfoDTO.getResource().getApp());
+        }
+        String token = jwtBuilder
+                .sign(algorithm);
+        return new AccessToken(token, tokenType, expireIn);
+    }
+
+    public String getHeaderPrefix() {
+        String prefix = String.format("{\"kid\":\"%s\"", kid);
+        return Base64.getEncoder().encodeToString(prefix.getBytes());
+    }
+
 }

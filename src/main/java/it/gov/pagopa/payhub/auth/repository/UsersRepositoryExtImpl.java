@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.repository;
 
+import it.gov.pagopa.payhub.auth.config.BaseEntityListener;
 import it.gov.pagopa.payhub.auth.model.User;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UsersRepositoryExtImpl implements UsersRepositoryExt{
 
@@ -25,7 +26,7 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
     public User registerUser(User user) {
         return mongoTemplate.findAndModify(
                 Query.query(Criteria.where(User.Fields.mappedExternalUserId).is(user.getMappedExternalUserId())),
-                new Update()
+                BaseEntityListener.setTechFieldsOnDocumentUpdate(new Update()
                         .set(User.Fields.userCode, user.getUserCode())
                         .set(User.Fields.iamIssuer, user.getIamIssuer())
                         .setOnInsert(User.Fields.tosAccepted, false)
@@ -33,7 +34,8 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
 
                         .set(User.Fields.fiscalCode, user.getFiscalCode())
                         .set(User.Fields.firstName, user.getFirstName())
-                        .set(User.Fields.lastName, user.getLastName()),
+                        .set(User.Fields.lastName, user.getLastName())
+                ),
                 FindAndModifyOptions.options()
                         .returnNew(true)
                         .upsert(true),

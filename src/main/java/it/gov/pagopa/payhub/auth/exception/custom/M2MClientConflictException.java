@@ -1,8 +1,10 @@
 package it.gov.pagopa.payhub.auth.exception.custom;
 
-public class M2MClientConflictException extends RuntimeException {
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+
+public class M2MClientConflictException extends BaseBusinessException {
 
 	public M2MClientConflictException(String message) {
-		super(message);
+		super(ErrorCodeConstants.ERROR_CODE_CLIENT_CONFLICT, message);
 	}
 }

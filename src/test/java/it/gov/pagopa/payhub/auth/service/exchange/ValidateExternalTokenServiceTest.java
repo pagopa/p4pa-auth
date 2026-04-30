@@ -4,15 +4,18 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import it.gov.pagopa.payhub.auth.exception.custom.*;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeClientException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeRequestException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenIssuerException;
 import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import it.gov.pagopa.payhub.auth.utils.JWTValidatorUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
@@ -35,7 +38,7 @@ class ValidateExternalTokenServiceTest {
     private WireMockServer wireMockServer;
     private JWTValidatorUtils utils;
 
-    @Mock
+    @MockitoBean
     private JWTValidator jwtValidator;
 
     @BeforeEach

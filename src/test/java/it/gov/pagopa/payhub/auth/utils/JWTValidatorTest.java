@@ -2,9 +2,9 @@ package it.gov.pagopa.payhub.auth.utils;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import it.gov.pagopa.payhub.auth.config.CacheConfig;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
-import java.security.KeyPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.security.KeyPair;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 class JWTValidatorTest {
@@ -32,10 +34,16 @@ class JWTValidatorTest {
     void setup() throws Exception {
         wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
         wireMockServer.start();
+
         utils = new JWTValidatorUtils(wireMockServer);
+
         keyPair = JWTValidatorUtils.generateKeyPair();
         String publicKey = JWTValidatorUtils.getPublicKey(keyPair);
-        jwtValidator = new JWTValidator(publicKey);
+
+        CacheConfig cacheConfig = new CacheConfig();
+        cacheConfig.setJwks(new CacheConfig.CacheConfigurationProperties(0, 10));
+
+        jwtValidator = new JWTValidator(publicKey, cacheConfig);
     }
 
     @AfterEach
@@ -93,7 +101,7 @@ class JWTValidatorTest {
 
     @Test
     void givenValidLegacyJWTThenOk() {
-        String validToken = utils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600_000L), "jwtId");
+        String validToken = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().plusSeconds(3_600_000L), "jwtId");
         Assertions.assertDoesNotThrow(() -> jwtValidator.validate(validToken, keyPair.getPublic()));
     }
 
@@ -106,7 +114,7 @@ class JWTValidatorTest {
 
     @Test
     void givenInvalidTokenWhenValidateLegacyTokenThenThrowTokenExpiredException() {
-        String invalidToken = utils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().minusSeconds(3_600_000L), "jwtId");
+        String invalidToken = JWTValidatorUtils.generateLegacyToken(keyPair, "a2a", Instant.now(), Instant.now().minusSeconds(3_600_000L), "jwtId");
         PublicKey publicKey = keyPair.getPublic();
         assertThrows(TokenExpiredException.class, () ->jwtValidator.validate(invalidToken, publicKey));
     }

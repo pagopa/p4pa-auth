@@ -1,10 +1,14 @@
 package it.gov.pagopa.payhub.auth.service.user.registration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
 public class FiscalCodeObfuscatorService {
     public String obfuscate(String fiscalCode){
+        if(StringUtils.isEmpty(fiscalCode)) {
+            return null;
+        }
         char[] arr = fiscalCode.toCharArray();
         if(arr.length >= 6){
             arr[1]='X';
