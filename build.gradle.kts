@@ -66,6 +66,9 @@ val kafkaAppender = "0.2.0-RC2"
 val commonsLang3Version = "3.20.0"
 val lz4JavaVersion = "1.11.0"
 
+// fix CVE
+val nettyVersion= "4.2.13.Final"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
@@ -99,6 +102,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
     implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
+
+    // Fix CVE
+    implementation("io.netty:netty-codec-dns:$nettyVersion") // CVE-2026-42579
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
