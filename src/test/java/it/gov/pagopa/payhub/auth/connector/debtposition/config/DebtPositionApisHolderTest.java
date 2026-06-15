@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.Set;
@@ -27,6 +28,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
         DebtPositionApiClientConfig clientConfig = DebtPositionApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .printBodyWhenError(true)
                 .build();
         debtPositionApisHolder = new DebtPositionApisHolder(clientConfig, restTemplateBuilderMock);
     }
@@ -46,6 +48,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                         .deleteOperators(1L, Set.of("operatorExternalUserId")),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
+        Mockito.verify(restTemplateMock).setErrorHandler(Mockito.any(ResponseErrorHandler.class));
     }
 
 }
