@@ -19,8 +19,8 @@ public class DebtPositionTypeOrgOperatorClient {
         try {
             debtPositionApisHolder.getDebtPositionTypeOrgOperatorsApi(accessToken)
                     .saveDefaultTechnicalDebtPositionTypeOrgOperatorsForOperator(operatorExternalUserId, organizationId);
-        } catch (HttpClientErrorException.NotFound e) {
-            log.warn("Error in saving default technical DebtPositionTypeOrgs for operator with operatorExternalUserId {} and organizationId {}", operatorExternalUserId, organizationId);
+        } catch (HttpClientErrorException.Conflict e) {
+            log.warn("Default technical DebtPositionTypeOrgs already assigned to operator with operatorExternalUserId {} and organizationId {}", operatorExternalUserId, organizationId);
         }
     }
 
