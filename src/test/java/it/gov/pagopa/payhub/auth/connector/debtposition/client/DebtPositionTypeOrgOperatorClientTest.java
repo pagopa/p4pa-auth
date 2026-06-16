@@ -36,7 +36,7 @@ class DebtPositionTypeOrgOperatorClientTest {
     }
 
     @Test
-    void whenGetOrganizationByIpaCodeThenInvokeWithAccessToken() {
+    void givenNoExceptionWhenSaveDefaultTechnicalDebtPositionTypeOrgForOperatorThenOk() {
         //GIVEN
         String operatorExternalUserId = "operatorExternalUserId";
         Long organizationId = 1L;
@@ -62,34 +62,7 @@ class DebtPositionTypeOrgOperatorClientTest {
     }
 
     @Test
-    void givenConflictWhenGetOrganizationByIpaCodeThenDoNothing() {
-        //GIVEN
-        String operatorExternalUserId = "operatorExternalUserId";
-        Long organizationId = 1L;
-        String accessToken = "ACCESSTOKEN";
-        HttpClientErrorException conflictException = HttpClientErrorException.create(HttpStatus.CONFLICT, "Conflict", null, null, null);
-
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgOperatorsApi(accessToken))
-                .thenReturn(debtPositionTypeOrgOperatorsApiMock);
-        Mockito.doThrow(conflictException)
-                .when(debtPositionTypeOrgOperatorsApiMock)
-                .saveDefaultTechnicalDebtPositionTypeOrgOperatorsForOperator(
-                        operatorExternalUserId,
-                        organizationId
-                );
-
-        //WHEN,THEN
-        Assertions.assertDoesNotThrow(
-                () -> client.saveDefaultTechnicalDebtPositionTypeOrgForOperator(
-                        operatorExternalUserId,
-                        organizationId,
-                        accessToken
-                )
-        );
-    }
-
-    @Test
-    void givenGenericHttpExceptionWhenGetOrganizationByIpaCodeThenThrowIt() {
+    void givenGenericHttpExceptionWhenSaveDefaultTechnicalDebtPositionTypeOrgForOperatorThenThrowIt() {
         //GIVEN
         String operatorExternalUserId = "operatorExternalUserId";
         Long organizationId = 1L;
