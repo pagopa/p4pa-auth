@@ -4,7 +4,10 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.model.User;
+import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
+import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
+import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,16 +25,24 @@ class IamUserRegistrationServiceTest {
 
     @Mock
     private UserService userServiceMock;
+    @Mock
+    private AccessTokenBuilderService accessTokenBuilderServiceMock;
+    @Mock
+    private TokenStoreService tokenStoreServiceMock;
 
     private IamUserRegistrationService service;
 
     void init(boolean isOrganizationAccessMode) {
-        service = new IamUserRegistrationService(isOrganizationAccessMode, userServiceMock);
+        service = new IamUserRegistrationService(isOrganizationAccessMode, userServiceMock, accessTokenBuilderServiceMock, tokenStoreServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInvocation() {
-        Mockito.verifyNoMoreInteractions(userServiceMock);
+        Mockito.verifyNoMoreInteractions(
+                userServiceMock,
+                accessTokenBuilderServiceMock,
+                tokenStoreServiceMock
+        );
     }
 
     @Test
@@ -40,11 +51,18 @@ class IamUserRegistrationServiceTest {
         init(false);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
+        AccessToken expectedAccessToken = new AccessToken();
+        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
+        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
+                .thenReturn(expectedAccessToken);
+        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
+                .thenReturn(userInfoUserPair.getFirst());
         // When
-        service.registerUser(userInfoUserPair.getFirst());
+        AccessToken actualAccessToken = service.registerUser(userInfoUserPair.getFirst());
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
+        Assertions.assertEquals(expectedAccessToken, actualAccessToken);
     }
 
     @Test
@@ -53,6 +71,13 @@ class IamUserRegistrationServiceTest {
         init(false);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
         userInfoUserPair.getFirst().setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
+
+        AccessToken expectedAccessToken = new AccessToken();
+        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
+        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
+                .thenReturn(expectedAccessToken);
+        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
+                .thenReturn(userInfoUserPair.getFirst());
 
         // When
         service.registerUser(userInfoUserPair.getFirst());
@@ -67,13 +92,20 @@ class IamUserRegistrationServiceTest {
         init(true);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
+        AccessToken expectedAccessToken = new AccessToken();
+        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
+        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
+                .thenReturn(expectedAccessToken);
+        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
+                .thenReturn(userInfoUserPair.getFirst());
+
         // When
-        User result = service.registerUser(userInfoUserPair.getFirst());
+        AccessToken actualAccessToken = service.registerUser(userInfoUserPair.getFirst());
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
-        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"));
-        Assertions.assertSame(userInfoUserPair.getSecond(), result);
+        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"), "ACCESS_TOKEN");
+        Assertions.assertSame(expectedAccessToken, actualAccessToken);
     }
 
     @Test
@@ -83,6 +115,13 @@ class IamUserRegistrationServiceTest {
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
         IamUserInfoDTO userInfo = userInfoUserPair.getFirst();
         userInfo.setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
+
+        AccessToken expectedAccessToken = new AccessToken();
+        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
+        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
+                .thenReturn(expectedAccessToken);
+        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
+                .thenReturn(userInfoUserPair.getFirst());
 
         // When
         InvalidOrganizationAccessDataException exception = Assertions.assertThrows(InvalidOrganizationAccessDataException.class, () -> service.registerUser(userInfo));
@@ -97,8 +136,8 @@ class IamUserRegistrationServiceTest {
         Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName());
     }
 
-    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, String email, Set<String> roles) {
-        Mockito.verify(userServiceMock).registerOperator(user.getUserId(), organizationIpaCode, roles, email);
+    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, String email, Set<String> roles, String accessToken) {
+        Mockito.verify(userServiceMock).registerOperator(user, organizationIpaCode, roles, email, accessToken);
     }
 
     private Pair<IamUserInfoDTO, User> configureUserServiceMock() {

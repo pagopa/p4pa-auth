@@ -18,7 +18,7 @@ public interface AuthzService {
 
     void deleteOrganizationOperatorByExternalUserId(String organizationIpaCode, String externalUserId);
 
-    OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest);
+    OperatorDTO createOrganizationOperator(String organizationIpaCode, CreateOperatorRequest createOperatorRequest, String accessToken);
 
     UserDTO createUser(UserDTO user);
 

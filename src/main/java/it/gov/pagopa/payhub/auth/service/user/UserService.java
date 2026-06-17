@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface UserService {
     User registerUser(String externalUserId, String fiscalCode, String iamIssuer, String firstName, String lastName);
-    Operator registerOperator(String userId, String organizationIpaCode, Set<String> roles, String email);
+    Operator registerOperator(User user, String organizationIpaCode, Set<String> roles, String email, String accessToken);
     UserInfo getUserInfo(String accessToken);
     UserInfo getUserInfoFromMappedExternalUserId(String mappedExternalUserId, String accessToken);
     Page<OperatorDTO> retrieveOrganizationOperators(String organizationIpaCode, Pageable pageable);

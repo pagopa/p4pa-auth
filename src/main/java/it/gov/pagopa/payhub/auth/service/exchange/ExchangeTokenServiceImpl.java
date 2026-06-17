@@ -2,12 +2,10 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -55,14 +53,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         }
         Map<String, Claim> claims = validateExternalTokenService.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
         IamUserInfoDTO iamUser = idTokenClaimsMapper.apply(claims);
-        User registeredUser = iamUserRegistrationService.registerUser(iamUser);
-        MDC.put("externalUserId", registeredUser.getMappedExternalUserId());
-        iamUser.setInnerUserId(registeredUser.getUserId());
-        iamUser.setMappedExternalUserId(registeredUser.getMappedExternalUserId());
-
-        AccessToken accessToken = accessTokenBuilderService.build(iamUser);
-        tokenStoreService.save(accessToken.getAccessToken(), iamUser);
-        return accessToken;
+        return iamUserRegistrationService.registerUser(iamUser);
     }
 
     private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer) {

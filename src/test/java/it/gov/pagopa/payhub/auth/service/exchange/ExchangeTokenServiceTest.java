@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
-import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
@@ -76,12 +75,8 @@ class ExchangeTokenServiceTest {
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
                 .thenReturn(iamUserInfo);
 
-        User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        Mockito.when(iamUserRegistrationServiceMock.registerUser(Mockito.same(iamUserInfo)))
-                .thenReturn(registeredUser);
-
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-        Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
+        Mockito.when(iamUserRegistrationServiceMock.registerUser(Mockito.same(iamUserInfo)))
                 .thenReturn(expectedAccessToken);
 
         // When
@@ -89,9 +84,6 @@ class ExchangeTokenServiceTest {
 
         // Then
         Assertions.assertSame(expectedAccessToken, result);
-        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
-        Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
     }
 
     @Test

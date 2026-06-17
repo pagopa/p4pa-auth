@@ -208,6 +208,7 @@ class AuthzServiceTest {
 
     @Test
     void whenCreateOrganizationOperatorThenVerifyOperator() {
+        String accessToken = "ACCESS_TOKEN";
         String organizationIpaCode = "organizationIpaCode";
         CreateOperatorRequest createOperatorRequest = new CreateOperatorRequest();
         createOperatorRequest.setExternalUserId("externalUserId");
@@ -223,11 +224,11 @@ class AuthzServiceTest {
 
         Mockito.when(userServiceMock.registerUser(createOperatorRequest.getExternalUserId(), createOperatorRequest.getFiscalCode(),
             "PU", createOperatorRequest.getFirstName(), createOperatorRequest.getLastName())).thenReturn(mockUser);
-        Mockito.when(userServiceMock.registerOperator(mockUser.getUserId(), organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles())
-                    , createOperatorRequest.getEmail())).thenReturn(mockOperator);
+        Mockito.when(userServiceMock.registerOperator(mockUser, organizationIpaCode, new HashSet<>(createOperatorRequest.getRoles())
+                    , createOperatorRequest.getEmail(), accessToken)).thenReturn(mockOperator);
         Mockito.when(operatorDTOMapper.apply(mockUser, mockOperator)).thenReturn(expectedOperatorDTO);
 
-        OperatorDTO actualOperatorDTO = service.createOrganizationOperator(organizationIpaCode, createOperatorRequest);
+        OperatorDTO actualOperatorDTO = service.createOrganizationOperator(organizationIpaCode, createOperatorRequest, accessToken);
 
         assertEquals(expectedOperatorDTO, actualOperatorDTO);
     }
