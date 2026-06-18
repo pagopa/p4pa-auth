@@ -22,6 +22,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 
+import static it.gov.pagopa.payhub.auth.service.exchange.ExchangeTokenServiceImpl.CachedTechnicalAccessToken;
+
 @ExtendWith(MockitoExtension.class)
 class ExchangeTokenServiceTest {
 
@@ -64,7 +66,7 @@ class ExchangeTokenServiceTest {
     }
 
     @Test
-    void givenNoTechnicalAccessTokenWhenPostTokenThenSuccess(){
+    void givenNoCachedTechnicalAccessTokenWhenPostTokenThenSuccess() {
         // Given
         String clientId="CLIENT_ID";
         String subjectToken="SUBJECT_TOKEN";
@@ -102,7 +104,7 @@ class ExchangeTokenServiceTest {
     }
 
     @Test
-    void givenExpiredAccessTechnicalTokenWhenPostTokenThenSuccess() {
+    void givenCachedTechnicalAccessTokenWithNullTokenStringWhenPostTokenThenSuccess() {
         // Given
         String clientId="CLIENT_ID";
         String subjectToken="SUBJECT_TOKEN";
@@ -110,7 +112,10 @@ class ExchangeTokenServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
-        String technicalAccessTokenString = injectTechnicalAccessTokenWithExpirationDate(Instant.now().minus(1, ChronoUnit.HOURS));
+        injectCachedTechnicalAccessToken(
+                null,
+                Instant.now().plus(1, ChronoUnit.HOURS)
+        );
 
         HashMap<String, Claim> expectedClaims = new HashMap<>();
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
@@ -121,13 +126,13 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        AccessToken technicalAccessToken = AccessToken.builder().accessToken(technicalAccessTokenString).expiresIn(3600).build();
+        AccessToken technicalAccessToken = AccessToken.builder().accessToken("technicalAccessToken").expiresIn(3600).build();
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
                 .thenReturn(expectedAccessToken);
 
-        Mockito.when(iamUserRegistrationServiceMock.registerUser(iamUserInfo, technicalAccessTokenString))
+        Mockito.when(iamUserRegistrationServiceMock.registerUser(iamUserInfo, technicalAccessToken.getAccessToken()))
                 .thenReturn(registeredUser);
 
         // When
@@ -142,7 +147,7 @@ class ExchangeTokenServiceTest {
     }
 
     @Test
-    void givenValidTechnicalAccessTokenWhenPostTokenThenSuccess() {
+    void givenExpiredCachedTechnicalAccessTokenWhenPostTokenThenSuccess() {
         // Given
         String clientId="CLIENT_ID";
         String subjectToken="SUBJECT_TOKEN";
@@ -150,7 +155,53 @@ class ExchangeTokenServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
-        String technicalAccessTokenString = injectTechnicalAccessTokenWithExpirationDate(Instant.now().plus(1, ChronoUnit.HOURS));
+        CachedTechnicalAccessToken cachedTechnicalAccessToken = injectCachedTechnicalAccessToken(
+                "technicalAccessToken",
+                Instant.now().minus(1, ChronoUnit.HOURS)
+        );
+
+        HashMap<String, Claim> expectedClaims = new HashMap<>();
+        Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
+                .thenReturn(expectedClaims);
+
+        IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
+                .thenReturn(iamUserInfo);
+
+        User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
+        AccessToken technicalAccessToken = AccessToken.builder().accessToken(cachedTechnicalAccessToken.tokenString()).expiresIn(3600).build();
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
+        Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
+                .thenReturn(technicalAccessToken)
+                .thenReturn(expectedAccessToken);
+
+        Mockito.when(iamUserRegistrationServiceMock.registerUser(iamUserInfo, technicalAccessToken.getAccessToken()))
+                .thenReturn(registeredUser);
+
+        // When
+        AccessToken result = service.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
+
+        // Then
+        Assertions.assertSame(expectedAccessToken, result);
+        Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
+        Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
+        Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
+    }
+
+    @Test
+    void givenValidCachedTechnicalAccessTokenWhenPostTokenThenSuccess() {
+        // Given
+        String clientId="CLIENT_ID";
+        String subjectToken="SUBJECT_TOKEN";
+        String subjectIssuer="SUBJECT_ISSUER";
+        String subjectTokenType="SUBJECT_TOKEN_TYPE";
+        String scope="SCOPE";
+
+        CachedTechnicalAccessToken cachedTechnicalAccessToken = injectCachedTechnicalAccessToken(
+                "technicalAccessToken",
+                Instant.now().plus(1, ChronoUnit.HOURS)
+        );
 
         HashMap<String, Claim> expectedClaims = new HashMap<>();
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
@@ -165,7 +216,7 @@ class ExchangeTokenServiceTest {
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(expectedAccessToken);
 
-        Mockito.when(iamUserRegistrationServiceMock.registerUser(iamUserInfo, technicalAccessTokenString))
+        Mockito.when(iamUserRegistrationServiceMock.registerUser(iamUserInfo, cachedTechnicalAccessToken.tokenString()))
                 .thenReturn(registeredUser);
 
         // When
@@ -179,15 +230,13 @@ class ExchangeTokenServiceTest {
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
     }
 
-    private String injectTechnicalAccessTokenWithExpirationDate(Instant expirationInstant) {
-        String accessTokenString = "technicalAccessToken";
-        ExchangeTokenServiceImpl.CachedTechnicalAccessToken cachedTechnicalAccessToken = new ExchangeTokenServiceImpl.CachedTechnicalAccessToken(
+    private CachedTechnicalAccessToken injectCachedTechnicalAccessToken(String accessTokenString, Instant expirationInstant) {
+        CachedTechnicalAccessToken cachedTechnicalAccessToken = new ExchangeTokenServiceImpl.CachedTechnicalAccessToken(
                 accessTokenString,
                 expirationInstant.atZone(Constants.ZONEID).toOffsetDateTime()
         );
         ReflectionTestUtils.setField(service, "cachedTechnicalAccessToken", cachedTechnicalAccessToken);
-
-        return accessTokenString;
+        return cachedTechnicalAccessToken;
     }
 
     @Test
