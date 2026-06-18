@@ -135,5 +135,8 @@ class JsonConfigTest {
       j3JsonMapper.readValue(invalidJson, SampleUknownFieldsNotAllowedDTO.class));
     Assertions.assertThrows(com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException.class, () ->
       j2ObjectMapper.readValue(invalidJson, SampleUknownFieldsNotAllowedDTO.class));
+
+    j3JsonMapper.readValue(invalidJson, SampleDTO.class);
+    j2ObjectMapper.readValue(invalidJson, SampleDTO.class);
   }
 }
