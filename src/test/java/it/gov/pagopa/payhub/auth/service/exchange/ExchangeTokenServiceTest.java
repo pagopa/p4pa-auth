@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
-import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +28,7 @@ class ExchangeTokenServiceTest {
 
     private static final String TECHNICAL_ACCESS_TOKEN_STRING = "technicalAccessToken";
     private static final String ACCESS_TOKEN_STRING = "accessToken";
+    private static final int EXPIRES_IN_SECONDS = 3600;
 
     @Mock
     private ValidateExternalTokenService validateExternalTokenServiceMock;
@@ -86,7 +86,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(3600).build();
+        AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(EXPIRES_IN_SECONDS).build();
         AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
@@ -129,7 +129,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(3600).build();
+        AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(EXPIRES_IN_SECONDS).build();
         AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
@@ -172,7 +172,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(3600).build();
+        AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(EXPIRES_IN_SECONDS).build();
         AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
