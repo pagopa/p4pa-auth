@@ -2,20 +2,20 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
-import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Set;
+
+import static it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService.PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX;
 
 @Service
 @Slf4j
@@ -25,7 +25,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
     private static final Set<String> FAKE_AUTH_ENABLED_ENVS = Set.of("DEV", "UAT");
 
-    private static final String TECHNICAL_EXTERNAL_USER_ID = "piattaforma-unitaria";
+    private static final String PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID = Client2UserInfoMapper.buildSystemMappedExternalUserId(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
 
     private CachedTechnicalAccessToken cachedTechnicalAccessToken;
 
@@ -91,7 +91,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
     }
 
     private CachedTechnicalAccessToken getAndCacheTechnicalAccessToken(IamUserInfoDTO iamUser) {
-        iamUser.setMappedExternalUserId(TECHNICAL_EXTERNAL_USER_ID);
+        iamUser.setMappedExternalUserId(PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID);
         AccessToken technicalAccessToken = accessTokenBuilderService.build(iamUser);
         cachedTechnicalAccessToken = new CachedTechnicalAccessToken(
                 technicalAccessToken.getAccessToken(),
