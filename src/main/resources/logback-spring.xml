@@ -18,22 +18,6 @@
         </encoder>
     </appender>
 
-    <appender name="SYNC_AUDIT"
-              class="ch.qos.logback.core.ConsoleAppender">
-        <encoder
-                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="AUDIT"
-              class="ch.qos.logback.classic.AsyncAppender">
-        <neverBlock>true</neverBlock>
-        <queueSize>${ASYNC_LOG_QUEUE_SIZE:-500000}</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-        <appender-ref ref="SYNC_AUDIT"/>
-    </appender>
-
     <appender name="ASYNC_STDOUT"
               class="ch.qos.logback.classic.AsyncAppender">
         <neverBlock>true</neverBlock>
@@ -42,8 +26,28 @@
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <if condition='"TRUE".equalsIgnoreCase("${ENABLE_AUDIT_APPENDER}")'>
+    <condition class="ch.qos.logback.core.boolex.PropertyEqualityCondition">
+        <key>ENABLE_AUDIT_APPENDER</key>
+        <value>TRUE</value>
+    </condition>
+    <if>
         <then>
+            <appender name="SYNC_AUDIT"
+                      class="ch.qos.logback.core.ConsoleAppender">
+                <encoder
+                        class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                    <pattern>%msg%n</pattern>
+                </encoder>
+            </appender>
+
+            <appender name="AUDIT"
+                      class="ch.qos.logback.classic.AsyncAppender">
+                <neverBlock>true</neverBlock>
+                <queueSize>${ASYNC_LOG_QUEUE_SIZE:-500000}</queueSize>
+                <discardingThreshold>0</discardingThreshold>
+                <appender-ref ref="SYNC_AUDIT"/>
+            </appender>
+
             <appender name="SYNC_KAFKA_AUDIT" class="com.github.danielwegener.logback.kafka.KafkaAppender">
                 <encoder>
                     <pattern>%msg%n</pattern>
@@ -66,19 +70,26 @@
                 <appender-ref ref="SYNC_KAFKA_AUDIT"/>
             </appender>
 
-            <logger name="AUDIT" additivity="false">
-                <appender-ref ref="AUDIT"/>
-                <if condition='"TRUE".equalsIgnoreCase("${ENABLE_KAFKA_AUDIT_APPENDER}")'>
-                    <then>
+            <condition class="ch.qos.logback.core.boolex.PropertyEqualityCondition">
+                <key>ENABLE_KAFKA_AUDIT_APPENDER</key>
+                <value>TRUE</value>
+            </condition>
+            <if>
+                <then>
+                    <logger name="AUDIT" additivity="false">
+                        <appender-ref ref="AUDIT"/>
                         <appender-ref ref="KAFKA_AUDIT"/>
-                    </then>
-                </if>
-            </logger>
+                    </logger>
+                </then>
+                <else>
+                    <logger name="AUDIT" additivity="false">
+                        <appender-ref ref="AUDIT"/>
+                    </logger>
+                </else>
+            </if>
         </then>
         <else>
-            <logger name="AUDIT" additivity="false">
-                <appender-ref ref="AUDIT"/>
-            </logger>
+            <logger name="AUDIT" additivity="false" level="OFF" />
         </else>
     </if>
 
