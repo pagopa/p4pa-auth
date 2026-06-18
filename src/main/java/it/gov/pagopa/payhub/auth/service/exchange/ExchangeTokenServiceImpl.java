@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,11 +70,12 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
     }
 
     private String getTechnicalAccessToken(IamUserInfoDTO iamUser) {
-        if(technicalAccessToken != null && JWT.decode(technicalAccessToken).getExpiresAt().after(Date.from(Instant.now()))) {
+        if(technicalAccessToken != null && Instant.now().isBefore(JWT.decode(technicalAccessToken).getExpiresAt().toInstant())) {
             return technicalAccessToken;
         }
         iamUser.setMappedExternalUserId("piattaforma-unitaria");
-        return technicalAccessToken = accessTokenBuilderService.build(iamUser).getAccessToken();
+        technicalAccessToken = accessTokenBuilderService.build(iamUser).getAccessToken();
+        return technicalAccessToken;
     }
 
     private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer) {
