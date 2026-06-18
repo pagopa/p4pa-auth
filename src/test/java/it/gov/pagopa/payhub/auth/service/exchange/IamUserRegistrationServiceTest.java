@@ -4,10 +4,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationAccessDataException;
 import it.gov.pagopa.payhub.auth.model.User;
-import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
-import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.user.UserService;
-import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,62 +22,42 @@ class IamUserRegistrationServiceTest {
 
     @Mock
     private UserService userServiceMock;
-    @Mock
-    private AccessTokenBuilderService accessTokenBuilderServiceMock;
-    @Mock
-    private TokenStoreService tokenStoreServiceMock;
 
     private IamUserRegistrationService service;
 
     void init(boolean isOrganizationAccessMode) {
-        service = new IamUserRegistrationService(isOrganizationAccessMode, userServiceMock, accessTokenBuilderServiceMock, tokenStoreServiceMock);
+        service = new IamUserRegistrationService(isOrganizationAccessMode, userServiceMock);
     }
 
     @AfterEach
     void verifyNotMoreInvocation() {
-        Mockito.verifyNoMoreInteractions(
-                userServiceMock,
-                accessTokenBuilderServiceMock,
-                tokenStoreServiceMock
-        );
+        Mockito.verifyNoMoreInteractions(userServiceMock);
     }
 
     @Test
     void givenNoOrganizationAccessModeWhenRegisterUserThenOk() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(false);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
-        AccessToken expectedAccessToken = new AccessToken();
-        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
-        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
-                .thenReturn(expectedAccessToken);
-        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
-                .thenReturn(userInfoUserPair.getFirst());
         // When
-        AccessToken actualAccessToken = service.registerUser(userInfoUserPair.getFirst());
+        service.registerUser(userInfoUserPair.getFirst(), accessToken);
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
-        Assertions.assertEquals(expectedAccessToken, actualAccessToken);
     }
 
     @Test
     void givenNoOrganizationAccessModeAndNoOrganizationDataWhenRegisterUserThenThrowInvalidOrganizationAccessDataException() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(false);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
         userInfoUserPair.getFirst().setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
 
-        AccessToken expectedAccessToken = new AccessToken();
-        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
-        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
-                .thenReturn(expectedAccessToken);
-        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
-                .thenReturn(userInfoUserPair.getFirst());
-
         // When
-        service.registerUser(userInfoUserPair.getFirst());
+        service.registerUser(userInfoUserPair.getFirst(), accessToken);
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
@@ -89,42 +66,30 @@ class IamUserRegistrationServiceTest {
     @Test
     void givenValidOrganizationAccessModeWhenRegisterUserThenOk() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(true);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
-        AccessToken expectedAccessToken = new AccessToken();
-        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
-        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
-                .thenReturn(expectedAccessToken);
-        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
-                .thenReturn(userInfoUserPair.getFirst());
-
         // When
-        AccessToken actualAccessToken = service.registerUser(userInfoUserPair.getFirst());
+        User result = service.registerUser(userInfoUserPair.getFirst(), accessToken);
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
-        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"), "ACCESS_TOKEN");
-        Assertions.assertSame(expectedAccessToken, actualAccessToken);
+        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"), accessToken);
+        Assertions.assertSame(userInfoUserPair.getSecond(), result);
     }
 
     @Test
     void givenInvalidOrganizationAccessModeWhenRegisterUserThenThrowInvalidOrganizationAccessDataException() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(true);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
         IamUserInfoDTO userInfo = userInfoUserPair.getFirst();
         userInfo.setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
 
-        AccessToken expectedAccessToken = new AccessToken();
-        expectedAccessToken.setAccessToken("ACCESS_TOKEN");
-        Mockito.when(accessTokenBuilderServiceMock.build(userInfoUserPair.getFirst()))
-                .thenReturn(expectedAccessToken);
-        Mockito.when(tokenStoreServiceMock.save(expectedAccessToken.getAccessToken(), userInfoUserPair.getFirst()))
-                .thenReturn(userInfoUserPair.getFirst());
-
         // When
-        InvalidOrganizationAccessDataException exception = Assertions.assertThrows(InvalidOrganizationAccessDataException.class, () -> service.registerUser(userInfo));
+        InvalidOrganizationAccessDataException exception = Assertions.assertThrows(InvalidOrganizationAccessDataException.class, () -> service.registerUser(userInfo, accessToken));
 
         // Then
         verifyRegisterUserInvocation(userInfo);

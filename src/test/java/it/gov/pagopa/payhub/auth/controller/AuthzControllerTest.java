@@ -227,7 +227,7 @@ class AuthzControllerTest {
     @Test
     void givenIsNotImplementedWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
-        String body = AuthzControllerNoOrganizationAccessModeTest.buildCreateOperatorRequest();
+        String body = AuthzControllerNoOrganizationAccessModeTest.buildAndSerializeCreateOperatorRequest();
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                     .mappedExternalUserId("ABCDEF12A01A111U")

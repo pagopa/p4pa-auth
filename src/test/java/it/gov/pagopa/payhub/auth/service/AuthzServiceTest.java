@@ -208,6 +208,7 @@ class AuthzServiceTest {
 
     @Test
     void whenCreateOrganizationOperatorThenVerifyOperator() {
+        //GIVEN
         String accessToken = "ACCESS_TOKEN";
         String organizationIpaCode = "organizationIpaCode";
         CreateOperatorRequest createOperatorRequest = new CreateOperatorRequest();
@@ -228,8 +229,10 @@ class AuthzServiceTest {
                     , createOperatorRequest.getEmail(), accessToken)).thenReturn(mockOperator);
         Mockito.when(operatorDTOMapper.apply(mockUser, mockOperator)).thenReturn(expectedOperatorDTO);
 
+        //WHEN
         OperatorDTO actualOperatorDTO = service.createOrganizationOperator(organizationIpaCode, createOperatorRequest, accessToken);
 
+        //THEN
         assertEquals(expectedOperatorDTO, actualOperatorDTO);
     }
 

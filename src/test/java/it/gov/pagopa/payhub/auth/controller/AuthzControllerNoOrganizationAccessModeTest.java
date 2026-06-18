@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.auth.service.*;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.*;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthzControllerImpl.class)
@@ -64,7 +66,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
     @Test
     void givenUnauthorizedUserWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
-        String body = buildCreateOperatorRequest();
+        String body = buildAndSerializeCreateOperatorRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
@@ -86,7 +88,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
     @Test
     void givenAuthorizedUserWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
-        String body = buildCreateOperatorRequest();
+        String body = buildAndSerializeCreateOperatorRequest();
 
         Mockito.when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
@@ -96,16 +98,26 @@ class AuthzControllerNoOrganizationAccessModeTest {
                     .build()))
                 .build());
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        OperatorDTO expectedOperator = new OperatorDTO();
+        expectedOperator.operatorId("operatorId");
+        Mockito.when(authzServiceMock.createOrganizationOperator(organizationIpaCode, buildCreateOperatorRequest(), "accessToken"))
+                .thenReturn(expectedOperator);
 
         mockMvc.perform(
             post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk())
+        .andExpect(jsonPath("$.operatorId").value("operatorId"));
     }
 
-    public static String buildCreateOperatorRequest() {
+    public static String buildAndSerializeCreateOperatorRequest() {
+        Gson gson = new Gson();
+        return gson.toJson(buildCreateOperatorRequest());
+    }
+
+    private static CreateOperatorRequest buildCreateOperatorRequest() {
         CreateOperatorRequest createOperatorRequest = new CreateOperatorRequest();
         createOperatorRequest.setExternalUserId("externalUserId");
         createOperatorRequest.setFiscalCode("fiscalCode");
@@ -113,8 +125,7 @@ class AuthzControllerNoOrganizationAccessModeTest {
         createOperatorRequest.setLastName("lastName");
         createOperatorRequest.setEmail("email@example.com");
         createOperatorRequest.setRoles(List.of("ROLE_ADMIN"));
-        Gson gson = new Gson();
-        return gson.toJson(createOperatorRequest);
+        return createOperatorRequest;
     }
 
     // end region

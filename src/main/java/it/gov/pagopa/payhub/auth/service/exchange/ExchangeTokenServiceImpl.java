@@ -1,14 +1,19 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +24,8 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
     public static final String SUBJECT_TOKEN_TYPE_FAKE = "FAKE-AUTH";
 
     private static final Set<String> FAKE_AUTH_ENABLED_ENVS = Set.of("DEV", "UAT");
+
+    private String technicalAccessToken;
 
     private final String env;
     private final ValidateExternalTokenService validateExternalTokenService;
@@ -53,7 +60,22 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         }
         Map<String, Claim> claims = validateExternalTokenService.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
         IamUserInfoDTO iamUser = idTokenClaimsMapper.apply(claims);
-        return iamUserRegistrationService.registerUser(iamUser);
+        User registeredUser = iamUserRegistrationService.registerUser(iamUser, getTechnicalAccessToken(iamUser));
+        MDC.put("externalUserId", registeredUser.getMappedExternalUserId());
+        iamUser.setInnerUserId(registeredUser.getUserId());
+        iamUser.setMappedExternalUserId(registeredUser.getMappedExternalUserId());
+
+        AccessToken accessToken = accessTokenBuilderService.build(iamUser);
+        tokenStoreService.save(accessToken.getAccessToken(), iamUser);
+        return accessToken;
+    }
+
+    private String getTechnicalAccessToken(IamUserInfoDTO iamUser) {
+        if(technicalAccessToken != null && JWT.decode(technicalAccessToken).getExpiresAt().after(Date.from(Instant.now()))) {
+            return technicalAccessToken;
+        }
+        iamUser.setMappedExternalUserId("piattaforma-unitaria");
+        return technicalAccessToken = accessTokenBuilderService.build(iamUser).getAccessToken();
     }
 
     private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer) {
