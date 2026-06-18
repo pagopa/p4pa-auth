@@ -33,7 +33,7 @@ public class OperatorRegistrationService {
         Operator operator = operatorsRepository.registerOperator(user.getUserId(), organizationIpaCode, email, roles);
         Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken);
         if(organization == null) {
-            log.warn("Skipping saving of default technical DPTypeOrgs for user with userId {} and organization {}",
+            log.info("Skipping saving of default technical DPTypeOrgs for user with userId {} and organization {}",
                     user.getUserId(), organizationIpaCode);
             return operator;
         }
