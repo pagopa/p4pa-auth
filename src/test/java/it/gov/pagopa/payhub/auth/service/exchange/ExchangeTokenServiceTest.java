@@ -236,7 +236,7 @@ class ExchangeTokenServiceTest {
     private void injectCachedTechnicalAccessToken(String accessTokenString, Instant expirationInstant) {
         CachedTechnicalAccessToken cachedTechnicalAccessToken = new ExchangeTokenServiceImpl.CachedTechnicalAccessToken(
                 accessTokenString,
-                expirationInstant.atZone(Constants.ZONEID).toOffsetDateTime()
+                expirationInstant.toEpochMilli()
         );
         ReflectionTestUtils.setField(service, "cachedTechnicalAccessToken", cachedTechnicalAccessToken);
     }

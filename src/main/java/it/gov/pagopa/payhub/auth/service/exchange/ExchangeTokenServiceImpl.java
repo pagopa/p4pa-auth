@@ -54,7 +54,8 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
     record CachedTechnicalAccessToken(
             String tokenString,
-            OffsetDateTime tokenExpirationOffsetDateTime) {}
+            Long tokenExpirationTimestampInMillis
+    ) {}
 
     @Override
     public AccessToken postToken(String clientId, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
@@ -85,7 +86,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
     private boolean isCachedTokenValid() {
         return cachedTechnicalAccessToken !=null &&
                 cachedTechnicalAccessToken.tokenString() != null &&
-                OffsetDateTime.now(Constants.ZONEID).isBefore(cachedTechnicalAccessToken.tokenExpirationOffsetDateTime());
+                System.currentTimeMillis() < cachedTechnicalAccessToken.tokenExpirationTimestampInMillis();
     }
 
     private CachedTechnicalAccessToken getAndCacheTechnicalAccessToken(IamUserInfoDTO iamUser) {
@@ -93,7 +94,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         AccessToken technicalAccessToken = accessTokenBuilderService.build(iamUser);
         cachedTechnicalAccessToken = new CachedTechnicalAccessToken(
                 technicalAccessToken.getAccessToken(),
-                OffsetDateTime.now(Constants.ZONEID).plusSeconds(technicalAccessToken.getExpiresIn())
+                System.currentTimeMillis() + (technicalAccessToken.getExpiresIn() * 1000L)
         );
         return cachedTechnicalAccessToken;
     }
