@@ -56,6 +56,7 @@ See [log configured pattern](/src/main/resources/logback-spring.xml).
 
 ### 🧩 Microservices
 * [p4pa-organization](https://github.com/pagopa/p4pa-organization): To retrieve organization info and add them to the user info.
+* [p4pa-debt-positions](https://github.com/pagopa/p4pa-debt-positions): To manage DeptPositionTypeOrg operator permissions.
 
 ### 🌍 External
 * External IAM - The IAM which will provide the id token used to authenticate users:
@@ -126,12 +127,16 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | DEFAULT_REST_TIMEOUT_READ_MILLIS                  | Default read timeout (milliseconds)       | 120000  |
 
 ##### 🧩 Microservices
-| ENV                                | DESCRIPTION                                    | DEFAULT |
-|------------------------------------|------------------------------------------------|---------|
-| ORGANIZATION_BASE_URL              | Organization microservice URL                  |         |
-| ORGANIZATION_MAX_ATTEMPTS          | Organization API max attempts                  | 3       |
-| ORGANIZATION_WAIT_TIME_MILLIS      | Organization retry waiting time (milliseconds) | 500     |
-| ORGANIZATION_PRINT_BODY_WHEN_ERROR | To print body when an error occurs             | true    |
+| ENV                                 | DESCRIPTION                                    | DEFAULT                            |
+|-------------------------------------|------------------------------------------------|------------------------------------|
+| ORGANIZATION_BASE_URL               | Organization microservice URL                  |                                    |
+| ORGANIZATION_MAX_ATTEMPTS           | Organization API max attempts                  | 3                                  |
+| ORGANIZATION_WAIT_TIME_MILLIS       | Organization retry waiting time (milliseconds) | 500                                |
+| ORGANIZATION_PRINT_BODY_WHEN_ERROR  | To print body when an error occurs             | true                               |
+| DEBT_POSITION_BASE_URL              | DebtPosition microservice URL                  | http://localhost:8080/debtposition |
+| DEBT_POSITION_MAX_ATTEMPTS          | DebtPosition API max attempts                  | 3                                  |
+| DEBT_POSITION_WAIT_TIME_MILLIS      | DebtPosition retry waiting time (milliseconds) | 500                                |
+| DEBT_POSITION_PRINT_BODY_WHEN_ERROR | To print body when an error occurs             | true                               |
 
 ##### 🌍 External services
 | ENV                         | DESCRIPTION                                                                                               | DEFAULT                              |
