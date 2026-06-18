@@ -40,7 +40,7 @@ class OperatorRegistrationServiceTest {
     }
 
     @Test
-    void whenRegisterOperatorThenReturnStoredOperator() {
+    void givenOrganizationFoundWhenRegisterOperatorThenReturnStoredOperator() {
         // Given
         String accessToken = "ACCESS_TOKEN";
         String organizationIpaCode = "ORGANIZATIONIPACODE";
@@ -69,5 +69,37 @@ class OperatorRegistrationServiceTest {
 
         // Then
         Assertions.assertSame(storedOperator, result);
+    }
+
+    @Test
+    void givenOrganizationNotFoundWhenRegisterOperatorThenReturnStoredOperator() {
+        // Given
+        String accessToken = "ACCESS_TOKEN";
+        String organizationIpaCode = "ORGANIZATIONIPACODE";
+        String email = "EMAIL";
+        Set<String> roles = Set.of("ROLE");
+        Operator storedOperator = new Operator();
+        Organization organization = new Organization();
+        organization.setOrganizationId(1L);
+        User user = new User();
+        user.setUserId("USERID");
+        user.setMappedExternalUserId("operatorExternalUserId");
+
+        Mockito.when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
+                .thenReturn(storedOperator);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(organizationIpaCode, accessToken))
+                .thenReturn(null);
+
+        // When
+        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, accessToken);
+
+        // Then
+        Assertions.assertSame(storedOperator, result);
+        Mockito.verify(debtPositionTypeOrgOperatorServiceMock, Mockito.times(0))
+                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+                        Mockito.anyString(),
+                        Mockito.anyLong(),
+                        Mockito.anyString()
+                );
     }
 }
