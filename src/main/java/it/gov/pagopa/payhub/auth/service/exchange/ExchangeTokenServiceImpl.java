@@ -24,6 +24,8 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
     private static final Set<String> FAKE_AUTH_ENABLED_ENVS = Set.of("DEV", "UAT");
 
+    private static final String TECHNICAL_EXTERNAL_USER_ID = "piattaforma-unitaria";
+
     private String technicalAccessToken;
 
     private final String env;
@@ -73,7 +75,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         if(technicalAccessToken != null && Instant.now().isBefore(JWT.decode(technicalAccessToken).getExpiresAt().toInstant())) {
             return technicalAccessToken;
         }
-        iamUser.setMappedExternalUserId("piattaforma-unitaria");
+        iamUser.setMappedExternalUserId(TECHNICAL_EXTERNAL_USER_ID);
         technicalAccessToken = accessTokenBuilderService.build(iamUser).getAccessToken();
         return technicalAccessToken;
     }
