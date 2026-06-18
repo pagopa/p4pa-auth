@@ -1,18 +1,18 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
-import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
+import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +26,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
     private static final String TECHNICAL_EXTERNAL_USER_ID = "piattaforma-unitaria";
 
-    private String technicalAccessToken;
+    private CachedTechnicalAccessToken cachedTechnicalAccessToken;
 
     private final String env;
     private final ValidateExternalTokenService validateExternalTokenService;
@@ -52,6 +52,10 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         this.fakeUserInfoService = fakeUserInfoService;
     }
 
+    record CachedTechnicalAccessToken(
+            String tokenString,
+            OffsetDateTime tokenExpirationOffsetDateTime) {}
+
     @Override
     public AccessToken postToken(String clientId, String subjectToken, String subjectIssuer, String subjectTokenType, String scope) {
         log.info("Client {} requested to exchange a {} token provided by {} asking for token-exchange grant type and scope {}",
@@ -72,12 +76,26 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
     }
 
     private String getTechnicalAccessToken(IamUserInfoDTO iamUser) {
-        if(technicalAccessToken != null && Instant.now().isBefore(JWT.decode(technicalAccessToken).getExpiresAt().toInstant())) {
-            return technicalAccessToken;
+        if(isCachedTokenValid()) {
+            return cachedTechnicalAccessToken.tokenString();
         }
+        return getAndCacheTechnicalAccessToken(iamUser).tokenString();
+    }
+
+    private boolean isCachedTokenValid() {
+        return cachedTechnicalAccessToken !=null &&
+                cachedTechnicalAccessToken.tokenString() != null &&
+                OffsetDateTime.now(Constants.ZONEID).isBefore(cachedTechnicalAccessToken.tokenExpirationOffsetDateTime());
+    }
+
+    private CachedTechnicalAccessToken getAndCacheTechnicalAccessToken(IamUserInfoDTO iamUser) {
         iamUser.setMappedExternalUserId(TECHNICAL_EXTERNAL_USER_ID);
-        technicalAccessToken = accessTokenBuilderService.build(iamUser).getAccessToken();
-        return technicalAccessToken;
+        AccessToken technicalAccessToken = accessTokenBuilderService.build(iamUser);
+        cachedTechnicalAccessToken = new CachedTechnicalAccessToken(
+                technicalAccessToken.getAccessToken(),
+                OffsetDateTime.now(Constants.ZONEID).plusSeconds(technicalAccessToken.getExpiresIn())
+        );
+        return cachedTechnicalAccessToken;
     }
 
     private AccessToken handleFakeAuth(String iamUserId, String subjectIssuer) {

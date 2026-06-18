@@ -1,13 +1,12 @@
 package it.gov.pagopa.payhub.auth.service.exchange;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
+import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,11 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -87,7 +81,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        AccessToken technicalAccessToken = AccessToken.builder().accessToken("technicalAccessToken").build();
+        AccessToken technicalAccessToken = AccessToken.builder().accessToken("technicalAccessToken").expiresIn(3600).build();
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
@@ -108,7 +102,7 @@ class ExchangeTokenServiceTest {
     }
 
     @Test
-    void givenExpiredAccessTechnicalTokenWhenPostTokenThenSuccess() throws NoSuchAlgorithmException {
+    void givenExpiredAccessTechnicalTokenWhenPostTokenThenSuccess() {
         // Given
         String clientId="CLIENT_ID";
         String subjectToken="SUBJECT_TOKEN";
@@ -116,7 +110,7 @@ class ExchangeTokenServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
 
-        injectTechnicalAccessTokenWithExpirationDate(Instant.now().minus(1, ChronoUnit.HOURS));
+        String technicalAccessTokenString = injectTechnicalAccessTokenWithExpirationDate(Instant.now().minus(1, ChronoUnit.HOURS));
 
         HashMap<String, Claim> expectedClaims = new HashMap<>();
         Mockito.when(validateExternalTokenServiceMock.validate(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
@@ -127,13 +121,13 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        AccessToken technicalAccessToken = AccessToken.builder().accessToken("technicalAccessToken").build();
+        AccessToken technicalAccessToken = AccessToken.builder().accessToken(technicalAccessTokenString).expiresIn(3600).build();
         AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
                 .thenReturn(expectedAccessToken);
 
-        Mockito.when(iamUserRegistrationServiceMock.registerUser(iamUserInfo, technicalAccessToken.getAccessToken()))
+        Mockito.when(iamUserRegistrationServiceMock.registerUser(iamUserInfo, technicalAccessTokenString))
                 .thenReturn(registeredUser);
 
         // When
@@ -148,7 +142,7 @@ class ExchangeTokenServiceTest {
     }
 
     @Test
-    void givenValidTechnicalAccessTokenWhenPostTokenThenSuccess() throws NoSuchAlgorithmException {
+    void givenValidTechnicalAccessTokenWhenPostTokenThenSuccess() {
         // Given
         String clientId="CLIENT_ID";
         String subjectToken="SUBJECT_TOKEN";
@@ -185,23 +179,15 @@ class ExchangeTokenServiceTest {
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
     }
 
-    private String injectTechnicalAccessTokenWithExpirationDate(Instant expirationInstant) throws NoSuchAlgorithmException {
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-        keyGen.initialize(2048);
-        KeyPair keyPair = keyGen.generateKeyPair();
-
-        Algorithm algorithm = Algorithm.RSA512(
-                (RSAPublicKey) keyPair.getPublic(),
-                (RSAPrivateKey) keyPair.getPrivate()
+    private String injectTechnicalAccessTokenWithExpirationDate(Instant expirationInstant) {
+        String accessTokenString = "technicalAccessToken";
+        ExchangeTokenServiceImpl.CachedTechnicalAccessToken cachedTechnicalAccessToken = new ExchangeTokenServiceImpl.CachedTechnicalAccessToken(
+                accessTokenString,
+                expirationInstant.atZone(Constants.ZONEID).toOffsetDateTime()
         );
+        ReflectionTestUtils.setField(service, "cachedTechnicalAccessToken", cachedTechnicalAccessToken);
 
-        String token = JWT.create()
-                .withExpiresAt(expirationInstant)
-                .sign(algorithm);
-
-        ReflectionTestUtils.setField(service, "technicalAccessToken", token);
-
-        return token;
+        return accessTokenString;
     }
 
     @Test
