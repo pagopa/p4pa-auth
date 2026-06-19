@@ -63,8 +63,8 @@ val caffeineVersion = "3.2.4"
 val httpClientVersion = "5.6.1"
 val httpCoreVersion = "5.4.2"
 val kafkaAppender = "0.2.0-RC2"
-val commonsLang3Version = "3.20.0"
 val lz4JavaVersion = "1.11.0"
+val commonsLang3Version = "3.20.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -198,7 +198,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
         mapOf(
             "dateLibrary" to "java8",
             "requestMappingMode" to "api_interface",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "interfaceOnly" to "true",
             "useTags" to "true",
             "useBeanValidation" to "true",
@@ -230,7 +231,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -266,7 +268,8 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",

@@ -16,6 +16,7 @@ import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -100,7 +101,7 @@ class JsonConfigTest {
     SampleDTO expectedResult = new SampleDTO();
     expectedResult.setName("NAME");
     expectedResult.setValue(42);
-    expectedResult.setDateTime(LocalDateTime.of(2025, 12, 22, 18, 17, 39, 940891000));
+    expectedResult.setDateTime(LocalDateTime.of(2025, Month.DECEMBER, 22, 18, 17, 39, 940891000));
     expectedResult.setOffsetDateTime(OffsetDateTime.of(2025, 12, 22, 18, 17, 39, 941234000, ZoneOffset.of("+01:00")));
     expectedResult.setImplicitField(expectedResult.getName());
 
