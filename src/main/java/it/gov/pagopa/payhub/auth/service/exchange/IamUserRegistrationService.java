@@ -27,7 +27,7 @@ public class IamUserRegistrationService {
         this.userService = userService;
     }
 
-    User registerUser(IamUserInfoDTO userInfo) {
+    User registerUser(IamUserInfoDTO userInfo, String accessToken) {
         User user = userService.registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName());
 
         if (organizationAccessMode) {
@@ -35,8 +35,8 @@ public class IamUserRegistrationService {
                 throw new InvalidOrganizationAccessDataException(ErrorCodeConstants.ERROR_CODES_ROLES_NOT_FOUND, "No roles configured for organizationAccess " + userInfo.getOrganizationAccess());
             }
 
-            userService.registerOperator(user.getUserId(), userInfo.getOrganizationAccess().getOrganizationIpaCode(),
-                new HashSet<>(userInfo.getOrganizationAccess().getRoles()), userInfo.getOrganizationAccess().getEmail());
+            userService.registerOperator(user, userInfo.getOrganizationAccess().getOrganizationIpaCode(),
+                new HashSet<>(userInfo.getOrganizationAccess().getRoles()), userInfo.getOrganizationAccess().getEmail(), accessToken);
         }
 
         return user;

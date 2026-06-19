@@ -37,11 +37,12 @@ class IamUserRegistrationServiceTest {
     @Test
     void givenNoOrganizationAccessModeWhenRegisterUserThenOk() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(false);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
         // When
-        service.registerUser(userInfoUserPair.getFirst());
+        service.registerUser(userInfoUserPair.getFirst(), accessToken);
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
@@ -50,12 +51,13 @@ class IamUserRegistrationServiceTest {
     @Test
     void givenNoOrganizationAccessModeAndNoOrganizationDataWhenRegisterUserThenThrowInvalidOrganizationAccessDataException() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(false);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
         userInfoUserPair.getFirst().setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
 
         // When
-        service.registerUser(userInfoUserPair.getFirst());
+        service.registerUser(userInfoUserPair.getFirst(), accessToken);
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
@@ -64,28 +66,30 @@ class IamUserRegistrationServiceTest {
     @Test
     void givenValidOrganizationAccessModeWhenRegisterUserThenOk() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(true);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
 
         // When
-        User result = service.registerUser(userInfoUserPair.getFirst());
+        User result = service.registerUser(userInfoUserPair.getFirst(), accessToken);
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
-        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"));
+        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"), accessToken);
         Assertions.assertSame(userInfoUserPair.getSecond(), result);
     }
 
     @Test
     void givenInvalidOrganizationAccessModeWhenRegisterUserThenThrowInvalidOrganizationAccessDataException() {
         // Given
+        String accessToken = "ACCESS_TOKEN";
         init(true);
         Pair<IamUserInfoDTO, User> userInfoUserPair = configureUserServiceMock();
         IamUserInfoDTO userInfo = userInfoUserPair.getFirst();
         userInfo.setOrganizationAccess(IamUserOrganizationRolesDTO.builder().organizationIpaCode("ORG2").build());
 
         // When
-        InvalidOrganizationAccessDataException exception = Assertions.assertThrows(InvalidOrganizationAccessDataException.class, () -> service.registerUser(userInfo));
+        InvalidOrganizationAccessDataException exception = Assertions.assertThrows(InvalidOrganizationAccessDataException.class, () -> service.registerUser(userInfo, accessToken));
 
         // Then
         verifyRegisterUserInvocation(userInfo);
@@ -97,8 +101,8 @@ class IamUserRegistrationServiceTest {
         Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName());
     }
 
-    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, String email, Set<String> roles) {
-        Mockito.verify(userServiceMock).registerOperator(user.getUserId(), organizationIpaCode, roles, email);
+    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, String email, Set<String> roles, String accessToken) {
+        Mockito.verify(userServiceMock).registerOperator(user, organizationIpaCode, roles, email, accessToken);
     }
 
     private Pair<IamUserInfoDTO, User> configureUserServiceMock() {
