@@ -86,7 +86,8 @@ public class AuthzControllerImpl implements AuthzApi {
         if(!SecurityUtils.isPrincipalAdmin(organizationIpaCode)){
             throw new UserUnauthorizedException("User not allowed to create operator");
         }
-        OperatorDTO operatorDTO = authzService.createOrganizationOperator(organizationIpaCode, createOperatorRequest);
+        String accessToken = SecurityUtils.getAccessToken();
+        OperatorDTO operatorDTO = authzService.createOrganizationOperator(organizationIpaCode, createOperatorRequest, accessToken);
         return ResponseEntity.ok(operatorDTO);
     }
 

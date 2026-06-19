@@ -123,17 +123,19 @@ class UserServiceTest {
     @Test
     void whenRegisterOperatorThenReturnStoredOperator() {
         // Given
-        String userId = "USERID";
+        String accessToken = "ACCESS_TOKEN";
         String organizationIpaCode = "ORGANIZATIONIPACODE";
         String email = "EMAIL";
         Set<String> roles = Set.of("ROLE");
         Operator storedOperator = new Operator();
+        User user = new User();
+        user.setUserId("USERID");
 
-        Mockito.when(operatorRegistrationServiceMock.registerOperator(userId, organizationIpaCode, roles, email))
+        Mockito.when(operatorRegistrationServiceMock.registerOperator(user, organizationIpaCode, roles, email, accessToken))
                 .thenReturn(storedOperator);
 
         // When
-        Operator result = service.registerOperator(userId, organizationIpaCode, roles, email);
+        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, accessToken);
 
         // Then
         Assertions.assertSame(storedOperator, result);
