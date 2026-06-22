@@ -7,7 +7,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
     java
-    id("org.springframework.boot") version "4.0.7"
+    id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
     id("org.sonarqube") version "7.3.1.8318"
