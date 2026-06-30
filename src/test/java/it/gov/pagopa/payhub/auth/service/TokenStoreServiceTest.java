@@ -32,4 +32,29 @@ class TokenStoreServiceTest {
         // Then
         Assertions.assertNull(result);
     }
+
+    @Test
+    void givenClaimsWhenSaveRefreshTokenThenReturnThem(){
+        // Given
+        String externalUserId = "EXTERNALUSERID";
+        String refreshToken = "RefreshToken";
+
+        // When
+        String result = service.saveRefreshToken(refreshToken, externalUserId);
+
+        // Then
+        Assertions.assertSame(externalUserId, result);
+    }
+
+    @Test
+    void givenRefreshTokenWhenLoadRefreshTokenThenNull(){
+        // Given
+        String refreshToken = "RefreshToken";
+
+        // When
+        String result = service.loadRefreshToken(refreshToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
 }
