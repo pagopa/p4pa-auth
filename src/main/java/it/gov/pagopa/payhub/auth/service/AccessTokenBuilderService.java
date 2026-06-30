@@ -27,7 +27,7 @@ import java.util.UUID;
 @Service
 public class AccessTokenBuilderService {
     public static final String ACCESS_TOKEN_TYPE = "JWT";
-    public static final String REFRESH_TOKEN_TYPE = "Refresh";
+    public static final String REFRESH_TOKEN_TYPE = "refresh_token";
     public static final String CLAIM_ORGANIZATION_IPA_CODE = "organizationIpaCode";
     private final String allowedAudience;
     private final int expireIn;
