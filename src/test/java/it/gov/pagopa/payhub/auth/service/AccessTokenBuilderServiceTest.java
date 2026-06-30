@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 public class AccessTokenBuilderServiceTest {
 
     public static final int EXPIRE_IN = 3600;
+    public static final int REFRESH_EXPIRE_IN = 6000;
 
     private static final String PRIVATE_KEY = """
             -----BEGIN RSA PRIVATE KEY-----
@@ -70,7 +71,7 @@ public class AccessTokenBuilderServiceTest {
     @BeforeEach
     void init() {
         DataCipherService dataCipherService = new DataCipherService("PSW", "PEPPER", new JsonMapper());
-        accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService);
+        accessTokenBuilderService = new AccessTokenBuilderService("APPLICATION_AUDIENCE", EXPIRE_IN, PRIVATE_KEY, PUBLIC_KEY, dataCipherService, REFRESH_EXPIRE_IN);
     }
 
     @Test

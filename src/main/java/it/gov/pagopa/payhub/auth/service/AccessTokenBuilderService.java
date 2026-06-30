@@ -27,9 +27,11 @@ import java.util.UUID;
 @Service
 public class AccessTokenBuilderService {
     public static final String ACCESS_TOKEN_TYPE = "JWT";
+    public static final String REFRESH_TOKEN_TYPE = "Refresh";
     public static final String CLAIM_ORGANIZATION_IPA_CODE = "organizationIpaCode";
     private final String allowedAudience;
     private final int expireIn;
+    private final int refreshExpireIn;
     private final Algorithm algorithm;
     private final String kid;
     @Getter
@@ -39,9 +41,11 @@ public class AccessTokenBuilderService {
             @Value("${jwt.audience}") String allowedAudience,
             @Value("${jwt.access-token.expire-in}") int expireIn,
             @Value("${jwt.access-token.private-key}") String privateKey,
-            @Value("${jwt.access-token.public-key}") String publicKey, DataCipherService dataCipherService) {
+            @Value("${jwt.access-token.public-key}") String publicKey, DataCipherService dataCipherService,
+            @Value("${jwt.refresh-token.expire-in}") int refreshExpireIn) {
         this.allowedAudience = allowedAudience;
         this.expireIn = expireIn;
+        this.refreshExpireIn = refreshExpireIn;
         byte[] hashed = dataCipherService.hash(publicKey.replace("\n", ""));
         this.kid = UUID.nameUUIDFromBytes(hashed).toString();
 
@@ -88,7 +92,18 @@ public class AccessTokenBuilderService {
         }
         String token = jwtBuilder
                 .sign(algorithm);
-        return new AccessToken(token, tokenType, expireIn);
+
+        String refreshTokenStr = JWT.create()
+                .withHeader(headerClaims)
+                .withClaim("typ", REFRESH_TOKEN_TYPE)
+                .withIssuer(allowedAudience)
+                .withJWTId(UUID.randomUUID().toString())
+                .withSubject(iamUserInfoDTO.getMappedExternalUserId())
+                .withIssuedAt(Instant.now())
+                .withExpiresAt(Instant.now().plusSeconds(refreshExpireIn))
+                .sign(algorithm);
+
+        return new AccessToken(token, tokenType, expireIn, refreshTokenStr, refreshExpireIn);
     }
 
     public String getHeaderPrefix() {

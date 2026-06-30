@@ -39,6 +39,8 @@ jwt:
   external-token:
     base-url: "\${JWT_EXTERNAL_TOKEN_BASE_URL:https://auth.server.com}"
     issuer: "\${JWT_EXTERNAL_TOKEN_ISS:externalauthentication-server-issuer}"
+  refresh-token:
+    expire-in: "\${JWT_REFRESH_TOKEN_EXPIRATION_SECONDS:86400}"
 
 management:
   info:
