@@ -28,6 +28,7 @@ class ExchangeTokenServiceTest {
 
     private static final String TECHNICAL_ACCESS_TOKEN_STRING = "technicalAccessToken";
     private static final String ACCESS_TOKEN_STRING = "accessToken";
+    private static final String REFRESH_TOKEN_STRING = "refreshToken";
     private static final int EXPIRES_IN_SECONDS = 3600;
 
     @Mock
@@ -87,7 +88,7 @@ class ExchangeTokenServiceTest {
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
         AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(EXPIRES_IN_SECONDS).build();
-        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).refreshToken(REFRESH_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
                 .thenReturn(expectedAccessToken);
@@ -101,6 +102,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -130,7 +132,7 @@ class ExchangeTokenServiceTest {
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
         AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(EXPIRES_IN_SECONDS).build();
-        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).refreshToken(REFRESH_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
                 .thenReturn(expectedAccessToken);
@@ -144,6 +146,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -173,7 +176,7 @@ class ExchangeTokenServiceTest {
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
         AccessToken technicalAccessToken = AccessToken.builder().accessToken(TECHNICAL_ACCESS_TOKEN_STRING).expiresIn(EXPIRES_IN_SECONDS).build();
-        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).refreshToken(REFRESH_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(technicalAccessToken)
                 .thenReturn(expectedAccessToken);
@@ -187,6 +190,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -215,7 +219,7 @@ class ExchangeTokenServiceTest {
                 .thenReturn(iamUserInfo);
 
         User registeredUser = User.builder().userId("INNERUSERID").mappedExternalUserId("MAPPEDEXTERNALUSERID").build();
-        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).refreshToken(REFRESH_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(expectedAccessToken);
 
@@ -228,6 +232,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
         Mockito.verify(accessTokenBuilderServiceMock).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -254,7 +259,7 @@ class ExchangeTokenServiceTest {
         Mockito.when(fakeUserInfoServiceMock.buildIamUserInfoFake(subjectToken, subjectIssuer))
                 .thenReturn(iamUserInfo);
 
-        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).build();
+        AccessToken expectedAccessToken = AccessToken.builder().accessToken(ACCESS_TOKEN_STRING).refreshToken(REFRESH_TOKEN_STRING).build();
         Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo))
                 .thenReturn(expectedAccessToken);
 
