@@ -28,4 +28,22 @@ class TokenStoreServiceImpl implements  TokenStoreService{
     public void delete(String accessToken) {
         //Do Nothing
     }
+
+    @Override
+    @CachePut(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN, key = "#refreshToken")
+    public IamUserInfoDTO saveRefreshToken(String refreshToken, IamUserInfoDTO idTokenClaims) {
+        return idTokenClaims;
+    }
+
+    @Override
+    @Cacheable(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN, unless="#result == null")
+    public IamUserInfoDTO loadRefreshToken(String refreshToken) {
+        return null;
+    }
+
+    @Override
+    @CacheEvict(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN)
+    public void deleteRefreshToken(String refreshToken) {
+        // Do Nothing
+    }
 }

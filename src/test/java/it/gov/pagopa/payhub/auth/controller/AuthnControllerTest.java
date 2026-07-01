@@ -73,7 +73,7 @@ class AuthnControllerTest {
         Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("{\"access_token\":\"token\",\"expires_in\":0,\"token_type\":\"bearer\"}", result.getResponse().getContentAsString());
+        Assertions.assertEquals("{\"access_token\":\"token\",\"expires_in\":0,\"refresh_expires_in\":0,\"refresh_token\":\"refresh\",\"token_type\":\"bearer\"}", result.getResponse().getContentAsString());
     }
 
     @Test
@@ -128,7 +128,7 @@ class AuthnControllerTest {
 
         (exception != null
                 ? doThrow(exception)
-                : doReturn(new AccessToken("token", "bearer", 0)))
+                : doReturn(new AccessToken("token", "bearer", 0, "refresh", 0)))
                 .when(authnServiceMock).postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
 
         MvcResult result = mockMvc.perform(
@@ -307,7 +307,7 @@ class AuthnControllerTest {
         Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
 
         Mockito.when(authnServiceMock.postLimitedToken(Mockito.any(LimitedTokenRequest.class)))
-                .thenReturn(new AccessToken("token", "bearer", 0));
+                .thenReturn(new AccessToken("token", "bearer", 0, "refresh", 0));
 
         MvcResult result = mockMvc.perform(
                         post("/payhub/oauth/token/limited")
@@ -318,7 +318,7 @@ class AuthnControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assertions.assertEquals("{\"access_token\":\"token\",\"expires_in\":0,\"token_type\":\"bearer\"}", result.getResponse().getContentAsString());
+        Assertions.assertEquals("{\"access_token\":\"token\",\"expires_in\":0,\"refresh_expires_in\":0,\"refresh_token\":\"refresh\",\"token_type\":\"bearer\"}", result.getResponse().getContentAsString());
     }
 //endregion
 }

@@ -21,6 +21,7 @@ import java.time.Duration;
 public class RedisConfig {
 
     public static final String CACHE_NAME_ACCESS_TOKEN = "ACCESS_TOKEN";
+    public static final String CACHE_NAME_REFRESH_TOKEN = "REFRESH_TOKEN";
 
     @Bean
     public RedisCacheManager redisCacheManager(
@@ -35,13 +36,20 @@ public class RedisConfig {
     @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(
             JsonMapper jsonMapper,
-            @Value("${jwt.access-token.expire-in}") int accessTokenExpirationSeconds
+            @Value("${jwt.access-token.expire-in}") int accessTokenExpirationSeconds,
+            @Value("${jwt.refresh-token.expire-in}") int refreshTokenExpirationSeconds
     ) {
         return builder -> builder
                 .withCacheConfiguration(CACHE_NAME_ACCESS_TOKEN,
                         RedisCacheConfiguration.defaultCacheConfig()
                                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JacksonJsonRedisSerializer<>(jsonMapper, IamUserInfoDTO.class)))
                                 .entryTtl(Duration.ofSeconds(accessTokenExpirationSeconds))
+                                .disableCachingNullValues()
+                )
+                .withCacheConfiguration(CACHE_NAME_REFRESH_TOKEN,
+                        RedisCacheConfiguration.defaultCacheConfig()
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JacksonJsonRedisSerializer<>(jsonMapper, IamUserInfoDTO.class)))
+                                .entryTtl(Duration.ofSeconds(refreshTokenExpirationSeconds))
                                 .disableCachingNullValues()
                 );
     }
