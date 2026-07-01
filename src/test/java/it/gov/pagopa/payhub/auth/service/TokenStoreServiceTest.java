@@ -36,14 +36,14 @@ class TokenStoreServiceTest {
     @Test
     void givenClaimsWhenSaveRefreshTokenThenReturnThem(){
         // Given
-        String externalUserId = "EXTERNALUSERID";
+        IamUserInfoDTO userInfo = new IamUserInfoDTO();
         String refreshToken = "RefreshToken";
 
         // When
-        String result = service.saveRefreshToken(refreshToken, externalUserId);
+        IamUserInfoDTO result = service.saveRefreshToken(refreshToken, userInfo);
 
         // Then
-        Assertions.assertSame(externalUserId, result);
+        Assertions.assertSame(userInfo, result);
     }
 
     @Test
@@ -52,7 +52,7 @@ class TokenStoreServiceTest {
         String refreshToken = "RefreshToken";
 
         // When
-        String result = service.loadRefreshToken(refreshToken);
+        IamUserInfoDTO result = service.loadRefreshToken(refreshToken);
 
         // Then
         Assertions.assertNull(result);

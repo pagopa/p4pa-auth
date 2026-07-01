@@ -12,7 +12,6 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Duration;
@@ -49,7 +48,7 @@ public class RedisConfig {
                 )
                 .withCacheConfiguration(CACHE_NAME_REFRESH_TOKEN,
                         RedisCacheConfiguration.defaultCacheConfig()
-                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JacksonJsonRedisSerializer<>(jsonMapper, IamUserInfoDTO.class)))
                                 .entryTtl(Duration.ofSeconds(refreshTokenExpirationSeconds))
                                 .disableCachingNullValues()
                 );

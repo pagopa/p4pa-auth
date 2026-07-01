@@ -31,13 +31,13 @@ class TokenStoreServiceImpl implements  TokenStoreService{
 
     @Override
     @CachePut(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN, key = "#refreshToken")
-    public String saveRefreshToken(String refreshToken, String externalUserId) {
-        return externalUserId;
+    public IamUserInfoDTO saveRefreshToken(String refreshToken, IamUserInfoDTO idTokenClaims) {
+        return idTokenClaims;
     }
 
     @Override
     @Cacheable(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN, unless="#result == null")
-    public String loadRefreshToken(String refreshToken) {
+    public IamUserInfoDTO loadRefreshToken(String refreshToken) {
         return null;
     }
 

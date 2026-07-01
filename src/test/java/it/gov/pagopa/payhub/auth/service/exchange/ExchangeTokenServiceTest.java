@@ -102,7 +102,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -146,7 +146,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -190,7 +190,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -232,7 +232,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same("MAPPEDEXTERNALUSERID"));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
         Mockito.verify(accessTokenBuilderServiceMock).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());

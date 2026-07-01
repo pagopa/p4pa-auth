@@ -7,7 +7,7 @@ public interface TokenStoreService {
     IamUserInfoDTO load(String accessToken);
     void delete(String accessToken);
 
-    String saveRefreshToken(String refreshToken, String externalUserId);
-    String loadRefreshToken(String refreshToken);
+    IamUserInfoDTO saveRefreshToken(String refreshToken, IamUserInfoDTO userInfo);
+    IamUserInfoDTO loadRefreshToken(String refreshToken);
     void deleteRefreshToken(String refreshToken);
 }
