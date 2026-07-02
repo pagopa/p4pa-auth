@@ -94,10 +94,9 @@ public class AccessTokenBuilderService {
                 .sign(algorithm);
 
         if(generateRefreshToken) {
-            headerClaims.put("typ", REFRESH_TOKEN_TYPE);
             String refreshTokenStr = JWT.create()
                     .withHeader(headerClaims)
-                    .withClaim("typ", tokenType)
+                    .withClaim("typ", REFRESH_TOKEN_TYPE)
                     .withIssuer(allowedAudience)
                     .withJWTId(UUID.randomUUID().toString())
                     .withSubject(iamUserInfoDTO.getMappedExternalUserId())
