@@ -34,17 +34,24 @@ jobs:
           cd p4pa-doc
           ENV=${{ github.ref_name }}
           DEST_DIR=openapi/$ENV/internal
+          DEST_DIR_PUBLIC=openapi/$ENV/public
+          
           mkdir -p $DEST_DIR
+          mkdir -p $DEST_DIR_PUBLIC
 
           REPO_NAME=${{ github.event.repository.name }}
+          
           OPENAPI_FILE_MANUAL=$DEST_DIR/$REPO_NAME.openapi.yaml
+          OPENAPI_FILE_PUBLIC=$DEST_DIR_PUBLIC/$REPO_NAME.openapi.yaml
 
           cp ../$REPO_NAME/openapi/$REPO_NAME.openapi.yaml $OPENAPI_FILE_MANUAL
+          cp ../$REPO_NAME/openapi/$REPO_NAME.openapi.yaml $OPENAPI_FILE_PUBLIC
 
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "p4pa-pagopa-github-bot"
 
           git add $OPENAPI_FILE_MANUAL
+          git add $OPENAPI_FILE_PUBLIC
           git diff-index --quiet HEAD || git commit -m "Updated internal OpenAPI spec for $REPO_NAME on environment $ENV"
 
           git config --local remote.origin.url 'https://p4pa-pagopa-github-bot:${{ secrets.ADMIN_GITHUB_TOKEN_RW }}@github.com/pagopa/p4pa-doc.git'
