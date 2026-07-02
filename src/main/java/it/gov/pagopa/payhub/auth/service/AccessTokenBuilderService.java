@@ -68,10 +68,10 @@ public class AccessTokenBuilderService {
     }
 
     public AccessToken build(IamUserInfoDTO iamUserInfoDTO) {
-        return build(iamUserInfoDTO, expireIn);
+        return build(iamUserInfoDTO, expireIn, true);
     }
 
-    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam) {
+    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam, boolean generateRefreshToken) {
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(HeaderParams.KEY_ID, kid);
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -93,17 +93,22 @@ public class AccessTokenBuilderService {
         String token = jwtBuilder
                 .sign(algorithm);
 
-        String refreshTokenStr = JWT.create()
-                .withHeader(headerClaims)
-                .withClaim("typ", REFRESH_TOKEN_TYPE)
-                .withIssuer(allowedAudience)
-                .withJWTId(UUID.randomUUID().toString())
-                .withSubject(iamUserInfoDTO.getMappedExternalUserId())
-                .withIssuedAt(Instant.now())
-                .withExpiresAt(Instant.now().plusSeconds(refreshExpireIn))
-                .sign(algorithm);
+        if(generateRefreshToken) {
+            String refreshTokenStr = JWT.create()
+                    .withHeader(headerClaims)
+                    .withClaim("typ", REFRESH_TOKEN_TYPE)
+                    .withIssuer(allowedAudience)
+                    .withJWTId(UUID.randomUUID().toString())
+                    .withSubject(iamUserInfoDTO.getMappedExternalUserId())
+                    .withIssuedAt(Instant.now())
+                    .withExpiresAt(Instant.now().plusSeconds(refreshExpireIn))
+                    .sign(algorithm);
 
-        return new AccessToken(token, tokenType, expireIn, refreshTokenStr, refreshExpireIn);
+            return new AccessToken(token, tokenType, expireIn, refreshTokenStr, refreshExpireIn);
+        }
+
+
+        return new AccessToken(token, tokenType, expireIn, null, null);
     }
 
     public String getHeaderPrefix() {
