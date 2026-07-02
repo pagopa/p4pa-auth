@@ -99,6 +99,17 @@ public class AccessTokenBuilderServiceTest {
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
+
+        Assertions.assertEquals(REFRESH_EXPIRE_IN, result.getRefreshExpiresIn());
+        Assertions.assertNotNull(result.getRefreshToken());
+
+        DecodedJWT decodedRefreshToken = JWT.decode(result.getRefreshToken());
+        String decodedRefreshHeader = new String(Base64.getDecoder().decode(decodedRefreshToken.getHeader()));
+        String decodedRefreshPayload = new String(Base64.getDecoder().decode(decodedRefreshToken.getPayload()));
+
+        Assertions.assertEquals(decodedPrefix + ",\"typ\":\"refresh_token\",\"alg\":\"RS512\"}", decodedRefreshHeader);
+        Assertions.assertEquals(REFRESH_EXPIRE_IN, (decodedRefreshToken.getExpiresAtAsInstant().toEpochMilli() - decodedRefreshToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
+        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedRefreshPayload).matches(), "Payload not matches requested pattern: " + decodedRefreshPayload);
     }
 
     @Test
