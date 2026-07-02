@@ -125,11 +125,12 @@ class AuthnControllerTest {
         String subjectTokenType = "SUBJECT_TOKEN_TYPE";
         String scope = "SCOPE";
         String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
 
         (exception != null
                 ? doThrow(exception)
                 : doReturn(new AccessToken("token", "bearer", 0, "refresh", 0)))
-                .when(authnServiceMock).postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
+                .when(authnServiceMock).postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
 
         MvcResult result = mockMvc.perform(
                 post("/payhub/oauth/token")
@@ -140,6 +141,7 @@ class AuthnControllerTest {
                         .param("subject_token_type", subjectTokenType)
                         .param("scope", scope)
                         .param("client_secret", clientSecret)
+                        .param("refresh_token", refreshToken)
         ).andExpect(status().is(expectedStatus.value())).andReturn();
 
         if (exception != null && expectedError != null) {

@@ -43,6 +43,8 @@ class AuthnServiceTest {
     private LimitedTokenService limitedTokenServiceMock;
     @Mock
     private OrganizationService organizationServiceMock;
+    @Mock
+    private RefreshTokenService refreshTokenServiceMock;
 
     private AuthnService service;
 
@@ -55,7 +57,8 @@ class AuthnServiceTest {
                 logoutServiceMock,
                 auditLoggerServiceMock,
                 limitedTokenServiceMock,
-                organizationServiceMock
+                organizationServiceMock,
+                refreshTokenServiceMock
         );
     }
 
@@ -79,6 +82,7 @@ class AuthnServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
         String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
         Organization organization = new Organization();
         organization.setOrganizationId(1L);
         organization.setOrgName("orgName");
@@ -91,7 +95,7 @@ class AuthnServiceTest {
                 .thenReturn(organization);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
+        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
 
         // Then
         Map<String, String> label2value = Map.ofEntries(
@@ -113,6 +117,7 @@ class AuthnServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
         String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
         Organization organization = new Organization();
         organization.setOrganizationId(1L);
         organization.setOrgName("orgName");
@@ -125,7 +130,7 @@ class AuthnServiceTest {
                 .thenReturn(null);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
+        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
 
         // Then
         Map<String, String> label2value = Map.ofEntries(
@@ -145,6 +150,7 @@ class AuthnServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
         String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
         Organization organization = new Organization();
         organization.setOrganizationId(1L);
         organization.setOrgName("orgName");
@@ -155,7 +161,7 @@ class AuthnServiceTest {
                 .thenReturn(expectedResult);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
+        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
 
         // Then
         Map<String, String> label2value = Map.ofEntries(
@@ -176,6 +182,7 @@ class AuthnServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
         String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
         Organization organization = new Organization();
         organization.setOrganizationId(1L);
         organization.setOrgName("orgName");
@@ -186,7 +193,7 @@ class AuthnServiceTest {
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken)).thenReturn(organization);
 
         // When
-        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret);
+        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
 
         // Then
         Map<String, String> label2value = Map.ofEntries(
@@ -207,11 +214,12 @@ class AuthnServiceTest {
         String subjectTokenType="SUBJECT_TOKEN_TYPE";
         String scope="SCOPE";
         String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
 
         String grantType="UNEXPECTED_GRANT_TYPE";
         // When, Then
         assertThrows(InvalidGrantTypeException.class, () ->
-            service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret));
+            service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken));
     }
 
     @Test
