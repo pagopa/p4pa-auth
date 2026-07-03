@@ -36,7 +36,8 @@ public class LimitedTokenServiceImpl implements LimitedTokenService {
         IamUserInfoDTO iamUser = limitedScopeTokenMapper.mapBaseUserInfoToIamUserInfoDTO(userInfo, request);
         AccessToken accessToken = accessTokenBuilderService.build(
                 iamUser,
-                request.getExpireInSeconds() != null ? request.getExpireInSeconds().intValue() : null
+                request.getExpireInSeconds() != null ? request.getExpireInSeconds().intValue() : null,
+                false
         );
         MDC.put("externalUserId", iamUser.getMappedExternalUserId());
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
