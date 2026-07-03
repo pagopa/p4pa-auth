@@ -74,6 +74,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
 
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
+        tokenStoreService.saveRefreshToken(accessToken.getRefreshToken(), iamUser);
         return accessToken;
     }
 

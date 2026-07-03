@@ -32,4 +32,29 @@ class TokenStoreServiceTest {
         // Then
         Assertions.assertNull(result);
     }
+
+    @Test
+    void givenClaimsWhenSaveRefreshTokenThenReturnThem(){
+        // Given
+        IamUserInfoDTO userInfo = new IamUserInfoDTO();
+        String refreshToken = "RefreshToken";
+
+        // When
+        IamUserInfoDTO result = service.saveRefreshToken(refreshToken, userInfo);
+
+        // Then
+        Assertions.assertSame(userInfo, result);
+    }
+
+    @Test
+    void givenRefreshTokenWhenLoadRefreshTokenThenNull(){
+        // Given
+        String refreshToken = "RefreshToken";
+
+        // When
+        IamUserInfoDTO result = service.loadRefreshToken(refreshToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
 }
