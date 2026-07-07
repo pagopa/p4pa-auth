@@ -54,7 +54,6 @@ public class AuthnServiceImpl implements AuthnService {
     }
 
     @Override
-    @SuppressWarnings("java:S107")
     public AccessToken postToken(String clientId, String grantType, String scope, String subjectToken, String subjectIssuer,
                                  String subjectTokenType, String clientSecret, String refreshToken) {
         AccessToken accessToken = switch (grantType) {
