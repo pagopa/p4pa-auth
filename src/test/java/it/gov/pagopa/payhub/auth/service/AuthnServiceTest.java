@@ -19,12 +19,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthnServiceTest {
@@ -64,7 +64,7 @@ class AuthnServiceTest {
 
     @AfterEach
     void verifyNotMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(
+        verifyNoMoreInteractions(
           clientCredentialService,
           exchangeTokenServiceMock,
           userServiceMock,
@@ -89,9 +89,9 @@ class AuthnServiceTest {
 
         String grantType= ValidateExternalTokenService.ALLOWED_GRANT_TYPE;
         AccessToken expectedResult = new AccessToken().accessToken(accessToken);
-        Mockito.when(exchangeTokenServiceMock.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
+        when(exchangeTokenServiceMock.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedResult);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken))
+        when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken))
                 .thenReturn(organization);
 
         // When
@@ -103,7 +103,7 @@ class AuthnServiceTest {
                 Map.entry("organizationId", String.valueOf(organization.getOrganizationId())),
                 Map.entry("organizationName", organization.getOrgName())
         );
-        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
+        verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 
@@ -124,9 +124,9 @@ class AuthnServiceTest {
 
         String grantType= ValidateExternalTokenService.ALLOWED_GRANT_TYPE;
         AccessToken expectedResult = new AccessToken().accessToken(accessToken);
-        Mockito.when(exchangeTokenServiceMock.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
+        when(exchangeTokenServiceMock.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedResult);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken))
+        when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken))
                 .thenReturn(null);
 
         // When
@@ -136,7 +136,7 @@ class AuthnServiceTest {
         Map<String, String> label2value = Map.ofEntries(
                 Map.entry("grantType", grantType)
         );
-        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
+        verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 
@@ -157,7 +157,7 @@ class AuthnServiceTest {
 
         String grantType= ValidateExternalTokenService.ALLOWED_GRANT_TYPE;
         AccessToken expectedResult = new AccessToken().accessToken(accessToken);
-        Mockito.when(exchangeTokenServiceMock.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
+        when(exchangeTokenServiceMock.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope))
                 .thenReturn(expectedResult);
 
         // When
@@ -167,9 +167,9 @@ class AuthnServiceTest {
         Map<String, String> label2value = Map.ofEntries(
                 Map.entry("grantType", grantType)
         );
-        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
+        verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
         Assertions.assertSame(expectedResult, result);
-        Mockito.verify(organizationServiceMock,Mockito.times(0)).getOrganizationByIpaCode(Mockito.anyString(),Mockito.anyString());
+        verify(organizationServiceMock,times(0)).getOrganizationByIpaCode(anyString(),anyString());
     }
 
     @Test
@@ -189,8 +189,8 @@ class AuthnServiceTest {
 
         String grantType= ValidateClientCredentialsService.ALLOWED_GRANT_TYPE;
         AccessToken expectedResult = new AccessToken().accessToken(accessToken);
-        Mockito.when(clientCredentialService.postToken(clientId, scope, clientSecret)).thenReturn(expectedResult);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken)).thenReturn(organization);
+        when(clientCredentialService.postToken(clientId, scope, clientSecret)).thenReturn(expectedResult);
+        when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken)).thenReturn(organization);
 
         // When
         AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
@@ -201,7 +201,7 @@ class AuthnServiceTest {
                 Map.entry("organizationId", String.valueOf(organization.getOrganizationId())),
                 Map.entry("organizationName", organization.getOrgName())
         );
-        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
+        verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 
@@ -227,7 +227,7 @@ class AuthnServiceTest {
         // Given
         String accessToken = "accessToken";
         UserInfo expectedResult = new UserInfo();
-        Mockito.when(userServiceMock.getUserInfo(accessToken))
+        when(userServiceMock.getUserInfo(accessToken))
                 .thenReturn(expectedResult);
 
         // When
@@ -247,7 +247,7 @@ class AuthnServiceTest {
         service.logout(clientId, accessToken);
 
         // Then
-        Mockito.verify(logoutServiceMock).logout(clientId, accessToken);
+        verify(logoutServiceMock).logout(clientId, accessToken);
     }
 
     @Test
@@ -268,7 +268,7 @@ class AuthnServiceTest {
                         .expiresIn(3600)
                         .build();
 
-        Mockito.when(limitedTokenServiceMock.generate(request))
+        when(limitedTokenServiceMock.generate(request))
                 .thenReturn(expectedResult);
 
         // When
@@ -295,8 +295,8 @@ class AuthnServiceTest {
 
         String grantType= ValidateRefreshTokenService.GRANT_TYPE_REFRESH_TOKEN;
         AccessToken expectedResult = new AccessToken().accessToken(accessToken).refreshToken(refreshToken);
-        Mockito.when(refreshTokenServiceMock.refreshToken(clientId, refreshToken)).thenReturn(expectedResult);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken)).thenReturn(organization);
+        when(refreshTokenServiceMock.refreshToken(clientId, refreshToken)).thenReturn(expectedResult);
+        when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken)).thenReturn(organization);
 
         // When
         AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
@@ -307,7 +307,7 @@ class AuthnServiceTest {
                 Map.entry("organizationId", String.valueOf(organization.getOrganizationId())),
                 Map.entry("organizationName", organization.getOrgName())
         );
-        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
+        verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
         Assertions.assertSame(expectedResult, result);
     }
 

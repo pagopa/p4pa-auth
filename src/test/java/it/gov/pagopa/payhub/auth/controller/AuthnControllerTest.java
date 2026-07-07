@@ -1,8 +1,7 @@
 package it.gov.pagopa.payhub.auth.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -70,7 +68,7 @@ class AuthnControllerTest {
         MvcResult result =
                 invokePostTokenAndVerify(null, HttpStatus.OK, null);
 
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals("{\"access_token\":\"token\",\"expires_in\":0,\"refresh_expires_in\":0,\"refresh_token\":\"refresh\",\"token_type\":\"bearer\"}", result.getResponse().getContentAsString());
@@ -176,9 +174,9 @@ class AuthnControllerTest {
                         .build()))
                 .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
                         get("/payhub/oauth/userinfo")
@@ -191,9 +189,9 @@ class AuthnControllerTest {
     void givenRequestWitAuthorizationAndNotOrganizationAccessWhenGetUserInfoThenOk() throws Exception {
         
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
                 .thenReturn(expectedUser);
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
                         get("/payhub/oauth/userinfo")
@@ -204,7 +202,7 @@ class AuthnControllerTest {
 
     @Test
     void givenRequestWithInvalidAuthorizationWhenGetUserInfoThenForbidden() throws Exception {
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new InvalidAccessTokenException("ERRORCODE", ""));
 
         mockMvc.perform(
@@ -216,7 +214,7 @@ class AuthnControllerTest {
 
     @Test
     void givenRequestWithUserNotFoundWhenGetUserInfoThenForbidden() throws Exception {
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
                 .thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(
@@ -232,7 +230,7 @@ class AuthnControllerTest {
         String clientId = "CLIENTID";
         String token = "TOKEN";
 
-        Mockito.doNothing().when(authnServiceMock).logout(clientId, token);
+        doNothing().when(authnServiceMock).logout(clientId, token);
 
         mockMvc.perform(
             post("/payhub/oauth/revoke")
@@ -262,7 +260,7 @@ class AuthnControllerTest {
         String clientId = "CLIENTID";
         String token = "TOKEN";
 
-        Mockito.doThrow(new InvalidExchangeClientException("ERRORCODE", ""))
+        doThrow(new InvalidExchangeClientException("ERRORCODE", ""))
                 .when(authnServiceMock).logout(clientId, token);
 
         MvcResult result = mockMvc.perform(
@@ -282,8 +280,8 @@ class AuthnControllerTest {
 
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
-        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+        when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
 
         mockMvc.perform(
             get("/payhub/oauth/userinfo")
@@ -305,10 +303,10 @@ class AuthnControllerTest {
         request.setResourceId("RES_ID");
         request.setSessionData(Map.of("checkoutUrl", "http://www.test.com"));
 
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
-        Mockito.when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
+        when(jwtLegacyHandlerServiceMock.handleLegacyToken("legacyAccessToken")).thenReturn(expectedUser);
 
-        Mockito.when(authnServiceMock.postLimitedToken(Mockito.any(LimitedTokenRequest.class)))
+        when(authnServiceMock.postLimitedToken(any(LimitedTokenRequest.class)))
                 .thenReturn(new AccessToken("token", "bearer", 0, "refresh", 0));
 
         MvcResult result = mockMvc.perform(

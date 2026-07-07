@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ValidateRefreshTokenServiceTest {
@@ -34,7 +34,7 @@ class ValidateRefreshTokenServiceTest {
     @BeforeEach
     void setUp() {
         validateRefreshTokenService = new ValidateRefreshTokenService(ALLOWED_AUDIENCE);
-        mockedJWT = Mockito.mockStatic(JWT.class);
+        mockedJWT = mockStatic(JWT.class);
     }
 
     @AfterEach
@@ -46,19 +46,19 @@ class ValidateRefreshTokenServiceTest {
     void givenValidParametersWhenValidateThenReturnsClaims() {
         // Given
         String refreshToken = "refresh-token";
-        DecodedJWT decodedJWTMock = Mockito.mock(DecodedJWT.class);
+        DecodedJWT decodedJWTMock = mock(DecodedJWT.class);
 
         Map<String, Claim> claimsMap = new HashMap<>();
-        Claim issClaim = Mockito.mock(Claim.class);
-        Mockito.when(issClaim.asString()).thenReturn(ALLOWED_AUDIENCE);
-        Claim typClaim = Mockito.mock(Claim.class);
-        Mockito.when(typClaim.asString()).thenReturn(REFRESH_TOKEN_TYPE);
+        Claim issClaim = mock(Claim.class);
+        when(issClaim.asString()).thenReturn(ALLOWED_AUDIENCE);
+        Claim typClaim = mock(Claim.class);
+        when(typClaim.asString()).thenReturn(REFRESH_TOKEN_TYPE);
 
         claimsMap.put("iss", issClaim);
         claimsMap.put("typ", typClaim);
 
         mockedJWT.when(() -> JWT.decode(refreshToken)).thenReturn(decodedJWTMock);
-        Mockito.when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
+        when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
 
         // When
         Map<String, Claim> result = validateRefreshTokenService.validate(ALLOWED_CLIENT_ID, refreshToken);
@@ -102,15 +102,15 @@ class ValidateRefreshTokenServiceTest {
     void givenInvalidIssuerWhenValidateThenThrowsInvalidTokenException() {
         // Given
         String refreshToken = "refresh-token";
-        DecodedJWT decodedJWTMock = Mockito.mock(DecodedJWT.class);
+        DecodedJWT decodedJWTMock = mock(DecodedJWT.class);
 
         Map<String, Claim> claimsMap = new HashMap<>();
-        Claim issClaim = Mockito.mock(Claim.class);
-        Mockito.when(issClaim.asString()).thenReturn("https://wrong-issuer.com");
+        Claim issClaim = mock(Claim.class);
+        when(issClaim.asString()).thenReturn("https://wrong-issuer.com");
         claimsMap.put("iss", issClaim);
 
         mockedJWT.when(() -> JWT.decode(refreshToken)).thenReturn(decodedJWTMock);
-        Mockito.when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
+        when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
 
         // When & Then
         InvalidTokenException exception = assertThrows(InvalidTokenException.class, () ->
@@ -125,19 +125,19 @@ class ValidateRefreshTokenServiceTest {
     void givenWrongTokenTypeWhenValidateThenThrowsInvalidTokenException() {
         // Given
         String refreshToken = "refresh-token";
-        DecodedJWT decodedJWTMock = Mockito.mock(DecodedJWT.class);
+        DecodedJWT decodedJWTMock = mock(DecodedJWT.class);
 
         Map<String, Claim> claimsMap = new HashMap<>();
-        Claim issClaim = Mockito.mock(Claim.class);
-        Mockito.when(issClaim.asString()).thenReturn(ALLOWED_AUDIENCE);
-        Claim typClaim = Mockito.mock(Claim.class);
-        Mockito.when(typClaim.asString()).thenReturn("wrong_type");
+        Claim issClaim = mock(Claim.class);
+        when(issClaim.asString()).thenReturn(ALLOWED_AUDIENCE);
+        Claim typClaim = mock(Claim.class);
+        when(typClaim.asString()).thenReturn("wrong_type");
 
         claimsMap.put("iss", issClaim);
         claimsMap.put("typ", typClaim);
 
         mockedJWT.when(() -> JWT.decode(refreshToken)).thenReturn(decodedJWTMock);
-        Mockito.when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
+        when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
 
         // When & Then
         InvalidTokenException exception = assertThrows(InvalidTokenException.class, () ->
