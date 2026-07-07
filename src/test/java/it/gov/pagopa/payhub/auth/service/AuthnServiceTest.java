@@ -277,4 +277,38 @@ class AuthnServiceTest {
         // Then
         Assertions.assertSame(expectedResult, result);
     }
+
+    @Test
+    void whenPostTokenThenCallRefreshTokenService(){
+        // Given
+        String accessToken = "eyJraWQiOiIzNTMxNTA2Ny05YmVjLTMxY2MtYmIwMi0zMzBhZTZlOGY0NjIiLCJ0eXAiOiJhdCtKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJkZXYucGlhdHRhZm9ybWF1bml0YXJpYS5wYWdvcGEuaXQiLCJqdGkiOiI1OWEyNWU5NC01MDFjLTQxNDEtODdiZS1hYzdjNWE2YTExZDkiLCJzdWIiOiJFVXFLaUQxcHNMckdOdUx4Q0d6cml5LXJveVBsQnZ1eWVKTWMwZHhheE5zPSIsImlhdCI6MTc2NTM2MTQxMiwiZXhwIjoxNzY1Mzc1ODEyLCJvcmdhbml6YXRpb25JcGFDb2RlIjoiREVNTyJ9.X9wYsGzDtC8H3-QnlcUzMgd_2VAPJv8K10rqyBDeYOLBNWl0OdhjXWi6sCIdwjqTmS9pLMA9AHfzDPDUSJro1am2HPvrZe1hJ7XycapqqHsCXvtmeRRwE6c-WZ5bxxsxEB3-PSRvia_6C3c7x58QI18DzAl57u63jgE9rHhDQp-moXaAQ7c5obs2Kp2WnO_eh9gBs5CP2bBBWIZaFBwROrEmwSNuOCmkg-IpfVCQ1yEwzBNl9P1IKG4a31vN64zxNS8cFAlwrN3tmkFp1e4kwWOxY9VBLloH8f-VWr_PGLSlEQS_P1M3rI4u5g6Luk3gKGE_M2xSOJhjq-twXWr4PA";
+        String clientId="CLIENT_ID";
+        String subjectToken="SUBJECT_TOKEN";
+        String subjectIssuer="SUBJECT_ISSUER";
+        String subjectTokenType="SUBJECT_TOKEN_TYPE";
+        String scope="SCOPE";
+        String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
+        Organization organization = new Organization();
+        organization.setOrganizationId(1L);
+        organization.setOrgName("orgName");
+
+        String grantType= ValidateRefreshTokenService.GRANT_TYPE_REFRESH_TOKEN;
+        AccessToken expectedResult = new AccessToken().accessToken(accessToken).refreshToken(refreshToken);
+        Mockito.when(refreshTokenServiceMock.refreshToken(clientId, refreshToken)).thenReturn(expectedResult);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("DEMO", accessToken)).thenReturn(organization);
+
+        // When
+        AccessToken result = service.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
+
+        // Then
+        Map<String, String> label2value = Map.ofEntries(
+                Map.entry("grantType", grantType),
+                Map.entry("organizationId", String.valueOf(organization.getOrganizationId())),
+                Map.entry("organizationName", organization.getOrgName())
+        );
+        Mockito.verify(auditLoggerServiceMock).log(AuditEventType.LOGIN_SUCCESS, label2value,"Authentication success" );
+        Assertions.assertSame(expectedResult, result);
+    }
+
 }
