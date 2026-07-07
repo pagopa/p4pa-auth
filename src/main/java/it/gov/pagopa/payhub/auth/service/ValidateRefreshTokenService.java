@@ -1,11 +1,14 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import io.jsonwebtoken.Claims;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeClientException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
-import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,26 +16,18 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
+import static it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService.REFRESH_TOKEN_TYPE;
+
 @Service
 @Slf4j
 public class ValidateRefreshTokenService {
     public static final String ALLOWED_CLIENT_ID = "piattaforma-unitaria";
     public static final String GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
 
-    private final String allowedIssuer;
     private final String allowedAudience;
-    private final String urlJwkProvider;
-    private final JWTValidator jwtValidator;
 
-    public ValidateRefreshTokenService(
-            @Value("${jwt.external-token.issuer:}") String allowedIssuer,
-            @Value("${jwt.audience}") String allowedAudience,
-            @Value("${jwt.external-token.base-url:}") String urlJwkProvider,
-            JWTValidator jwtValidator) {
-        this.allowedIssuer = allowedIssuer;
+    public ValidateRefreshTokenService(@Value("${jwt.audience}") String allowedAudience) {
         this.allowedAudience = allowedAudience;
-        this.urlJwkProvider = urlJwkProvider;
-        this.jwtValidator = jwtValidator;
     }
 
     public Map<String, Claim> validate(String clientId, String refreshToken) {
@@ -41,19 +36,26 @@ public class ValidateRefreshTokenService {
             throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "refresh_token is mandatory");
         }
 
-        Map<String, Claim> claims = jwtValidator.validate(refreshToken, urlJwkProvider);
-        if (!allowedIssuer.equals(claims.get(Claims.ISSUER).asString())) {
-            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_ISSUER, "Invalid refresh token issuer");
-        }
-        if (!allowedAudience.equals(claims.get(Claims.AUDIENCE).asString())) {
-            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_AUDIENCE, "Invalid refresh token audience");
-        }
-        if (!GRANT_TYPE_REFRESH_TOKEN.equals(claims.get("typ").asString())) {
-            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN_TYPE, "Token is not a refresh token");
-        }
+        try {
+            DecodedJWT jwt = JWT.decode(refreshToken);
+            Map<String, Claim> claims = jwt.getClaims();
 
-        log.info("Refresh token cryptographic validation passed");
-        return claims;
+            if (!allowedAudience.equals(claims.get(Claims.ISSUER).asString())) {
+                throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_ISSUER, "Invalid refresh token issuer");
+            }
+
+            if (!REFRESH_TOKEN_TYPE.equals(claims.get("typ").asString())) {
+                throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN_TYPE, "Token is not a refresh token");
+            }
+
+            log.info("Refresh token structure and claims validation passed");
+            return claims;
+
+        } catch (com.auth0.jwt.exceptions.TokenExpiredException e){
+            throw new TokenExpiredException(e.getMessage());
+        } catch (JWTDecodeException e) {
+            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "The refresh token is malformed", e);
+        }
     }
 
     private void validateClient(String clientId) {
