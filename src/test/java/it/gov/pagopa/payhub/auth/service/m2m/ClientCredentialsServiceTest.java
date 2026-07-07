@@ -56,7 +56,7 @@ class ClientCredentialsServiceTest {
 		IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
 		Mockito.when(client2UserInfoMapperMock.apply(clientDTO)).thenReturn(iamUserInfo);
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-		Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo)).thenReturn(expectedAccessToken);
+		Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo, null, false)).thenReturn(expectedAccessToken);
 		//When
 		AccessToken result = service.postToken(clientId, scope, clientSecret);
 		//Then

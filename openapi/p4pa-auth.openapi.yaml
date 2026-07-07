@@ -71,6 +71,7 @@ paths:
           schema:
             type: string
         - name: refresh_token
+          description: "Refresh Token"
           in: query
           schema:
             type: string
@@ -684,6 +685,7 @@ components:
         expires_in:
           type: integer
         refresh_token:
+          description: "RefreshToken will be invalidated if used to generate new AccessToken"
           type: string
         refresh_expires_in:
           type: integer
