@@ -38,7 +38,7 @@ public class ClientCredentialServiceImpl implements ClientCredentialService {
 		validateClientCredentialsService.validate(scope, clientSecret);
 		ClientNoSecretDTO authorizedClient = authorizeClientCredentialsRequestService.authorizeCredentials(clientId, clientSecret);
 		IamUserInfoDTO iamUser = client2UserInfoMapper.apply(authorizedClient);
-		AccessToken accessToken = accessTokenBuilderService.build(iamUser);
+		AccessToken accessToken = accessTokenBuilderService.build(iamUser, null, false);
 		MDC.put("externalUserId", iamUser.getUserId());
 		tokenStoreService.save(accessToken.getAccessToken(), iamUser);
 		return accessToken;

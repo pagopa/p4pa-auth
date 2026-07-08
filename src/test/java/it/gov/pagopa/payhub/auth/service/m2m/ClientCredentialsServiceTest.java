@@ -11,8 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClientCredentialsServiceTest {
@@ -48,20 +49,20 @@ class ClientCredentialsServiceTest {
 		String scope="SCOPE";
 		String clientSecret="CLIENT_SECRET";
 
-		Mockito.doNothing().when(validateClientCredentialsServiceMock).validate(scope, clientSecret);
+		doNothing().when(validateClientCredentialsServiceMock).validate(scope, clientSecret);
 		ClientNoSecretDTO clientDTO = ClientNoSecretDTO.builder()
 				.organizationIpaCode("ORGIPACODE")
 				.build();
-		Mockito.doReturn(clientDTO).when(authorizeClientCredentialsRequestServiceMock).authorizeCredentials(clientId, clientSecret);
+		doReturn(clientDTO).when(authorizeClientCredentialsRequestServiceMock).authorizeCredentials(clientId, clientSecret);
 		IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
-		Mockito.when(client2UserInfoMapperMock.apply(clientDTO)).thenReturn(iamUserInfo);
+		when(client2UserInfoMapperMock.apply(clientDTO)).thenReturn(iamUserInfo);
 		AccessToken expectedAccessToken = AccessToken.builder().accessToken("accessToken").build();
-		Mockito.when(accessTokenBuilderServiceMock.build(iamUserInfo)).thenReturn(expectedAccessToken);
+		when(accessTokenBuilderServiceMock.build(iamUserInfo, null, false)).thenReturn(expectedAccessToken);
 		//When
 		AccessToken result = service.postToken(clientId, scope, clientSecret);
 		//Then
 		Assertions.assertSame(expectedAccessToken, result);
-		Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
+		verify(tokenStoreServiceMock).save(same(expectedAccessToken.getAccessToken()), same(iamUserInfo));
 	}
 
 }

@@ -32,6 +32,7 @@ public class AuthnServiceImpl implements AuthnService {
     private final AuditLoggerService auditService;
     private final LimitedTokenService limitedTokenService;
     private final OrganizationService organizationService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthnServiceImpl(
             ClientCredentialService clientCredentialService,
@@ -40,7 +41,7 @@ public class AuthnServiceImpl implements AuthnService {
             LogoutService logoutService,
             AuditLoggerService auditService,
             LimitedTokenService limitedTokenService,
-            OrganizationService organizationService
+            OrganizationService organizationService, RefreshTokenService refreshTokenService
     ) {
 	    this.clientCredentialService = clientCredentialService;
 	    this.exchangeTokenService = exchangeTokenService;
@@ -49,13 +50,16 @@ public class AuthnServiceImpl implements AuthnService {
         this.auditService = auditService;
         this.limitedTokenService = limitedTokenService;
         this.organizationService=organizationService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
-    public AccessToken postToken(String clientId, String grantType, String scope, String subjectToken, String subjectIssuer, String subjectTokenType, String clientSecret) {
+    public AccessToken postToken(String clientId, String grantType, String scope, String subjectToken, String subjectIssuer,
+                                 String subjectTokenType, String clientSecret, String refreshToken) {
         AccessToken accessToken = switch (grantType) {
             case ValidateExternalTokenService.ALLOWED_GRANT_TYPE -> exchangeTokenService.postToken(clientId, subjectToken, subjectIssuer, subjectTokenType, scope);
             case ValidateClientCredentialsService.ALLOWED_GRANT_TYPE -> clientCredentialService.postToken(clientId, scope, clientSecret);
+            case ValidateRefreshTokenService.GRANT_TYPE_REFRESH_TOKEN -> refreshTokenService.refreshToken(clientId, refreshToken);
             default -> throw new InvalidGrantTypeException("Invalid grantType " + grantType);
         };
         Map<String, String> label2value = new HashMap<>();
