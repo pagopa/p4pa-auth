@@ -11,7 +11,6 @@ import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -33,9 +32,6 @@ public class ValidateRefreshTokenService {
 
     public Map<String, Claim> validate(String clientId, String refreshToken) {
         validateClient(clientId);
-        if (!StringUtils.hasText(refreshToken)) {
-            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "refresh_token is mandatory");
-        }
 
         jwtValidator.validateInternalToken(refreshToken);
         DecodedJWT jwt = JWT.decode(refreshToken);

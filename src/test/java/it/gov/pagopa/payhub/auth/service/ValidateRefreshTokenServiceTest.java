@@ -90,19 +90,6 @@ class ValidateRefreshTokenServiceTest {
     }
 
     @Test
-    void givenEmptyRefreshTokenWhenValidateThenThrowsInvalidTokenException() {
-        // Given
-        String emptyRefreshToken = "";
-
-        // When & Then
-        InvalidTokenException exception = assertThrows(InvalidTokenException.class, () ->
-                validateRefreshTokenService.validate(ALLOWED_CLIENT_ID, emptyRefreshToken)
-        );
-
-        assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, exception.getCode());
-    }
-
-    @Test
     void givenInvalidIssuerWhenValidateThenThrowsInvalidTokenException() {
         // Given
         String refreshToken = "refresh-token";
