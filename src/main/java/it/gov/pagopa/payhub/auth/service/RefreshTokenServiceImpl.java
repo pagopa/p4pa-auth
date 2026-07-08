@@ -27,10 +27,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     @Override
     public AccessToken refreshToken(String clientId, String refreshToken) {
         log.info("Client {} requested a token refresh", clientId);
-        validateRefreshTokenService.validate(clientId, refreshToken);
         if (!StringUtils.hasText(refreshToken)) {
             throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "Missing refresh_token parameter");
         }
+        validateRefreshTokenService.validate(clientId, refreshToken);
 
         IamUserInfoDTO userInfo = tokenStoreService.loadRefreshToken(refreshToken);
         if (userInfo == null) {

@@ -85,8 +85,6 @@ class RefreshTokenServiceImplTest {
 
         assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, exception.getCode());
         assertTrue(exception.getMessage().contains("Missing refresh_token parameter"));
-
-        verify(validateRefreshTokenService).validate(clientId, emptyRefreshToken);
     }
 
     @Test

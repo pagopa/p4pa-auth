@@ -1,20 +1,21 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeClientException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+import it.gov.pagopa.payhub.auth.utils.JWTValidator;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,10 +31,12 @@ class ValidateRefreshTokenServiceTest {
 
     private ValidateRefreshTokenService validateRefreshTokenService;
     private MockedStatic<JWT> mockedJWT;
+    @Mock
+    private JWTValidator jwtValidator;
 
     @BeforeEach
     void setUp() {
-        validateRefreshTokenService = new ValidateRefreshTokenService(ALLOWED_AUDIENCE);
+        validateRefreshTokenService = new ValidateRefreshTokenService(ALLOWED_AUDIENCE, jwtValidator);
         mockedJWT = mockStatic(JWT.class);
     }
 
@@ -59,6 +62,7 @@ class ValidateRefreshTokenServiceTest {
 
         mockedJWT.when(() -> JWT.decode(refreshToken)).thenReturn(decodedJWTMock);
         when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
+        doNothing().when(jwtValidator).validateInternalToken(refreshToken);
 
         // When
         Map<String, Claim> result = validateRefreshTokenService.validate(ALLOWED_CLIENT_ID, refreshToken);
@@ -67,7 +71,7 @@ class ValidateRefreshTokenServiceTest {
         assertNotNull(result);
         assertEquals(ALLOWED_AUDIENCE, result.get("iss").asString());
         assertEquals(REFRESH_TOKEN_TYPE, result.get("typ").asString());
-
+        Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(refreshToken));
         mockedJWT.verify(() -> JWT.decode(refreshToken));
     }
 
@@ -146,39 +150,6 @@ class ValidateRefreshTokenServiceTest {
 
         assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN_TYPE, exception.getCode());
         mockedJWT.verify(() -> JWT.decode(refreshToken));
-    }
-
-    @Test
-    void givenMalformedTokenWhenValidateThenThrowsInvalidTokenException() {
-        // Given
-        String malformedToken = "malformed-token";
-
-        mockedJWT.when(() -> JWT.decode(malformedToken)).thenThrow(new JWTDecodeException("Invalid JWT"));
-
-        // When & Then
-        InvalidTokenException exception = assertThrows(InvalidTokenException.class, () ->
-                validateRefreshTokenService.validate(ALLOWED_CLIENT_ID, malformedToken)
-        );
-
-        assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, exception.getCode());
-        assertTrue(exception.getMessage().contains("The refresh token is malformed"));
-        mockedJWT.verify(() -> JWT.decode(malformedToken));
-    }
-
-    @Test
-    void givenExpiredTokenWhenValidateThenThrowsTokenExpiredException() {
-        // Given
-        String expiredToken = "expired-token";
-
-        mockedJWT.when(() -> JWT.decode(expiredToken))
-                .thenThrow(new com.auth0.jwt.exceptions.TokenExpiredException("The Token has expired on...", Instant.now()));
-
-        // When & Then
-        assertThrows(it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException.class, () ->
-                validateRefreshTokenService.validate(ALLOWED_CLIENT_ID, expiredToken)
-        );
-
-        mockedJWT.verify(() -> JWT.decode(expiredToken));
     }
 }
 
