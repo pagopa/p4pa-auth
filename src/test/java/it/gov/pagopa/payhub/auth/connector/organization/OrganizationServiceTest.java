@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.organization;
 
+import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationSearchClient;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
@@ -16,18 +17,21 @@ class OrganizationServiceTest {
 
     @Mock
     private OrganizationSearchClient organizationSearchClientMock;
+    @Mock
+    private OrganizationClient organizationClientMock;
 
     private OrganizationService service;
 
     @BeforeEach
     void init(){
-        service = new OrganizationServiceImpl(organizationSearchClientMock);
+        service = new OrganizationServiceImpl(organizationSearchClientMock, organizationClientMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                organizationSearchClientMock
+                organizationSearchClientMock,
+                organizationClientMock
         );
     }
 

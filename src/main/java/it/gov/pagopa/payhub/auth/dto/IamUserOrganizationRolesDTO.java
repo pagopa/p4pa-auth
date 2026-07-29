@@ -18,6 +18,6 @@ public class IamUserOrganizationRolesDTO {
   @Builder.Default
   private List<String> roles = new ArrayList<>();
   private String email;
-
+  private String externalOrganizationId;
 }
 

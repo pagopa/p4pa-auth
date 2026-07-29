@@ -51,7 +51,8 @@ public class IamUserInfoDTO2UserInfoMapper {
 
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
-        Optional<Organization> organization = retrieveOrganization(organizationIpaCode, accessToken);
+        Optional<Organization> organization = retrieveAndUpdateOrganization(organizationIpaCode,
+                iamUserInfoDTO.getOrganizationAccess().getExternalOrganizationId(), accessToken);
         UserInfo userInfo;
 
         if (
@@ -103,7 +104,9 @@ public class IamUserInfoDTO2UserInfoMapper {
             userInfo = UserInfo.builder()
                     .organizations(userRoles.stream()
                             .map(r -> {
-                                Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
+                                Optional<Organization> organizationOpt = retrieveAndUpdateOrganization(r.getOrganizationIpaCode(),
+                                        iamUserInfoDTO.getOrganizationAccess()!=null && iamUserInfoDTO.getOrganizationAccess().getExternalOrganizationId()!=null ? iamUserInfoDTO.getOrganizationAccess().getExternalOrganizationId() : null,
+                                        accessToken);
                                 return (UserOrganizationRoles) UserOrganizationRoles.builder()
                                         .operatorId(r.getOperatorId())
                                         .organizationId(organizationOpt.map(Organization::getOrganizationId).orElse(null))
@@ -151,9 +154,14 @@ public class IamUserInfoDTO2UserInfoMapper {
         target.setIssuer(dto.getIssuer());
     }
 
-    private Optional<Organization> retrieveOrganization(String organizationIpaCode, String accessToken) {
+    private Optional<Organization> retrieveAndUpdateOrganization(String organizationIpaCode, String externalOrganizationId, String accessToken) {
         if (StringUtils.isNotBlank(organizationIpaCode)) {
-            return Optional.ofNullable(organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken));
+            Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken);
+            if(organization.getExternalOrganizationId()!=null
+                && !organization.getExternalOrganizationId().equals(externalOrganizationId)) {
+                organizationService.updateOrganizationExternalId(organization.getOrganizationId(), externalOrganizationId, accessToken);
+            }
+            return Optional.of(organization);
         }
         return Optional.empty();
     }
