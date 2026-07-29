@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.doNothing;
+
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
 
@@ -50,6 +52,18 @@ class OrganizationServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenUpdateOrganizationExternalIdThenInvokeClient(){
+        // Given
+        Long organizationId = 1L;
+        String accessToken = "ACCESSTOKEN";
+        String organizationExternalId = "ORG_EXT_ID";
+
+        doNothing().when(organizationClientMock).updateOrganizationExternalId(organizationId, organizationExternalId, accessToken);
+        // When Then
+        Assertions.assertDoesNotThrow(() -> service.updateOrganizationExternalId(organizationId, organizationExternalId, accessToken));
     }
 
 }
