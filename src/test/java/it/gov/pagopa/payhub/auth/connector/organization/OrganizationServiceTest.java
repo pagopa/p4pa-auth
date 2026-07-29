@@ -22,7 +22,7 @@ class OrganizationServiceTest {
     @Mock
     private OrganizationClient organizationClientMock;
     @InjectMocks
-    private OrganizationService service;
+    private OrganizationServiceImpl service;
 
 
     @AfterEach
