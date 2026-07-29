@@ -5,9 +5,9 @@ import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationSearc
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,13 +21,9 @@ class OrganizationServiceTest {
     private OrganizationSearchClient organizationSearchClientMock;
     @Mock
     private OrganizationClient organizationClientMock;
-
+    @InjectMocks
     private OrganizationService service;
 
-    @BeforeEach
-    void init(){
-        service = new OrganizationServiceImpl(organizationSearchClientMock, organizationClientMock);
-    }
 
     @AfterEach
     void verifyNoMoreInteractions(){
