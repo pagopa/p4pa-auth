@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
@@ -231,6 +232,19 @@ class AuthExceptionHandlerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("INVALID_REQUEST"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("[INVALID_REQUEST] Required request body is missing"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+    }
+
+    @Test
+    void handleInvalidOrganizationException() throws Exception {
+        doThrow(new InvalidOrganizationException("INVALID_ORGANIZATION", "Error"))
+                .when(testControllerSpy).testEndpoint(DATA, BODY);
+
+        performRequest(DATA, MediaType.APPLICATION_JSON)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("[INVALID_ORGANIZATION] Error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("INVALID_ORGANIZATION"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 

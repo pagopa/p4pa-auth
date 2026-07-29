@@ -24,7 +24,7 @@ public class OrganizationClient {
     } catch (HttpClientErrorException.NotFound e) {
       throw new ResourceNotFoundException("ORGANIZATION_NOT_FOUND", "Organization with organizationId " + organizationId + " not found");
     } catch (HttpClientErrorException.BadRequest e) {
-      throw new InvalidOrganizationException("ORGANIZATION_BAD_REQUEST", "Error while update Organization having organizationId: "+organizationId);
+      throw new InvalidOrganizationException("ORGANIZATION_BAD_REQUEST", "Error while update organizationExternalId having organizationId "+organizationId);
     }
   }
 }
