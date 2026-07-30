@@ -51,8 +51,7 @@ public class IamUserInfoDTO2UserInfoMapper {
 
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
-        Optional<Organization> organization = retrieveAndUpdateOrganization(organizationIpaCode,
-                iamUserInfoDTO.getOrganizationAccess().getExternalOrganizationId(), accessToken);
+        Optional<Organization> organization = retrieveOrganization(organizationIpaCode, accessToken);
         UserInfo userInfo;
 
         if (
@@ -84,6 +83,8 @@ public class IamUserInfoDTO2UserInfoMapper {
 
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
 
+        updateOrganizationExternalId(iamUserInfoDTO, accessToken);
+
         return userInfo;
     }
 
@@ -104,9 +105,7 @@ public class IamUserInfoDTO2UserInfoMapper {
             userInfo = UserInfo.builder()
                     .organizations(userRoles.stream()
                             .map(r -> {
-                                Optional<Organization> organizationOpt = retrieveAndUpdateOrganization(r.getOrganizationIpaCode(),
-                                        iamUserInfoDTO.getOrganizationAccess()!=null && iamUserInfoDTO.getOrganizationAccess().getExternalOrganizationId()!=null ? iamUserInfoDTO.getOrganizationAccess().getExternalOrganizationId() : null,
-                                        accessToken);
+                                Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
                                 return (UserOrganizationRoles) UserOrganizationRoles.builder()
                                         .operatorId(r.getOperatorId())
                                         .organizationId(organizationOpt.map(Organization::getOrganizationId).orElse(null))
@@ -124,6 +123,7 @@ public class IamUserInfoDTO2UserInfoMapper {
 
         if (iamUserInfoDTO.getOrganizationAccess() != null) {
             userInfo.setOrganizationAccess(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode());
+            updateOrganizationExternalId(iamUserInfoDTO, accessToken);
         }
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
@@ -154,15 +154,28 @@ public class IamUserInfoDTO2UserInfoMapper {
         target.setIssuer(dto.getIssuer());
     }
 
-    private Optional<Organization> retrieveAndUpdateOrganization(String organizationIpaCode, String externalOrganizationId, String accessToken) {
+    private Optional<Organization> retrieveOrganization(String organizationIpaCode, String accessToken) {
         if (StringUtils.isNotBlank(organizationIpaCode)) {
-            Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken);
-            if(externalOrganizationId!=null && !externalOrganizationId.equals(organization.getExternalOrganizationId())) {
-                organizationService.updateOrganizationExternalId(organization.getOrganizationId(), externalOrganizationId, accessToken);
-            }
-            return Optional.of(organization);
+            return Optional.ofNullable(organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken));
         }
         return Optional.empty();
+    }
+
+    private void updateOrganizationExternalId(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
+        IamUserOrganizationRolesDTO organizationRolesDTO = iamUserInfoDTO.getOrganizationAccess();
+        if (organizationRolesDTO == null) {
+            return;
+        }
+
+        Organization organization = organizationService.getOrganizationByIpaCode(iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode(), accessToken);
+        if(organization == null) {
+            return;
+        }
+
+        String externalOrgId = organizationRolesDTO.getExternalOrganizationId();
+        if (externalOrgId != null && !externalOrgId.equals(organization.getExternalOrganizationId())) {
+            organizationService.updateOrganizationExternalId(organization.getOrganizationId(), externalOrgId, accessToken);
+        }
     }
 
     private Broker getSessionBroker(IamUserInfoDTO iamUserInfoDTO, List<UserOrganizationRoles> userOrganizations, String accessToken) {

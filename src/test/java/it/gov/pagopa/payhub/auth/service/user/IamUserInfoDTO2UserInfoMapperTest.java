@@ -187,6 +187,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockOrganization.setBrokerId(1L);
         when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
+        doNothing().when(organizationServiceMock).updateOrganizationExternalId(2L,"ORGEXTID", accessToken);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
