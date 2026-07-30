@@ -25,7 +25,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public void updateOrganizationExternalId(Long organizationId, String organizationExternalId, String accessToken) {
-        organizationClient.updateOrganizationExternalId(organizationId, organizationExternalId, accessToken);
+    public void updateExternalOrganizationId(Long organizationId, String organizationExternalId, String accessToken) {
+        organizationClient.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken);
     }
 }

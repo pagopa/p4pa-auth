@@ -44,7 +44,7 @@ class OrganizationClientTest {
     }
 
     @Test
-    void givenExistingOrganizationWhenUpdateOrganizationExternalIdThenInvokeWithAccessToken() {
+    void givenExistingOrganizationWhenUpdateExternalOrganizationIdThenInvokeWithAccessToken() {
         String accessToken = "ACCESSTOKEN";
         String organizationExternalId = "ORG_EXT_ID";
         Long organizationId = 1L;
@@ -53,11 +53,11 @@ class OrganizationClientTest {
                 .thenReturn(organizationApiMock);
         Mockito.doNothing().when(organizationApiMock).updateOrganizationExternalId(organizationId, organizationExternalId);
 
-        assertDoesNotThrow(() -> organizationClient.updateOrganizationExternalId(organizationId, organizationExternalId, accessToken));
+        assertDoesNotThrow(() -> organizationClient.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken));
     }
 
     @Test
-    void givenNoExistentOrganizationWhenUpdateOrganizationExternalIdThenResourceNotFoundException() {
+    void givenNoExistentOrganizationWhenUpdateExternalOrganizationIdThenResourceNotFoundException() {
         Long organizationId = 99L;
         String accessToken = "ACCESSTOKEN";
         String organizationExternalId = "ORG_EXT_ID";
@@ -68,7 +68,7 @@ class OrganizationClientTest {
                 .when(organizationApiMock).updateOrganizationExternalId(organizationId, organizationExternalId);
 
         Assertions.assertThrows(ResourceNotFoundException.class,() ->
-                organizationClient.updateOrganizationExternalId(organizationId, organizationExternalId, accessToken));
+                organizationClient.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken));
     }
 
     @Test
@@ -93,7 +93,7 @@ class OrganizationClientTest {
 
         InvalidOrganizationException ex = Assertions.assertThrows(
                 InvalidOrganizationException.class,
-                () -> organizationClient.updateOrganizationExternalId(organizationId, organizationExternalId, accessToken)
+                () -> organizationClient.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken)
         );
 
         Assertions.assertEquals("ORGANIZATION_BAD_REQUEST", ex.getCode());

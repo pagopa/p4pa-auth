@@ -51,15 +51,15 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void whenUpdateOrganizationExternalIdThenInvokeClient(){
+    void whenUpdateExternalOrganizationIdThenInvokeClient(){
         // Given
         Long organizationId = 1L;
         String accessToken = "ACCESSTOKEN";
         String organizationExternalId = "ORG_EXT_ID";
 
-        doNothing().when(organizationClientMock).updateOrganizationExternalId(organizationId, organizationExternalId, accessToken);
+        doNothing().when(organizationClientMock).updateExternalOrganizationId(organizationId, organizationExternalId, accessToken);
         // When Then
-        Assertions.assertDoesNotThrow(() -> service.updateOrganizationExternalId(organizationId, organizationExternalId, accessToken));
+        Assertions.assertDoesNotThrow(() -> service.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken));
     }
 
 }

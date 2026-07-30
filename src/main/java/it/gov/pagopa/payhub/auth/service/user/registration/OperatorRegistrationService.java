@@ -48,7 +48,7 @@ public class OperatorRegistrationService {
 
     private void updateOrganizationExternalId(Long organizationId, String actualExternalOrganizationId, String externalOrganizationId, String accessToken) {
         if (externalOrganizationId != null && !externalOrganizationId.equals(actualExternalOrganizationId)) {
-            organizationService.updateOrganizationExternalId(organizationId, externalOrganizationId, accessToken);
+            organizationService.updateExternalOrganizationId(organizationId, externalOrganizationId, accessToken);
         }
     }
 

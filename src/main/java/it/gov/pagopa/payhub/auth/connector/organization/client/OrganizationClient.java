@@ -17,7 +17,7 @@ public class OrganizationClient {
     this.organizationApisHolder = organizationApisHolder;
   }
 
-  public void updateOrganizationExternalId(Long organizationId, String organizationExternalId, String accessToken) {
+  public void updateExternalOrganizationId(Long organizationId, String organizationExternalId, String accessToken) {
     try {
       organizationApisHolder.getOrganizationApi(accessToken)
               .updateOrganizationExternalId(organizationId, organizationExternalId);
