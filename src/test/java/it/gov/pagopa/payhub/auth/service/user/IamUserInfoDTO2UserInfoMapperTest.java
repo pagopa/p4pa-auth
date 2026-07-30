@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service.user;
 
 import it.gov.pagopa.payhub.auth.connector.organization.BrokerService;
+import it.gov.pagopa.payhub.auth.connector.organization.OrgSubUnitService;
 import it.gov.pagopa.payhub.auth.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
@@ -12,6 +13,7 @@ import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnit;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -35,6 +37,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
     private OrganizationService organizationServiceMock;
     @Mock
     private BrokerService brokerServiceMock;
+    @Mock
+    private OrgSubUnitService orgSubUnitServiceMock;
 
     private IamUserInfoDTO2UserInfoMapper mapper;
 
@@ -46,7 +50,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 organizationAccessMode,
                 operatorsRepositoryMock,
                 organizationServiceMock,
-                brokerServiceMock);
+                brokerServiceMock,
+                orgSubUnitServiceMock);
     }
 
     @AfterEach
@@ -54,7 +59,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.verifyNoMoreInteractions(
                 operatorsRepositoryMock,
                 organizationServiceMock,
-                brokerServiceMock);
+                brokerServiceMock,
+                orgSubUnitServiceMock);
     }
 
     @Test
@@ -104,6 +110,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .organizationFiscalCode("ORGFISCALCODE")
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
+                        .orgSubUnitCodes(List.of("SUB_UNIT_1", "SUB_UNIT_2"))
                         .build()))
                 .brokerId(1L)
                 .brokerFiscalCode("BROKERFISCALCODE")
@@ -117,12 +124,17 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockOrganization.setOrgEmail("email@email.it");
         mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setBrokerId(1L);
+
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
+
+        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
+                .thenReturn(List.of(buildOrgSubUnit("SUB_UNIT_1"), buildOrgSubUnit("SUB_UNIT_2")));
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
+
         Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
@@ -238,6 +250,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .organizationFiscalCode("ORGFISCALCODE")
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
+                        .orgSubUnitCodes(List.of("SUB_UNIT_1"))
                         .build()))
                 .brokerId(1L)
                 .brokerFiscalCode("BROKERFISCALCODE")
@@ -251,12 +264,17 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockOrganization.setOrganizationId(2L);
         mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setOrgEmail("email@email.it");
+
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
+
+        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
+                .thenReturn(List.of(buildOrgSubUnit("SUB_UNIT_1")));
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
+
         Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
@@ -308,6 +326,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
                         .organizationFiscalCode("ORGFISCALCODE")
                         .email("email@email.it")
                         .roles(List.of(Constants.ROLE_ADMIN))
+                        .orgSubUnitCodes(List.of("SUB_UNIT_1", "SUB_UNIT_2", "SUB_UNIT_3"))
                         .build()))
                 .brokerId(1L)
                 .brokerFiscalCode("BROKERFISCALCODE")
@@ -319,12 +338,21 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockOrganization.setOrgEmail("email@email.it");
         mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setBrokerId(1L);
+
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("IPA_CODE"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
+
+        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationId(2L, accessToken))
+                .thenReturn(List.of(
+                buildOrgSubUnit("SUB_UNIT_1"),
+                buildOrgSubUnit("SUB_UNIT_2"),
+                buildOrgSubUnit("SUB_UNIT_3")
+        ));
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
+
         Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
@@ -455,4 +483,51 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals("BROKERFISCALCODE", limited.getBrokerFiscalCode());
     }
 
+    @Test
+    void givenNoAssociatedOrgSubUnitsWhenApplyThenEmptyCodes() {
+        String accessToken = "sampleAccessToken";
+        String userId = "INNERUSERID";
+
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .type("UserInfo")
+                .traceId("traceId")
+                .systemUser(false)
+                .innerUserId(userId)
+                .mappedExternalUserId("MAPPEDEXTERNALUSERID")
+                .fiscalCode("FISCALCODE")
+                .familyName("FAMILYNAME")
+                .name("NAME")
+                .issuer("ISSUER")
+                .build();
+
+        Operator operator = Operator.builder()
+                .operatorId("OPERATORID")
+                .organizationIpaCode("ORG")
+                .roles(Set.of("ROLE"))
+                .email("EMAIL")
+                .build();
+
+        Organization organization = new Organization();
+        organization.setOrganizationId(2L);
+        organization.setOrgFiscalCode("ORGFISCALCODE");
+
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId))
+                .thenReturn(List.of(operator));
+
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("ORG", accessToken))
+                .thenReturn(organization);
+
+        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
+                .thenReturn(Collections.emptyList());
+
+        UserInfo result = mapper.apply(iamUserInfo, accessToken);
+
+        Assertions.assertEquals(Collections.emptyList(), result.getOrganizations().getFirst().getOrgSubUnitCodes());
+    }
+
+    private OrgSubUnit buildOrgSubUnit(String subUnitCode) {
+        OrgSubUnit orgSubUnit = new OrgSubUnit();
+        orgSubUnit.setSubUnitCode(subUnitCode);
+        return orgSubUnit;
+    }
 }
