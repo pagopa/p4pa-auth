@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.connector.organization.config;
 
 import it.gov.pagopa.payhub.auth.connector.BaseApiHolderTest;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrganizationDetailDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,18 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
                         .crudGetBroker("BROKERID"),
+                new ParameterizedTypeReference<>() {},
+                organizationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetOrganizationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken ->{
+                    organizationApisHolder.getOrganizationApi(accessToken)
+                            .updateOrganization(new OrganizationDetailDTO());
+                    return voidMock;
+                },
                 new ParameterizedTypeReference<>() {},
                 organizationApisHolder::unload);
     }

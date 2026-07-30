@@ -65,6 +65,11 @@ public class AuthExceptionHandler {
         return handleException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
     }
 
+    @ExceptionHandler(InvalidOrganizationException.class)
+    public ResponseEntity<AuthErrorDTO> handleInvalidOrganizationException(InvalidOrganizationException ex, HttpServletRequest request) {
+        return handleException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
+    }
+
     @ExceptionHandler({InvalidGrantTypeException.class})
     public ResponseEntity<AuthErrorDTO> handleUnsupportedGrantType(RuntimeException ex, HttpServletRequest request) {
         return handleException(ex, request, HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE);

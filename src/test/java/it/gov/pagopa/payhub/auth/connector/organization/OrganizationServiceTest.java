@@ -1,33 +1,35 @@
 package it.gov.pagopa.payhub.auth.connector.organization;
 
+import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationSearchClient;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
 
     @Mock
     private OrganizationSearchClient organizationSearchClientMock;
+    @Mock
+    private OrganizationClient organizationClientMock;
+    @InjectMocks
+    private OrganizationServiceImpl service;
 
-    private OrganizationService service;
-
-    @BeforeEach
-    void init(){
-        service = new OrganizationServiceImpl(organizationSearchClientMock);
-    }
 
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                organizationSearchClientMock
+                organizationSearchClientMock,
+                organizationClientMock
         );
     }
 
@@ -46,6 +48,18 @@ class OrganizationServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenUpdateExternalOrganizationIdThenInvokeClient(){
+        // Given
+        Long organizationId = 1L;
+        String accessToken = "ACCESSTOKEN";
+        String organizationExternalId = "ORG_EXT_ID";
+
+        doNothing().when(organizationClientMock).updateExternalOrganizationId(organizationId, organizationExternalId, accessToken);
+        // When Then
+        Assertions.assertDoesNotThrow(() -> service.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken));
     }
 
 }

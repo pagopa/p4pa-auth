@@ -45,6 +45,7 @@ class IDTokenClaims2UserInfoMapperTest {
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("SELC_99999999990")
                         .email("ee@ee.it")
+                        .externalOrganizationId("133e9c1b-dfc5-43ea-98a7-f64f30613074")
                         .roles(List.of("ROLE_ADMIN"))
                         .build())
                 .build();

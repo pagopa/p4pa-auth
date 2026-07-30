@@ -36,7 +36,7 @@ public class IamUserRegistrationService {
             }
 
             userService.registerOperator(user, userInfo.getOrganizationAccess().getOrganizationIpaCode(),
-                new HashSet<>(userInfo.getOrganizationAccess().getRoles()), userInfo.getOrganizationAccess().getEmail(), accessToken);
+                new HashSet<>(userInfo.getOrganizationAccess().getRoles()), userInfo.getOrganizationAccess().getEmail(), userInfo.getOrganizationAccess().getExternalOrganizationId(), accessToken);
         }
 
         return user;

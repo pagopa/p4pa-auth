@@ -27,7 +27,7 @@ public class OperatorRegistrationService {
         this.debtPositionTypeOrgOperatorService = debtPositionTypeOrgOperatorService;
     }
 
-    public Operator registerOperator(User user, String organizationIpaCode, Set<String> roles, String email, String accessToken){
+    public Operator registerOperator(User user, String organizationIpaCode, Set<String> roles, String email, String externalOrganizationId, String accessToken){
         log.info("Registering relationship between userId {} and organization {} setting roles {}",
                 user.getUserId(), organizationIpaCode, roles);
         Operator operator = operatorsRepository.registerOperator(user.getUserId(), organizationIpaCode, email, roles);
@@ -42,7 +42,14 @@ public class OperatorRegistrationService {
                 organization.getOrganizationId(),
                 accessToken
         );
+        updateOrganizationExternalId(organization.getOrganizationId(), organization.getExternalOrganizationId(), externalOrganizationId, accessToken);
         return operator;
+    }
+
+    private void updateOrganizationExternalId(Long organizationId, String actualExternalOrganizationId, String externalOrganizationId, String accessToken) {
+        if (externalOrganizationId != null && !externalOrganizationId.equals(actualExternalOrganizationId)) {
+            organizationService.updateExternalOrganizationId(organizationId, externalOrganizationId, accessToken);
+        }
     }
 
 }
