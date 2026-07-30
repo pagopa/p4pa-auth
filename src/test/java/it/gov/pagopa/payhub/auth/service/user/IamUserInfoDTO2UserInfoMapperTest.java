@@ -26,8 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IamUserInfoDTO2UserInfoMapperTest {
@@ -463,6 +462,50 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(true, limited.getCanManageUsers());
         Assertions.assertEquals(1L, limited.getBrokerId());
         Assertions.assertEquals("BROKERFISCALCODE", limited.getBrokerFiscalCode());
+    }
+
+    @Test
+    void givenNoOrganizationAccessWhenApplyThenNotUpdateExternalId() {
+        // Given
+        String accessToken = "sampleToken";
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .systemUser(false)
+                .innerUserId("USER1")
+                .organizationAccess(null)
+                .build();
+
+        when(operatorsRepositoryMock.findAllByUserId("USER1")).thenReturn(Collections.emptyList());
+
+        // When
+        mapper.apply(iamUserInfo, accessToken);
+
+        // Then
+        verify(organizationServiceMock, never()).getOrganizationByIpaCode(anyString(), anyString());
+        verify(organizationServiceMock, never()).updateOrganizationExternalId(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    void givenOrganizationNotFoundWhenApplyThenNotUpdateExternalId() {
+        // Given
+        String accessToken = "sampleToken";
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .systemUser(false)
+                .innerUserId("USER1")
+                .organizationAccess(IamUserOrganizationRolesDTO.builder()
+                        .organizationIpaCode("IPA_NOT_FOUND")
+                        .externalOrganizationId("EXT123")
+                        .build())
+                .build();
+
+        when(operatorsRepositoryMock.findAllByUserId("USER1")).thenReturn(Collections.emptyList());
+        when(organizationServiceMock.getOrganizationByIpaCode("IPA_NOT_FOUND", accessToken))
+                .thenReturn(null);
+
+        // When
+        mapper.apply(iamUserInfo, accessToken);
+
+        // Then
+        verify(organizationServiceMock, never()).updateOrganizationExternalId(anyLong(), anyString(), anyString());
     }
 
 }
