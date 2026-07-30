@@ -51,13 +51,8 @@ public class IamUserInfoDTO2UserInfoMapper {
         return userInfoMapper(iamUserInfoDTO, accessToken);
     }
 
-    private UserInfo systemUserMapper(
-            IamUserInfoDTO iamUserInfoDTO,
-            String accessToken
-    ) {
-        String organizationIpaCode = iamUserInfoDTO
-                .getOrganizationAccess()
-                .getOrganizationIpaCode();
+    private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
+        String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
 
         Optional<Organization> organization =
                 retrieveOrganization(organizationIpaCode, accessToken);
@@ -75,11 +70,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                     .map(Organization::getOrganizationId)
                     .orElse(null);
 
-            List<String> orgSubUnitCodes =
-                    retrieveAllOrgSubUnitCodes(
-                            organizationId,
-                            accessToken
-                    );
+            List<String> orgSubUnitCodes = retrieveAllOrgSubUnitCodes(organizationId, accessToken);
 
             UserOrganizationRoles organizationRoles =
                     UserOrganizationRoles.builder()
@@ -88,17 +79,11 @@ public class IamUserInfoDTO2UserInfoMapper {
                             .organizationIpaCode(organizationIpaCode)
                             .organizationFiscalCode(organization
                                             .map(Organization::getOrgFiscalCode)
-                                            .orElse(null)
+                                            .orElseThrow(() -> new IllegalStateException("Organization fiscal code not found for IPA code: " + organizationIpaCode))
                             )
-                            .roles(
-                                    Collections.singletonList(
-                                            Constants.ROLE_ADMIN
-                                    )
-                            )
-                            .email(
-                                    organization
-                                            .map(Organization::getOrgEmail)
-                                            .orElse(null)
+                            .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+                            .email(organization.map(Organization::getOrgEmail)
+                                    .orElse(null)
                             )
                             .orgSubUnitCodes(orgSubUnitCodes)
                             .build();
@@ -154,20 +139,24 @@ public class IamUserInfoDTO2UserInfoMapper {
 
         List<String> orgSubUnitCodes = organizationOpt
                 .map(Organization::getOrganizationId)
-                .map(organizationId -> retrieveOperatorOrgSubUnitCodes(organizationId, operatorExternalUserId, accessToken))
+                .map(organizationId -> retrieveOperatorOrgSubUnitCodes(
+                        organizationId,
+                        operatorExternalUserId,
+                        accessToken))
                 .orElseGet(Collections::emptyList);
+
+        String organizationFiscalCode = organizationOpt
+                .map(Organization::getOrgFiscalCode)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Organization fiscal code not found for IPA code: " + operator.getOrganizationIpaCode()));
 
         return UserOrganizationRoles.builder()
                 .operatorId(operator.getOperatorId())
                 .organizationId(organizationOpt
-                                .map(Organization::getOrganizationId)
-                                .orElse(null)
-                )
+                        .map(Organization::getOrganizationId)
+                        .orElse(null))
                 .organizationIpaCode(operator.getOrganizationIpaCode())
-                .organizationFiscalCode(organizationOpt
-                                .map(Organization::getOrgFiscalCode)
-                                .orElse(null)
-                )
+                .organizationFiscalCode(organizationFiscalCode)
                 .roles(new ArrayList<>(operator.getRoles()))
                 .email(operator.getEmail())
                 .orgSubUnitCodes(orgSubUnitCodes)
