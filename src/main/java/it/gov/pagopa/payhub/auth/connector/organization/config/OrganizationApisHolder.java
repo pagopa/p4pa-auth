@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.auth.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.p4pa_organization.controller.ApiClient;
 import it.gov.pagopa.pu.p4pa_organization.controller.BaseApi;
 import it.gov.pagopa.pu.p4pa_organization.controller.generated.BrokerEntityControllerApi;
+import it.gov.pagopa.pu.p4pa_organization.controller.generated.OrganizationApi;
 import it.gov.pagopa.pu.p4pa_organization.controller.generated.OrganizationSearchControllerApi;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ public class OrganizationApisHolder {
 
     private final BrokerEntityControllerApi brokerEntityControllerApi;
     private final OrganizationSearchControllerApi organizationSearchControllerApi;
+    private final OrganizationApi organizationApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -36,6 +38,7 @@ public class OrganizationApisHolder {
 
         this.organizationSearchControllerApi = new OrganizationSearchControllerApi(apiClient);
         this.brokerEntityControllerApi = new BrokerEntityControllerApi(apiClient);
+        this.organizationApi = new OrganizationApi(apiClient);
     }
 
     @PreDestroy
@@ -55,6 +58,13 @@ public class OrganizationApisHolder {
      */
     public BrokerEntityControllerApi getBrokerEntityControllerApi(String accessToken) {
         return getApi(accessToken, brokerEntityControllerApi);
+    }
+
+    /**
+     * It will return a {@link OrganizationApi} instrumented with the provided accessToken. Use null if auth is not required
+     */
+    public OrganizationApi getOrganizationApi(String accessToken){
+        return getApi(accessToken, organizationApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
