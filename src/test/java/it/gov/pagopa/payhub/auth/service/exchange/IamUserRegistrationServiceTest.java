@@ -94,7 +94,7 @@ class IamUserRegistrationServiceTest {
         // Then
         verifyRegisterUserInvocation(userInfo);
         Assertions.assertEquals("ROLES_NOT_FOUND",exception.getCode());
-        Assertions.assertEquals("No roles configured for organizationAccess IamUserOrganizationRolesDTO(organizationIpaCode=ORG2, roles=[], email=null, externalOrganizationId=null)", exception.getMessage());
+        Assertions.assertEquals("No roles configured for organizationAccess IamUserOrganizationRolesDTO(organizationIpaCode=ORG2, externalOrganizationId=null, roles=[], email=null)", exception.getMessage());
     }
 
     private void verifyRegisterUserInvocation(IamUserInfoDTO userInfo) {
