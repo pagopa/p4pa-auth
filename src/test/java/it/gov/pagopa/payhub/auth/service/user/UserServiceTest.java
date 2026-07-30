@@ -131,11 +131,11 @@ class UserServiceTest {
         User user = new User();
         user.setUserId("USERID");
 
-        Mockito.when(operatorRegistrationServiceMock.registerOperator(user, organizationIpaCode, roles, email, accessToken))
+        Mockito.when(operatorRegistrationServiceMock.registerOperator(user, organizationIpaCode, roles, email, null, accessToken))
                 .thenReturn(storedOperator);
 
         // When
-        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, accessToken);
+        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, null, accessToken);
 
         // Then
         Assertions.assertSame(storedOperator, result);

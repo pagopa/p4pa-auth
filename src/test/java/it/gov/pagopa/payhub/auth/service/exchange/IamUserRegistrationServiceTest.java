@@ -75,7 +75,7 @@ class IamUserRegistrationServiceTest {
 
         // Then
         verifyRegisterUserInvocation(userInfoUserPair.getFirst());
-        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"), accessToken);
+        verifyRegisterOperatorInvocation(userInfoUserPair.getSecond(), "ORG", "EMAIL", Set.of("ROLE"), "ORG_EXTERNAL_ID", accessToken);
         Assertions.assertSame(userInfoUserPair.getSecond(), result);
     }
 
@@ -101,8 +101,8 @@ class IamUserRegistrationServiceTest {
         Mockito.verify(userServiceMock).registerUser(userInfo.getUserId(), userInfo.getFiscalCode(), userInfo.getIssuer(), userInfo.getName(), userInfo.getFamilyName());
     }
 
-    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, String email, Set<String> roles, String accessToken) {
-        Mockito.verify(userServiceMock).registerOperator(user, organizationIpaCode, roles, email, accessToken);
+    private void verifyRegisterOperatorInvocation(User user, String organizationIpaCode, String email, Set<String> roles, String externalOrganizationId, String accessToken) {
+        Mockito.verify(userServiceMock).registerOperator(user, organizationIpaCode, roles, email, externalOrganizationId, accessToken);
     }
 
     private Pair<IamUserInfoDTO, User> configureUserServiceMock() {
@@ -116,6 +116,7 @@ class IamUserRegistrationServiceTest {
                         .organizationIpaCode("ORG")
                         .roles(List.of("ROLE"))
                         .email("EMAIL")
+                        .externalOrganizationId("ORG_EXTERNAL_ID")
                         .build())
                 .build();
 

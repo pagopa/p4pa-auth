@@ -114,7 +114,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .build();
 
         when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(organizationRoles);
-        doNothing().when(organizationServiceMock).updateOrganizationExternalId(2L,"ORGEXTID", accessToken);
         Organization mockOrganization = new Organization();
         mockOrganization.setOrganizationId(2L);
         mockOrganization.setOrgEmail("email@email.it");
@@ -186,7 +185,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockOrganization.setBrokerId(1L);
         when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
-        doNothing().when(organizationServiceMock).updateOrganizationExternalId(2L,"ORGEXTID", accessToken);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
@@ -334,8 +332,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
         when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
-
-        doNothing().when(organizationServiceMock).updateOrganizationExternalId(2L,"ORGEXTID", accessToken);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 

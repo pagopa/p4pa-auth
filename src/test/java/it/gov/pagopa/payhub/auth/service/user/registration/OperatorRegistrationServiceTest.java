@@ -65,7 +65,7 @@ class OperatorRegistrationServiceTest {
                         accessToken
                 );
         // When
-        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, accessToken);
+        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, null, accessToken);
 
         // Then
         Assertions.assertSame(storedOperator, result);
@@ -91,7 +91,7 @@ class OperatorRegistrationServiceTest {
                 .thenReturn(null);
 
         // When
-        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, accessToken);
+        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, null, accessToken);
 
         // Then
         Assertions.assertSame(storedOperator, result);
