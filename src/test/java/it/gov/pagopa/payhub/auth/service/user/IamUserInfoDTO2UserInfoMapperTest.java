@@ -335,6 +335,8 @@ class IamUserInfoDTO2UserInfoMapperTest {
         when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
+        doNothing().when(organizationServiceMock).updateOrganizationExternalId(2L,"ORGEXTID", accessToken);
+
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
 
         Assertions.assertEquals(expected, result);

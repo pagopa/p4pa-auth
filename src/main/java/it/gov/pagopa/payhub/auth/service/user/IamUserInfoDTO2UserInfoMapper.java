@@ -157,8 +157,7 @@ public class IamUserInfoDTO2UserInfoMapper {
     private Optional<Organization> retrieveAndUpdateOrganization(String organizationIpaCode, String externalOrganizationId, String accessToken) {
         if (StringUtils.isNotBlank(organizationIpaCode)) {
             Organization organization = organizationService.getOrganizationByIpaCode(organizationIpaCode, accessToken);
-            if(organization.getExternalOrganizationId()!=null
-                && !organization.getExternalOrganizationId().equals(externalOrganizationId)) {
+            if(externalOrganizationId!=null && !externalOrganizationId.equals(organization.getExternalOrganizationId())) {
                 organizationService.updateOrganizationExternalId(organization.getOrganizationId(), externalOrganizationId, accessToken);
             }
             return Optional.of(organization);
