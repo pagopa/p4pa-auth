@@ -168,7 +168,7 @@ public class IamUserInfoDTO2UserInfoMapper {
             return Collections.emptyList();
         }
 
-        List<OrgSubUnit> orgSubUnits = orgSubUnitService.getOrgSubUnitsByOrganizationId(organizationId, accessToken);
+        List<OrgSubUnit> orgSubUnits = orgSubUnitService.getActiveOrgSubUnitsByOrganizationId(organizationId, accessToken);
 
         return extractOrgSubUnitCodes(orgSubUnits);
     }
@@ -179,7 +179,7 @@ public class IamUserInfoDTO2UserInfoMapper {
         }
 
         List<OrgSubUnit> orgSubUnits =
-                orgSubUnitService.getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(organizationId, operatorExternalUserId, accessToken);
+                orgSubUnitService.getActiveOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(organizationId, operatorExternalUserId, accessToken);
 
         return extractOrgSubUnitCodes(orgSubUnits);
     }

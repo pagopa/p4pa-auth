@@ -1,10 +1,8 @@
 package it.gov.pagopa.payhub.auth.connector.organization;
 
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrgSubUnitSearchClient;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.CollectionModelOrgSubUnit;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnit;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnitStatus;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.PagedModelOrgSubUnitEmbedded;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -22,33 +20,27 @@ public class OrgSubUnitServiceImpl implements OrgSubUnitService {
     }
 
     @Override
-    public List<OrgSubUnit> getOrgSubUnitsByOrganizationId(Long organizationId, String accessToken) {
-        CollectionModelOrgSubUnit response =
+    public List<OrgSubUnit> getActiveOrgSubUnitsByOrganizationId(Long organizationId, String accessToken) {
+        List<OrgSubUnit> orgSubUnits =
                 orgSubUnitSearchClient.getAllOrgSubUnitsByOrganizationId(organizationId, accessToken);
 
-        return extractActiveOrgSubUnits(response);
+        return extractActiveOrgSubUnits(orgSubUnits);
     }
 
     @Override
-    public List<OrgSubUnit> getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(Long organizationId, String operatorExternalUserId, String accessToken) {
-        CollectionModelOrgSubUnit response =
+    public List<OrgSubUnit> getActiveOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(Long organizationId, String operatorExternalUserId, String accessToken) {
+        List<OrgSubUnit> orgSubUnits =
                 orgSubUnitSearchClient.getAllOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(organizationId, operatorExternalUserId, accessToken);
 
-        return extractActiveOrgSubUnits(response);
+        return extractActiveOrgSubUnits(orgSubUnits);
     }
 
-    private List<OrgSubUnit> extractActiveOrgSubUnits(CollectionModelOrgSubUnit response) {
-        if (response == null) {
+    private List<OrgSubUnit> extractActiveOrgSubUnits(List<OrgSubUnit> orgSubUnits) {
+        if (CollectionUtils.isEmpty(orgSubUnits)) {
             return Collections.emptyList();
         }
 
-        PagedModelOrgSubUnitEmbedded embedded = response.getEmbedded();
-
-        if (embedded == null || CollectionUtils.isEmpty(embedded.getOrgSubUnits())) {
-            return Collections.emptyList();
-        }
-
-        return embedded.getOrgSubUnits().stream()
+        return orgSubUnits.stream()
                 .filter(Objects::nonNull)
                 .filter(orgSubUnit -> OrgSubUnitStatus.ACTIVE.equals(orgSubUnit.getStatus()))
                 .toList();

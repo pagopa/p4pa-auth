@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface OrgSubUnitService {
 
-    List<OrgSubUnit> getOrgSubUnitsByOrganizationId(Long organizationId, String accessToken);
+    List<OrgSubUnit> getActiveOrgSubUnitsByOrganizationId(Long organizationId, String accessToken);
 
-    List<OrgSubUnit> getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(Long organizationId, String operatorExternalUserId, String accessToken);
+    List<OrgSubUnit> getActiveOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(Long organizationId, String operatorExternalUserId, String accessToken);
 }

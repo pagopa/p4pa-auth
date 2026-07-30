@@ -128,7 +128,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
-        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
+        Mockito.when(orgSubUnitServiceMock.getActiveOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
                 .thenReturn(List.of(buildOrgSubUnit("SUB_UNIT_1"), buildOrgSubUnit("SUB_UNIT_2")));
 
         Broker mockBroker = new Broker();
@@ -268,7 +268,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
-        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
+        Mockito.when(orgSubUnitServiceMock.getActiveOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
                 .thenReturn(List.of(buildOrgSubUnit("SUB_UNIT_1")));
 
         Broker mockBroker = new Broker();
@@ -342,7 +342,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("IPA_CODE"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
-        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationId(2L, accessToken))
+        Mockito.when(orgSubUnitServiceMock.getActiveOrgSubUnitsByOrganizationId(2L, accessToken))
                 .thenReturn(List.of(
                 buildOrgSubUnit("SUB_UNIT_1"),
                 buildOrgSubUnit("SUB_UNIT_2"),
@@ -517,7 +517,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode("ORG", accessToken))
                 .thenReturn(organization);
 
-        Mockito.when(orgSubUnitServiceMock.getOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
+        Mockito.when(orgSubUnitServiceMock.getActiveOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(2L, "MAPPEDEXTERNALUSERID", accessToken))
                 .thenReturn(Collections.emptyList());
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);

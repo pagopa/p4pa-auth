@@ -2,12 +2,13 @@ package it.gov.pagopa.payhub.auth.connector.organization.client;
 
 import it.gov.pagopa.payhub.auth.connector.organization.config.OrganizationApisHolder;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.CollectionModelOrgSubUnit;
-import lombok.extern.slf4j.Slf4j;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnit;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
-@Slf4j
 public class OrgSubUnitSearchClient {
 
     private final OrganizationApisHolder organizationApisHolder;
@@ -16,23 +17,27 @@ public class OrgSubUnitSearchClient {
         this.organizationApisHolder = organizationApisHolder;
     }
 
-    public CollectionModelOrgSubUnit getAllOrgSubUnitsByOrganizationId(Long organizationId, String accessToken) {
-        try {
-            return organizationApisHolder.getOrgSubUnitSearchControllerApi(accessToken)
-                    .crudOrgSubUnitFindAllByOrganizationId(organizationId);
-        } catch (HttpClientErrorException.NotFound e) {
-            log.warn("OrgSubUnit with organizationId {} not found", organizationId);
-            return null;
-        }
+    public List<OrgSubUnit> getAllOrgSubUnitsByOrganizationId(Long organizationId, String accessToken) {
+        CollectionModelOrgSubUnit response = organizationApisHolder.getOrgSubUnitSearchControllerApi(accessToken)
+                .crudOrgSubUnitFindAllByOrganizationId(organizationId);
+
+        return extractOrgSubUnits(response);
     }
 
-    public CollectionModelOrgSubUnit getAllOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(Long organizationId, String operatorExternalUserId, String accessToken) {
-        try {
-            return organizationApisHolder.getOrgSubUnitSearchControllerApi(accessToken)
-                    .crudOrgSubUnitFindAllByOrganizationIdAndOperatorExternalUserId(organizationId, operatorExternalUserId);
-        } catch (HttpClientErrorException.NotFound e) {
-            log.warn("OrgSubUnit with organizationId {} not found", organizationId);
-            return null;
+    public List<OrgSubUnit> getAllOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(Long organizationId, String operatorExternalUserId, String accessToken) {
+        CollectionModelOrgSubUnit response = organizationApisHolder.getOrgSubUnitSearchControllerApi(accessToken)
+                .crudOrgSubUnitFindAllByOrganizationIdAndOperatorExternalUserId(organizationId, operatorExternalUserId);
+
+        return extractOrgSubUnits(response);
+    }
+
+    private List<OrgSubUnit> extractOrgSubUnits(CollectionModelOrgSubUnit response) {
+        if (response == null || response.getEmbedded() == null) {
+            return Collections.emptyList();
         }
+
+        List<OrgSubUnit> orgSubUnits = response.getEmbedded().getOrgSubUnits();
+
+        return orgSubUnits != null ? orgSubUnits : Collections.emptyList();
     }
 }
