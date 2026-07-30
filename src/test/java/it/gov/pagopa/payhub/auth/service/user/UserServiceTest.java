@@ -15,9 +15,9 @@ import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -47,19 +47,8 @@ class UserServiceTest {
     private OrganizationOperatorRetrieverService organizationOperatorRetrieverServiceMock;
     @Mock
     private UserInfoRetrieverService userInfoRetrieverServiceMock;
-
-    private UserService service;
-
-    @BeforeEach
-    void init() {
-        service = new UserServiceImpl(
-                tokenStoreServiceMock,
-                userRegistrationServiceMock,
-                operatorRegistrationServiceMock,
-                userInfoMapperMock,
-                organizationOperatorRetrieverServiceMock,
-                userInfoRetrieverServiceMock);
-    }
+    @InjectMocks
+    private UserServiceImpl service;
 
     @AfterEach
     void verifyNotMoreInteractions() {

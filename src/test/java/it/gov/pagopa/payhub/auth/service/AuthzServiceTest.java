@@ -14,9 +14,9 @@ import it.gov.pagopa.payhub.auth.service.user.retrieve.UserDTOMapper;
 import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -60,21 +60,9 @@ class AuthzServiceTest {
     @Mock
     private UserDTOMapper userDTOMapper;
 
-    private AuthzService service;
+    @InjectMocks
+    private AuthzServiceImpl service;
 
-    @BeforeEach
-    void init(){
-        service = new AuthzServiceImpl(
-                userServiceMock,
-                clientServiceMock,
-                clientRepositoryMock,
-                externalUserIdObfuscatorService,
-                usersRepository,
-                operatorsRepository,
-                operatorDTOMapper,
-                userDTOMapper
-        );
-    }
 
     @AfterEach
     void verifyNotMoreInteractions(){

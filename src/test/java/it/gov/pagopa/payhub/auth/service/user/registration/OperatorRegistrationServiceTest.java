@@ -8,14 +8,17 @@ import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Set;
+
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OperatorRegistrationServiceTest {
@@ -26,13 +29,8 @@ class OperatorRegistrationServiceTest {
     private OrganizationService organizationServiceMock;
     @Mock
     private DebtPositionTypeOrgOperatorService debtPositionTypeOrgOperatorServiceMock;
-
+    @InjectMocks
     private OperatorRegistrationService service;
-
-    @BeforeEach
-    void init() {
-        service = new OperatorRegistrationService(operatorsRepositoryMock, organizationServiceMock, debtPositionTypeOrgOperatorServiceMock);
-    }
 
     @AfterEach
     void verifyNotMoreInteractions() {
@@ -53,11 +51,11 @@ class OperatorRegistrationServiceTest {
         user.setUserId("USERID");
         user.setMappedExternalUserId("operatorExternalUserId");
 
-        Mockito.when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
+        when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
                 .thenReturn(storedOperator);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(organizationIpaCode, accessToken))
+        when(organizationServiceMock.getOrganizationByIpaCode(organizationIpaCode, accessToken))
                 .thenReturn(organization);
-        Mockito.doNothing()
+        doNothing()
                 .when(debtPositionTypeOrgOperatorServiceMock)
                 .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
                         user.getMappedExternalUserId(),
@@ -85,9 +83,9 @@ class OperatorRegistrationServiceTest {
         user.setUserId("USERID");
         user.setMappedExternalUserId("operatorExternalUserId");
 
-        Mockito.when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
+        when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
                 .thenReturn(storedOperator);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(organizationIpaCode, accessToken))
+        when(organizationServiceMock.getOrganizationByIpaCode(organizationIpaCode, accessToken))
                 .thenReturn(null);
 
         // When
@@ -101,5 +99,85 @@ class OperatorRegistrationServiceTest {
                         Mockito.anyLong(),
                         Mockito.anyString()
                 );
+    }
+
+    @Test
+    void givenSameExternalIdWhenRegisterOperatorThenDoNotUpdateExternalId() {
+        // Given
+        String accessToken = "ACCESS_TOKEN";
+        String organizationIpaCode = "ORGANIZATIONIPACODE";
+        String email = "EMAIL";
+        String sameExternalId = "SAME_EXT_ID";
+        Set<String> roles = Set.of("ROLE");
+        Operator storedOperator = new Operator();
+        Organization organization = new Organization();
+        organization.setOrganizationId(1L);
+        organization.setExternalOrganizationId(sameExternalId); // Stesso ID gia a DB
+
+        User user = new User();
+        user.setUserId("USERID");
+        user.setMappedExternalUserId("operatorExternalUserId");
+
+        when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
+                .thenReturn(storedOperator);
+        when(organizationServiceMock.getOrganizationByIpaCode(organizationIpaCode, accessToken))
+                .thenReturn(organization);
+        doNothing()
+                .when(debtPositionTypeOrgOperatorServiceMock)
+                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+                        user.getMappedExternalUserId(),
+                        organization.getOrganizationId(),
+                        accessToken
+                );
+
+        // When
+        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, sameExternalId, accessToken);
+
+        // Then
+        Assertions.assertSame(storedOperator, result);
+        Mockito.verify(organizationServiceMock, Mockito.never())
+                .updateOrganizationExternalId(Mockito.anyLong(), Mockito.anyString(), Mockito.anyString());
+    }
+
+    @Test
+    void givenDifferentExternalIdWhenRegisterOperatorThenUpdateExternalId() {
+        // Given
+        String accessToken = "ACCESS_TOKEN";
+        String organizationIpaCode = "ORGANIZATIONIPACODE";
+        String email = "EMAIL";
+        String oldExternalId = "OLD_EXT_ID";
+        String newExternalId = "NEW_EXT_ID";
+        Set<String> roles = Set.of("ROLE");
+        Operator storedOperator = new Operator();
+        Organization organization = new Organization();
+        organization.setOrganizationId(1L);
+        organization.setExternalOrganizationId(oldExternalId);
+
+        User user = new User();
+        user.setUserId("USERID");
+        user.setMappedExternalUserId("operatorExternalUserId");
+
+        when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
+                .thenReturn(storedOperator);
+        when(organizationServiceMock.getOrganizationByIpaCode(organizationIpaCode, accessToken))
+                .thenReturn(organization);
+        doNothing()
+                .when(debtPositionTypeOrgOperatorServiceMock)
+                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+                        user.getMappedExternalUserId(),
+                        organization.getOrganizationId(),
+                        accessToken
+                );
+        doNothing()
+                .when(organizationServiceMock)
+                .updateOrganizationExternalId(1L, newExternalId, accessToken);
+
+        // When
+        Operator result = service.registerOperator(user, organizationIpaCode, roles, email, newExternalId, accessToken);
+
+        // Then
+        Assertions.assertSame(storedOperator, result);
+        Mockito.verify(organizationServiceMock, Mockito.times(1))
+                .updateOrganizationExternalId(1L, newExternalId, accessToken);
     }
 }
