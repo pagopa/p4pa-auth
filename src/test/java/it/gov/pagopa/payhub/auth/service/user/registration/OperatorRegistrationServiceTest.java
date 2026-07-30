@@ -17,8 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Set;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OperatorRegistrationServiceTest {
@@ -93,7 +92,7 @@ class OperatorRegistrationServiceTest {
 
         // Then
         Assertions.assertSame(storedOperator, result);
-        Mockito.verify(debtPositionTypeOrgOperatorServiceMock, Mockito.times(0))
+        verify(debtPositionTypeOrgOperatorServiceMock, Mockito.times(0))
                 .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
                         Mockito.anyString(),
                         Mockito.anyLong(),
@@ -135,7 +134,7 @@ class OperatorRegistrationServiceTest {
 
         // Then
         Assertions.assertSame(storedOperator, result);
-        Mockito.verify(organizationServiceMock, Mockito.never())
+        verify(organizationServiceMock, never())
                 .updateOrganizationExternalId(Mockito.anyLong(), Mockito.anyString(), Mockito.anyString());
     }
 
@@ -177,7 +176,7 @@ class OperatorRegistrationServiceTest {
 
         // Then
         Assertions.assertSame(storedOperator, result);
-        Mockito.verify(organizationServiceMock, Mockito.times(1))
+        verify(organizationServiceMock, times(1))
                 .updateOrganizationExternalId(1L, newExternalId, accessToken);
     }
 }
