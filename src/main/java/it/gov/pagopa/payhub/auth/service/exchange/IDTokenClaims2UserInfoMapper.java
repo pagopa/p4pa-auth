@@ -58,7 +58,7 @@ public class IDTokenClaims2UserInfoMapper implements Function<Map<String, Claim>
         List<String> roles = readUserOrganizationRoles(organizationClaim);
         return IamUserOrganizationRolesDTO.builder()
                 .organizationIpaCode((String)organizationClaim.get("ipaCode"))
-                .externalOrganizationId(organizationClaim.get("id")!=null?(String)organizationClaim.get("id"):null)
+                .externalOrganizationId((String)organizationClaim.get("id"))
                 .email(claims.get("email").asString())
                 .roles(roles)
                 .build();
