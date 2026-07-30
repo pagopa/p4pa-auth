@@ -26,8 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class IamUserInfoDTO2UserInfoMapperTest {
 
@@ -78,7 +76,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
                         .email("EMAIL")
-                        .externalOrganizationId("ORGEXTID")
                         .build())
                 .build();
 
@@ -113,20 +110,20 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
-        when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(organizationRoles);
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(organizationRoles);
+
         Organization mockOrganization = new Organization();
         mockOrganization.setOrganizationId(2L);
         mockOrganization.setOrgEmail("email@email.it");
         mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setBrokerId(1L);
-        mockOrganization.setExternalOrganizationId("OLDEXTID");
-        when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
-        when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -156,7 +153,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("ORG")
                         .email("EMAIL")
-                        .externalOrganizationId("ORGEXTID")
                         .build())
                 .build();
 
@@ -177,19 +173,19 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
-        when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(Collections.emptyList());
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(Collections.emptyList());
 
         Organization mockOrganization = new Organization();
         mockOrganization.setOrganizationId(2L);
         mockOrganization.setOrgEmail("email@email.it");
         mockOrganization.setBrokerId(1L);
-        when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
-        when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -248,20 +244,20 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .canManageUsers(!organizationAccessMode)
                 .build();
 
-        when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(organizationRoles);
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(organizationRoles);
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
         mockOrganization.setOrganizationId(2L);
         mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setOrgEmail("email@email.it");
-        when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
-        when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -291,7 +287,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
                 .organizationAccess(IamUserOrganizationRolesDTO.builder()
                         .organizationIpaCode("IPA_CODE")
                         .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-                        .externalOrganizationId("ORGEXTID")
                         .build())
                 .build();
 
@@ -324,13 +319,13 @@ class IamUserInfoDTO2UserInfoMapperTest {
         mockOrganization.setOrgEmail("email@email.it");
         mockOrganization.setOrgFiscalCode("ORGFISCALCODE");
         mockOrganization.setBrokerId(1L);
-        when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("IPA_CODE"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("IPA_CODE"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
-        when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -374,13 +369,13 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
-        when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
-        when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -406,7 +401,7 @@ class IamUserInfoDTO2UserInfoMapperTest {
         String userId = "INNERUSERID";
 
         // operatorsRepository is invoked before branching in user path
-        when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(Collections.emptyList());
+        Mockito.when(operatorsRepositoryMock.findAllByUserId(userId)).thenReturn(Collections.emptyList());
 
         UserOrganizationRoles org = UserOrganizationRoles.builder()
                 .organizationIpaCode("ORG")
@@ -433,13 +428,13 @@ class IamUserInfoDTO2UserInfoMapperTest {
 
         Organization mockOrganization = new Organization();
         mockOrganization.setBrokerId(1L);
-        when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(Mockito.eq("ORG"), Mockito.anyString()))
                 .thenReturn(mockOrganization);
 
         Broker mockBroker = new Broker();
         mockBroker.setBrokerId(1L);
         mockBroker.setBrokerFiscalCode("BROKERFISCALCODE");
-        when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.when(brokerServiceMock.getBrokerById(Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(mockBroker);
 
         UserInfo result = mapper.apply(iamUserInfo, accessToken);
@@ -458,50 +453,6 @@ class IamUserInfoDTO2UserInfoMapperTest {
         Assertions.assertEquals(true, limited.getCanManageUsers());
         Assertions.assertEquals(1L, limited.getBrokerId());
         Assertions.assertEquals("BROKERFISCALCODE", limited.getBrokerFiscalCode());
-    }
-
-    @Test
-    void givenNoOrganizationAccessWhenApplyThenNotUpdateExternalId() {
-        // Given
-        String accessToken = "sampleToken";
-        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
-                .systemUser(false)
-                .innerUserId("USER1")
-                .organizationAccess(null)
-                .build();
-
-        when(operatorsRepositoryMock.findAllByUserId("USER1")).thenReturn(Collections.emptyList());
-
-        // When
-        mapper.apply(iamUserInfo, accessToken);
-
-        // Then
-        verify(organizationServiceMock, never()).getOrganizationByIpaCode(anyString(), anyString());
-        verify(organizationServiceMock, never()).updateOrganizationExternalId(anyLong(), anyString(), anyString());
-    }
-
-    @Test
-    void givenOrganizationNotFoundWhenApplyThenNotUpdateExternalId() {
-        // Given
-        String accessToken = "sampleToken";
-        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
-                .systemUser(false)
-                .innerUserId("USER1")
-                .organizationAccess(IamUserOrganizationRolesDTO.builder()
-                        .organizationIpaCode("IPA_NOT_FOUND")
-                        .externalOrganizationId("EXT123")
-                        .build())
-                .build();
-
-        when(operatorsRepositoryMock.findAllByUserId("USER1")).thenReturn(Collections.emptyList());
-        when(organizationServiceMock.getOrganizationByIpaCode("IPA_NOT_FOUND", accessToken))
-                .thenReturn(null);
-
-        // When
-        mapper.apply(iamUserInfo, accessToken);
-
-        // Then
-        verify(organizationServiceMock, never()).updateOrganizationExternalId(anyLong(), anyString(), anyString());
     }
 
 }
