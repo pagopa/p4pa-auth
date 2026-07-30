@@ -92,7 +92,7 @@ class OperatorRegistrationServiceTest {
 
         // Then
         Assertions.assertSame(storedOperator, result);
-        verify(debtPositionTypeOrgOperatorServiceMock, Mockito.times(0))
+        verify(debtPositionTypeOrgOperatorServiceMock, times(0))
                 .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
                         Mockito.anyString(),
                         Mockito.anyLong(),
