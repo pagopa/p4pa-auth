@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,12 +29,12 @@ class OrgSubUnitServiceTest {
     private CollectionModelOrgSubUnit responseMock;
     @Mock
     private PagedModelOrgSubUnitEmbedded embeddedMock;
+    @InjectMocks
+    private OrgSubUnitServiceImpl orgSubUnitService;
 
     private static final Long ORGANIZATION_ID = 1L;
     private static final String OPERATOR_EXTERNAL_USER_ID = "operatorExternalUserId";
     private static final String ACCESS_TOKEN = "accessToken";
-
-    private OrgSubUnitService orgSubUnitService;
 
     @BeforeEach
     void setUp() {
