@@ -63,7 +63,7 @@ val caffeineVersion = "3.2.4"
 val httpClientVersion = "5.6.1"
 val httpCoreVersion = "5.4.2"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.11.0"
+val lz4JavaVersion = "1.11.1"
 val commonsLang3Version = "3.20.0"
 
 dependencies {
