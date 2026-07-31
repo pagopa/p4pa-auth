@@ -7,19 +7,19 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
+import it.gov.pagopa.payhub.auth.connector.organization.OrgSubUnitService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
 import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
+import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnit;
 import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class IamUserInfoDTO2UserInfoMapper {
@@ -27,18 +27,20 @@ public class IamUserInfoDTO2UserInfoMapper {
     private final OperatorsRepository operatorsRepository;
     private final OrganizationService organizationService;
     private final BrokerService brokerService;
+    private final OrgSubUnitService orgSubUnitService;
     private final boolean organizationAccessMode;
 
     public IamUserInfoDTO2UserInfoMapper(
             @Value("${app.enable-access-organization-mode}") boolean organizationAccessMode,
-
             OperatorsRepository operatorsRepository,
             OrganizationService organizationService,
-            BrokerService brokerService
+            BrokerService brokerService,
+            OrgSubUnitService orgSubUnitService
     ) {
         this.operatorsRepository = operatorsRepository;
         this.organizationService = organizationService;
         this.brokerService = brokerService;
+        this.orgSubUnitService = orgSubUnitService;
         this.organizationAccessMode = organizationAccessMode;
     }
 
@@ -51,36 +53,51 @@ public class IamUserInfoDTO2UserInfoMapper {
 
     private UserInfo systemUserMapper(IamUserInfoDTO iamUserInfoDTO, String accessToken) {
         String organizationIpaCode = iamUserInfoDTO.getOrganizationAccess().getOrganizationIpaCode();
-        Optional<Organization> organization = retrieveOrganization(organizationIpaCode, accessToken);
+
+        Optional<Organization> organization =
+                retrieveOrganization(organizationIpaCode, accessToken);
+
         UserInfo userInfo;
 
-        if (
-            iamUserInfoDTO.getType() != null
-            && UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfoDTO.getType())
-        ) {
+        if (isLimitedScope(iamUserInfoDTO)) {
             userInfo = UserInfoLimitedScope.builder()
                     .organizations(Collections.emptyList())
-                    .canManageUsers(false) // system user => false (as before)
+                    .canManageUsers(false)
                     .resource(iamUserInfoDTO.getResource())
                     .build();
         } else {
+            Long organizationId = organization
+                    .map(Organization::getOrganizationId)
+                    .orElse(null);
+
+            List<String> orgSubUnitCodes = retrieveAllOrgSubUnitCodes(organizationId, accessToken);
+
+            UserOrganizationRoles organizationRoles =
+                    UserOrganizationRoles.builder()
+                            .operatorId(iamUserInfoDTO.getInnerUserId())
+                            .organizationId(organizationId)
+                            .organizationIpaCode(organizationIpaCode)
+                            .organizationFiscalCode(organization
+                                            .map(Organization::getOrgFiscalCode)
+                                            .orElseThrow(() -> new IllegalStateException("Organization fiscal code not found for IPA code: " + organizationIpaCode))
+                            )
+                            .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+                            .email(organization.map(Organization::getOrgEmail)
+                                    .orElse(null)
+                            )
+                            .orgSubUnitCodes(orgSubUnitCodes)
+                            .build();
+
             userInfo = UserInfo.builder()
                     .organizationAccess(organizationIpaCode)
-                    .canManageUsers(false) // system user => false (as before)
-                    .organizations(Collections.singletonList(
-                            UserOrganizationRoles.builder()
-                                    .operatorId(iamUserInfoDTO.getInnerUserId())
-                                    .organizationId(organization.map(Organization::getOrganizationId).orElse(null))
-                                    .organizationIpaCode(organizationIpaCode)
-                                    .organizationFiscalCode(organization.map(Organization::getOrgFiscalCode).orElse(null))
-                                    .roles(Collections.singletonList(Constants.ROLE_ADMIN))
-                                    .email(organization.map(Organization::getOrgEmail).orElse(null))
-                                    .build()))
+                    .canManageUsers(false)
+                    .organizations(
+                            Collections.singletonList(organizationRoles)
+                    )
                     .build();
         }
 
         setCommonFieldsForSystemUser(userInfo, iamUserInfoDTO);
-
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
 
         return userInfo;
@@ -91,29 +108,18 @@ public class IamUserInfoDTO2UserInfoMapper {
 
         UserInfo userInfo;
 
-        if (
-                iamUserInfoDTO.getType() != null
-                        && UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfoDTO.getType())
-        ) {
+        if (isLimitedScope(iamUserInfoDTO)) {
             userInfo = UserInfoLimitedScope.builder()
                     .organizations(Collections.emptyList())
                     .resource(iamUserInfoDTO.getResource())
                     .build();
         } else {
+            List<UserOrganizationRoles> organizations = userRoles.stream()
+                    .map(operator -> mapUserOrganizationRoles(operator, iamUserInfoDTO.getMappedExternalUserId(), accessToken))
+                    .toList();
+
             userInfo = UserInfo.builder()
-                    .organizations(userRoles.stream()
-                            .map(r -> {
-                                Optional<Organization> organizationOpt = retrieveOrganization(r.getOrganizationIpaCode(), accessToken);
-                                return (UserOrganizationRoles) UserOrganizationRoles.builder()
-                                        .operatorId(r.getOperatorId())
-                                        .organizationId(organizationOpt.map(Organization::getOrganizationId).orElse(null))
-                                        .organizationIpaCode(r.getOrganizationIpaCode())
-                                        .organizationFiscalCode(organizationOpt.map(Organization::getOrgFiscalCode).orElse(null))
-                                        .roles(new ArrayList<>(r.getRoles()))
-                                        .email(r.getEmail())
-                                        .build();
-                            })
-                            .toList())
+                    .organizations(organizations)
                     .build();
         }
 
@@ -125,6 +131,75 @@ public class IamUserInfoDTO2UserInfoMapper {
         setBrokerInfo(userInfo, iamUserInfoDTO, accessToken);
         userInfo.setCanManageUsers(!organizationAccessMode);
         return userInfo;
+    }
+
+    private UserOrganizationRoles mapUserOrganizationRoles(Operator operator, String operatorExternalUserId, String accessToken) {
+        Optional<Organization> organizationOpt =
+                retrieveOrganization(operator.getOrganizationIpaCode(), accessToken);
+
+        List<String> orgSubUnitCodes = organizationOpt
+                .map(Organization::getOrganizationId)
+                .map(organizationId -> retrieveOperatorOrgSubUnitCodes(
+                        organizationId,
+                        operatorExternalUserId,
+                        accessToken))
+                .orElseGet(Collections::emptyList);
+
+        String organizationFiscalCode = organizationOpt
+                .map(Organization::getOrgFiscalCode)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Organization fiscal code not found for IPA code: " + operator.getOrganizationIpaCode()));
+
+        return UserOrganizationRoles.builder()
+                .operatorId(operator.getOperatorId())
+                .organizationId(organizationOpt
+                        .map(Organization::getOrganizationId)
+                        .orElse(null))
+                .organizationIpaCode(operator.getOrganizationIpaCode())
+                .organizationFiscalCode(organizationFiscalCode)
+                .roles(new ArrayList<>(operator.getRoles()))
+                .email(operator.getEmail())
+                .orgSubUnitCodes(orgSubUnitCodes)
+                .build();
+    }
+
+    private List<String> retrieveAllOrgSubUnitCodes(Long organizationId, String accessToken) {
+        if (organizationId == null) {
+            return Collections.emptyList();
+        }
+
+        List<OrgSubUnit> orgSubUnits = orgSubUnitService.getActiveOrgSubUnitsByOrganizationId(organizationId, accessToken);
+
+        return extractOrgSubUnitCodes(orgSubUnits);
+    }
+
+    private List<String> retrieveOperatorOrgSubUnitCodes(Long organizationId, String operatorExternalUserId, String accessToken) {
+        if (organizationId == null || StringUtils.isBlank(operatorExternalUserId)) {
+            return Collections.emptyList();
+        }
+
+        List<OrgSubUnit> orgSubUnits =
+                orgSubUnitService.getActiveOrgSubUnitsByOrganizationIdAndOperatorExternalUserId(organizationId, operatorExternalUserId, accessToken);
+
+        return extractOrgSubUnitCodes(orgSubUnits);
+    }
+
+    private List<String> extractOrgSubUnitCodes(List<OrgSubUnit> orgSubUnits) {
+        if (CollectionUtils.isEmpty(orgSubUnits)) {
+            return Collections.emptyList();
+        }
+
+        return orgSubUnits.stream()
+                .filter(Objects::nonNull)
+                .map(OrgSubUnit::getSubUnitCode)
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toList();
+    }
+
+    private boolean isLimitedScope(IamUserInfoDTO iamUserInfoDTO) {
+        return iamUserInfoDTO.getType() != null
+                && UserInfoLimitedScope.class.getSimpleName().equals(iamUserInfoDTO.getType());
     }
 
     private void setCommonFieldsForSystemUser(UserInfo target, IamUserInfoDTO dto) {
