@@ -25,7 +25,7 @@ import static it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRe
 @RestController
 public class AuthzControllerImpl implements AuthzApi {
 
-    private static final String PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX  = Client2UserInfoMapper.buildSystemMappedExternalUserId(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
+    public static final String PIATTAFORMA_UNITARIA_MAPPED_EXTERNAL_USER_ID_PREFIX  = Client2UserInfoMapper.buildSystemMappedExternalUserId(PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX);
 
     private final AuthzService authzService;
     private final boolean organizationAccessMode;
