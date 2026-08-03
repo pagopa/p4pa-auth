@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.IamUserOrganizationRolesDTO;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
+import it.gov.pagopa.payhub.auth.service.m2m.AuthorizeClientCredentialsRequestService;
 import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import it.gov.pagopa.payhub.dto.generated.UserInfoLimitedScope;
@@ -82,14 +83,24 @@ public class IamUserInfoDTO2UserInfoMapper {
                                 .build();
 
                 organizations = Collections.singletonList(organizationRoles);
+            } else if (iamUserInfoDTO.getInnerUserId().equals(AuthorizeClientCredentialsRequestService.PIATTAFORMA_UNITARIA_CLIENT_ID_PREFIX)) {
+                UserOrganizationRoles organizationRoles =
+                        UserOrganizationRoles.builder()
+                                .operatorId(iamUserInfoDTO.getInnerUserId())
+                                .organizationId(-1L)
+                                .organizationIpaCode("UNKNOWN")
+                                .organizationFiscalCode("UNKNOWN")
+                                .roles(Collections.singletonList(Constants.ROLE_ADMIN))
+                                .orgSubUnitCodes(List.of())
+                                .build();
+
+                organizations = Collections.singletonList(organizationRoles);
             }
 
             userInfo = UserInfo.builder()
                     .organizationAccess(organizationIpaCode)
                     .canManageUsers(false)
-                    .organizations(
-                            organizations
-                    )
+                    .organizations(organizations)
                     .build();
         }
 
