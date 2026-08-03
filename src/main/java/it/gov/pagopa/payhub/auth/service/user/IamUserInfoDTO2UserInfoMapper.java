@@ -79,7 +79,7 @@ public class IamUserInfoDTO2UserInfoMapper {
                             .organizationIpaCode(organizationIpaCode)
                             .organizationFiscalCode(organization
                                             .map(Organization::getOrgFiscalCode)
-                                            .orElseThrow(() -> new IllegalStateException("Organization fiscal code not found for IPA code: " + organizationIpaCode))
+                                            .orElse(null)
                             )
                             .roles(Collections.singletonList(Constants.ROLE_ADMIN))
                             .email(organization.map(Organization::getOrgEmail)
@@ -147,8 +147,7 @@ public class IamUserInfoDTO2UserInfoMapper {
 
         String organizationFiscalCode = organizationOpt
                 .map(Organization::getOrgFiscalCode)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Organization fiscal code not found for IPA code: " + operator.getOrganizationIpaCode()));
+                .orElse(null);
 
         return UserOrganizationRoles.builder()
                 .operatorId(operator.getOperatorId())
