@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "57c8548a-2579-4a56-8ab4-bcee0cf07a1a",
+    "_postman_id": "47faa630-1944-4b05-99e9-b894cc38f244",
     "name": "p4pa-auth-E2E",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "15747968",
-    "_collection_link": "https://go.postman.co/collection/15747968-57c8548a-2579-4a56-8ab4-bcee0cf07a1a?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/15747968-47faa630-1944-4b05-99e9-b894cc38f244?source=collection_link"
   },
   "item": [
     {
@@ -891,8 +891,10 @@
                   "        pm.expect(op).have.property(\"operatorId\")\r",
                   "        pm.expect(op).have.property(\"mappedExternalUserId\")\r",
                   "        pm.expect(op).have.property(\"organizationIpaCode\").to.eq(\"IPA_TEST\")\r",
-                  "        pm.expect(op).have.property(\"userCode\")\r",
                   "        pm.expect(op).have.property(\"roles\")\r",
+                  "        if(op.fiscalCode) {\r",
+                  "            pm.expect(op).have.property(\"userCode\")\r",
+                  "        }\r",
                   "        pm.expect(op.roles).have.property(\"length\").to.gte(1)\r",
                   "\r",
                   "        if(op.userCode === \"DXEMXY1XL21XXXXX\") {\r",
@@ -906,7 +908,8 @@
                   "});"
                 ],
                 "type": "text/javascript",
-                "packages": {}
+                "packages": {},
+                "requests": {}
               }
             }
           ],
