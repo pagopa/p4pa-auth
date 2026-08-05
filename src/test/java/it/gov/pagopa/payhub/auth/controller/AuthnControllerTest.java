@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.custom.*;
@@ -61,6 +62,9 @@ class AuthnControllerTest {
 
     @MockitoBean
     private AccessTokenBuilderService accessTokenBuilderServiceMock;
+
+    @MockitoBean
+    private Tracer tracerMock;
 
 //region desc=postToken tests
     @Test

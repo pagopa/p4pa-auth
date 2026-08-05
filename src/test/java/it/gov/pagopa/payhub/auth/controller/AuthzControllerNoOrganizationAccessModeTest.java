@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
@@ -11,7 +12,6 @@ import it.gov.pagopa.payhub.auth.utils.Constants;
 import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -61,20 +62,23 @@ class AuthzControllerNoOrganizationAccessModeTest {
     @MockitoBean
     private AccessTokenBuilderService accessTokenBuilderServiceMock;
 
+    @MockitoBean
+    private Tracer tracerMock;
+
 // createOperator region
     @Test
     void givenUnauthorizedUserWhenCreateOrganizationOperatorThenOk() throws Exception {
         String organizationIpaCode = "IPACODE";
         String body = buildAndSerializeCreateOperatorRequest();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("ORG2")
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
                 .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
             post("/payhub/am/operators/{organizationIpaCode}", organizationIpaCode)
@@ -89,17 +93,17 @@ class AuthzControllerNoOrganizationAccessModeTest {
         String organizationIpaCode = "IPACODE";
         String body = buildAndSerializeCreateOperatorRequest();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode(organizationIpaCode)
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
                 .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
         OperatorDTO expectedOperator = new OperatorDTO();
         expectedOperator.operatorId("operatorId");
-        Mockito.when(authzServiceMock.createOrganizationOperator(organizationIpaCode, buildCreateOperatorRequest(), "accessToken"))
+        when(authzServiceMock.createOrganizationOperator(organizationIpaCode, buildCreateOperatorRequest(), "accessToken"))
                 .thenReturn(expectedOperator);
 
         mockMvc.perform(
@@ -134,14 +138,14 @@ class AuthzControllerNoOrganizationAccessModeTest {
     void givenAuthorizedUserWhenCreateUserThenOk() throws Exception {
         String body = buildCreateUserRequest();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
                     .roles(List.of(Constants.ROLE_ADMIN))
                     .build()))
                 .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
             post("/payhub/am/users")
@@ -155,14 +159,14 @@ class AuthzControllerNoOrganizationAccessModeTest {
     void givenUnauthorizedUserWhenCreateUserThenOk() throws Exception {
         String body = buildCreateUserRequest();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
                 .organizations(List.of(UserOrganizationRoles.builder()
                     .organizationIpaCode("IPA_TEST_2")
                     .roles(List.of(Constants.ROLE_OPER))
                     .build()))
                 .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
             post("/payhub/am/users")
@@ -190,14 +194,14 @@ class AuthzControllerNoOrganizationAccessModeTest {
         CreateClientRequest request = buildCreateClientRequest();
         Gson gson = new Gson();
         String body = gson.toJson(request);
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
           .thenReturn(UserInfo.builder()
             .organizations(List.of(UserOrganizationRoles.builder()
               .organizationIpaCode("ORG2")
               .roles(List.of(Constants.ROLE_OPER))
               .build()))
             .build());
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         mockMvc.perform(
           post("/payhub/oauth/clients/{organizationIpaCode}", organizationIpaCode)
@@ -224,9 +228,9 @@ class AuthzControllerNoOrganizationAccessModeTest {
             .build()))
           .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken"))
+        when(authnServiceMock.getUserInfo("accessToken"))
           .thenReturn(expectedUser);
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
 
         doReturn(new ClientDTO(organizationIpaCode + createClientRequest.getClientName(), createClientRequest.getClientName(), organizationIpaCode, uuidRandomForSecret))
                 .when(authzServiceMock).registerClient(organizationIpaCode, createClientRequest);
@@ -280,9 +284,9 @@ class AuthzControllerNoOrganizationAccessModeTest {
                         .build()))
                 .build();
 
-        Mockito.when(authnServiceMock.getUserInfo("accessToken")).thenReturn(expectedUser);
-        Mockito.when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
-        Mockito.when(authzServiceMock.getClient(organizationIpaCode, clientId))
+        when(authnServiceMock.getUserInfo("accessToken")).thenReturn(expectedUser);
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+        when(authzServiceMock.getClient(organizationIpaCode, clientId))
                 .thenReturn(Optional.of(expectedClientDTO));
 
         MvcResult result = mockMvc.perform(
