@@ -4,6 +4,7 @@ import com.mongodb.MongoQueryException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteError;
+import it.gov.pagopa.payhub.auth.exception.common.CommonExceptionHandlerTest;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import org.bson.BsonDocument;
 import org.junit.jupiter.api.Test;
@@ -11,13 +12,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -31,11 +32,11 @@ import static org.mockito.Mockito.doThrow;
 
 @WebMvcTest(value = {
         MongoTooManyRequestsExceptionHandler.class,
-        AuthExceptionHandlerTest.TestController.class})
+        CommonExceptionHandlerTest.TestController.class})
 @ContextConfiguration(classes = {
         AuthExceptionHandler.class,
         MongoTooManyRequestsExceptionHandler.class,
-        AuthExceptionHandlerTest.TestController.class})
+        CommonExceptionHandlerTest.TestController.class})
 @AutoConfigureMockMvc(addFilters = false)
 class MongoTooManyRequestsExceptionHandlerTest {
     @Autowired
@@ -43,7 +44,7 @@ class MongoTooManyRequestsExceptionHandlerTest {
     @MockitoBean
     private AuditLoggerService auditLoggerServiceMock;
     @MockitoSpyBean
-    private AuthExceptionHandlerTest.TestController testControllerSpy;
+    private CommonExceptionHandlerTest.TestController testControllerSpy;
 
     @Test
     void handleUncategorizedMongoDbException() throws Exception {
@@ -111,7 +112,7 @@ class MongoTooManyRequestsExceptionHandlerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content("{\"requiredField\":\"data\"}"))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-                .andExpect(MockMvcResultMatchers.content().json("{\"error_description\":\"[AUTH_GENERIC_ERROR] DUMMY\"}", JsonCompareMode.LENIENT));
+                .andExpect(MockMvcResultMatchers.content().json("{\"code\":\"AUTH_GENERIC_ERROR\",\"error\":\"AUTH_GENERIC_ERROR\",\"error_description\":\"DUMMY\"}", JsonCompareMode.LENIENT));
     }
 
 

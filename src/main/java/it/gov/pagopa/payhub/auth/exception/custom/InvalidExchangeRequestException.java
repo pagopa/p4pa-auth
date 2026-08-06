@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.exception.custom;
 
+import it.gov.pagopa.payhub.auth.exception.common.BaseBusinessException;
 import lombok.Getter;
 
 @Getter

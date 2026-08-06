@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.utils;
 
-import it.gov.pagopa.payhub.auth.exception.custom.IllegalStateBusinessException;
+import it.gov.pagopa.payhub.auth.exception.common.IllegalStateBusinessException;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;

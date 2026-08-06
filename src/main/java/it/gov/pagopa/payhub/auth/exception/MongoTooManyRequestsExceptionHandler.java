@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.exception;
 
+import it.gov.pagopa.payhub.auth.exception.common.CommonExceptionHandler;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class MongoTooManyRequestsExceptionHandler {
             Long retryAfterMs = getRetryAfterMs(ex);
             return handleRequestRateTooLargeException(ex, request, retryAfterMs);
         } else {
-            return AuthExceptionHandler.handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
+            return CommonExceptionHandler.handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
         }
     }
 
@@ -39,7 +40,7 @@ public class MongoTooManyRequestsExceptionHandler {
 
         log.info(
                 "A MongoQueryException (RequestRateTooLarge) occurred handling request {}: HttpStatus 429 - {}",
-                AuthExceptionHandler.getRequestDetails(request), message);
+                CommonExceptionHandler.getRequestDetails(request), message);
 
         final ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .contentType(MediaType.APPLICATION_JSON);
