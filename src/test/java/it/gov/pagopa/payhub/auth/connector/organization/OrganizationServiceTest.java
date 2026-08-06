@@ -56,10 +56,11 @@ class OrganizationServiceTest {
         Long organizationId = 1L;
         String accessToken = "ACCESSTOKEN";
         String organizationExternalId = "ORG_EXT_ID";
+        String orgIpaCode = "ORGIPACODE";
 
         doNothing().when(organizationClientMock).updateExternalOrganizationId(organizationId, organizationExternalId, accessToken);
         // When Then
-        Assertions.assertDoesNotThrow(() -> service.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken));
+        Assertions.assertDoesNotThrow(() -> service.updateExternalOrganizationId(organizationId, organizationExternalId, orgIpaCode, accessToken));
     }
 
 }
