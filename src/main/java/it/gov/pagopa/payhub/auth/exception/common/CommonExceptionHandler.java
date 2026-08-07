@@ -1,22 +1,25 @@
 package it.gov.pagopa.payhub.auth.exception.common;
 
-import it.gov.pagopa.payhub.dto.generated.ErrorFieldDTO;
-import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import it.gov.pagopa.payhub.auth.exception.transcoder.ExceptionMessageTranscoded;
 import it.gov.pagopa.payhub.auth.exception.transcoder.ExceptionMessageTranscoderService;
 import it.gov.pagopa.payhub.auth.utils.Utilities;
+import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
+import it.gov.pagopa.payhub.dto.generated.ErrorFieldDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.transaction.TransactionException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +34,18 @@ import java.util.Objects;
 public class CommonExceptionHandler {
 
   private static final ExceptionMessageTranscoderService exceptionMessageTranscoderService = new ExceptionMessageTranscoderService();
+
+//region Spring Data
+  @ExceptionHandler({DataIntegrityViolationException.class})
+  public ResponseEntity<AuthErrorDTO> handleDataIntegrityViolationException(RuntimeException ex, HttpServletRequest request){
+    return handleException(ex, request, HttpStatus.CONFLICT, AuthErrorDTO.ErrorEnum.AUTH_CONFLICT);
+  }
+
+  @ExceptionHandler({CannotAcquireLockException.class})
+  public ResponseEntity<AuthErrorDTO> handleCannotAcquireLockException(CannotAcquireLockException ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.TOO_MANY_REQUESTS, AuthErrorDTO.ErrorEnum.AUTH_TOO_MANY_REQUESTS);
+  }
+//endregion
 
   @ExceptionHandler(ConflictException.class)
   public ResponseEntity<AuthErrorDTO> handleConflictException(ConflictException ex, HttpServletRequest request) {

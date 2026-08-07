@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.exception.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.WriteConcernResult;
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.MongoTooManyRequestsExceptionHandler;
 import it.gov.pagopa.payhub.dto.generated.ErrorFieldDTO;
@@ -24,6 +25,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.mongodb.core.MongoActionOperation;
+import org.springframework.data.mongodb.core.MongoDataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,6 +38,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +47,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -375,5 +381,50 @@ public abstract class CommonExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
+
+//region Spring Data
+  @Test
+  void handleDataIntegrityViolationException() throws Exception {
+    doThrow(new DataIntegrityViolationException("Error"))
+            .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+            .andExpect(MockMvcResultMatchers.status().isConflict())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_CONFLICT"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_CONFLICT"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Conflict."))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleDataIntegrityViolationMongoException() throws Exception {
+    doThrow(new DataIntegrityViolationException("Error", new MongoDataIntegrityViolationException("ERROR", WriteConcernResult.unacknowledged(), MongoActionOperation.INSERT)))
+            .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+            .andExpect(MockMvcResultMatchers.status().isConflict())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_CONFLICT"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_CONFLICT"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Conflict. ERROR"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleTransactionException_unexpected() throws Exception {
+    doThrow(new TransactionSystemException("TransactionError", new RuntimeException()))
+            .when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+            .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_GENERIC_ERROR"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_GENERIC_ERROR"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("TransactionError"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+//endregion
+
 
 }
