@@ -3,12 +3,12 @@ package it.gov.pagopa.payhub.auth.exception.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteConcernResult;
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
-import it.gov.pagopa.payhub.auth.exception.MongoTooManyRequestsExceptionHandler;
-import it.gov.pagopa.payhub.dto.generated.ErrorFieldDTO;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
+import it.gov.pagopa.payhub.auth.exception.MongoTooManyRequestsExceptionHandler;
 import it.gov.pagopa.payhub.auth.exception.transcoder.handler.ConstraintViolationExceptionMessageTranscoderTest;
 import it.gov.pagopa.payhub.auth.utils.TestUtils;
 import it.gov.pagopa.payhub.auth.utils.UtilitiesTest;
+import it.gov.pagopa.payhub.dto.generated.ErrorFieldDTO;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -30,6 +30,7 @@ import org.springframework.data.mongodb.core.MongoActionOperation;
 import org.springframework.data.mongodb.core.MongoDataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,7 +48,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -168,6 +168,19 @@ public abstract class CommonExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
 
+  }
+
+  @Test
+  void handleAuthorizationDeniedException() throws Exception {
+    doThrow(new AuthorizationDeniedException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isForbidden())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("AUTH_USER_UNAUTHORIZED"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("AUTH_USER_UNAUTHORIZED"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
   @Test
