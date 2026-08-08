@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.connector.organization;
 
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationSearchClient;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
@@ -40,7 +41,7 @@ class OrganizationServiceTest {
         String orgIpaCode = "ORGIPACODE";
         Organization expectedResult = new Organization();
 
-        Mockito.when(organizationSearchClientMock.getOrganizationByIpaCode(orgIpaCode, accessToken))
+        when(organizationSearchClientMock.getOrganizationByIpaCode(orgIpaCode, accessToken))
                 .thenReturn(expectedResult);
 
         // When

@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.connector.organization.client;
 
 import it.gov.pagopa.payhub.auth.connector.organization.config.OrganizationApisHolder;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.CollectionModelOrgSubUnit;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnit;
+import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrgSubUnit;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSubUnit;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

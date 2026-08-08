@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.connector.organization;
 
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrgSubUnitSearchClient;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnit;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnitStatus;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSubUnit;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSubUnitStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

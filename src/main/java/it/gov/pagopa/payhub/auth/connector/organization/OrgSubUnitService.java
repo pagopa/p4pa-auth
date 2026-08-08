@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.organization;
 
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrgSubUnit;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSubUnit;
 
 import java.util.List;
 

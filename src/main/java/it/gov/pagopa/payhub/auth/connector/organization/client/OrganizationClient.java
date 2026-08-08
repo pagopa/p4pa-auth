@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.organization.client;
 
 import it.gov.pagopa.payhub.auth.connector.organization.config.OrganizationApisHolder;
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,6 @@ public class OrganizationClient {
               .updateOrganizationExternalId(organizationId, organizationExternalId);
     } catch (HttpClientErrorException.NotFound e) {
       throw new ResourceNotFoundException("ORGANIZATION_NOT_FOUND", "Organization with organizationId " + organizationId + " not found");
-    } catch (HttpClientErrorException.BadRequest e) {
-      throw new InvalidOrganizationException("ORGANIZATION_BAD_REQUEST", "Error while update organizationExternalId having organizationId "+organizationId);
     }
   }
 }

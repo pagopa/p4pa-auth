@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.connector.debtposition.config;
 
+import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.connector.BaseApiHolderTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,22 +16,31 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.Set;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class DebtPositionApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private DebtPositionApisHolder debtPositionApisHolder;
+    private DebtPositionApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
-        Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-        Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        DebtPositionApiClientConfig clientConfig = DebtPositionApiClientConfig.builder()
+        when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+        when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+
+        apiClientConfig = DebtPositionApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .printBodyWhenError(true)
+                .maxAttempts(3)
                 .build();
-        debtPositionApisHolder = new DebtPositionApisHolder(clientConfig, restTemplateBuilderMock);
+
+        debtPositionApisHolder = new DebtPositionApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
+
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(debtPositionApisHolder.getDebtPositionTypeOrgOperatorsApi(null));
     }
 
     @AfterEach
@@ -42,13 +52,22 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     }
 
     @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgOperatorsApi(accessToken)
+                        .deleteOperators(1L, Set.of("operatorExternalUserId")),
+                new ParameterizedTypeReference<>() {}
+        );
+    }
+
+    @Test
     void whenGetDebtPositionTypeOrgOperatorsApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgOperatorsApi(accessToken)
                         .deleteOperators(1L, Set.of("operatorExternalUserId")),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
-        Mockito.verify(restTemplateMock).setErrorHandler(Mockito.any(ResponseErrorHandler.class));
+        verify(restTemplateMock).setErrorHandler(Mockito.any(ResponseErrorHandler.class));
     }
 
 }

@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.auth.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgOperatorsApi;
+import it.gov.pagopa.pu.debtpositions.client.generated.DebtPositionTypeOrgOperatorsApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgOperatorClientTest {
@@ -42,7 +44,7 @@ class DebtPositionTypeOrgOperatorClientTest {
         Long organizationId = 1L;
         String accessToken = "ACCESSTOKEN";
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgOperatorsApi(accessToken))
+        when(debtPositionApisHolderMock.getDebtPositionTypeOrgOperatorsApi(accessToken))
                 .thenReturn(debtPositionTypeOrgOperatorsApiMock);
         Mockito.doNothing()
                 .when(debtPositionTypeOrgOperatorsApiMock)
@@ -54,7 +56,7 @@ class DebtPositionTypeOrgOperatorClientTest {
         client.saveDefaultTechnicalDebtPositionTypeOrgForOperator(operatorExternalUserId, organizationId, accessToken);
 
         //THEN
-        Mockito.verify(debtPositionTypeOrgOperatorsApiMock)
+        verify(debtPositionTypeOrgOperatorsApiMock)
                 .saveDefaultTechnicalDebtPositionTypeOrgOperatorsForOperator(
                         operatorExternalUserId,
                         organizationId
@@ -69,9 +71,9 @@ class DebtPositionTypeOrgOperatorClientTest {
         String accessToken = "ACCESSTOKEN";
         HttpClientErrorException expectedException = new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgOperatorsApi(accessToken))
+        when(debtPositionApisHolderMock.getDebtPositionTypeOrgOperatorsApi(accessToken))
                 .thenReturn(debtPositionTypeOrgOperatorsApiMock);
-        Mockito.doThrow(expectedException)
+        doThrow(expectedException)
                 .when(debtPositionTypeOrgOperatorsApiMock)
                 .saveDefaultTechnicalDebtPositionTypeOrgOperatorsForOperator(
                         operatorExternalUserId,

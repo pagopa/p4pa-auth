@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.auth.connector.organization.client;
 
 import it.gov.pagopa.payhub.auth.connector.organization.config.OrganizationApisHolder;
-import it.gov.pagopa.pu.p4pa_organization.controller.generated.OrganizationSearchControllerApi;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +13,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationSearchClientTest {
@@ -41,9 +43,9 @@ class OrganizationSearchClientTest {
         String accessToken = "ACCESSTOKEN";
         Organization expectedResult = new Organization();
 
-        Mockito.when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
+        when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
-        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
+        when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
                 .thenReturn(expectedResult);
 
         Organization result = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
@@ -56,9 +58,9 @@ class OrganizationSearchClientTest {
         String orgIpaCode = "ORGIPACODE";
         String accessToken = "ACCESSTOKEN";
 
-        Mockito.when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
+        when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
-        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
+        when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         Organization result = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
@@ -72,9 +74,9 @@ class OrganizationSearchClientTest {
         String accessToken = "ACCESSTOKEN";
         HttpClientErrorException expectedException = new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        Mockito.when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
+        when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
-        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
+        when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
                 .thenThrow(expectedException);
 
         HttpClientErrorException result = Assertions.assertThrows(expectedException.getClass(), () -> organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken));
@@ -88,9 +90,9 @@ class OrganizationSearchClientTest {
         String accessToken = "ACCESSTOKEN";
         RuntimeException expectedException = new RuntimeException();
 
-        Mockito.when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
+        when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
-        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
+        when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
                 .thenThrow(expectedException);
 
         RuntimeException result = Assertions.assertThrows(expectedException.getClass(), () -> organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken));
