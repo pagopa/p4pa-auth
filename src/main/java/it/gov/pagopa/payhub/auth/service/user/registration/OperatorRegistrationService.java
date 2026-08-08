@@ -42,13 +42,13 @@ public class OperatorRegistrationService {
                 organization.getOrganizationId(),
                 accessToken
         );
-        updateOrganizationExternalId(organization.getOrganizationId(), organization.getExternalOrganizationId(), externalOrganizationId, accessToken);
+        updateOrganizationExternalId(organization.getOrganizationId(), organization.getExternalOrganizationId(), externalOrganizationId, organizationIpaCode, accessToken);
         return operator;
     }
 
-    private void updateOrganizationExternalId(Long organizationId, String actualExternalOrganizationId, String externalOrganizationId, String accessToken) {
+    private void updateOrganizationExternalId(Long organizationId, String actualExternalOrganizationId, String externalOrganizationId, String organizationIpaCode, String accessToken) {
         if (externalOrganizationId != null && !externalOrganizationId.equals(actualExternalOrganizationId)) {
-            organizationService.updateExternalOrganizationId(organizationId, externalOrganizationId, accessToken);
+            organizationService.updateExternalOrganizationId(organizationId, externalOrganizationId, organizationIpaCode, accessToken);
         }
     }
 
