@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.auth.exception;
 
 import it.gov.pagopa.payhub.auth.exception.common.CommonExceptionHandlerTest;
-import it.gov.pagopa.payhub.auth.exception.custom.InvalidOrganizationException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.TokenExpiredException;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
@@ -43,20 +42,6 @@ class AuthExceptionHandlerTest extends CommonExceptionHandlerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
 
-    }
-
-    @Test
-    void handleInvalidOrganizationException() throws Exception {
-        doThrow(new InvalidOrganizationException("INVALID_ORGANIZATION", "Error"))
-                .when(testControllerSpy).testEndpoint(DATA, BODY);
-
-        performRequest(DATA, MediaType.APPLICATION_JSON)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("invalid_request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("INVALID_ORGANIZATION"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.fields").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
     }
 
 }

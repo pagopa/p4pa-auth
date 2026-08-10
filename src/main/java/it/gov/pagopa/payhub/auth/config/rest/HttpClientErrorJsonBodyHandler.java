@@ -37,7 +37,6 @@ public class HttpClientErrorJsonBodyHandler<T> extends DefaultResponseErrorHandl
 
   /**
    * Skipped Http client errors:
-   * <li>404 is normally catch in order to transcode it as null
    * <li>429 is handled by openApiGenerator code in order to retry it
    */
   private final Set<HttpStatusCode> ignoredClientErrors = Set.of(
