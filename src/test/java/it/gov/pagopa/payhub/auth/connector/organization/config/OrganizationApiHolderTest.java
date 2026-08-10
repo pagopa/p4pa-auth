@@ -21,7 +21,7 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private OrganizationApisHolder organizationApisHolder;
+    private OrganizationApisHolder apisHolder;
     private OrganizationApiClientConfig apiClientConfig;
 
     @BeforeEach
@@ -33,10 +33,9 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
                 .baseUrl("http://example.com")
                 .maxAttempts(3)
                 .build();
+        apisHolder = new OrganizationApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        organizationApisHolder = new OrganizationApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
-
-        verifyHttpClientErrorJsonBodyHandlerConfiguration(organizationApisHolder.getOrganizationSearchControllerApi(null));
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getOrganizationSearchControllerApi(null));
     }
 
     @AfterEach
@@ -50,7 +49,7 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getOrganizationSearchControllerApi(accessToken)
                         .crudOrganizationsFindByIpaCode("IPACODE"),
                 new ParameterizedTypeReference<>() {}
         );
@@ -59,31 +58,31 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetOrganizationSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getOrganizationSearchControllerApi(accessToken)
                         .crudOrganizationsFindByIpaCode("IPACODE"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetAuthnApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getBrokerEntityControllerApi(accessToken)
                         .crudGetBroker("BROKERID"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetOrganizationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken ->{
-                    organizationApisHolder.getOrganizationApi(accessToken)
+                    apisHolder.getOrganizationApi(accessToken)
                             .updateOrganization(new OrganizationDetailDTO());
                     return voidMock;
                 },
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
 }

@@ -24,7 +24,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private DebtPositionApisHolder debtPositionApisHolder;
+    private DebtPositionApisHolder apisHolder;
     private DebtPositionApiClientConfig apiClientConfig;
 
     @BeforeEach
@@ -38,9 +38,9 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                 .maxAttempts(3)
                 .build();
 
-        debtPositionApisHolder = new DebtPositionApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
+        apisHolder = new DebtPositionApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        verifyHttpClientErrorJsonBodyHandlerConfiguration(debtPositionApisHolder.getDebtPositionTypeOrgOperatorsApi(null));
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getDebtPositionTypeOrgOperatorsApi(null));
     }
 
     @AfterEach
@@ -54,7 +54,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgOperatorsApi(accessToken)
+                accessToken -> apisHolder.getDebtPositionTypeOrgOperatorsApi(accessToken)
                         .deleteOperators(1L, Set.of("operatorExternalUserId")),
                 new ParameterizedTypeReference<>() {}
         );
@@ -63,10 +63,10 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetDebtPositionTypeOrgOperatorsApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgOperatorsApi(accessToken)
+                accessToken -> apisHolder.getDebtPositionTypeOrgOperatorsApi(accessToken)
                         .deleteOperators(1L, Set.of("operatorExternalUserId")),
                 new ParameterizedTypeReference<>() {},
-                debtPositionApisHolder::unload);
+                apisHolder::unload);
         verify(restTemplateMock).setErrorHandler(Mockito.any(ResponseErrorHandler.class));
     }
 
