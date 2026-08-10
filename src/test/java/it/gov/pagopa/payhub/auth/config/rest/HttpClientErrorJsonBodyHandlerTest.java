@@ -2,9 +2,9 @@ package it.gov.pagopa.payhub.auth.config.rest;
 
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.common.*;
-import it.gov.pagopa.payhub.dto.generated.ErrorFieldDTO;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO.ErrorEnum;
+import it.gov.pagopa.payhub.dto.generated.ErrorFieldDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,6 +37,7 @@ class HttpClientErrorJsonBodyHandlerTest {
 
   private final URI url = new URI("http://www.sample.com");
   private final AuthErrorDTO expectedErrorDTO = new AuthErrorDTO(ErrorEnum.INVALID_REQUEST, "BADREQUEST", "MESSAGE", List.of(new ErrorFieldDTO("FIELD", "FIELDERRORCODE", "FIELDERRORMESSAGE")), "TRACEID");
+  private final byte[] expectedErrorBytes = jsonMapper.writeValueAsBytes(expectedErrorDTO);
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
@@ -61,39 +62,31 @@ class HttpClientErrorJsonBodyHandlerTest {
     try (MockClientHttpResponse response = new MockClientHttpResponse(new byte[0], HttpStatus.BAD_REQUEST)) {
 
       // When
-      HttpClientErrorException.BadRequest result = Assertions.assertThrows(HttpClientErrorException.BadRequest.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
+      RestInvokeInvalidValueException result = Assertions.assertThrows(RestInvokeInvalidValueException.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
 
       // Then
+      Assertions.assertEquals(HttpStatus.BAD_REQUEST, result.getHttpStatus());
+      Assertions.assertEquals("APPNAME", result.getApplicationName());
+      Assertions.assertNull(result.getCategory());
+      Assertions.assertEquals("APPNAME_BAD_REQUEST", result.getCode());
       Assertions.assertEquals("400 Bad Request on GET request for \"http://www.sample.com\": [no body]", result.getMessage());
+      Assertions.assertNull(result.getFields());
     }
   }
 
-  @ParameterizedTest
-  @ValueSource(booleans = {true, false})
-  void testNotFoundException(boolean bodyPrinterWhenError) {
-    // Given
-    HttpClientErrorJsonBodyHandler<AuthErrorDTO> httpClientHandler = buildHttpClientErrorHandler(bodyPrinterWhenError);
-    try (MockClientHttpResponse response = new MockClientHttpResponse(new byte[0], HttpStatus.NOT_FOUND)) {
-
-      // When
-      HttpClientErrorException.NotFound result = Assertions.assertThrows(HttpClientErrorException.NotFound.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
-
-      // Then
-      Assertions.assertEquals("404 Not Found on GET request for \"http://www.sample.com\": [no body]", result.getMessage());
-    }
-  }
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void testBodyException(boolean bodyPrinterWhenError) {
     // Given
     HttpClientErrorJsonBodyHandler<AuthErrorDTO> httpClientHandler = buildHttpClientErrorHandler(bodyPrinterWhenError);
-    try (MockClientHttpResponse response = new MockClientHttpResponse(jsonMapper.writeValueAsBytes(expectedErrorDTO), HttpStatus.BAD_REQUEST)) {
+    try (MockClientHttpResponse response = new MockClientHttpResponse(expectedErrorBytes, HttpStatus.BAD_REQUEST)) {
 
       // When
       RestInvokeInvalidValueException result = Assertions.assertThrows(RestInvokeInvalidValueException.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
 
       // Then
+      Assertions.assertEquals(HttpStatus.BAD_REQUEST, result.getHttpStatus());
       Assertions.assertEquals("APPNAME", result.getApplicationName());
       Assertions.assertEquals(expectedErrorDTO.getError().getValue(), result.getCategory());
       Assertions.assertEquals(expectedErrorDTO.getCode(), result.getCode());
@@ -121,7 +114,8 @@ class HttpClientErrorJsonBodyHandlerTest {
   private final Map<HttpStatus, Class<? extends BaseBusinessException>> httpStatus2ExpectedException = Map.of(
     HttpStatus.CONFLICT, RestInvokeConflictException.class,
     HttpStatus.FORBIDDEN, RestInvokeForbiddenException.class,
-    HttpStatus.UNAUTHORIZED, RestInvokeNotAuthorizedException.class
+    HttpStatus.UNAUTHORIZED, RestInvokeNotAuthorizedException.class,
+    HttpStatus.NOT_FOUND, RestInvokeNotFoundException.class
   );
 
   @Test
@@ -136,6 +130,12 @@ class HttpClientErrorJsonBodyHandlerTest {
       Assertions.assertInstanceOf(BaseBusinessException.class, result);
       Assertions.assertSame(errorDTO.getCode(), ((BaseBusinessException)result).getCode());
       Assertions.assertSame(errorDTO.getErrorDescription(), result.getMessage());
+
+      Assertions.assertInstanceOf(RestInvokeException.class, result);
+      RestInvokeException resultRestInvokeException = (RestInvokeException)result;
+      Assertions.assertEquals("TEST", resultRestInvokeException.getApplicationName());
+      Assertions.assertEquals(httpStatus, resultRestInvokeException.getHttpStatus());
+      Assertions.assertNull(resultRestInvokeException.getCategory());
 
       Class<? extends BaseBusinessException> expectedException = httpStatus2ExpectedException.getOrDefault(httpStatus, InvalidValueException.class);
       Assertions.assertInstanceOf(expectedException, result);

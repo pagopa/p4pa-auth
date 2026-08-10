@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.connector.organization.client;
 
 import it.gov.pagopa.payhub.auth.connector.organization.config.OrganizationApisHolder;
+import it.gov.pagopa.payhub.auth.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
@@ -61,7 +62,7 @@ class OrganizationSearchClientTest {
         when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
         when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "NOTFOUND", "NOTFOUND", "Not found"));
 
         Organization result = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
 

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.connector.organization.client;
 
 import it.gov.pagopa.payhub.auth.connector.organization.config.OrganizationApisHolder;
+import it.gov.pagopa.payhub.auth.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.organization.client.generated.BrokerEntityControllerApi;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import static org.mockito.Mockito.when;
 
@@ -61,7 +61,7 @@ class BrokerClientTest {
         when(organizationApisHolder.getBrokerEntityControllerApi(accessToken))
                 .thenReturn(brokerEntityControllerApi);
         when(brokerEntityControllerApi.crudGetBroker(String.valueOf(brokerId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "NOTFOUND", "NOTFOUND", "Not found"));
 
         Broker result = brokerClient.getBrokerById(brokerId, accessToken);
 
