@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.auth.connector.organization.config;
 
+import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationDetailDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,21 +14,28 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class OrganizationApiHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private OrganizationApisHolder organizationApisHolder;
+    private OrganizationApisHolder apisHolder;
+    private OrganizationApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
-        Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-        Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        OrganizationApiClientConfig clientConfig = OrganizationApiClientConfig.builder()
+        when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+        when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+
+        apiClientConfig = OrganizationApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        organizationApisHolder = new OrganizationApisHolder(clientConfig, restTemplateBuilderMock);
+        apisHolder = new OrganizationApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
+
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getOrganizationSearchControllerApi(null));
     }
 
     @AfterEach
@@ -39,33 +47,42 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
     }
 
     @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> apisHolder.getOrganizationSearchControllerApi(accessToken)
+                        .crudOrganizationsFindByIpaCode("IPACODE"),
+                new ParameterizedTypeReference<>() {}
+        );
+    }
+
+    @Test
     void whenGetOrganizationSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getOrganizationSearchControllerApi(accessToken)
                         .crudOrganizationsFindByIpaCode("IPACODE"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetAuthnApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getBrokerEntityControllerApi(accessToken)
                         .crudGetBroker("BROKERID"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetOrganizationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken ->{
-                    organizationApisHolder.getOrganizationApi(accessToken)
+                    apisHolder.getOrganizationApi(accessToken)
                             .updateOrganization(new OrganizationDetailDTO());
                     return voidMock;
                 },
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
 }

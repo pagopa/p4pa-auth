@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.auth.exception.custom.IllegalStateBusinessException;
+import it.gov.pagopa.payhub.auth.exception.common.IllegalStateBusinessException;
 import it.gov.pagopa.payhub.auth.utils.AESUtils;
 import it.gov.pagopa.payhub.auth.utils.HashAlgorithm;
 import org.springframework.beans.factory.annotation.Value;

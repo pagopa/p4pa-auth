@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.connector.organization;
 
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationSearchClient;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;

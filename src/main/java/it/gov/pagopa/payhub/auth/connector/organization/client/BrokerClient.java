@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.auth.connector.organization.client;
 
 import it.gov.pagopa.payhub.auth.connector.organization.config.OrganizationApisHolder;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
+import it.gov.pagopa.payhub.auth.exception.common.RestInvokeNotFoundException;
+import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Service
 @Slf4j
@@ -19,7 +19,7 @@ public class BrokerClient {
     public Broker getBrokerById(Long id, String accessToken) {
         try {
             return organizationApisHolder.getBrokerEntityControllerApi(accessToken).crudGetBroker(String.valueOf(id));
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("Broker with ID {} not found.", id);
             return null;
         }

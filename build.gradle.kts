@@ -1,9 +1,9 @@
-import java.util.Objects
-import com.github.jk1.license.render.*
 import com.github.jk1.license.filter.*
+import com.github.jk1.license.render.*
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+import java.util.Objects
 
 plugins {
     java
@@ -63,7 +63,7 @@ val caffeineVersion = "3.2.4"
 val httpClientVersion = "5.6.1"
 val httpCoreVersion = "5.4.2"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.11.0"
+val lz4JavaVersion = "1.11.1"
 val commonsLang3Version = "3.20.0"
 
 dependencies {
@@ -223,8 +223,9 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-organization.generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    apiPackage.set("it.gov.pagopa.pu.p4pa-organization.controller.generated")
-    modelPackage.set("it.gov.pagopa.pu.p4pa-organization.dto.generated")
+    invokerPackage.set("it.gov.pagopa.pu.organization.generated")
+    apiPackage.set("it.gov.pagopa.pu.organization.client.generated")
+    modelPackage.set("it.gov.pagopa.pu.organization.dto.generated")
     configOptions.set(
         mapOf(
             "swaggerAnnotations" to "false",
@@ -254,9 +255,9 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/develop/openapi/generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
-    apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
-    modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+    invokerPackage.set("it.gov.pagopa.pu.debtpositions.generated")
+    apiPackage.set("it.gov.pagopa.pu.debtpositions.client.generated")
+    modelPackage.set("it.gov.pagopa.pu.debtpositions.dto.generated")
     typeMappings.set(
         mapOf(
             "LocalDateTime" to "java.time.LocalDateTime"

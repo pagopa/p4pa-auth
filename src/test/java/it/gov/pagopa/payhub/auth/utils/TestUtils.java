@@ -2,21 +2,22 @@ package it.gov.pagopa.payhub.auth.utils;
 
 import org.junit.jupiter.api.Assertions;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 public class TestUtils {
-    private TestUtils() {
-    }
+    private TestUtils() {}
 
     static {
         clearDefaultTimezone();
+        clearLocale();
     }
 
     public static void clearDefaultTimezone() {
         TimeZone.setDefault(Constants.DEFAULT_TIMEZONE);
+    }
+
+    public static void clearLocale() {
+        Locale.setDefault(Locale.ITALY);
     }
 
     /**

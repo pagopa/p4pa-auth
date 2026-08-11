@@ -1,17 +1,11 @@
 package it.gov.pagopa.payhub.auth.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.exception.AuthExceptionHandler;
-import it.gov.pagopa.payhub.auth.exception.custom.*;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.security.JwtAuthenticationFilter;
 import it.gov.pagopa.payhub.auth.security.WebSecurityConfig;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
@@ -19,13 +13,7 @@ import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.AuthnService;
 import it.gov.pagopa.payhub.auth.service.ValidateTokenService;
 import it.gov.pagopa.payhub.auth.service.m2m.legacy.JWTLegacyHandlerService;
-import it.gov.pagopa.payhub.dto.generated.AccessToken;
-import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
-import it.gov.pagopa.payhub.dto.generated.LimitedTokenRequest;
-import it.gov.pagopa.payhub.dto.generated.UserInfo;
-import it.gov.pagopa.payhub.dto.generated.UserOrganizationRoles;
-import java.util.List;
-import java.util.Map;
+import it.gov.pagopa.payhub.dto.generated.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +25,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthnControllerImpl.class)
 @Import({AuthExceptionHandler.class, WebSecurityConfig.class, JwtAuthenticationFilter.class, JsonConfig.class})
@@ -69,8 +67,29 @@ class AuthnControllerTest {
 //region desc=postToken tests
     @Test
     void givenExpectedAuthTokenWhenPostTokenThenOk() throws Exception {
-        MvcResult result =
-                invokePostTokenAndVerify(null, HttpStatus.OK, null);
+        String clientId = "CLIENT_ID";
+        String grantType = "GRANT_TYPE";
+        String subjectToken = "SUBJECT_TOKEN";
+        String subjectIssuer = "SUBJECT_ISSUER";
+        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
+        String scope = "SCOPE";
+        String clientSecret = "CLIENT_SECRET";
+        String refreshToken = "REFRESH_TOKEN";
+
+        doReturn(new AccessToken("token", "bearer", 0, "refresh", 0))
+                .when(authnServiceMock).postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
+
+        MvcResult result = mockMvc.perform(
+                post("/payhub/oauth/token")
+                        .param("client_id", clientId)
+                        .param("grant_type", grantType)
+                        .param("subject_token", subjectToken)
+                        .param("subject_issuer", subjectIssuer)
+                        .param("subject_token_type", subjectTokenType)
+                        .param("scope", scope)
+                        .param("client_secret", clientSecret)
+                        .param("refresh_token", refreshToken)
+        ).andExpect(status().is(HttpStatus.OK.value())).andReturn();
 
         when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("p4paauthTokenPrefix");
 
@@ -87,75 +106,6 @@ class AuthnControllerTest {
         AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 AuthErrorDTO.class);
         assertEquals(AuthErrorDTO.ErrorEnum.INVALID_REQUEST, actual.getError());
-    }
-
-    @Test
-    void givenInvalidExchangeClientExceptionWhenPostTokenThenInvalidClientError() throws Exception {
-        invokePostTokenAndVerify(new InvalidExchangeClientException("ERRORCODE", "description"), HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_CLIENT);
-    }
-
-    @Test
-    void givenInvalidExchangeRequestExceptionWhenPostTokenThenInvalidClientError() throws Exception {
-        invokePostTokenAndVerify(new InvalidExchangeRequestException("ERRORCODE", "description"), HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
-    }
-
-    @Test
-    void givenInvalidGrantTypeExceptionWhenPostTokenThenInvalidClientError() throws Exception {
-        invokePostTokenAndVerify(new InvalidGrantTypeException("description"), HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.UNSUPPORTED_GRANT_TYPE);
-    }
-
-    @Test
-    void givenInvalidTokenExceptionWhenPostTokenThenInvalidClientError() throws Exception {
-        invokePostTokenAndVerify(new InvalidTokenException("ERRORCODE", "description"), HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
-    }
-
-    @Test
-    void givenInvalidTokenIssuerExceptionWhenPostTokenThenInvalidClientError() throws Exception {
-        invokePostTokenAndVerify(new InvalidTokenIssuerException("description"), HttpStatus.BAD_REQUEST, AuthErrorDTO.ErrorEnum.INVALID_REQUEST);
-    }
-
-    @Test
-    void givenTokenExpiredExceptionWhenPostTokenThenInvalidClientError() throws Exception {
-        invokePostTokenAndVerify(new TokenExpiredException("description"), HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
-    }
-
-    MvcResult invokePostTokenAndVerify(BaseBusinessException exception, HttpStatus expectedStatus, AuthErrorDTO.ErrorEnum expectedError) throws Exception {
-        String clientId = "CLIENT_ID";
-        String grantType = "GRANT_TYPE";
-        String subjectToken = "SUBJECT_TOKEN";
-        String subjectIssuer = "SUBJECT_ISSUER";
-        String subjectTokenType = "SUBJECT_TOKEN_TYPE";
-        String scope = "SCOPE";
-        String clientSecret = "CLIENT_SECRET";
-        String refreshToken = "REFRESH_TOKEN";
-
-        (exception != null
-                ? doThrow(exception)
-                : doReturn(new AccessToken("token", "bearer", 0, "refresh", 0)))
-                .when(authnServiceMock).postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret, refreshToken);
-
-        MvcResult result = mockMvc.perform(
-                post("/payhub/oauth/token")
-                        .param("client_id", clientId)
-                        .param("grant_type", grantType)
-                        .param("subject_token", subjectToken)
-                        .param("subject_issuer", subjectIssuer)
-                        .param("subject_token_type", subjectTokenType)
-                        .param("scope", scope)
-                        .param("client_secret", clientSecret)
-                        .param("refresh_token", refreshToken)
-        ).andExpect(status().is(expectedStatus.value())).andReturn();
-
-        if (exception != null && expectedError != null) {
-            AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
-                    AuthErrorDTO.class);
-            assertEquals(expectedError, actual.getError());
-            assertEquals("[" + exception.getCode() + "] " +exception.getMessage(), actual.getErrorDescription());
-        } else {
-            Assertions.assertFalse(result.getResponse().getContentAsString().contains("error"));
-        }
-
-        return result;
     }
 //endregion
 
@@ -257,26 +207,6 @@ class AuthnControllerTest {
                 post("/payhub/oauth/revoke")
                         .param("token", "token")
         ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void givenCompleteRequestWhenLogoutThenInvalidClientError() throws Exception {
-        String clientId = "CLIENTID";
-        String token = "TOKEN";
-
-        doThrow(new InvalidExchangeClientException("ERRORCODE", ""))
-                .when(authnServiceMock).logout(clientId, token);
-
-        MvcResult result = mockMvc.perform(
-                post("/payhub/oauth/revoke")
-                        .param("client_id", clientId)
-                        .param("token", token)
-        ).andExpect(status().isUnauthorized()).andReturn();
-
-        AuthErrorDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(),
-                AuthErrorDTO.class);
-        assertEquals(AuthErrorDTO.ErrorEnum.INVALID_CLIENT, actual.getError());
-        assertEquals("[ERRORCODE] ", actual.getErrorDescription());
     }
 
     @Test

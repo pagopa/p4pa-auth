@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.connector.organization;
 
 import it.gov.pagopa.payhub.auth.connector.organization.client.BrokerClient;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

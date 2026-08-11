@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.auth.exception;
 
+import it.gov.pagopa.payhub.auth.exception.common.CommonExceptionHandler;
 import it.gov.pagopa.payhub.dto.generated.AuthErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +32,11 @@ public class MongoTooManyRequestsExceptionHandler {
             Long retryAfterMs = getRetryAfterMs(ex);
             return handleRequestRateTooLargeException(ex, request, retryAfterMs);
         } else {
-            return AuthExceptionHandler.handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
+            if(ex instanceof DataIntegrityViolationException) {
+                return CommonExceptionHandler.handleException(ex, request, HttpStatus.CONFLICT, AuthErrorDTO.ErrorEnum.AUTH_CONFLICT);
+            } else {
+                return CommonExceptionHandler.handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorDTO.ErrorEnum.AUTH_GENERIC_ERROR);
+            }
         }
     }
 
@@ -39,7 +45,7 @@ public class MongoTooManyRequestsExceptionHandler {
 
         log.info(
                 "A MongoQueryException (RequestRateTooLarge) occurred handling request {}: HttpStatus 429 - {}",
-                AuthExceptionHandler.getRequestDetails(request), message);
+                CommonExceptionHandler.getRequestDetails(request), message);
 
         final ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .contentType(MediaType.APPLICATION_JSON);
