@@ -42,8 +42,8 @@ licenseReport {
     outputDir = "$projectDir/dependency-licenses"
     filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
-tasks.classes {
-    finalizedBy(tasks.generateLicenseReport)
+tasks.dependencies {
+  finalizedBy(tasks.generateLicenseReport)
 }
 
 repositories {
@@ -60,8 +60,8 @@ val wiremockVersion = "3.13.2"
 val bouncycastleVersion = "1.84"
 val micrometerVersion = "1.7.0"
 val caffeineVersion = "3.2.4"
-val httpClientVersion = "5.6.1"
-val httpCoreVersion = "5.4.2"
+val httpClientVersion = "5.6.4"
+val httpCoreVersion = "5.4.3"
 val kafkaAppender = "0.2.0-RC2"
 val lz4JavaVersion = "1.11.1"
 val commonsLang3Version = "3.20.0"
@@ -86,6 +86,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
+    implementation("org.apache.httpcomponents.core5:httpcore5-h2:$httpCoreVersion")
     implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
     implementation("com.github.danielwegener:logback-kafka-appender:$kafkaAppender") {
         exclude(group = "org.lz4", module = "lz4-java")
