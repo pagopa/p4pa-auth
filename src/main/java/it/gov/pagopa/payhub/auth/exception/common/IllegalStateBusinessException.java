@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.auth.exception.custom;
+package it.gov.pagopa.payhub.auth.exception.common;
 
 public class IllegalStateBusinessException extends BaseBusinessException {
   public IllegalStateBusinessException(String code, String message) {

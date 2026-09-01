@@ -2,8 +2,9 @@ package it.gov.pagopa.payhub.auth.connector.organization;
 
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.auth.connector.organization.client.OrganizationSearchClient;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public void updateExternalOrganizationId(Long organizationId, String organizationExternalId, String accessToken) {
+    @CacheEvict(key = "#ipaCode")
+    public void updateExternalOrganizationId(Long organizationId, String organizationExternalId, String ipaCode, String accessToken) {
         organizationClient.updateExternalOrganizationId(organizationId, organizationExternalId, accessToken);
     }
 }

@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.auth.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.repository.OperatorsRepository;
-import it.gov.pagopa.pu.p4pa_organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -135,7 +135,7 @@ class OperatorRegistrationServiceTest {
         // Then
         Assertions.assertSame(storedOperator, result);
         verify(organizationServiceMock, never())
-                .updateExternalOrganizationId(Mockito.anyLong(), Mockito.anyString(), Mockito.anyString());
+                .updateExternalOrganizationId(Mockito.anyLong(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
@@ -169,7 +169,7 @@ class OperatorRegistrationServiceTest {
                 );
         doNothing()
                 .when(organizationServiceMock)
-                .updateExternalOrganizationId(1L, newExternalId, accessToken);
+                .updateExternalOrganizationId(1L, newExternalId, organizationIpaCode, accessToken);
 
         // When
         Operator result = service.registerOperator(user, organizationIpaCode, roles, email, newExternalId, accessToken);
@@ -177,6 +177,6 @@ class OperatorRegistrationServiceTest {
         // Then
         Assertions.assertSame(storedOperator, result);
         verify(organizationServiceMock, times(1))
-                .updateExternalOrganizationId(1L, newExternalId, accessToken);
+                .updateExternalOrganizationId(1L, newExternalId, organizationIpaCode, accessToken);
     }
 }

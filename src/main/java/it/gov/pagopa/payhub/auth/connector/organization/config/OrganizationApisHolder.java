@@ -1,17 +1,20 @@
 package it.gov.pagopa.payhub.auth.connector.organization.config;
 
-import it.gov.pagopa.payhub.auth.config.rest.RestTemplateConfig;
-import it.gov.pagopa.pu.p4pa_organization.controller.ApiClient;
-import it.gov.pagopa.pu.p4pa_organization.controller.BaseApi;
-import it.gov.pagopa.pu.p4pa_organization.controller.generated.BrokerEntityControllerApi;
-import it.gov.pagopa.pu.p4pa_organization.controller.generated.OrgSubUnitSearchControllerApi;
-import it.gov.pagopa.pu.p4pa_organization.controller.generated.OrganizationApi;
-import it.gov.pagopa.pu.p4pa_organization.controller.generated.OrganizationSearchControllerApi;
+import it.gov.pagopa.payhub.auth.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.payhub.auth.connector.organization.mapper.OrganizationErrorDTOMapper;
+import it.gov.pagopa.pu.organization.generated.ApiClient;
+import it.gov.pagopa.pu.organization.generated.BaseApi;
+import it.gov.pagopa.pu.organization.client.generated.BrokerEntityControllerApi;
+import it.gov.pagopa.pu.organization.client.generated.OrgSubUnitSearchControllerApi;
+import it.gov.pagopa.pu.organization.client.generated.OrganizationApi;
+import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @Service
@@ -26,7 +29,8 @@ public class OrganizationApisHolder {
 
     public OrganizationApisHolder(
             OrganizationApiClientConfig clientConfig,
-            RestTemplateBuilder restTemplateBuilder
+            RestTemplateBuilder restTemplateBuilder,
+            JsonMapper jsonMapper
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
@@ -34,9 +38,9 @@ public class OrganizationApisHolder {
         apiClient.setBearerToken(bearerTokenHolder::get);
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
-        if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
-        }
+        restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "ORGANIZATION", clientConfig.isPrintBodyWhenError(),
+                OrganizationErrorDTO.class, OrganizationErrorDTOMapper::map)
+        );
 
         this.organizationSearchControllerApi = new OrganizationSearchControllerApi(apiClient);
         this.brokerEntityControllerApi = new BrokerEntityControllerApi(apiClient);
