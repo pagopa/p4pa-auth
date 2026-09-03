@@ -21,11 +21,13 @@ public class IamUserInfoDTO {
     private IamUserOrganizationRolesDTO organizationAccess;
     private LimitedScopeResource resource;
 
-      // field calculated upon registration
-      private String innerUserId;
-      private String mappedExternalUserId;
+    // field calculated upon registration
+    private String innerUserId;
+    private String mappedExternalUserId;
 
-      // field to check if it is a real user or a machine/system user
-      private boolean systemUser;
+    // field to check if it is a real user or a machine/system user
+    private boolean systemUser;
+
+    private Long issuedAt;
 }
 

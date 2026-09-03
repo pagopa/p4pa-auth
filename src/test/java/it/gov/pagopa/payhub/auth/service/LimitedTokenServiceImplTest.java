@@ -99,7 +99,7 @@ class LimitedTokenServiceImplTest {
       mockedSecurityUtils.when(SecurityUtils::getPrincipal).thenReturn(baseUser);
 
       when(limitedScopeTokenMapper.mapBaseUserInfoToIamUserInfoDTO(baseUser, request)).thenReturn(iamUser);
-      when(accessTokenBuilderService.build(iamUser, 3600, false)).thenReturn(expectedToken);
+      when(accessTokenBuilderService.build(iamUser, 3600, null, false)).thenReturn(expectedToken);
 
       // When
       AccessToken result = service.generate(request);
@@ -116,7 +116,7 @@ class LimitedTokenServiceImplTest {
 
       // Then
       verify(limitedScopeTokenMapper, times(1)).mapBaseUserInfoToIamUserInfoDTO(baseUser, request);
-      verify(accessTokenBuilderService, times(1)).build(iamUser, 3600, false);
+      verify(accessTokenBuilderService, times(1)).build(iamUser, 3600, null, false);
       verifyNoMoreInteractions(limitedScopeTokenMapper, accessTokenBuilderService, tokenStoreService);
     }
   }
