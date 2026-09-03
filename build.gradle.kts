@@ -67,6 +67,9 @@ val lz4JavaVersion = "1.11.2"
 val commonsLang3Version = "3.20.0"
 val podamVersion = "8.0.2.RELEASE"
 
+// CVE Security dependencies
+val tomcatEmbedCoreVersion = "11.0.25"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
@@ -100,6 +103,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
     implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
+
+    // CVE Security dependencies
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
