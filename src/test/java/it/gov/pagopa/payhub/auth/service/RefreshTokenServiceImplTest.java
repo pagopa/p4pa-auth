@@ -153,4 +153,29 @@ class RefreshTokenServiceImplTest {
         );
     }
 
+    @Test
+    void givenRefreshTokenWithNullIssueAtWhenRefreshTokenThenSetIssueAtAndSuccess() {
+        // Given
+        mockUserInfo.setIssueAt(null);
+
+        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
+        when(accessTokenBuilderService.build(eq(mockUserInfo), eq(null), anyInt(), eq(true)))
+                .thenReturn(mockAccessToken);
+
+        // When
+        AccessToken result = refreshTokenService.refreshToken(clientId, refreshToken);
+
+        // Then
+        assertNotNull(result);
+        assertNotNull(mockUserInfo.getIssueAt());
+        assertTrue(mockUserInfo.getIssueAt() > 0);
+
+        verify(validateRefreshTokenService).validate(clientId, refreshToken);
+        verify(tokenStoreService).loadRefreshToken(refreshToken);
+        verify(tokenStoreService).deleteRefreshToken(refreshToken);
+
+        verify(accessTokenBuilderService).build(eq(mockUserInfo), eq(null), argThat(ttl -> ttl >= 86390 && ttl <= 86400), eq(true));
+        verify(tokenStoreService).save("new-access-token", mockUserInfo);
+        verify(tokenStoreService).saveRefreshToken(eq("new-refresh-token"), eq(mockUserInfo), longThat(ttl -> ttl >= 86390 && ttl <= 86400));
+    }
 }
