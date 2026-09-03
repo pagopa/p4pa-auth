@@ -32,6 +32,7 @@ public class Client2UserInfoMapper implements Function<ClientNoSecretDTO, IamUse
 				.organizationIpaCode(clientDTO.getOrganizationIpaCode())
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build())
+			.issuedAt(Utilities.nowInSeconds())
 			.build();
 	}
 

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.Collections;
 
 class Client2UserInfoMapperTest {
@@ -55,6 +56,7 @@ class Client2UserInfoMapperTest {
 				.organizationIpaCode(clientDTO.getOrganizationIpaCode())
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build())
+			.issuedAt(Instant.now().getEpochSecond())
 			.build();
 		// When
 		IamUserInfoDTO result = mapper.apply(clientDTO);

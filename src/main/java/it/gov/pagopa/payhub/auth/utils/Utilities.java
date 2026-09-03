@@ -22,4 +22,8 @@ public class Utilities {
             ? ZonedDateTime.of(localDateTime, Constants.ZONEID).toOffsetDateTime()
             : null;
     }
+
+    public static long nowInSeconds() {
+        return System.currentTimeMillis() / 1000;
+    }
 }

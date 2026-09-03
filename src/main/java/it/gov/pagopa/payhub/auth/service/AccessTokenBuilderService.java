@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Jwks;
 import io.jsonwebtoken.security.PublicJwk;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,10 +20,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AccessTokenBuilderService {
@@ -68,10 +66,10 @@ public class AccessTokenBuilderService {
     }
 
     public AccessToken build(IamUserInfoDTO iamUserInfoDTO) {
-        return build(iamUserInfoDTO, expireIn, true);
+        return build(iamUserInfoDTO, expireIn, refreshExpireIn, true);
     }
 
-    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam, boolean generateRefreshToken) {
+    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam, Integer refreshExpireInParam, boolean generateRefreshToken) {
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(HeaderParams.KEY_ID, kid);
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -93,7 +91,12 @@ public class AccessTokenBuilderService {
         String token = jwtBuilder
                 .sign(algorithm);
 
+        if (iamUserInfoDTO.getIssuedAt()== null) {
+            iamUserInfoDTO.setIssuedAt(Utilities.nowInSeconds());
+        }
+
         if(generateRefreshToken) {
+            int actualRefreshExpireIn = Objects.requireNonNullElse(refreshExpireInParam, refreshExpireIn);
             String refreshTokenStr = JWT.create()
                     .withHeader(headerClaims)
                     .withClaim("typ", REFRESH_TOKEN_TYPE)
@@ -101,14 +104,14 @@ public class AccessTokenBuilderService {
                     .withJWTId(UUID.randomUUID().toString())
                     .withSubject(iamUserInfoDTO.getMappedExternalUserId())
                     .withIssuedAt(Instant.now())
-                    .withExpiresAt(Instant.now().plusSeconds(refreshExpireIn))
+                    .withExpiresAt(Instant.now().plusSeconds(actualRefreshExpireIn))
                     .sign(algorithm);
 
-            return new AccessToken(token, tokenType, expireIn, refreshTokenStr, refreshExpireIn);
+            return new AccessToken(token, tokenType, Objects.requireNonNullElse(expireInParam, expireIn), refreshTokenStr, refreshExpireIn);
         }
 
 
-        return new AccessToken(token, tokenType, expireIn, null, null);
+        return new AccessToken(token, tokenType, Objects.requireNonNullElse(expireInParam, expireIn), null, null);
     }
 
     public String getHeaderPrefix() {

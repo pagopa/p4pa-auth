@@ -16,13 +16,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.Instant;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
 public class AccessTokenBuilderServiceTest {
 
     public static final int EXPIRE_IN = 3600;
-    public static final int REFRESH_EXPIRE_IN = 6000;
+    public static final int REFRESH_EXPIRE_IN = 86400;
 
     private static final String PRIVATE_KEY = """
             -----BEGIN RSA PRIVATE KEY-----
@@ -86,6 +87,7 @@ public class AccessTokenBuilderServiceTest {
         // When
         AccessToken result = accessTokenBuilderService.build(iamUserInfo);
         String prefix = accessTokenBuilderService.getHeaderPrefix();
+
         // Then
         Assertions.assertEquals("bearer", result.getTokenType());
         Assertions.assertEquals(EXPIRE_IN, result.getExpiresIn());
@@ -104,10 +106,12 @@ public class AccessTokenBuilderServiceTest {
         Assertions.assertNotNull(result.getRefreshToken());
 
         DecodedJWT decodedRefreshToken = JWT.decode(result.getRefreshToken());
-
         String decodedRefreshPayload = new String(Base64.getDecoder().decode(decodedRefreshToken.getPayload()));
+
         Assertions.assertEquals(REFRESH_EXPIRE_IN, (decodedRefreshToken.getExpiresAtAsInstant().toEpochMilli() - decodedRefreshToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"refresh_token\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedRefreshPayload).matches(), "Payload not matches requested pattern: " + decodedRefreshPayload);
+
+        Assertions.assertNotNull(iamUserInfo.getIssuedAt());
     }
 
     @Test
@@ -120,8 +124,9 @@ public class AccessTokenBuilderServiceTest {
                 .build();
 
         // When
-        AccessToken result = accessTokenBuilderService.build(iamUserInfo, null, false);
+        AccessToken result = accessTokenBuilderService.build(iamUserInfo, null, null, false);
         String prefix = accessTokenBuilderService.getHeaderPrefix();
+
         // Then
         Assertions.assertEquals("bearer", result.getTokenType());
         Assertions.assertEquals(EXPIRE_IN, result.getExpiresIn());
@@ -135,6 +140,9 @@ public class AccessTokenBuilderServiceTest {
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
+
+        Assertions.assertNotNull(iamUserInfo.getIssuedAt());
+        Assertions.assertNull(result.getRefreshToken());
     }
 
 
@@ -145,12 +153,37 @@ public class AccessTokenBuilderServiceTest {
 
         // When
         AccessToken result = accessTokenBuilderService.build(iamUserInfo);
-        // Then
 
+        // Then
         DecodedJWT decodedAccessToken = JWT.decode(result.getAccessToken());
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
 
         Assertions.assertFalse(decodedPayload.contains("organizationIpaCode"));
+        Assertions.assertNotNull(iamUserInfo.getIssuedAt());
+    }
+
+    @Test
+    void givenCustomRefreshExpireInWhenBuildThenUseCustomTTL() {
+        // Given
+        int customRefreshExpireIn = 86400;
+        Long existingSessionIssuedAt = Instant.now().getEpochSecond() - 3600;
+
+        IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
+                .mappedExternalUserId("MAPPEDUSEREXTERNALID")
+                .issuedAt(existingSessionIssuedAt)
+                .build();
+
+        // When
+        AccessToken result = accessTokenBuilderService.build(iamUserInfo, null, customRefreshExpireIn, true);
+
+        // Then
+        Assertions.assertEquals(customRefreshExpireIn, result.getRefreshExpiresIn());
+        Assertions.assertNotNull(result.getRefreshToken());
+
+        DecodedJWT decodedRefreshToken = JWT.decode(result.getRefreshToken());
+        long actualJwtRefreshTtl = (decodedRefreshToken.getExpiresAtAsInstant().toEpochMilli() - decodedRefreshToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000;
+        Assertions.assertEquals(customRefreshExpireIn, actualJwtRefreshTtl);
+        Assertions.assertEquals(existingSessionIssuedAt, iamUserInfo.getIssuedAt());
     }
 
     @Test

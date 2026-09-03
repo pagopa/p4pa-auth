@@ -37,6 +37,7 @@ public class LimitedTokenServiceImpl implements LimitedTokenService {
         AccessToken accessToken = accessTokenBuilderService.build(
                 iamUser,
                 request.getExpireInSeconds() != null ? request.getExpireInSeconds().intValue() : null,
+                null,
                 false
         );
         MDC.put("externalUserId", iamUser.getMappedExternalUserId());
