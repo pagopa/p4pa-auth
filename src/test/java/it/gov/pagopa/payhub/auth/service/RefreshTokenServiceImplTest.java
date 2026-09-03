@@ -66,7 +66,7 @@ class RefreshTokenServiceImplTest {
         // Given
         long nowSeconds = Instant.now().getEpochSecond();
         long sessionIssuedAt = nowSeconds - 3600;
-        mockUserInfo.setIssueAt(sessionIssuedAt);
+        mockUserInfo.setIssuedAt(sessionIssuedAt);
 
         when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
         when(accessTokenBuilderService.build(eq(mockUserInfo), eq(null), anyInt(), eq(true)))
@@ -93,7 +93,7 @@ class RefreshTokenServiceImplTest {
         // Given
         long nowSeconds = Instant.now().getEpochSecond();
         long sessionIssuedAt = nowSeconds - 90000;
-        mockUserInfo.setIssueAt(sessionIssuedAt);
+        mockUserInfo.setIssuedAt(sessionIssuedAt);
 
         when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
 
@@ -154,7 +154,7 @@ class RefreshTokenServiceImplTest {
     @Test
     void givenRefreshTokenWithNullIssueAtWhenRefreshTokenThenSetIssueAtAndSuccess() {
         // Given
-        mockUserInfo.setIssueAt(null);
+        mockUserInfo.setIssuedAt(null);
 
         when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
         when(accessTokenBuilderService.build(eq(mockUserInfo), eq(null), anyInt(), eq(true)))
@@ -165,8 +165,8 @@ class RefreshTokenServiceImplTest {
 
         // Then
         assertNotNull(result);
-        assertNotNull(mockUserInfo.getIssueAt());
-        assertTrue(mockUserInfo.getIssueAt() > 0);
+        assertNotNull(mockUserInfo.getIssuedAt());
+        assertTrue(mockUserInfo.getIssuedAt() > 0);
 
         verify(validateRefreshTokenService).validate(clientId, refreshToken);
         verify(tokenStoreService).deleteRefreshToken(refreshToken);

@@ -56,7 +56,7 @@ class Client2UserInfoMapperTest {
 				.organizationIpaCode(clientDTO.getOrganizationIpaCode())
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build())
-			.issueAt(Instant.now().getEpochSecond())
+			.issuedAt(Instant.now().getEpochSecond())
 			.build();
 		// When
 		IamUserInfoDTO result = mapper.apply(clientDTO);

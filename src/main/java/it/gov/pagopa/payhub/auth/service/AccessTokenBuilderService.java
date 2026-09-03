@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Jwks;
 import io.jsonwebtoken.security.PublicJwk;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.utils.CertUtils;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,10 +20,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AccessTokenBuilderService {
@@ -93,12 +91,12 @@ public class AccessTokenBuilderService {
         String token = jwtBuilder
                 .sign(algorithm);
 
-        if (iamUserInfoDTO.getIssueAt()== null) {
-            iamUserInfoDTO.setIssueAt(Instant.now().getEpochSecond());
+        if (iamUserInfoDTO.getIssuedAt()== null) {
+            iamUserInfoDTO.setIssuedAt(Utilities.nowInSeconds());
         }
 
         if(generateRefreshToken) {
-            int actualRefreshExpireIn = (refreshExpireInParam != null) ? refreshExpireInParam : refreshExpireIn;
+            int actualRefreshExpireIn = Objects.requireNonNullElse(refreshExpireInParam, refreshExpireIn);
             String refreshTokenStr = JWT.create()
                     .withHeader(headerClaims)
                     .withClaim("typ", REFRESH_TOKEN_TYPE)
@@ -109,11 +107,11 @@ public class AccessTokenBuilderService {
                     .withExpiresAt(Instant.now().plusSeconds(actualRefreshExpireIn))
                     .sign(algorithm);
 
-            return new AccessToken(token, tokenType, expireInParam == null ? expireIn : expireInParam, refreshTokenStr, refreshExpireIn);
+            return new AccessToken(token, tokenType, Objects.requireNonNullElse(expireInParam, expireIn), refreshTokenStr, refreshExpireIn);
         }
 
 
-        return new AccessToken(token, tokenType, expireInParam == null ? expireIn : expireInParam, null, null);
+        return new AccessToken(token, tokenType, Objects.requireNonNullElse(expireInParam, expireIn), null, null);
     }
 
     public String getHeaderPrefix() {

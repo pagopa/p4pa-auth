@@ -4,13 +4,12 @@ import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.time.Instant;
 
 
 @Slf4j
@@ -45,12 +44,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
             throw new InvalidAccessTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "RefreshToken not found");
         }
 
-        long nowSeconds = Instant.now().getEpochSecond();
-        if (userInfo.getIssueAt() == null) {
-            userInfo.setIssueAt(nowSeconds);
+        long nowSeconds = Utilities.nowInSeconds();
+        if (userInfo.getIssuedAt() == null) {
+            userInfo.setIssuedAt(nowSeconds);
         }
 
-        long elapsedTime = nowSeconds - userInfo.getIssueAt();
+        long elapsedTime = nowSeconds - userInfo.getIssuedAt();
         int remainingSessionLifetime = (int) (maxSessionLifetimeSeconds - elapsedTime);
 
         if (remainingSessionLifetime <= 0) {

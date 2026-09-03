@@ -111,7 +111,7 @@ public class AccessTokenBuilderServiceTest {
         Assertions.assertEquals(REFRESH_EXPIRE_IN, (decodedRefreshToken.getExpiresAtAsInstant().toEpochMilli() - decodedRefreshToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"refresh_token\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+}").matcher(decodedRefreshPayload).matches(), "Payload not matches requested pattern: " + decodedRefreshPayload);
 
-        Assertions.assertNotNull(iamUserInfo.getIssueAt());
+        Assertions.assertNotNull(iamUserInfo.getIssuedAt());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class AccessTokenBuilderServiceTest {
         Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
 
-        Assertions.assertNotNull(iamUserInfo.getIssueAt());
+        Assertions.assertNotNull(iamUserInfo.getIssuedAt());
         Assertions.assertNull(result.getRefreshToken());
     }
 
@@ -159,7 +159,7 @@ public class AccessTokenBuilderServiceTest {
         String decodedPayload = new String(Base64.getDecoder().decode(decodedAccessToken.getPayload()));
 
         Assertions.assertFalse(decodedPayload.contains("organizationIpaCode"));
-        Assertions.assertNotNull(iamUserInfo.getIssueAt());
+        Assertions.assertNotNull(iamUserInfo.getIssuedAt());
     }
 
     @Test
@@ -170,7 +170,7 @@ public class AccessTokenBuilderServiceTest {
 
         IamUserInfoDTO iamUserInfo = IamUserInfoDTO.builder()
                 .mappedExternalUserId("MAPPEDUSEREXTERNALID")
-                .issueAt(existingSessionIssuedAt)
+                .issuedAt(existingSessionIssuedAt)
                 .build();
 
         // When
@@ -183,7 +183,7 @@ public class AccessTokenBuilderServiceTest {
         DecodedJWT decodedRefreshToken = JWT.decode(result.getRefreshToken());
         long actualJwtRefreshTtl = (decodedRefreshToken.getExpiresAtAsInstant().toEpochMilli() - decodedRefreshToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000;
         Assertions.assertEquals(customRefreshExpireIn, actualJwtRefreshTtl);
-        Assertions.assertEquals(existingSessionIssuedAt, iamUserInfo.getIssueAt());
+        Assertions.assertEquals(existingSessionIssuedAt, iamUserInfo.getIssuedAt());
     }
 
     @Test

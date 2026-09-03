@@ -28,6 +28,6 @@ public class IamUserInfoDTO {
     // field to check if it is a real user or a machine/system user
     private boolean systemUser;
 
-    private Long issueAt;
+    private Long issuedAt;
 }
 

@@ -6,13 +6,13 @@ import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
+import it.gov.pagopa.payhub.auth.utils.Utilities;
 import it.gov.pagopa.payhub.dto.generated.AccessToken;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,7 +73,7 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         iamUser.setInnerUserId(registeredUser.getUserId());
         iamUser.setMappedExternalUserId(registeredUser.getMappedExternalUserId());
 
-        iamUser.setIssueAt(Instant.now().getEpochSecond());
+        iamUser.setIssuedAt(Utilities.nowInSeconds());
 
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
