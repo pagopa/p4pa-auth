@@ -68,10 +68,10 @@ public class AccessTokenBuilderService {
     }
 
     public AccessToken build(IamUserInfoDTO iamUserInfoDTO) {
-        return build(iamUserInfoDTO, expireIn, true);
+        return build(iamUserInfoDTO, expireIn, refreshExpireIn, true);
     }
 
-    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam, boolean generateRefreshToken) {
+    public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam, Integer refreshExpireInParam, boolean generateRefreshToken) {
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(HeaderParams.KEY_ID, kid);
         headerClaims.put("typ", ACCESS_TOKEN_TYPE);
@@ -93,7 +93,12 @@ public class AccessTokenBuilderService {
         String token = jwtBuilder
                 .sign(algorithm);
 
+        if (iamUserInfoDTO.getIssueAt()== null) {
+            iamUserInfoDTO.setIssueAt(Instant.now().getEpochSecond());
+        }
+
         if(generateRefreshToken) {
+            int actualRefreshExpireIn = (refreshExpireInParam != null) ? refreshExpireInParam : refreshExpireIn;
             String refreshTokenStr = JWT.create()
                     .withHeader(headerClaims)
                     .withClaim("typ", REFRESH_TOKEN_TYPE)
@@ -101,14 +106,14 @@ public class AccessTokenBuilderService {
                     .withJWTId(UUID.randomUUID().toString())
                     .withSubject(iamUserInfoDTO.getMappedExternalUserId())
                     .withIssuedAt(Instant.now())
-                    .withExpiresAt(Instant.now().plusSeconds(refreshExpireIn))
+                    .withExpiresAt(Instant.now().plusSeconds(actualRefreshExpireIn))
                     .sign(algorithm);
 
-            return new AccessToken(token, tokenType, expireIn, refreshTokenStr, refreshExpireIn);
+            return new AccessToken(token, tokenType, expireInParam == null ? expireIn : expireInParam, refreshTokenStr, refreshExpireIn);
         }
 
 
-        return new AccessToken(token, tokenType, expireIn, null, null);
+        return new AccessToken(token, tokenType, expireInParam == null ? expireIn : expireInParam, null, null);
     }
 
     public String getHeaderPrefix() {

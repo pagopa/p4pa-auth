@@ -12,6 +12,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,6 +72,8 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         MDC.put("externalUserId", registeredUser.getMappedExternalUserId());
         iamUser.setInnerUserId(registeredUser.getUserId());
         iamUser.setMappedExternalUserId(registeredUser.getMappedExternalUserId());
+
+        iamUser.setIssueAt(Instant.now().getEpochSecond());
 
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);

@@ -6,11 +6,20 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 
 @Service
 @CacheConfig(cacheNames = RedisConfig.CACHE_NAME_ACCESS_TOKEN, cacheManager = "redisCacheManager")
 class TokenStoreServiceImpl implements  TokenStoreService{
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public TokenStoreServiceImpl(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
     @Override
     @CachePut(key = "#accessToken")
     public IamUserInfoDTO save(String accessToken, IamUserInfoDTO idTokenClaims) {
@@ -32,6 +41,13 @@ class TokenStoreServiceImpl implements  TokenStoreService{
     @Override
     @CachePut(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN, key = "#refreshToken")
     public IamUserInfoDTO saveRefreshToken(String refreshToken, IamUserInfoDTO idTokenClaims) {
+        return idTokenClaims;
+    }
+
+    @Override
+    public IamUserInfoDTO saveRefreshToken(String refreshToken, IamUserInfoDTO idTokenClaims, long ttlInSeconds) {
+        String key = RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" + refreshToken;
+        redisTemplate.opsForValue().set(key, idTokenClaims, Duration.ofSeconds(ttlInSeconds));
         return idTokenClaims;
     }
 

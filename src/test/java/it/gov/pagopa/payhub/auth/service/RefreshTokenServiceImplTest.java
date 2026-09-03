@@ -9,9 +9,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,16 +29,23 @@ class RefreshTokenServiceImplTest {
     @Mock
     private ValidateRefreshTokenService validateRefreshTokenService;
 
-    @InjectMocks
     private RefreshTokenServiceImpl refreshTokenService;
 
     private final String clientId = "piattaforma-unitaria";
     private final String refreshToken = "valid-refresh-token-string";
+
     private IamUserInfoDTO mockUserInfo;
     private AccessToken mockAccessToken;
 
     @BeforeEach
     void setUp() {
+        refreshTokenService = new RefreshTokenServiceImpl(
+                tokenStoreService,
+                accessTokenBuilderService,
+                validateRefreshTokenService,
+                86400
+        );
+
         mockUserInfo = new IamUserInfoDTO();
         mockAccessToken = new AccessToken();
         mockAccessToken.setAccessToken("new-access-token");
@@ -56,8 +64,13 @@ class RefreshTokenServiceImplTest {
     @Test
     void givenValidRefreshTokenWhenRefreshTokenThenSuccess() {
         // Given
+        long nowSeconds = Instant.now().getEpochSecond();
+        long sessionIssuedAt = nowSeconds - 3600;
+        mockUserInfo.setIssueAt(sessionIssuedAt);
+
         when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
-        when(accessTokenBuilderService.build(mockUserInfo)).thenReturn(mockAccessToken);
+        when(accessTokenBuilderService.build(eq(mockUserInfo), eq(null), anyInt(), eq(true)))
+                .thenReturn(mockAccessToken);
 
         // When
         AccessToken result = refreshTokenService.refreshToken(clientId, refreshToken);
@@ -68,9 +81,34 @@ class RefreshTokenServiceImplTest {
         assertEquals("new-refresh-token", result.getRefreshToken());
 
         verify(validateRefreshTokenService).validate(clientId, refreshToken);
+        verify(tokenStoreService).loadRefreshToken(refreshToken);
         verify(tokenStoreService).deleteRefreshToken(refreshToken);
+
+        verify(accessTokenBuilderService).build(eq(mockUserInfo), eq(null), argThat(ttl -> ttl >= 82790 && ttl <= 82800), eq(true));
         verify(tokenStoreService).save("new-access-token", mockUserInfo);
-        verify(tokenStoreService).saveRefreshToken("new-refresh-token", mockUserInfo);
+        verify(tokenStoreService).saveRefreshToken(eq("new-refresh-token"), eq(mockUserInfo), longThat(ttl -> ttl >= 82790 && ttl <= 82800));
+    }
+
+    @Test
+    void givenSessionExpiredWhenRefreshTokenThenThrowsInvalidAccessTokenException() {
+        // Given
+        long nowSeconds = Instant.now().getEpochSecond();
+        long sessionIssuedAt = nowSeconds - 90000;
+        mockUserInfo.setIssueAt(sessionIssuedAt);
+
+        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
+
+        // When & Then
+        InvalidAccessTokenException exception = assertThrows(InvalidAccessTokenException.class, () ->
+                refreshTokenService.refreshToken(clientId, refreshToken)
+        );
+
+        assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, exception.getCode());
+        assertTrue(exception.getMessage().contains("Session expired, re-authentication required"));
+
+        verify(validateRefreshTokenService).validate(clientId, refreshToken);
+        verify(tokenStoreService).loadRefreshToken(refreshToken);
+        verify(tokenStoreService).deleteRefreshToken(refreshToken);
     }
 
     @Test
