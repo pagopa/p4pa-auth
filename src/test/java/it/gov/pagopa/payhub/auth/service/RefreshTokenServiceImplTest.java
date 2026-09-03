@@ -81,7 +81,6 @@ class RefreshTokenServiceImplTest {
         assertEquals("new-refresh-token", result.getRefreshToken());
 
         verify(validateRefreshTokenService).validate(clientId, refreshToken);
-        verify(tokenStoreService).loadRefreshToken(refreshToken);
         verify(tokenStoreService).deleteRefreshToken(refreshToken);
 
         verify(accessTokenBuilderService).build(eq(mockUserInfo), eq(null), argThat(ttl -> ttl >= 82790 && ttl <= 82800), eq(true));
@@ -107,7 +106,6 @@ class RefreshTokenServiceImplTest {
         assertTrue(exception.getMessage().contains("Session expired, re-authentication required"));
 
         verify(validateRefreshTokenService).validate(clientId, refreshToken);
-        verify(tokenStoreService).loadRefreshToken(refreshToken);
         verify(tokenStoreService).deleteRefreshToken(refreshToken);
     }
 
@@ -171,7 +169,6 @@ class RefreshTokenServiceImplTest {
         assertTrue(mockUserInfo.getIssueAt() > 0);
 
         verify(validateRefreshTokenService).validate(clientId, refreshToken);
-        verify(tokenStoreService).loadRefreshToken(refreshToken);
         verify(tokenStoreService).deleteRefreshToken(refreshToken);
 
         verify(accessTokenBuilderService).build(eq(mockUserInfo), eq(null), argThat(ttl -> ttl >= 86390 && ttl <= 86400), eq(true));
