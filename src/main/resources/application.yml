@@ -41,7 +41,7 @@ jwt:
     issuer: "\${JWT_EXTERNAL_TOKEN_ISS:externalauthentication-server-issuer}"
   refresh-token:
     expire-in: "\${JWT_REFRESH_TOKEN_EXPIRATION_SECONDS:86400}"
-    max-lifetime-seconds: "\${JWT_REFRESH_TOKEN_MAX_LIFETIME_SECONDS:60}"
+  max-session-lifetime-seconds: "\${JWT_MAX_SESSION_LIFETIME_SECONDS:86400}"
 
 management:
   info:

@@ -20,16 +20,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     private final TokenStoreService tokenStoreService;
     private final AccessTokenBuilderService accessTokenBuilderService;
     private final ValidateRefreshTokenService validateRefreshTokenService;
-    private final int maxLifetimeSeconds;
+    private final int maxSessionLifetimeSeconds;
 
     public RefreshTokenServiceImpl(TokenStoreService tokenStoreService,
                                    AccessTokenBuilderService accessTokenBuilderService,
                                    ValidateRefreshTokenService validateRefreshTokenService,
-                                   @Value("${jwt.refresh-token.max-lifetime-seconds}") int maxLifetimeSeconds) {
+                                   @Value("${jwt.max-session-lifetime-seconds}") int maxSessionLifetimeSeconds) {
         this.tokenStoreService = tokenStoreService;
         this.accessTokenBuilderService = accessTokenBuilderService;
         this.validateRefreshTokenService = validateRefreshTokenService;
-        this.maxLifetimeSeconds = maxLifetimeSeconds;
+        this.maxSessionLifetimeSeconds = maxSessionLifetimeSeconds;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         }
 
         long elapsedTime = nowSeconds - userInfo.getIssueAt();
-        int remainingSessionLifetime = (int) (maxLifetimeSeconds - elapsedTime);
+        int remainingSessionLifetime = (int) (maxSessionLifetimeSeconds - elapsedTime);
 
         if (remainingSessionLifetime <= 0) {
             log.warn("Max session lifetime reached for user {}. Invalidating session.", userInfo.getMappedExternalUserId());
