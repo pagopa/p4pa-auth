@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.ValueOperations;
 
 import java.time.Duration;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -82,11 +81,7 @@ class TokenStoreServiceTest {
 
         // Then
         Assertions.assertSame(userInfo, result);
-        verify(valueOperations).set(
-                eq(expectedRedisKey),
-                eq(userInfo),
-                eq(Duration.ofSeconds(ttlInSeconds))
-        );
+        verify(valueOperations).set(expectedRedisKey, userInfo, Duration.ofSeconds(ttlInSeconds));
     }
 
     @Test
