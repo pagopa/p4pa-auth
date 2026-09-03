@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.dto.generated.ClientNoSecretDTO;
 import it.gov.pagopa.payhub.dto.generated.UserInfo;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.function.Function;
 
@@ -32,6 +33,7 @@ public class Client2UserInfoMapper implements Function<ClientNoSecretDTO, IamUse
 				.organizationIpaCode(clientDTO.getOrganizationIpaCode())
 				.roles(Collections.singletonList(Constants.ROLE_ADMIN))
 				.build())
+			.issueAt(Instant.now().getEpochSecond())
 			.build();
 	}
 
