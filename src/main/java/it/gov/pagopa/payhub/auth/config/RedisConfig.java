@@ -57,8 +57,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(
-            RedisConnectionFactory redisConnectionFactory,
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory,
             JsonMapper jsonMapper) {
 
         RedisTemplate<String, Object> template = new RedisTemplate<>();

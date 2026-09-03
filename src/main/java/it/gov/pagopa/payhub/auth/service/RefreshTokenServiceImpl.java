@@ -25,7 +25,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     public RefreshTokenServiceImpl(TokenStoreService tokenStoreService,
                                    AccessTokenBuilderService accessTokenBuilderService,
                                    ValidateRefreshTokenService validateRefreshTokenService,
-                                   @Value("${jwt.max-lifetime-seconds}") int maxLifetimeSeconds) {
+                                   @Value("${jwt.refresh-token.max-lifetime-seconds}") int maxLifetimeSeconds) {
         this.tokenStoreService = tokenStoreService;
         this.accessTokenBuilderService = accessTokenBuilderService;
         this.validateRefreshTokenService = validateRefreshTokenService;
