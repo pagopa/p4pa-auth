@@ -59,11 +59,10 @@ runs:
         branches: ${{ github.ref_name }}
         extra_plugins: ${{
           case( inputs.produce_release_notes == 'true',  
-            [
-              '@semantic-release/release-notes-generator@13.0.0',
+              '@semantic-release/release-notes-generator@13.0.0
+               @semantic-release/github@11.0.0'
+            ,
               '@semantic-release/github@11.0.0'
-            ],
-            ['@semantic-release/github@11.0.0']
           ) 
           }}
 
