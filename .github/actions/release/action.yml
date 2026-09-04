@@ -38,6 +38,9 @@ runs:
         elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           echo "TAG_FORMAT=v\${version}" >> $GITHUB_OUTPUT
         fi
+        
+        # TODO REMOVEM
+        echo "TAG_FORMAT=TEST_v\${version}" >> $GITHUB_OUTPUT
 
     # Set the appropriate token
     - name: 🔐 Set GitHub Token
