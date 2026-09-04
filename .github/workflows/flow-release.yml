@@ -40,7 +40,7 @@ jobs:
       - name  : 🚀 release + docker
         uses: ./.github/actions/release
         with:
-          current_branch: ${{ github.ref_name }}
+          current_branch: 'develop'
           produce_release_notes: 'false'
 
   azure-devops-trigger:
