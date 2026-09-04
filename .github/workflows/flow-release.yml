@@ -33,7 +33,7 @@ jobs:
       #  uses: pagopa/github-actions-template/payments-flow-release@b825ee193430395706a4a7e580b8435bdded0227
       #  with:
       #    current_branch: ${{ github.ref_name }}
-      - id: 🚀 release + docker
+      - name: 🚀 release + docker
         uses: ./.github/actions/release
         with:
           current_branch: ${{ github.ref_name }}
