@@ -60,14 +60,19 @@ runs:
         github_token: ${{ steps.set_token.outputs.GIT_AUTH_TOKEN }}
         tag_format: ${{ steps.set-tag-format.outputs.TAG_FORMAT }}
         branches: ${{ github.ref_name }}
-        extra_plugins: ${{
-          case( inputs.produce_release_notes == 'true',  
-              '@semantic-release/release-notes-generator@13.0.0
-               @semantic-release/github@11.0.0'
-            ,
-              ''
-          ) 
-          }}
+        dryRun: ${{ case( inputs.produce_release_notes == 'true', 'false','true') }}
+
+    - name: 🔨 Set GitHub tag when skipping release notes
+      if: steps.release.outputs.new_release_version > '' && inputs.produce_release_notes == 'false'
+      uses: actions/github-script@v5
+      with:
+        script: |
+          github.rest.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: 'refs/tags/${{ steps.release.outputs.new_release_version }}',
+            sha: context.sha
+          })
 
     #
     # Docker
