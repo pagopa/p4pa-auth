@@ -66,10 +66,16 @@ runs:
       uses: actions/github-script@v9.0.0
       with:
         script: |
-          github.rest.repos.deleteRelease({ 
+          const rel = await github.rest.repos.getReleaseByTag({ 
             owner: context.repo.owner,
             repo: context.repo.repo,
-            release_id: 'tag/${{ steps.release.outputs.new_release_git_tag }}'
+            tag: '${{ steps.release.outputs.new_release_git_tag }}'
+          })
+          console.log(`Deleting release notes for release ${rel})`)
+          await github.rest.repos.deleteRelease({ 
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: rel.data.id
           })
 
     #
