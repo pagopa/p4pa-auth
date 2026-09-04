@@ -41,7 +41,7 @@ jobs:
         uses: ./.github/actions/release
         with:
           current_branch: ${{ github.ref_name }}
-          produce_release_notes: 'false'
+          produce_release_notes: 'true'
 
   azure-devops-trigger:
     name: 🅰️ Azure DevOps Pipeline Trigger
