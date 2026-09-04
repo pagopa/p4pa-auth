@@ -71,7 +71,6 @@ runs:
             repo: context.repo.repo,
             tag: '${{ steps.release.outputs.new_release_git_tag }}'
           })
-          console.log(`Deleting release notes for release ${rel})`)
           await github.rest.repos.deleteRelease({ 
             owner: context.repo.owner,
             repo: context.repo.repo,
