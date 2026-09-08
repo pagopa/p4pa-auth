@@ -32,8 +32,8 @@ jobs:
     needs: checkout
     steps:
       - name: 🚀 release + docker
-        # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
-        uses: pagopa/github-actions-template/payments-flow-release@b825ee193430395706a4a7e580b8435bdded0227
+        # https://github.com/pagopa/github-actions-template/releases/tag/v2.6.1
+        uses: pagopa/github-actions-template/payments-flow-release@8e05805024deadaacb52fc78c5a52293215841dc
         with:
           current_branch: ${{ github.ref_name }}
           produce_release_notes: ${{ case( github.ref_name == 'main', 'true', 'false') }}
@@ -45,8 +45,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Trigger Azure DevOps Pipeline
-        # https://github.com/pagopa/github-actions-template/releases/tag/v2.1.0
-        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@cad30356d9046af6e7b0cee43db4cf919cc408f9
+        # https://github.com/pagopa/github-actions-template/releases/tag/v2.6.1
+        uses: pagopa/github-actions-template/azure-devops-trigger-pipeline@8e05805024deadaacb52fc78c5a52293215841dc
         with:
           enable_azure_devops_step: 'true'
           azure_devops_project_url: 'https://dev.azure.com/pagopaspa/p4pa-projects'
