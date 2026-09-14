@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.auth.connector.organization.config;
 
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationUpdateDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
