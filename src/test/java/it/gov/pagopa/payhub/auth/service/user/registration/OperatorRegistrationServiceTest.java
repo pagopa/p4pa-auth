@@ -49,6 +49,7 @@ class OperatorRegistrationServiceTest {
         User user = new User();
         user.setUserId("USERID");
         user.setMappedExternalUserId("operatorExternalUserId");
+        user.setFiscalCode("fiscalCode");
 
         when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
                 .thenReturn(storedOperator);
@@ -56,9 +57,10 @@ class OperatorRegistrationServiceTest {
                 .thenReturn(organization);
         doNothing()
                 .when(debtPositionTypeOrgOperatorServiceMock)
-                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+                .relateUserToDefaultDPTypeOrg(
                         user.getMappedExternalUserId(),
                         organization.getOrganizationId(),
+                        user.getFiscalCode(),
                         accessToken
                 );
         // When
@@ -93,9 +95,10 @@ class OperatorRegistrationServiceTest {
         // Then
         Assertions.assertSame(storedOperator, result);
         verify(debtPositionTypeOrgOperatorServiceMock, times(0))
-                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+                .relateUserToDefaultDPTypeOrg(
                         Mockito.anyString(),
                         Mockito.anyLong(),
+                        Mockito.anyString(),
                         Mockito.anyString()
                 );
     }
@@ -116,6 +119,7 @@ class OperatorRegistrationServiceTest {
         User user = new User();
         user.setUserId("USERID");
         user.setMappedExternalUserId("operatorExternalUserId");
+        user.setFiscalCode("fiscalCode");
 
         when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
                 .thenReturn(storedOperator);
@@ -123,9 +127,10 @@ class OperatorRegistrationServiceTest {
                 .thenReturn(organization);
         doNothing()
                 .when(debtPositionTypeOrgOperatorServiceMock)
-                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+                .relateUserToDefaultDPTypeOrg(
                         user.getMappedExternalUserId(),
                         organization.getOrganizationId(),
+                        user.getFiscalCode(),
                         accessToken
                 );
 
@@ -155,6 +160,7 @@ class OperatorRegistrationServiceTest {
         User user = new User();
         user.setUserId("USERID");
         user.setMappedExternalUserId("operatorExternalUserId");
+        user.setFiscalCode("fiscalCode");
 
         when(operatorsRepositoryMock.registerOperator(user.getUserId(), organizationIpaCode, email, roles))
                 .thenReturn(storedOperator);
@@ -162,9 +168,10 @@ class OperatorRegistrationServiceTest {
                 .thenReturn(organization);
         doNothing()
                 .when(debtPositionTypeOrgOperatorServiceMock)
-                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+                .relateUserToDefaultDPTypeOrg(
                         user.getMappedExternalUserId(),
                         organization.getOrganizationId(),
+                        user.getFiscalCode(),
                         accessToken
                 );
         doNothing()

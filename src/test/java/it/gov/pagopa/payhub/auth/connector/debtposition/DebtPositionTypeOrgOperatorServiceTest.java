@@ -9,6 +9,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgOperatorServiceTest {
 
@@ -30,22 +33,23 @@ class DebtPositionTypeOrgOperatorServiceTest {
     }
 
     @Test
-    void whenGetOrganizationByIpaCodeByIdThenInvokeClient(){
+    void whenRelateUserToDefaultDPTypeOrgThenInvokeClient(){
         // Given
         String accessToken = "ACCESSTOKEN";
         String operatorExternalUserId = "OPERATOR_EXTERNAL_USER_ID";
         Long organizationId = 1L;
+        String fiscalCode = "fiscalCode";
 
-        Mockito.doNothing()
+        doNothing()
                 .when(debtPositionTypeOrgOperatorClientMock)
-                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(operatorExternalUserId, organizationId, accessToken);
+                .relateUserToDefaultDPTypeOrg(operatorExternalUserId, organizationId, fiscalCode, accessToken);
 
         // When
-        service.saveDefaultTechnicalDebtPositionTypeOrgForOperator(operatorExternalUserId, organizationId, accessToken);
+        service.relateUserToDefaultDPTypeOrg(operatorExternalUserId, organizationId, fiscalCode, accessToken);
 
         // Then
-        Mockito.verify(debtPositionTypeOrgOperatorClientMock)
-                .saveDefaultTechnicalDebtPositionTypeOrgForOperator(operatorExternalUserId, organizationId, accessToken);
+        verify(debtPositionTypeOrgOperatorClientMock)
+                .relateUserToDefaultDPTypeOrg(operatorExternalUserId, organizationId, fiscalCode, accessToken);
     }
 
 }
