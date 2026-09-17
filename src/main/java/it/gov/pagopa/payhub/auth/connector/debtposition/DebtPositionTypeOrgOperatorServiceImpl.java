@@ -13,10 +13,11 @@ public class DebtPositionTypeOrgOperatorServiceImpl implements DebtPositionTypeO
     }
 
     @Override
-    public void saveDefaultTechnicalDebtPositionTypeOrgForOperator(String operatorExternalUserId, Long organizationId, String accessToken) {
-        debtPositionTypeOrgOperatorClient.saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+    public void relateUserToDefaultDPTypeOrg(String operatorExternalUserId, Long organizationId, String fiscalCode, String accessToken) {
+        debtPositionTypeOrgOperatorClient.relateUserToDefaultDPTypeOrg(
                 operatorExternalUserId,
                 organizationId,
+                fiscalCode,
                 accessToken
         );
     }

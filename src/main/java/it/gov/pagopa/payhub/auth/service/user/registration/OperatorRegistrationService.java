@@ -37,9 +37,10 @@ public class OperatorRegistrationService {
                     user.getUserId(), organizationIpaCode);
             return operator;
         }
-        debtPositionTypeOrgOperatorService.saveDefaultTechnicalDebtPositionTypeOrgForOperator(
+        debtPositionTypeOrgOperatorService.relateUserToDefaultDPTypeOrg(
                 user.getMappedExternalUserId(),
                 organization.getOrganizationId(),
+                user.getFiscalCode(),
                 accessToken
         );
         updateOrganizationExternalId(organization.getOrganizationId(), organization.getExternalOrganizationId(), externalOrganizationId, organizationIpaCode, accessToken);
