@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.auth.connector.organization.config;
 
 import it.gov.pagopa.payhub.auth.config.json.JsonConfig;
 import it.gov.pagopa.payhub.auth.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationUpdateDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,7 +78,7 @@ class OrganizationApiHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken ->{
                     apisHolder.getOrganizationApi(accessToken)
-                            .updateOrganization(new OrganizationDetailDTO());
+                            .updateOrganization(new OrganizationUpdateDTO());
                     return voidMock;
                 },
                 new ParameterizedTypeReference<>() {},
