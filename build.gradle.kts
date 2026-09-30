@@ -69,6 +69,7 @@ val podamVersion = "8.0.2.RELEASE"
 
 // CVE Security dependencies
 val tomcatEmbedCoreVersion = "11.0.26"
+val jacksonDatabindVersion = "3.1.7"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -106,6 +107,7 @@ dependencies {
 
     // CVE Security dependencies
     implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
+    implementation("tools.jackson.core:jackson-databind:$jacksonDatabindVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
