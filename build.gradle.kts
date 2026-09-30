@@ -50,7 +50,7 @@ repositories {
     mavenCentral()
 }
 
-val springDocOpenApiVersion = "3.1.0"
+val springDocOpenApiVersion = "3.1.1"
 val openApiToolsVersion = "0.2.11"
 val javaJwtVersion = "4.6.0"
 val jwksRsaVersion = "0.24.1"
