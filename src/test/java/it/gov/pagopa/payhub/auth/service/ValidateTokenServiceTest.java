@@ -36,7 +36,7 @@ class ValidateTokenServiceTest {
 
     Assertions.assertDoesNotThrow(() -> jwtValidator.validateInternalToken(validToken));
     Assertions.assertDoesNotThrow(() -> validateTokenService.validate(validToken));
-    Assertions.assertEquals(AccessTokenBuilderService.ACCESS_TOKEN_TYPE, jwt.getHeaderClaim("typ").asString());
+    Assertions.assertEquals(AccessTokenBuilderService.TOKEN_TYPE, jwt.getHeaderClaim("typ").asString());
   }
 
   @Test

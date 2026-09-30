@@ -99,7 +99,7 @@ public class AccessTokenBuilderServiceTest {
 
         Assertions.assertEquals(decodedPrefix + ",\"typ\":\"JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
-        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
+        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"access_token\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
 
         Assertions.assertEquals(REFRESH_EXPIRE_IN, result.getRefreshExpiresIn());
@@ -138,7 +138,7 @@ public class AccessTokenBuilderServiceTest {
 
         Assertions.assertEquals(decodedPrefix + ",\"typ\":\"JWT\",\"alg\":\"RS512\"}", decodedHeader);
         Assertions.assertEquals(EXPIRE_IN, (decodedAccessToken.getExpiresAtAsInstant().toEpochMilli() - decodedAccessToken.getIssuedAtAsInstant().toEpochMilli()) / 1_000);
-        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"bearer\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
+        Assertions.assertTrue(Pattern.compile("\\{\"typ\":\"access_token\",\"iss\":\"APPLICATION_AUDIENCE\",\"jti\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\",\"sub\":\"MAPPEDUSEREXTERNALID\",\"iat\":[0-9]+,\"exp\":[0-9]+,\"organizationIpaCode\":\"ORGIPACODE\"}").matcher(decodedPayload).matches(), "Payload not matches requested pattern: " + decodedPayload);
         Assertions.assertTrue(Pattern.compile("\\{\"kid\":\"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\"").matcher(decodedPrefix).matches(), "key identifier not matches requested pattern: " + decodedPrefix);
 
         Assertions.assertNotNull(iamUserInfo.getIssuedAt());

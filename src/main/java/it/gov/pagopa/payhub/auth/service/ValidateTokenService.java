@@ -24,7 +24,7 @@ public class ValidateTokenService {
   }
 
   private void validateAccessType(String type) {
-    if(!AccessTokenBuilderService.ACCESS_TOKEN_TYPE.equalsIgnoreCase(type)) {
+    if(!AccessTokenBuilderService.TOKEN_TYPE.equalsIgnoreCase(type)) {
       throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN_TYPE, "Invalid token type " + type);
     }
   }
