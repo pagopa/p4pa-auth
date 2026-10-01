@@ -24,7 +24,9 @@ import java.util.*;
 
 @Service
 public class AccessTokenBuilderService {
-    public static final String ACCESS_TOKEN_TYPE = "JWT";
+    public static final String TOKEN_USAGE = "bearer";
+    public static final String TOKEN_TYPE = "JWT";
+    public static final String ACCESS_TOKEN_TYPE = "access_token";
     public static final String REFRESH_TOKEN_TYPE = "refresh_token";
     public static final String CLAIM_ORGANIZATION_IPA_CODE = "organizationIpaCode";
     private final String allowedAudience;
@@ -72,11 +74,10 @@ public class AccessTokenBuilderService {
     public AccessToken build(IamUserInfoDTO iamUserInfoDTO, Integer expireInParam, Integer refreshExpireInParam, boolean generateRefreshToken) {
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(HeaderParams.KEY_ID, kid);
-        headerClaims.put("typ", ACCESS_TOKEN_TYPE);
-        String tokenType = "bearer";
+        headerClaims.put("typ", "JWT");
         JWTCreator.Builder jwtBuilder = JWT.create()
                 .withHeader(headerClaims)
-                .withClaim("typ", tokenType)
+                .withClaim("typ", ACCESS_TOKEN_TYPE)
                 .withIssuer(allowedAudience)
                 .withJWTId(UUID.randomUUID().toString())
                 .withSubject(iamUserInfoDTO.getMappedExternalUserId())
@@ -107,11 +108,11 @@ public class AccessTokenBuilderService {
                     .withExpiresAt(Instant.now().plusSeconds(actualRefreshExpireIn))
                     .sign(algorithm);
 
-            return new AccessToken(token, tokenType, Objects.requireNonNullElse(expireInParam, expireIn), refreshTokenStr, refreshExpireIn);
+            return new AccessToken(token, TOKEN_USAGE, Objects.requireNonNullElse(expireInParam, expireIn), refreshTokenStr, refreshExpireIn);
         }
 
 
-        return new AccessToken(token, tokenType, Objects.requireNonNullElse(expireInParam, expireIn), null, null);
+        return new AccessToken(token, TOKEN_USAGE, Objects.requireNonNullElse(expireInParam, expireIn), null, null);
     }
 
     public String getHeaderPrefix() {
