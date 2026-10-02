@@ -1,3 +1,4 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jk1.license.filter.*
 import com.github.jk1.license.render.*
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -11,7 +12,6 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
     id("org.sonarqube") version "7.4.0.8496"
-    id("com.github.ben-manes.versions") version "0.54.0"
     id("org.openapi.generator") version "7.25.0"
     id("org.ajoberstar.grgit") version "5.3.2"
     id("com.gorylenko.gradle-git-properties") version "4.0.1"
@@ -195,6 +195,14 @@ configure<SourceSetContainer> {
 springBoot {
     buildInfo()
     mainClass.value("it.gov.pagopa.payhub.auth.PayhubAuthApplication")
+}
+
+tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
+    revision = "release"
+    outputFormatter = "json"
+    checkForGradleUpdate = false
+    checkEmbeddedKotlin = false
+    rejectPreReleases = true
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
