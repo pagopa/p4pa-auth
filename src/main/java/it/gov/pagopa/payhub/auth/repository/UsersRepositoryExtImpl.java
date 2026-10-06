@@ -44,7 +44,7 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
     }
 
     @Override
-    public Page<User> retrieveUsers(String fiscalCode, String firstName, String lastName,
+    public Page<User> retrieveUsers(String fiscalCode, String firstName, String lastName, List<String> mappedExternalUserIdsToExclude,
         Pageable pageable) {
         Query query = new Query();
         if (fiscalCode != null && !fiscalCode.isEmpty()) {
@@ -55,6 +55,9 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
         }
         if (firstName != null && !firstName.isEmpty()) {
             query.addCriteria(Criteria.where("firstName").is(firstName));
+        }
+        if (mappedExternalUserIdsToExclude != null && !mappedExternalUserIdsToExclude.isEmpty()) {
+            query.addCriteria(Criteria.where("mappedExternalUserId").nin(mappedExternalUserIdsToExclude));
         }
         long count = mongoTemplate.count(query, User.class);
         query.with(pageable);

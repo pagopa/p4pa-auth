@@ -85,6 +85,8 @@ class UsersRepositoryExtImplTest extends BaseMongoRepositoryTest {
         String fiscalCode = "FISCALCODE";
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
+        List<String> mappedExternalUserIdsToExclude = List.of("mappedExternalUserId");
+
         List<User> users = Collections.singletonList(User.builder().firstName(firstName).lastName(lastName).fiscalCode(fiscalCode).build());
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -92,13 +94,14 @@ class UsersRepositoryExtImplTest extends BaseMongoRepositoryTest {
                 .addCriteria(Criteria.where("fiscalCode").is(fiscalCode))
                 .addCriteria(Criteria.where("firstName").is(firstName))
                 .addCriteria(Criteria.where("lastName").is(lastName))
+                .addCriteria(Criteria.where("mappedExternalUserId").nin(mappedExternalUserIdsToExclude))
                 .with(pageable);
 
         Mockito.when(mongoTemplateMock.count(Mockito.any(Query.class), Mockito.eq(User.class))).thenReturn(1L);
         Mockito.when(mongoTemplateMock.find(Mockito.any(Query.class), Mockito.eq(User.class))).thenReturn(users);
 
         // When
-        Page<User> result = repository.retrieveUsers(fiscalCode, firstName, lastName, pageable);
+        Page<User> result = repository.retrieveUsers(fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageable);
 
         // Verify
         Mockito.verify(mongoTemplateMock).count(expectedQuery, User.class);
@@ -124,7 +127,7 @@ class UsersRepositoryExtImplTest extends BaseMongoRepositoryTest {
         Mockito.when(mongoTemplateMock.find(Mockito.any(Query.class), Mockito.eq(User.class))).thenReturn(users);
 
         // When
-        Page<User> result = repository.retrieveUsers(null, null, null, pageable);
+        Page<User> result = repository.retrieveUsers(null, null, null, null,pageable);
 
         // Verify
         Mockito.verify(mongoTemplateMock).count(expectedQuery, User.class);
