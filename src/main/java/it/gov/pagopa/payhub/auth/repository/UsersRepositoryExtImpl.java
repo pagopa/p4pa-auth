@@ -44,9 +44,12 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
     }
 
     @Override
-    public Page<User> retrieveUsers(String fiscalCode, String firstName, String lastName, List<String> mappedExternalUserIdsToExclude,
+    public Page<User> retrieveUsers(List<String> userIdsIn, String fiscalCode, String firstName, String lastName, List<String> mappedExternalUserIdsToExclude,
         Pageable pageable) {
         Query query = new Query();
+        if (userIdsIn != null && !userIdsIn.isEmpty()) {
+            query.addCriteria(Criteria.where("userId").in(userIdsIn));
+        }
         if (fiscalCode != null && !fiscalCode.isEmpty()) {
             query.addCriteria(Criteria.where("fiscalCode").is(fiscalCode));
         }

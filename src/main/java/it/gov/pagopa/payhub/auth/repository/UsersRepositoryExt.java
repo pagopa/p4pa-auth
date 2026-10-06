@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface UsersRepositoryExt {
     User registerUser(User user);
-    Page<User> retrieveUsers(String fiscalCode, String firstName, String lastName, List<String> mappedExternalUserIdsToExclude, Pageable pageable);
+    Page<User> retrieveUsers(List<String> userIdsIn, String fiscalCode, String firstName, String lastName, List<String> mappedExternalUserIdsToExclude, Pageable pageable);
 }

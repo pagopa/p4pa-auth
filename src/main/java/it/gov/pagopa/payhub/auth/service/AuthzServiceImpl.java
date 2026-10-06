@@ -60,13 +60,31 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode,
         String firstName, String lastName, List<String> mappedExternalUserIdsToExclude, Pageable pageRequest) {
-        Page<User> users = usersRepository.retrieveUsers(fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest);
-       return new PageImpl<>(users.stream().map(user -> {
-            Optional<Operator> operator = operatorsRepository.findById(user.getUserId()+organizationIpaCode);
-         return operator.map(value -> operatorDTOMapper.apply(user, value)).orElse(null);
-       }).filter(Objects::nonNull).toList(),
-           pageRequest,
-           users.getTotalElements());
+        List<Operator> operators = operatorsRepository.findAllByOrganizationIpaCode(organizationIpaCode);
+
+        if (operators.isEmpty()) {
+            return new PageImpl<>(List.of(), pageRequest, 0);
+        }
+
+        List<String> userIds = operators.stream()
+                .map(Operator::getUserId)
+                .toList();
+
+        Page<User> usersPage = usersRepository.retrieveUsers(
+                userIds, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest
+        );
+
+        List<OperatorDTO> operatorDTOs = usersPage.getContent().stream()
+                .map(user -> {
+                    Operator matchedOperator = operators.stream()
+                            .filter(op -> op.getUserId().equals(user.getUserId()))
+                            .findFirst()
+                            .orElse(null);
+                    return operatorDTOMapper.apply(user, matchedOperator);
+                })
+                .toList();
+
+        return new PageImpl<>(operatorDTOs, pageRequest, usersPage.getTotalElements());
     }
 
     @Override

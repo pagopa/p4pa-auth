@@ -97,6 +97,8 @@ class AuthzServiceTest {
         String userId = "USERID";
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
+        List<String> userIdsIn = List.of(userId);
+
         List<String> mappedExternalUserIdsToExclude = List.of("mappedExternalUserId");
 
         Pageable pageRequest = PageRequest.of(0, 1);
@@ -116,8 +118,8 @@ class AuthzServiceTest {
 
         Page<User> userPage = new PageImpl<>(List.of(user), pageRequest, 1);
 
-        Mockito.when(usersRepository.retrieveUsers(fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest)).thenReturn(userPage);
-        Mockito.when(operatorsRepository.findById(userId +organizationIpaCode)).thenReturn(Optional.of(operator));
+        Mockito.when(operatorsRepository.findAllByOrganizationIpaCode(organizationIpaCode)).thenReturn(List.of(operator));
+        Mockito.when(usersRepository.retrieveUsers(userIdsIn, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest)).thenReturn(userPage);
         Mockito.when(operatorDTOMapper.apply(user, operator)).thenReturn(operatorDTO);
 
         // When
