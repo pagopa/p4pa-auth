@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.dto.UserWithOperator;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
@@ -59,31 +60,14 @@ public class AuthzServiceImpl implements AuthzService {
     @Override
     public Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode,
         String firstName, String lastName, List<String> mappedExternalUserIdsToExclude, Pageable pageRequest) {
-        List<Operator> operators = operatorsRepository.findAllByOrganizationIpaCode(organizationIpaCode);
+        Page<UserWithOperator> usersWithOperators = usersRepository.findUsersWithOperator(
+                organizationIpaCode, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest);
 
-        if (operators.isEmpty()) {
-            return new PageImpl<>(List.of(), pageRequest, 0);
-        }
-
-        List<String> userIds = operators.stream()
-                .map(Operator::getUserId)
+        List<OperatorDTO> operatorDTOs = usersWithOperators.getContent().stream()
+                .map(uwo -> operatorDTOMapper.apply(uwo, uwo.getOperator()))
                 .toList();
 
-        Page<User> usersPage = usersRepository.retrieveUsers(
-                userIds, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest
-        );
-
-        List<OperatorDTO> operatorDTOs = usersPage.getContent().stream()
-                .map(user -> {
-                    Operator matchedOperator = operators.stream()
-                            .filter(op -> op.getUserId().equals(user.getUserId()))
-                            .findFirst()
-                            .orElse(null);
-                    return operatorDTOMapper.apply(user, matchedOperator);
-                })
-                .toList();
-
-        return new PageImpl<>(operatorDTOs, pageRequest, usersPage.getTotalElements());
+        return new PageImpl<>(operatorDTOs, pageRequest, usersWithOperators.getTotalElements());
     }
 
     @Override
