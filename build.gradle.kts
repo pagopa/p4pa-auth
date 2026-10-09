@@ -112,11 +112,9 @@ dependencies {
     implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
   implementation(platform("com.fasterxml.jackson:jackson-bom:$jackson2BomVersion"))
   implementation("com.fasterxml.jackson.core:jackson-core:${jackson2BomVersion}")
-  implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2BomVersion")
   implementation("com.fasterxml.jackson.core:jackson-annotations:$jackson2AnnotationsVersion")
   implementation(platform("tools.jackson:jackson-bom:$jackson3BomVersion"))
   implementation("tools.jackson.core:jackson-core:$jackson3BomVersion")
-  implementation("tools.jackson.core:jackson-databind:$jackson3BomVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
