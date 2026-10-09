@@ -11,9 +11,9 @@ plugins {
     id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
-    id("org.sonarqube") version "7.4.0.8496"
-    id("org.openapi.generator") version "7.25.0"
-    id("org.ajoberstar.grgit") version "5.3.2"
+    id("org.sonarqube") version "7.5.0.8588"
+    id("org.openapi.generator") version "7.26.0"
+    id("org.ajoberstar.grgit") version "5.3.3"
     id("com.gorylenko.gradle-git-properties") version "4.0.1"
     id("com.github.jk1.dependency-license-report") version "3.1.4"
 }
@@ -51,7 +51,7 @@ repositories {
 }
 
 val springDocOpenApiVersion = "3.1.1"
-val openApiToolsVersion = "0.2.11"
+val openApiToolsVersion = "0.2.12"
 val javaJwtVersion = "4.6.1"
 val jwksRsaVersion = "0.24.1"
 val nimbusJoseJwtVersion = "10.10"
@@ -64,13 +64,14 @@ val httpClientVersion = "5.6.4"
 val httpCoreVersion = "5.4.4"
 val kafkaAppender = "0.2.0-RC2"
 val lz4JavaVersion = "1.12.0"
-val commonsLang3Version = "3.20.0"
+val commonsLang3Version = "3.21.0"
 val podamVersion = "8.0.2.RELEASE"
 
 // CVE Security dependencies
 val tomcatEmbedCoreVersion = "11.0.26"
-val jackson2DatabindVersion = "2.22.3"
-val jackson3DatabindVersion = "3.1.7"
+val jackson2BomVersion = "2.22.3"
+val jackson2AnnotationsVersion = "2.22"
+val jackson3BomVersion = "3.2.3"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -87,6 +88,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion") {
         exclude(group = "org.apache.commons", module = "commons-lang3")
+        exclude(group = "tools.jackson.core", module = "jackson-core")
     }
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
@@ -108,8 +110,13 @@ dependencies {
 
     // CVE Security dependencies
     implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2DatabindVersion")
-    implementation("tools.jackson.core:jackson-databind:$jackson3DatabindVersion")
+  implementation(platform("com.fasterxml.jackson:jackson-bom:$jackson2BomVersion"))
+  implementation("com.fasterxml.jackson.core:jackson-core:${jackson2BomVersion}")
+  implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2BomVersion")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:$jackson2AnnotationsVersion")
+  implementation(platform("tools.jackson:jackson-bom:$jackson3BomVersion"))
+  implementation("tools.jackson.core:jackson-core:$jackson3BomVersion")
+  implementation("tools.jackson.core:jackson-databind:$jackson3BomVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
