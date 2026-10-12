@@ -10,9 +10,9 @@ plugins {
     id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
-    id("org.sonarqube") version "7.4.0.8496"
-    id("org.openapi.generator") version "7.25.0"
-    id("org.ajoberstar.grgit") version "5.3.2"
+    id("org.sonarqube") version "7.5.0.8588"
+    id("org.openapi.generator") version "7.26.0"
+    id("org.ajoberstar.grgit") version "5.3.3"
     id("com.gorylenko.gradle-git-properties") version "4.0.1"
     id("com.github.jk1.dependency-license-report") version "3.1.4"
 }
@@ -50,7 +50,7 @@ repositories {
 }
 
 val springDocOpenApiVersion = "3.1.1"
-val openApiToolsVersion = "0.2.11"
+val openApiToolsVersion = "0.2.12"
 val javaJwtVersion = "4.6.1"
 val jwksRsaVersion = "0.24.1"
 val nimbusJoseJwtVersion = "10.10"
@@ -59,11 +59,11 @@ val wiremockVersion = "3.13.2"
 val bouncycastleVersion = "1.86"
 val micrometerVersion = "1.7.1"
 val caffeineVersion = "3.3.0"
-val httpClientVersion = "5.6.4"
+val httpClientVersion = "5.6.5"
 val httpCoreVersion = "5.4.4"
 val kafkaAppender = "0.2.0-RC2"
 val lz4JavaVersion = "1.12.0"
-val commonsLang3Version = "3.20.0"
+val commonsLang3Version = "3.21.0"
 val podamVersion = "8.0.2.RELEASE"
 
 // CVE Security dependencies
