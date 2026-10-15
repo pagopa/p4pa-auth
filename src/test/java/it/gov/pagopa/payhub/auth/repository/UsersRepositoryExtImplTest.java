@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.repository;
 
+import it.gov.pagopa.payhub.auth.dto.UserWithOperator;
 import it.gov.pagopa.payhub.auth.model.User;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -85,6 +89,8 @@ class UsersRepositoryExtImplTest extends BaseMongoRepositoryTest {
         String fiscalCode = "FISCALCODE";
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
+        List<String> mappedExternalUserIdsToExclude = List.of("mappedExternalUserId");
+
         List<User> users = Collections.singletonList(User.builder().firstName(firstName).lastName(lastName).fiscalCode(fiscalCode).build());
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -92,13 +98,14 @@ class UsersRepositoryExtImplTest extends BaseMongoRepositoryTest {
                 .addCriteria(Criteria.where("fiscalCode").is(fiscalCode))
                 .addCriteria(Criteria.where("firstName").is(firstName))
                 .addCriteria(Criteria.where("lastName").is(lastName))
+                .addCriteria(Criteria.where("mappedExternalUserId").nin(mappedExternalUserIdsToExclude))
                 .with(pageable);
 
         Mockito.when(mongoTemplateMock.count(Mockito.any(Query.class), Mockito.eq(User.class))).thenReturn(1L);
         Mockito.when(mongoTemplateMock.find(Mockito.any(Query.class), Mockito.eq(User.class))).thenReturn(users);
 
         // When
-        Page<User> result = repository.retrieveUsers(fiscalCode, firstName, lastName, pageable);
+        Page<User> result = repository.retrieveUsers(fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageable);
 
         // Verify
         Mockito.verify(mongoTemplateMock).count(expectedQuery, User.class);
@@ -124,7 +131,7 @@ class UsersRepositoryExtImplTest extends BaseMongoRepositoryTest {
         Mockito.when(mongoTemplateMock.find(Mockito.any(Query.class), Mockito.eq(User.class))).thenReturn(users);
 
         // When
-        Page<User> result = repository.retrieveUsers(null, null, null, pageable);
+        Page<User> result = repository.retrieveUsers(null, null, null, null,pageable);
 
         // Verify
         Mockito.verify(mongoTemplateMock).count(expectedQuery, User.class);
@@ -133,5 +140,74 @@ class UsersRepositoryExtImplTest extends BaseMongoRepositoryTest {
         Assertions.assertEquals(1, result.getTotalElements());
         Assertions.assertEquals(users, result.getContent());
         Assertions.assertEquals(pageable, result.getPageable());
+    }
+
+    @Test
+    void givenValidCriteriaWhenFindUsersWithOperatorThenReturnPagedData() {
+        String organizationIpaCode = "ORG_IPA";
+        String fiscalCode = "FISCALCODE";
+        String firstName = "FIRSTNAME";
+        String lastName = "LASTNAME";
+        List<String> mappedExternalUserIdsToExclude = List.of("mappedExternalUserId");
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Document countDoc = new Document("totalElements", 1);
+        AggregationResults<Document> countResults = new AggregationResults<>(List.of(countDoc), new Document());
+        Mockito.when(mongoTemplateMock.aggregate(Mockito.any(Aggregation.class), Mockito.eq(User.class), Mockito.eq(Document.class)))
+                .thenReturn(countResults);
+
+        UserWithOperator expectedUser = new UserWithOperator();
+        AggregationResults<UserWithOperator> dataResults = new AggregationResults<>(List.of(expectedUser), new Document());
+        Mockito.when(mongoTemplateMock.aggregate(Mockito.any(Aggregation.class), Mockito.eq(User.class), Mockito.eq(UserWithOperator.class)))
+                .thenReturn(dataResults);
+
+        Page<UserWithOperator> result = repository.findUsersWithOperator(
+                organizationIpaCode, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageable
+        );
+
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals(1, result.getContent().size());
+        Assertions.assertSame(expectedUser, result.getContent().getFirst());
+    }
+
+    @Test
+    void givenZeroMatchingUsersWhenFindUsersWithOperatorThenReturnEmptyPage() {
+        String organizationIpaCode = "ORG_IPA";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        AggregationResults<Document> countResults = new AggregationResults<>(Collections.emptyList(), new Document());
+        Mockito.when(mongoTemplateMock.aggregate(Mockito.any(Aggregation.class), Mockito.eq(User.class), Mockito.eq(Document.class)))
+                .thenReturn(countResults);
+
+        Page<UserWithOperator> result = repository.findUsersWithOperator(
+                organizationIpaCode, "FISCALCODE", "FIRSTNAME", "LASTNAME", null, pageable
+        );
+
+        Assertions.assertEquals(0, result.getTotalElements());
+        Assertions.assertTrue(result.getContent().isEmpty());
+    }
+
+    @Test
+    void givenNoOptionalCriteriaAndSortedPageableWhenFindUsersWithOperatorThenReturnPagedData() {
+        String organizationIpaCode = "ORG_IPA";
+        Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.ASC, "fiscalCode"));
+
+        Document countDoc = new Document("totalElements", 12);
+        AggregationResults<Document> countResults = new AggregationResults<>(List.of(countDoc), new Document());
+        Mockito.when(mongoTemplateMock.aggregate(Mockito.any(Aggregation.class), Mockito.eq(User.class), Mockito.eq(Document.class)))
+                .thenReturn(countResults);
+
+        UserWithOperator expectedUser1 = new UserWithOperator();
+        UserWithOperator expectedUser2 = new UserWithOperator();
+        AggregationResults<UserWithOperator> dataResults = new AggregationResults<>(List.of(expectedUser1, expectedUser2), new Document());
+        Mockito.when(mongoTemplateMock.aggregate(Mockito.any(Aggregation.class), Mockito.eq(User.class), Mockito.eq(UserWithOperator.class)))
+                .thenReturn(dataResults);
+
+        Page<UserWithOperator> result = repository.findUsersWithOperator(
+                organizationIpaCode, null, null, null, Collections.emptyList(), pageable
+        );
+
+        Assertions.assertEquals(12, result.getTotalElements());
+        Assertions.assertEquals(2, result.getContent().size());
     }
 }

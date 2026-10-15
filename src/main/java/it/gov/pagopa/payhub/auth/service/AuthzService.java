@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface AuthzService {
     Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, Pageable pageRequest);
 
-    Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode, String firstName, String lastName, Pageable pageRequest);
+    Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode, String firstName, String lastName, List<String> mappedExternalUserIdsToExclude, Pageable pageRequest);
 
     OperatorDTO getOrganizationOperator(String organizationIpaCode, String mappedExternalUserId);
 

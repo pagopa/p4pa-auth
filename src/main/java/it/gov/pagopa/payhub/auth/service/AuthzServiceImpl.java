@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.dto.UserWithOperator;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.exception.custom.UserNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,14 +59,15 @@ public class AuthzServiceImpl implements AuthzService {
 
     @Override
     public Page<OperatorDTO> getOrganizationOperators(String organizationIpaCode, String fiscalCode,
-        String firstName, String lastName, Pageable pageRequest) {
-        Page<User> users = usersRepository.retrieveUsers(fiscalCode, firstName, lastName, pageRequest);
-       return new PageImpl<>(users.stream().map(user -> {
-            Optional<Operator> operator = operatorsRepository.findById(user.getUserId()+organizationIpaCode);
-         return operator.map(value -> operatorDTOMapper.apply(user, value)).orElse(null);
-       }).filter(Objects::nonNull).toList(),
-           pageRequest,
-           users.getTotalElements());
+        String firstName, String lastName, List<String> mappedExternalUserIdsToExclude, Pageable pageRequest) {
+        Page<UserWithOperator> usersWithOperators = usersRepository.findUsersWithOperator(
+                organizationIpaCode, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest);
+
+        List<OperatorDTO> operatorDTOs = usersWithOperators.getContent().stream()
+                .map(uwo -> operatorDTOMapper.apply(uwo, uwo.getOperator()))
+                .toList();
+
+        return new PageImpl<>(operatorDTOs, pageRequest, usersWithOperators.getTotalElements());
     }
 
     @Override

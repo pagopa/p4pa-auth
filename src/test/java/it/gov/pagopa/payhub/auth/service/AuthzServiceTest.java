@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
+import it.gov.pagopa.payhub.auth.dto.UserWithOperator;
 import it.gov.pagopa.payhub.auth.exception.custom.OperatorNotFoundException;
 import it.gov.pagopa.payhub.auth.model.Operator;
 import it.gov.pagopa.payhub.auth.model.User;
@@ -97,6 +98,9 @@ class AuthzServiceTest {
         String userId = "USERID";
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
+
+        List<String> mappedExternalUserIdsToExclude = List.of("mappedExternalUserId");
+
         Pageable pageRequest = PageRequest.of(0, 1);
 
         User user = new User();
@@ -108,18 +112,26 @@ class AuthzServiceTest {
         operator.setUserId(userId);
         operator.setOperatorId(userId+organizationIpaCode);
 
+        UserWithOperator userWithOperator = new UserWithOperator();
+        userWithOperator.setFiscalCode(fiscalCode);
+        userWithOperator.setUserId(userId);
+        userWithOperator.setFirstName(firstName);
+        userWithOperator.setLastName(lastName);
+        userWithOperator.setOperator(operator);
+
         OperatorDTO operatorDTO = new OperatorDTO();
         operatorDTO.setOperatorId(operator.getOperatorId());
         operatorDTO.setUserId(user.getUserId());
 
-        Page<User> userPage = new PageImpl<>(List.of(user), pageRequest, 1);
+        Page<UserWithOperator> userPage = new PageImpl<>(List.of(userWithOperator), pageRequest, 1);
 
-        Mockito.when(usersRepository.retrieveUsers(fiscalCode, firstName, lastName, pageRequest)).thenReturn(userPage);
-        Mockito.when(operatorsRepository.findById(userId +organizationIpaCode)).thenReturn(Optional.of(operator));
-        Mockito.when(operatorDTOMapper.apply(user, operator)).thenReturn(operatorDTO);
+        Mockito.when(usersRepository.findUsersWithOperator(
+                organizationIpaCode, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest
+        )).thenReturn(userPage);
+        Mockito.when(operatorDTOMapper.apply(userWithOperator, operator)).thenReturn(operatorDTO);
 
         // When
-        Page<OperatorDTO> result = service.getOrganizationOperators(organizationIpaCode, fiscalCode, firstName, lastName, pageRequest);
+        Page<OperatorDTO> result = service.getOrganizationOperators(organizationIpaCode, fiscalCode, firstName, lastName, mappedExternalUserIdsToExclude, pageRequest);
 
         // Then
         assertEquals(1, result.getTotalElements());

@@ -114,6 +114,7 @@ class AuthzControllerTest {
         String fiscalCode = "FISCALCODE";
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
+        List<String> mappedExternalUserIdsToExclude = List.of("mappedExternalUserId");
 
         when(authnServiceMock.getUserInfo("accessToken"))
             .thenReturn(UserInfo.builder()
@@ -135,7 +136,7 @@ class AuthzControllerTest {
         );
         when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
         when(authzServiceMock.getOrganizationOperators(organizationIpaCode, fiscalCode,
-                firstName, lastName, pageRequest))
+                firstName, lastName, mappedExternalUserIdsToExclude, pageRequest))
             .thenReturn(expectedResult);
 
         mockMvc.perform(
@@ -143,6 +144,7 @@ class AuthzControllerTest {
                     .param("fiscalCode", fiscalCode)
                     .param("firstName", firstName)
                     .param("lastName", lastName)
+                        .param("mappedExternalUserIdsToExclude", mappedExternalUserIdsToExclude.toArray(new String[0]))
                     .param("page", "4")
                     .param("size", "1")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
