@@ -89,6 +89,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion") {
         exclude(group = "org.apache.commons", module = "commons-lang3")
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
     }
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
@@ -113,6 +114,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2DatabindVersion")
     implementation("tools.jackson.core:jackson-databind:$jackson3DatabindVersion")
     implementation("tools.jackson.core:jackson-core:$jacksonCoreVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonCoreVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
