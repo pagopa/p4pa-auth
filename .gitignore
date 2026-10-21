@@ -43,3 +43,9 @@ out/
 .github/terraform/.terraform/*
 *.tfstate
 *.tfstate.*
+
+######################
+# Mac OSX
+######################
+.DS_Store
+.svn
