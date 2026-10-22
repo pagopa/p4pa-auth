@@ -112,4 +112,29 @@ class LogoutServiceTest {
         Mockito.verify(validateExternalTokenServiceMock).validateClient(clientId);
         Mockito.verify(tokenStoreServiceMock).deleteRefreshToken(refreshToken);
     }
+
+    @Test
+    void givenInvalidTokenTypeWhenLogoutThenOk(){
+        // Given
+        String clientId = "clientId";
+        String refreshToken = "refreshToken";
+        DecodedJWT decodedJWTMock = mock(DecodedJWT.class);
+
+        Map<String, Claim> claimsMap = new HashMap<>();
+        Claim typClaim = mock(Claim.class);
+        when(typClaim.asString()).thenReturn("UNKNOWN");
+        claimsMap.put("typ", typClaim);
+
+        when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
+
+        mockedJWT.when(() -> JWT.decode(refreshToken)).thenReturn(decodedJWTMock);
+
+        // When
+        service.logout(clientId, refreshToken);
+
+        // Then
+        Mockito.verify(validateExternalTokenServiceMock).validateClient(clientId);
+        Mockito.verify(tokenStoreServiceMock, Mockito.never()).delete(Mockito.anyString());
+        Mockito.verify(tokenStoreServiceMock, Mockito.never()).deleteRefreshToken(Mockito.anyString());
+    }
 }

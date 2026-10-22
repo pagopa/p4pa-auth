@@ -8,12 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.time.Duration;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -99,5 +102,43 @@ class TokenStoreServiceTest {
 
         // Then
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void givenInvalidRefreshTokenWhenDeleteRefreshTokenThenNull(){
+        // Given
+        String refreshToken = "RefreshToken";
+
+        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        Mockito.when(valueOperations.get(RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" +refreshToken)).thenReturn(null);
+
+        // When
+        service.deleteRefreshToken(refreshToken);
+
+        // Then
+        Mockito.verify(redisTemplate, Mockito.never())
+                .delete(anyList());
+    }
+
+    @Test
+    void givenAccessAndRefreshTokenWhenDeleteRefreshTokenThenNull(){
+        // Given
+        IamUserInfoDTO userInfo = new IamUserInfoDTO();
+        String accessToken = "AccessToken";
+        String refreshToken = "RefreshToken";
+        AuthenticatedIamUserInfoDTO refreshUserInfo = new AuthenticatedIamUserInfoDTO(userInfo, accessToken);
+
+        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        Mockito.when(valueOperations.get(RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" +refreshToken)).thenReturn(refreshUserInfo);
+
+        // When
+        service.deleteRefreshToken(refreshToken);
+
+        // Then
+        Mockito.verify(redisTemplate, Mockito.times(1))
+                .delete(List.of(
+                        RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" + refreshToken,
+                        RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + accessToken
+                ));
     }
 }

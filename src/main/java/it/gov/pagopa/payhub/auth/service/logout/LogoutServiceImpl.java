@@ -36,9 +36,10 @@ public class LogoutServiceImpl implements LogoutService {
         String tokenType = claims.get("typ").asString();
         if(REFRESH_TOKEN_TYPE.equals(tokenType)) {
             tokenStoreService.deleteRefreshToken(token);
+            auditService.log(AuditEventType.LOGOUT, null, "Logout - access token");
         } else if(ACCESS_TOKEN_TYPE.equals(tokenType)) {
             tokenStoreService.delete(token);
+            auditService.log(AuditEventType.LOGOUT, null, "Logout - session");
         }
-        auditService.log(AuditEventType.LOGOUT, null, "Logout");
     }
 }
