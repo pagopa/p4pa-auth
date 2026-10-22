@@ -14,14 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LogoutServiceTest {
@@ -57,7 +55,7 @@ class LogoutServiceTest {
         String token = "token";
 
         InvalidExchangeClientException expectedException = new InvalidExchangeClientException("ERRORCODE", "");
-        Mockito.doThrow(expectedException)
+        doThrow(expectedException)
                         .when(validateExternalTokenServiceMock).validateClient(clientId);
 
         // When, Then
@@ -85,8 +83,8 @@ class LogoutServiceTest {
         service.logout(clientId, accessToken);
 
         // Then
-        Mockito.verify(validateExternalTokenServiceMock).validateClient(clientId);
-        Mockito.verify(tokenStoreServiceMock).delete(accessToken);
+        verify(validateExternalTokenServiceMock).validateClient(clientId);
+        verify(tokenStoreServiceMock).delete(accessToken);
     }
 
     @Test
@@ -109,8 +107,8 @@ class LogoutServiceTest {
         service.logout(clientId, refreshToken);
 
         // Then
-        Mockito.verify(validateExternalTokenServiceMock).validateClient(clientId);
-        Mockito.verify(tokenStoreServiceMock).deleteRefreshToken(refreshToken);
+        verify(validateExternalTokenServiceMock).validateClient(clientId);
+        verify(tokenStoreServiceMock).deleteRefreshToken(refreshToken);
     }
 
     @Test
@@ -133,8 +131,8 @@ class LogoutServiceTest {
         service.logout(clientId, refreshToken);
 
         // Then
-        Mockito.verify(validateExternalTokenServiceMock).validateClient(clientId);
-        Mockito.verify(tokenStoreServiceMock, Mockito.never()).delete(Mockito.anyString());
-        Mockito.verify(tokenStoreServiceMock, Mockito.never()).deleteRefreshToken(Mockito.anyString());
+        verify(validateExternalTokenServiceMock).validateClient(clientId);
+        verify(tokenStoreServiceMock, never()).delete(anyString());
+        verify(tokenStoreServiceMock, never()).deleteRefreshToken(anyString());
     }
 }
