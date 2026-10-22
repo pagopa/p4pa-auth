@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.AuthenticatedIamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.mapper.Client2UserInfoMapper;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
@@ -76,8 +77,13 @@ public class ExchangeTokenServiceImpl implements ExchangeTokenService {
         iamUser.setIssuedAt(Utilities.nowInSeconds());
 
         AccessToken accessToken = accessTokenBuilderService.build(iamUser);
+
+        AuthenticatedIamUserInfoDTO authenticatedIamUserInfoDTO = new AuthenticatedIamUserInfoDTO();
+        authenticatedIamUserInfoDTO.setIamUserInfo(iamUser);
+        authenticatedIamUserInfoDTO.setAccessToken(accessToken.getAccessToken());
+
         tokenStoreService.save(accessToken.getAccessToken(), iamUser);
-        tokenStoreService.saveRefreshToken(accessToken.getRefreshToken(), iamUser);
+        tokenStoreService.saveRefreshToken(accessToken.getRefreshToken(), authenticatedIamUserInfoDTO);
         return accessToken;
     }
 

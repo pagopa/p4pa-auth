@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.AuthenticatedIamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
@@ -39,30 +39,34 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         }
         validateRefreshTokenService.validate(clientId, refreshToken);
 
-        IamUserInfoDTO userInfo = tokenStoreService.loadRefreshToken(refreshToken);
+        AuthenticatedIamUserInfoDTO userInfo = tokenStoreService.loadRefreshToken(refreshToken);
         if (userInfo == null) {
             throw new InvalidAccessTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "RefreshToken not found");
         }
 
         long nowSeconds = Utilities.nowInSeconds();
-        if (userInfo.getIssuedAt() == null) {
-            userInfo.setIssuedAt(nowSeconds);
+        if (userInfo.getIamUserInfo().getIssuedAt() == null) {
+            userInfo.getIamUserInfo().setIssuedAt(nowSeconds);
         }
 
-        long elapsedTime = nowSeconds - userInfo.getIssuedAt();
+        long elapsedTime = nowSeconds - userInfo.getIamUserInfo().getIssuedAt();
         int remainingSessionLifetime = (int) (maxSessionLifetimeSeconds - elapsedTime);
 
         if (remainingSessionLifetime <= 0) {
-            log.warn("Max session lifetime reached for user {}. Invalidating session.", userInfo.getMappedExternalUserId());
+            log.warn("Max session lifetime reached for user {}. Invalidating session.", userInfo.getIamUserInfo().getMappedExternalUserId());
             tokenStoreService.deleteRefreshToken(refreshToken);
             throw new InvalidAccessTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "Session expired, re-authentication required");
         }
 
         tokenStoreService.deleteRefreshToken(refreshToken);
-        AccessToken newAccessToken = accessTokenBuilderService.build(userInfo, null, remainingSessionLifetime, true);
+        AccessToken newAccessToken = accessTokenBuilderService.build(userInfo.getIamUserInfo(), null, remainingSessionLifetime, true);
 
-        tokenStoreService.save(newAccessToken.getAccessToken(), userInfo);
-        tokenStoreService.saveRefreshToken(newAccessToken.getRefreshToken(), userInfo, remainingSessionLifetime);
+        AuthenticatedIamUserInfoDTO authenticatedIamUserInfoDTO = new AuthenticatedIamUserInfoDTO();
+        authenticatedIamUserInfoDTO.setAccessToken(newAccessToken.getAccessToken());
+        authenticatedIamUserInfoDTO.setIamUserInfo(userInfo.getIamUserInfo());
+
+        tokenStoreService.save(newAccessToken.getAccessToken(), userInfo.getIamUserInfo());
+        tokenStoreService.saveRefreshToken(newAccessToken.getRefreshToken(), authenticatedIamUserInfoDTO, remainingSessionLifetime);
 
         return newAccessToken;
     }

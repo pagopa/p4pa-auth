@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.config.RedisConfig;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.AuthenticatedIamUserInfoDTO;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -10,13 +12,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service
 @CacheConfig(cacheNames = RedisConfig.CACHE_NAME_ACCESS_TOKEN, cacheManager = "redisCacheManager")
 class TokenStoreServiceImpl implements  TokenStoreService{
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public TokenStoreServiceImpl(RedisTemplate<String, Object> redisTemplate) {
+    public TokenStoreServiceImpl(@Qualifier("refreshTokenRedisTemplate") RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
@@ -40,12 +43,12 @@ class TokenStoreServiceImpl implements  TokenStoreService{
 
     @Override
     @CachePut(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN, key = "#refreshToken")
-    public IamUserInfoDTO saveRefreshToken(String refreshToken, IamUserInfoDTO idTokenClaims) {
+    public AuthenticatedIamUserInfoDTO saveRefreshToken(String refreshToken, AuthenticatedIamUserInfoDTO idTokenClaims) {
         return idTokenClaims;
     }
 
     @Override
-    public IamUserInfoDTO saveRefreshToken(String refreshToken, IamUserInfoDTO idTokenClaims, long ttlInSeconds) {
+    public AuthenticatedIamUserInfoDTO saveRefreshToken(String refreshToken, AuthenticatedIamUserInfoDTO idTokenClaims, long ttlInSeconds) {
         String key = RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" + refreshToken;
         redisTemplate.opsForValue().set(key, idTokenClaims, Duration.ofSeconds(ttlInSeconds));
         return idTokenClaims;
@@ -53,13 +56,20 @@ class TokenStoreServiceImpl implements  TokenStoreService{
 
     @Override
     @Cacheable(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN, unless="#result == null")
-    public IamUserInfoDTO loadRefreshToken(String refreshToken) {
+    public AuthenticatedIamUserInfoDTO loadRefreshToken(String refreshToken) {
         return null;
     }
 
     @Override
-    @CacheEvict(cacheNames = RedisConfig.CACHE_NAME_REFRESH_TOKEN)
     public void deleteRefreshToken(String refreshToken) {
-        // Do Nothing
+        String refreshTokenKey = RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" + refreshToken;
+        AuthenticatedIamUserInfoDTO authenticatedIamUserInfoDTO = (AuthenticatedIamUserInfoDTO) redisTemplate.opsForValue().get(refreshTokenKey);
+        if (authenticatedIamUserInfoDTO ==null)
+            return;
+        String accessTokenKey = RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + authenticatedIamUserInfoDTO.getAccessToken();
+        redisTemplate.delete(List.of(
+                refreshTokenKey,
+                accessTokenKey
+        ));
     }
 }

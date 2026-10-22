@@ -1,19 +1,32 @@
 package it.gov.pagopa.payhub.auth.service.logout;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeClientException;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class LogoutServiceTest {
+    private static final String ACCESS_TOKEN_TYPE = "access_token";
+    private static final String REFRESH_TOKEN_TYPE = "refresh_token";
 
     @Mock
     private ValidateExternalTokenService validateExternalTokenServiceMock;
@@ -22,11 +35,19 @@ class LogoutServiceTest {
     @Mock
     private AuditLoggerService auditServiceMock;
 
+    private MockedStatic<JWT> mockedJWT;
+
     private LogoutService service;
 
     @BeforeEach
     void init(){
         service = new LogoutServiceImpl(validateExternalTokenServiceMock, tokenStoreServiceMock, auditServiceMock);
+        mockedJWT = mockStatic(JWT.class);
+    }
+
+    @AfterEach
+    void close() {
+        mockedJWT.close();
     }
 
     @Test
@@ -45,16 +66,50 @@ class LogoutServiceTest {
     }
 
     @Test
-    void givenCompleteRequestWhenLogoutThenOk(){
+    void givenValidClientIdAndAccessTokenWhenLogoutThenOk(){
         // Given
         String clientId = "clientId";
-        String token = "token";
+        String accessToken = "accessToken";
+        DecodedJWT decodedJWTMock = mock(DecodedJWT.class);
+
+        Map<String, Claim> claimsMap = new HashMap<>();
+        Claim typClaim = mock(Claim.class);
+        when(typClaim.asString()).thenReturn(ACCESS_TOKEN_TYPE);
+        claimsMap.put("typ", typClaim);
+
+        when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
+
+        mockedJWT.when(() -> JWT.decode(accessToken)).thenReturn(decodedJWTMock);
 
         // When
-        service.logout(clientId, token);
+        service.logout(clientId, accessToken);
 
         // Then
         Mockito.verify(validateExternalTokenServiceMock).validateClient(clientId);
-        Mockito.verify(tokenStoreServiceMock).delete(token);
+        Mockito.verify(tokenStoreServiceMock).delete(accessToken);
+    }
+
+    @Test
+    void givenValidClientIdAndRefreshTokenWhenLogoutThenOk(){
+        // Given
+        String clientId = "clientId";
+        String refreshToken = "refreshToken";
+        DecodedJWT decodedJWTMock = mock(DecodedJWT.class);
+
+        Map<String, Claim> claimsMap = new HashMap<>();
+        Claim typClaim = mock(Claim.class);
+        when(typClaim.asString()).thenReturn(REFRESH_TOKEN_TYPE);
+        claimsMap.put("typ", typClaim);
+
+        when(decodedJWTMock.getClaims()).thenReturn(claimsMap);
+
+        mockedJWT.when(() -> JWT.decode(refreshToken)).thenReturn(decodedJWTMock);
+
+        // When
+        service.logout(clientId, refreshToken);
+
+        // Then
+        Mockito.verify(validateExternalTokenServiceMock).validateClient(clientId);
+        Mockito.verify(tokenStoreServiceMock).deleteRefreshToken(refreshToken);
     }
 }
