@@ -71,6 +71,7 @@ class HttpClientErrorJsonBodyHandlerTest {
       Assertions.assertEquals("APPNAME_BAD_REQUEST", result.getCode());
       Assertions.assertEquals("400 Bad Request on GET request for \"http://www.sample.com\": [no body]", result.getMessage());
       Assertions.assertNull(result.getFields());
+      Assertions.assertEquals("", result.getBody());
     }
   }
 
