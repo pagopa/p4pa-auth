@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class AuthenticatedIamUserInfoDTO {
+public class RefreshTokenSessionDTO {
     private IamUserInfoDTO iamUserInfo;
     private String accessToken;
 }

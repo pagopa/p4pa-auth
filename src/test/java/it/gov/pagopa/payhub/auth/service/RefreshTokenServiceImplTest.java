@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.dto.AuthenticatedIamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
@@ -36,7 +36,7 @@ class RefreshTokenServiceImplTest {
     private final String refreshToken = "valid-refresh-token-string";
 
     private IamUserInfoDTO mockUserInfo;
-    private AuthenticatedIamUserInfoDTO mockRefreshUserInfo;
+    private RefreshTokenSessionDTO mockRefreshUserInfo;
     private AccessToken mockAccessToken;
 
     @BeforeEach
@@ -53,7 +53,7 @@ class RefreshTokenServiceImplTest {
         mockAccessToken.setAccessToken("new-access-token");
         mockAccessToken.setRefreshToken("new-refresh-token");
 
-        mockRefreshUserInfo = new AuthenticatedIamUserInfoDTO();
+        mockRefreshUserInfo = new RefreshTokenSessionDTO();
         mockRefreshUserInfo.setIamUserInfo(mockUserInfo);
         mockRefreshUserInfo.setAccessToken("new-access-token");
     }

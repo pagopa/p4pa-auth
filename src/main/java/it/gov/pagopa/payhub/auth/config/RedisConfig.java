@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.auth.config;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
-import it.gov.pagopa.payhub.auth.dto.AuthenticatedIamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
@@ -51,7 +51,7 @@ public class RedisConfig {
                 )
                 .withCacheConfiguration(CACHE_NAME_REFRESH_TOKEN,
                         RedisCacheConfiguration.defaultCacheConfig()
-                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JacksonJsonRedisSerializer<>(jsonMapper, AuthenticatedIamUserInfoDTO.class)))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JacksonJsonRedisSerializer<>(jsonMapper, RefreshTokenSessionDTO.class)))
                                 .entryTtl(Duration.ofSeconds(refreshTokenExpirationSeconds))
                                 .disableCachingNullValues()
                 );
@@ -64,8 +64,8 @@ public class RedisConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
-        JacksonJsonRedisSerializer<AuthenticatedIamUserInfoDTO> serializer =
-                new JacksonJsonRedisSerializer<>(jsonMapper, AuthenticatedIamUserInfoDTO.class);
+        JacksonJsonRedisSerializer<RefreshTokenSessionDTO> serializer =
+                new JacksonJsonRedisSerializer<>(jsonMapper, RefreshTokenSessionDTO.class);
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);

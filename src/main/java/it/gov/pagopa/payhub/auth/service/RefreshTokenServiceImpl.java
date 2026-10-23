@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.auth.service;
 
-import it.gov.pagopa.payhub.auth.dto.AuthenticatedIamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
@@ -39,7 +39,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         }
         validateRefreshTokenService.validate(clientId, refreshToken);
 
-        AuthenticatedIamUserInfoDTO userInfo = tokenStoreService.loadRefreshToken(refreshToken);
+        RefreshTokenSessionDTO userInfo = tokenStoreService.loadRefreshToken(refreshToken);
         if (userInfo == null) {
             throw new InvalidAccessTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "RefreshToken not found");
         }
@@ -61,12 +61,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         tokenStoreService.deleteRefreshToken(refreshToken);
         AccessToken newAccessToken = accessTokenBuilderService.build(userInfo.getIamUserInfo(), null, remainingSessionLifetime, true);
 
-        AuthenticatedIamUserInfoDTO authenticatedIamUserInfoDTO = new AuthenticatedIamUserInfoDTO();
-        authenticatedIamUserInfoDTO.setAccessToken(newAccessToken.getAccessToken());
-        authenticatedIamUserInfoDTO.setIamUserInfo(userInfo.getIamUserInfo());
+        RefreshTokenSessionDTO refreshTokenSessionDTO = new RefreshTokenSessionDTO();
+        refreshTokenSessionDTO.setAccessToken(newAccessToken.getAccessToken());
+        refreshTokenSessionDTO.setIamUserInfo(userInfo.getIamUserInfo());
 
         tokenStoreService.save(newAccessToken.getAccessToken(), userInfo.getIamUserInfo());
-        tokenStoreService.saveRefreshToken(newAccessToken.getRefreshToken(), authenticatedIamUserInfoDTO, remainingSessionLifetime);
+        tokenStoreService.saveRefreshToken(newAccessToken.getRefreshToken(), refreshTokenSessionDTO, remainingSessionLifetime);
 
         return newAccessToken;
     }
