@@ -18,10 +18,10 @@ import java.util.List;
 @Service
 @CacheConfig(cacheNames = RedisConfig.CACHE_NAME_ACCESS_TOKEN, cacheManager = "redisCacheManager")
 class TokenStoreServiceImpl implements  TokenStoreService{
+    private final RedisTemplate<String, RefreshTokenSessionDTO> refreshTokenRedisTemplate;
     private final StringRedisTemplate tokenInvalidationRedisTemplate;
-    private final RedisTemplate<String, Object> refreshTokenRedisTemplate;
 
-    public TokenStoreServiceImpl(@Qualifier("refreshTokenRedisTemplate") RedisTemplate<String, Object> refreshTokenRedisTemplate,
+    public TokenStoreServiceImpl(@Qualifier("refreshTokenRedisTemplate") RedisTemplate<String, RefreshTokenSessionDTO> refreshTokenRedisTemplate,
                                  StringRedisTemplate tokenInvalidationRedisTemplate) {
         this.refreshTokenRedisTemplate = refreshTokenRedisTemplate;
         this.tokenInvalidationRedisTemplate = tokenInvalidationRedisTemplate;
@@ -67,7 +67,7 @@ class TokenStoreServiceImpl implements  TokenStoreService{
     @Override
     public void deleteRefreshToken(String refreshToken) {
         String refreshTokenKey = RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" + refreshToken;
-        RefreshTokenSessionDTO authenticatedIamUserInfoDTO = (RefreshTokenSessionDTO) refreshTokenRedisTemplate.opsForValue().get(refreshTokenKey);
+        RefreshTokenSessionDTO authenticatedIamUserInfoDTO = refreshTokenRedisTemplate.opsForValue().get(refreshTokenKey);
         if (authenticatedIamUserInfoDTO ==null)
             return;
         String accessTokenKey = RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + authenticatedIamUserInfoDTO.getAccessToken();

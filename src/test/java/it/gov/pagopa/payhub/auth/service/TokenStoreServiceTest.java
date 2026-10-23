@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.auth.config.RedisConfig;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,16 +23,20 @@ import static org.mockito.Mockito.*;
 class TokenStoreServiceTest {
 
     @Mock
-    private RedisTemplate<String, Object> refreshTokenRedisTemplateMock;
+    private RedisTemplate<String, RefreshTokenSessionDTO> refreshTokenRedisTemplateMock;
 
     @Mock
     private StringRedisTemplate tokenInvalidationRedisTemplateMock;
 
     @Mock
-    private ValueOperations<String, Object> valueOperations;
+    private ValueOperations<String, RefreshTokenSessionDTO> valueOperations;
 
-    @InjectMocks
     private TokenStoreServiceImpl service;
+
+    @BeforeEach
+    void setup() {
+        service = new TokenStoreServiceImpl(refreshTokenRedisTemplateMock, tokenInvalidationRedisTemplateMock);
+    }
 
     @Test
     void givenClaimsWhenSaveThenReturnThem(){

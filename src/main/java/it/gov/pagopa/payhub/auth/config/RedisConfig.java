@@ -58,14 +58,33 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> refreshTokenRedisTemplate(RedisConnectionFactory redisConnectionFactory,
+    public RedisTemplate<String, RefreshTokenSessionDTO> refreshTokenRedisTemplate(RedisConnectionFactory redisConnectionFactory,
             JsonMapper jsonMapper) {
 
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        RedisTemplate<String, RefreshTokenSessionDTO> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
         JacksonJsonRedisSerializer<RefreshTokenSessionDTO> serializer =
                 new JacksonJsonRedisSerializer<>(jsonMapper, RefreshTokenSessionDTO.class);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(serializer);
+
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, IamUserInfoDTO> accessTokenRedisTemplate(RedisConnectionFactory redisConnectionFactory,
+                                                                                   JsonMapper jsonMapper) {
+
+        RedisTemplate<String, IamUserInfoDTO> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+
+        JacksonJsonRedisSerializer<IamUserInfoDTO> serializer =
+                new JacksonJsonRedisSerializer<>(jsonMapper, IamUserInfoDTO.class);
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
