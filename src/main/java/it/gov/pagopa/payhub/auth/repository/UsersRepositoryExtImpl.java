@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class UsersRepositoryExtImpl implements UsersRepositoryExt{
 
@@ -104,13 +105,13 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
         List<Criteria> criteriaList = new ArrayList<>();
 
         if (fiscalCode != null && !fiscalCode.isEmpty()) {
-            criteriaList.add(Criteria.where("fiscalCode").is(fiscalCode));
+            criteriaList.add(caseInsensitiveCriteria("fiscalCode", fiscalCode));
         }
         if (lastName != null && !lastName.isEmpty()) {
-            criteriaList.add(Criteria.where("lastName").is(lastName));
+            criteriaList.add(caseInsensitiveCriteria("lastName", lastName));
         }
         if (firstName != null && !firstName.isEmpty()) {
-            criteriaList.add(Criteria.where("firstName").is(firstName));
+            criteriaList.add(caseInsensitiveCriteria("firstName", firstName));
         }
         if (mappedExternalUserIdsToExclude != null && !mappedExternalUserIdsToExclude.isEmpty()) {
             criteriaList.add(Criteria.where("mappedExternalUserId").nin(mappedExternalUserIdsToExclude));
@@ -172,5 +173,10 @@ public class UsersRepositoryExtImpl implements UsersRepositoryExt{
                 User.class,
                 UserWithOperator.class
         ).getMappedResults();
+    }
+
+    private Criteria caseInsensitiveCriteria(String field, String value) {
+        return Criteria.where(field)
+                .regex("^" + Pattern.quote(value) + "$", "i");
     }
 }
