@@ -3,11 +3,18 @@ package it.gov.pagopa.payhub.auth.service;
 import it.gov.pagopa.payhub.auth.config.RedisConfig;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,11 +38,19 @@ class TokenStoreServiceTest {
     @Mock
     private ValueOperations<String, RefreshTokenSessionDTO> valueOperations;
 
+    private MockedStatic<SecurityUtils> mockedSecurityUtils;
+
     private TokenStoreServiceImpl service;
 
     @BeforeEach
     void setup() {
         service = new TokenStoreServiceImpl(refreshTokenRedisTemplateMock, tokenInvalidationRedisTemplateMock);
+        mockedSecurityUtils = mockStatic(SecurityUtils.class);
+    }
+
+    @AfterEach
+    void close() {
+        mockedSecurityUtils.close();
     }
 
     @Test
@@ -61,6 +76,54 @@ class TokenStoreServiceTest {
 
         // Then
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void givenNullAccessTokenWhenDeleteThenNull(){
+        // Given
+        String accessToken = "AccessToken";
+
+        mockedSecurityUtils.when(SecurityUtils::getAccessToken).thenReturn(null);
+
+        // When
+        service.delete(accessToken);
+
+        // Then
+        verify(tokenInvalidationRedisTemplateMock, times(1))
+                .delete(RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + accessToken);
+    }
+
+    @Test
+    void givenDifferentAccessTokenWhenDeleteThenNull(){
+        // Given
+        String accessToken = "AccessToken";
+        String differentAccessToken = "differentAccessToken";
+
+        mockedSecurityUtils.when(SecurityUtils::getAccessToken).thenReturn(differentAccessToken);
+
+        // When
+        InvalidAccessTokenException invalidAccessTokenException = Assertions.assertThrows(InvalidAccessTokenException.class, () -> service.delete(accessToken));
+
+        // Then
+        Assertions.assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, invalidAccessTokenException.getCode());
+        Assertions.assertEquals("AccessToken to delete is not the same AccessToken provided as authentication", invalidAccessTokenException.getMessage());
+        verify(tokenInvalidationRedisTemplateMock, never())
+                .delete(Mockito.anyString());
+    }
+
+    @Test
+    void givenAccessTokenWhenDeleteThenNull(){
+        // Given
+        String accessToken = "AccessToken";
+
+        mockedSecurityUtils.when(SecurityUtils::getAccessToken).thenReturn(accessToken);
+
+        // When
+        service.delete(accessToken);
+
+        // Then
+        verify(tokenInvalidationRedisTemplateMock, times(1))
+                .delete(RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + accessToken);
     }
 
     @Test
@@ -111,7 +174,7 @@ class TokenStoreServiceTest {
     }
 
     @Test
-    void givenInvalidRefreshTokenWhenDeleteRefreshTokenThenNull(){
+    void givenNullRefreshTokenWhenDeleteRefreshTokenThenDoNothing(){
         // Given
         String refreshToken = "RefreshToken";
 
@@ -127,6 +190,51 @@ class TokenStoreServiceTest {
     }
 
     @Test
+    void givenNullAccessTokenWhenDeleteRefreshTokenThenNull(){
+        // Given
+        IamUserInfoDTO userInfo = new IamUserInfoDTO();
+        String accessToken = "AccessToken";
+        String refreshToken = "RefreshToken";
+        RefreshTokenSessionDTO refreshUserInfo = new RefreshTokenSessionDTO(userInfo, accessToken);
+
+        when(refreshTokenRedisTemplateMock.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.get(RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" +refreshToken)).thenReturn(refreshUserInfo);
+
+        // When
+        service.deleteRefreshToken(refreshToken);
+
+        // Then
+        verify(tokenInvalidationRedisTemplateMock, times(1))
+                .delete(List.of(
+                        RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" + refreshToken,
+                        RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + accessToken
+                ));
+    }
+
+    @Test
+    void givenNotAssociatedAccessAndRefreshTokenWhenDeleteRefreshTokenThenNull(){
+        // Given
+        IamUserInfoDTO userInfo = new IamUserInfoDTO();
+        String accessToken = "AccessToken";
+        String differentAccessToken = "differentAccessToken";
+        String refreshToken = "RefreshToken";
+        RefreshTokenSessionDTO refreshUserInfo = new RefreshTokenSessionDTO(userInfo, accessToken);
+
+        when(refreshTokenRedisTemplateMock.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.get(RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" +refreshToken)).thenReturn(refreshUserInfo);
+        mockedSecurityUtils.when(SecurityUtils::getAccessToken).thenReturn(differentAccessToken);
+
+        // When
+        InvalidTokenException invalidTokenException = Assertions.assertThrows(InvalidTokenException.class, () -> service.deleteRefreshToken(refreshToken));
+
+        // Then
+        Assertions.assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, invalidTokenException.getCode());
+        Assertions.assertEquals("RefreshToken to delete is not associated with AccessToken provided as authentication", invalidTokenException.getMessage());
+        verify(tokenInvalidationRedisTemplateMock, never())
+                .delete(anyList());
+    }
+
+    @Test
     void givenAccessAndRefreshTokenWhenDeleteRefreshTokenThenNull(){
         // Given
         IamUserInfoDTO userInfo = new IamUserInfoDTO();
@@ -136,6 +244,7 @@ class TokenStoreServiceTest {
 
         when(refreshTokenRedisTemplateMock.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" +refreshToken)).thenReturn(refreshUserInfo);
+        mockedSecurityUtils.when(SecurityUtils::getAccessToken).thenReturn(accessToken);
 
         // When
         service.deleteRefreshToken(refreshToken);
