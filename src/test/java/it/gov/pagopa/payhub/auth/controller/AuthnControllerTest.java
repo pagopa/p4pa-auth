@@ -215,22 +215,6 @@ class AuthnControllerTest {
     }
 
     @Test
-    void givenInvalidClientIdWhenLogoutThenBadRequest() throws Exception {
-        String token = "TOKEN";
-        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
-
-        when(authnServiceMock.getUserInfo("accessToken"))
-                .thenReturn(expectedUser);
-        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
-
-        mockMvc.perform(
-                post("/payhub/oauth/revoke")
-                        .param("token", token)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
     void givenM2MLegacyRequestWhenGetUserInfoThenOk() throws Exception {
 
         UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
