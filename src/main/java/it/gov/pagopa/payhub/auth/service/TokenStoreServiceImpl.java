@@ -45,7 +45,8 @@ class TokenStoreServiceImpl implements  TokenStoreService{
 
     @Override
     public void delete(String accessToken) {
-        if (StringUtils.isNotBlank(SecurityUtils.getAccessToken()) && !SecurityUtils.getAccessToken().equals(accessToken)) {
+        String currentAccessToken = SecurityUtils.getAccessToken();
+        if (StringUtils.isNotBlank(currentAccessToken) && !currentAccessToken.equals(accessToken)) {
             throw new InvalidAccessTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "AccessToken to delete is not the same AccessToken provided as authentication");
         }
         String accessTokenKey = RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + accessToken;
@@ -77,7 +78,8 @@ class TokenStoreServiceImpl implements  TokenStoreService{
         RefreshTokenSessionDTO refreshTokenSessionDTO = refreshTokenRedisTemplate.opsForValue().get(refreshTokenKey);
         if (refreshTokenSessionDTO == null)
             return;
-        if (StringUtils.isNotBlank(SecurityUtils.getAccessToken()) && !SecurityUtils.getAccessToken().equals(refreshTokenSessionDTO.getAccessToken())) {
+        String currentAccessToken = SecurityUtils.getAccessToken();
+        if (StringUtils.isNotBlank(currentAccessToken) && !currentAccessToken.equals(refreshTokenSessionDTO.getAccessToken())) {
             throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "RefreshToken to delete is not associated with AccessToken provided as authentication");
         }
         String accessTokenKey = RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + refreshTokenSessionDTO.getAccessToken();
