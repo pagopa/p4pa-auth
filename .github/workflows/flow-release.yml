@@ -32,11 +32,13 @@ jobs:
     needs: checkout
     steps:
       - name: 🚀 release + docker
-        # https://github.com/pagopa/github-actions-template/releases/tag/v2.6.1
-        uses: pagopa/github-actions-template/payments-flow-release@8e05805024deadaacb52fc78c5a52293215841dc
+        # https://github.com/pagopa/github-actions-template/releases/tag/v2.6.1 TODO update version
+        uses: pagopa/github-actions-template/payments-flow-release@469a42b766be3a6dd10ab1a6b5f596983da70b7f
         with:
           current_branch: ${{ github.ref_name }}
           produce_release_notes: ${{ case( github.ref_name == 'main', 'true', 'false') }}
+          extra_build_args: |
+            IMAGE=ghcr.io/pagopa/p4pa-automation/eclipse-temurin
 
   azure-devops-trigger:
     name: 🅰️ Azure DevOps Pipeline Trigger
