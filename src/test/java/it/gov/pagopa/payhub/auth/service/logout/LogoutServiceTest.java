@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.auth.exception.custom.InvalidExchangeClientException
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
+import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,7 @@ class LogoutServiceTest {
     private AuditLoggerService auditServiceMock;
 
     private MockedStatic<JWT> mockedJWT;
+    private MockedStatic<SecurityUtils> mockedSecurityUtils;
 
     private LogoutService service;
 
@@ -41,11 +43,13 @@ class LogoutServiceTest {
     void init(){
         service = new LogoutServiceImpl(validateExternalTokenServiceMock, tokenStoreServiceMock, auditServiceMock);
         mockedJWT = mockStatic(JWT.class);
+        mockedSecurityUtils = mockStatic(SecurityUtils.class);
     }
 
     @AfterEach
     void close() {
         mockedJWT.close();
+        mockedSecurityUtils.close();
     }
 
     @Test
@@ -134,5 +138,21 @@ class LogoutServiceTest {
         verify(validateExternalTokenServiceMock).validateClient(clientId);
         verify(tokenStoreServiceMock, never()).delete(anyString());
         verify(tokenStoreServiceMock, never()).deleteRefreshToken(anyString());
+    }
+
+    @Test
+    void givenValidClientIdAndNullAccessTokenWhenLogoutThenOk(){
+        // Given
+        String clientId = "clientId";
+        String accessToken = "accessToken";
+
+        mockedSecurityUtils.when(SecurityUtils::getAccessToken).thenReturn(accessToken);
+
+        // When
+        service.logout(clientId, null);
+
+        // Then
+        verify(validateExternalTokenServiceMock).validateClient(clientId);
+        verify(tokenStoreServiceMock).delete(accessToken);
     }
 }

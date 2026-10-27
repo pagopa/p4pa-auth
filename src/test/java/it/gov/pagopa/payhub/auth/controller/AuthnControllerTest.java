@@ -183,29 +183,34 @@ class AuthnControllerTest {
     void givenCompleteRequestWhenLogoutThenOk() throws Exception {
         String clientId = "CLIENTID";
         String token = "TOKEN";
+        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 
+        when(authnServiceMock.getUserInfo("accessToken"))
+                .thenReturn(expectedUser);
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
         doNothing().when(authnServiceMock).logout(clientId, token);
 
         mockMvc.perform(
             post("/payhub/oauth/revoke")
                 .param("client_id", clientId)
                 .param("token", token)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isOk());
     }
 
     @Test
     void givenNoClientIdWhenLogoutThenBadRequest() throws Exception {
-        mockMvc.perform(
-                post("/payhub/oauth/revoke")
-                        .param("token", "token")
-        ).andExpect(status().isBadRequest());
-    }
+        String token = "TOKEN";
+        UserInfo expectedUser = UserInfo.builder().userId("USERID").build();
 
-    @Test
-    void givenInvalidClientIdWhenLogoutThenBadRequest() throws Exception {
+        when(authnServiceMock.getUserInfo("accessToken"))
+                .thenReturn(expectedUser);
+        when(accessTokenBuilderServiceMock.getHeaderPrefix()).thenReturn("accessToken");
+
         mockMvc.perform(
                 post("/payhub/oauth/revoke")
-                        .param("token", "token")
+                        .param("token", token)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
         ).andExpect(status().isBadRequest());
     }
 

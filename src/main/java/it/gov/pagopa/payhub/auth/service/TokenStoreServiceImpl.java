@@ -3,9 +3,13 @@ package it.gov.pagopa.payhub.auth.service;
 import it.gov.pagopa.payhub.auth.config.RedisConfig;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
 import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
+import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
+import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
+import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -40,9 +44,13 @@ class TokenStoreServiceImpl implements  TokenStoreService{
     }
 
     @Override
-    @CacheEvict
     public void delete(String accessToken) {
-        //Do Nothing
+        String currentAccessToken = SecurityUtils.getAccessToken();
+        if (StringUtils.isNotBlank(currentAccessToken) && !currentAccessToken.equals(accessToken)) {
+            throw new InvalidAccessTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "AccessToken to delete is not the same AccessToken provided as authentication");
+        }
+        String accessTokenKey = RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + accessToken;
+        tokenInvalidationRedisTemplate.delete(accessTokenKey);
     }
 
     @Override
@@ -67,10 +75,14 @@ class TokenStoreServiceImpl implements  TokenStoreService{
     @Override
     public void deleteRefreshToken(String refreshToken) {
         String refreshTokenKey = RedisConfig.CACHE_NAME_REFRESH_TOKEN + "::" + refreshToken;
-        RefreshTokenSessionDTO authenticatedIamUserInfoDTO = refreshTokenRedisTemplate.opsForValue().get(refreshTokenKey);
-        if (authenticatedIamUserInfoDTO ==null)
+        RefreshTokenSessionDTO refreshTokenSessionDTO = refreshTokenRedisTemplate.opsForValue().get(refreshTokenKey);
+        if (refreshTokenSessionDTO == null)
             return;
-        String accessTokenKey = RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + authenticatedIamUserInfoDTO.getAccessToken();
+        String currentAccessToken = SecurityUtils.getAccessToken();
+        if (StringUtils.isNotBlank(currentAccessToken) && !currentAccessToken.equals(refreshTokenSessionDTO.getAccessToken())) {
+            throw new InvalidTokenException(ErrorCodeConstants.ERROR_CODE_INVALID_TOKEN, "RefreshToken to delete is not associated with AccessToken provided as authentication");
+        }
+        String accessTokenKey = RedisConfig.CACHE_NAME_ACCESS_TOKEN + "::" + refreshTokenSessionDTO.getAccessToken();
         tokenInvalidationRedisTemplate.delete(List.of(
                 refreshTokenKey,
                 accessTokenKey

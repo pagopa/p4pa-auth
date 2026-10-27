@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.auth.enums.AuditEventType;
 import it.gov.pagopa.payhub.auth.service.AuditLoggerService;
 import it.gov.pagopa.payhub.auth.service.TokenStoreService;
 import it.gov.pagopa.payhub.auth.service.exchange.ValidateExternalTokenService;
+import it.gov.pagopa.payhub.auth.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -31,15 +32,20 @@ public class LogoutServiceImpl implements LogoutService {
     @Override
     public void logout(String clientId, String token) {
         validateExternalTokenService.validateClient(clientId);
+        if(token == null) {
+            tokenStoreService.delete(SecurityUtils.getAccessToken());
+            auditService.log(AuditEventType.LOGOUT, null, "Logout - access token");
+            return;
+        }
         DecodedJWT jwt = JWT.decode(token);
         Map<String, Claim> claims = jwt.getClaims();
         String tokenType = claims.get("typ").asString();
         if(REFRESH_TOKEN_TYPE.equals(tokenType)) {
             tokenStoreService.deleteRefreshToken(token);
-            auditService.log(AuditEventType.LOGOUT, null, "Logout - access token");
+            auditService.log(AuditEventType.LOGOUT, null, "Logout - session");
         } else if(ACCESS_TOKEN_TYPE.equals(tokenType)) {
             tokenStoreService.delete(token);
-            auditService.log(AuditEventType.LOGOUT, null, "Logout - session");
+            auditService.log(AuditEventType.LOGOUT, null, "Logout - access token");
         }
     }
 }
