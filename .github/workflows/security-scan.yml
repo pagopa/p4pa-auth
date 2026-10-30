@@ -37,7 +37,6 @@ jobs:
           platforms: linux/amd64
           build-args: |
             IMAGE=ghcr.io/pagopa/p4pa-automation/eclipse-temurin
-          secrets: GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
         uses: ./.github/actions/containerScan
