@@ -62,7 +62,7 @@ class OrganizationSearchClientTest {
         when(organizationApisHolder.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
         when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "NOTFOUND", "NOTFOUND", "Not found"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "NOTFOUND", "NOTFOUND", "Not found", "BODY"));
 
         Organization result = organizationSearchClient.getOrganizationByIpaCode(orgIpaCode, accessToken);
 

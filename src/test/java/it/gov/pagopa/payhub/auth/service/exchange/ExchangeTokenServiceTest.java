@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.auth.service.exchange;
 
 import com.auth0.jwt.interfaces.Claim;
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.model.User;
 import it.gov.pagopa.payhub.auth.service.AccessTokenBuilderService;
@@ -83,6 +84,9 @@ class ExchangeTokenServiceTest {
                 .thenReturn(expectedClaims);
 
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        RefreshTokenSessionDTO refreshTokenSessionDTO = new RefreshTokenSessionDTO();
+        refreshTokenSessionDTO.setIamUserInfo(iamUserInfo);
+        refreshTokenSessionDTO.setAccessToken(ACCESS_TOKEN_STRING);
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
                 .thenReturn(iamUserInfo);
 
@@ -102,7 +106,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(expectedAccessToken.getRefreshToken(), refreshTokenSessionDTO);
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -127,6 +131,9 @@ class ExchangeTokenServiceTest {
                 .thenReturn(expectedClaims);
 
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        RefreshTokenSessionDTO refreshTokenSessionDTO = new RefreshTokenSessionDTO();
+        refreshTokenSessionDTO.setIamUserInfo(iamUserInfo);
+        refreshTokenSessionDTO.setAccessToken(ACCESS_TOKEN_STRING);
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
                 .thenReturn(iamUserInfo);
 
@@ -146,7 +153,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(expectedAccessToken.getRefreshToken(), refreshTokenSessionDTO);
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -171,6 +178,9 @@ class ExchangeTokenServiceTest {
                 .thenReturn(expectedClaims);
 
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        RefreshTokenSessionDTO refreshTokenSessionDTO = new RefreshTokenSessionDTO();
+        refreshTokenSessionDTO.setIamUserInfo(iamUserInfo);
+        refreshTokenSessionDTO.setAccessToken(ACCESS_TOKEN_STRING);
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
                 .thenReturn(iamUserInfo);
 
@@ -190,7 +200,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(expectedAccessToken.getRefreshToken(), refreshTokenSessionDTO);
         Mockito.verify(accessTokenBuilderServiceMock, Mockito.times(2)).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());
@@ -215,6 +225,9 @@ class ExchangeTokenServiceTest {
                 .thenReturn(expectedClaims);
 
         IamUserInfoDTO iamUserInfo = new IamUserInfoDTO();
+        RefreshTokenSessionDTO refreshTokenSessionDTO = new RefreshTokenSessionDTO();
+        refreshTokenSessionDTO.setIamUserInfo(iamUserInfo);
+        refreshTokenSessionDTO.setAccessToken(ACCESS_TOKEN_STRING);
         Mockito.when(idTokenClaimsMapperMock.apply(expectedClaims))
                 .thenReturn(iamUserInfo);
 
@@ -232,7 +245,7 @@ class ExchangeTokenServiceTest {
         // Then
         Assertions.assertSame(expectedAccessToken, result);
         Mockito.verify(tokenStoreServiceMock).save(Mockito.same(expectedAccessToken.getAccessToken()), Mockito.same(iamUserInfo));
-        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(Mockito.same(expectedAccessToken.getRefreshToken()), Mockito.same(iamUserInfo));
+        Mockito.verify(tokenStoreServiceMock).saveRefreshToken(expectedAccessToken.getRefreshToken(), refreshTokenSessionDTO);
         Mockito.verify(accessTokenBuilderServiceMock).build(iamUserInfo);
         Assertions.assertEquals(registeredUser.getUserId(), iamUserInfo.getInnerUserId());
         Assertions.assertEquals(registeredUser.getMappedExternalUserId(), iamUserInfo.getMappedExternalUserId());

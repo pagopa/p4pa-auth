@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.service;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidAccessTokenException;
 import it.gov.pagopa.payhub.auth.exception.custom.InvalidTokenException;
 import it.gov.pagopa.payhub.auth.utils.ErrorCodeConstants;
@@ -35,6 +36,7 @@ class RefreshTokenServiceImplTest {
     private final String refreshToken = "valid-refresh-token-string";
 
     private IamUserInfoDTO mockUserInfo;
+    private RefreshTokenSessionDTO mockRefreshUserInfo;
     private AccessToken mockAccessToken;
 
     @BeforeEach
@@ -50,6 +52,10 @@ class RefreshTokenServiceImplTest {
         mockAccessToken = new AccessToken();
         mockAccessToken.setAccessToken("new-access-token");
         mockAccessToken.setRefreshToken("new-refresh-token");
+
+        mockRefreshUserInfo = new RefreshTokenSessionDTO();
+        mockRefreshUserInfo.setIamUserInfo(mockUserInfo);
+        mockRefreshUserInfo.setAccessToken("new-access-token");
     }
 
     @AfterEach
@@ -68,7 +74,7 @@ class RefreshTokenServiceImplTest {
         long sessionIssuedAt = nowSeconds - 3600;
         mockUserInfo.setIssuedAt(sessionIssuedAt);
 
-        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
+        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockRefreshUserInfo);
         when(accessTokenBuilderService.build(eq(mockUserInfo), eq(null), anyInt(), eq(true)))
                 .thenReturn(mockAccessToken);
 
@@ -85,7 +91,7 @@ class RefreshTokenServiceImplTest {
 
         verify(accessTokenBuilderService).build(eq(mockUserInfo), eq(null), argThat(ttl -> ttl >= 82790 && ttl <= 82800), eq(true));
         verify(tokenStoreService).save("new-access-token", mockUserInfo);
-        verify(tokenStoreService).saveRefreshToken(eq("new-refresh-token"), eq(mockUserInfo), longThat(ttl -> ttl >= 82790 && ttl <= 82800));
+        verify(tokenStoreService).saveRefreshToken(eq("new-refresh-token"), eq(mockRefreshUserInfo), longThat(ttl -> ttl >= 82790 && ttl <= 82800));
     }
 
     @Test
@@ -95,7 +101,7 @@ class RefreshTokenServiceImplTest {
         long sessionIssuedAt = nowSeconds - 90000;
         mockUserInfo.setIssuedAt(sessionIssuedAt);
 
-        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
+        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockRefreshUserInfo);
 
         // When & Then
         InvalidAccessTokenException exception = assertThrows(InvalidAccessTokenException.class, () ->
@@ -156,7 +162,7 @@ class RefreshTokenServiceImplTest {
         // Given
         mockUserInfo.setIssuedAt(null);
 
-        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockUserInfo);
+        when(tokenStoreService.loadRefreshToken(refreshToken)).thenReturn(mockRefreshUserInfo);
         when(accessTokenBuilderService.build(eq(mockUserInfo), eq(null), anyInt(), eq(true)))
                 .thenReturn(mockAccessToken);
 
@@ -173,6 +179,6 @@ class RefreshTokenServiceImplTest {
 
         verify(accessTokenBuilderService).build(eq(mockUserInfo), eq(null), argThat(ttl -> ttl >= 86390 && ttl <= 86400), eq(true));
         verify(tokenStoreService).save("new-access-token", mockUserInfo);
-        verify(tokenStoreService).saveRefreshToken(eq("new-refresh-token"), eq(mockUserInfo), longThat(ttl -> ttl >= 86390 && ttl <= 86400));
+        verify(tokenStoreService).saveRefreshToken(eq("new-refresh-token"), eq(mockRefreshUserInfo), longThat(ttl -> ttl >= 86390 && ttl <= 86400));
     }
 }

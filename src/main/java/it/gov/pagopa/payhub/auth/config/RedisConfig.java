@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.auth.config;
 
 import it.gov.pagopa.payhub.auth.dto.IamUserInfoDTO;
+import it.gov.pagopa.payhub.auth.dto.RefreshTokenSessionDTO;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
@@ -50,17 +51,36 @@ public class RedisConfig {
                 )
                 .withCacheConfiguration(CACHE_NAME_REFRESH_TOKEN,
                         RedisCacheConfiguration.defaultCacheConfig()
-                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JacksonJsonRedisSerializer<>(jsonMapper, IamUserInfoDTO.class)))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JacksonJsonRedisSerializer<>(jsonMapper, RefreshTokenSessionDTO.class)))
                                 .entryTtl(Duration.ofSeconds(refreshTokenExpirationSeconds))
                                 .disableCachingNullValues()
                 );
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory,
+    public RedisTemplate<String, RefreshTokenSessionDTO> refreshTokenRedisTemplate(RedisConnectionFactory redisConnectionFactory,
             JsonMapper jsonMapper) {
 
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        RedisTemplate<String, RefreshTokenSessionDTO> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+
+        JacksonJsonRedisSerializer<RefreshTokenSessionDTO> serializer =
+                new JacksonJsonRedisSerializer<>(jsonMapper, RefreshTokenSessionDTO.class);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(serializer);
+
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, IamUserInfoDTO> accessTokenRedisTemplate(RedisConnectionFactory redisConnectionFactory,
+                                                                                   JsonMapper jsonMapper) {
+
+        RedisTemplate<String, IamUserInfoDTO> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
         JacksonJsonRedisSerializer<IamUserInfoDTO> serializer =
