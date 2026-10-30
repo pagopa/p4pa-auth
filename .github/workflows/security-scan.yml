@@ -18,6 +18,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  packages: read
   contents: read
 
 jobs:

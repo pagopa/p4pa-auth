@@ -14,6 +14,7 @@ on:
     - cron: '00 07 * * *'
 
 permissions:
+  packages: read
   contents: read
 
 jobs:
