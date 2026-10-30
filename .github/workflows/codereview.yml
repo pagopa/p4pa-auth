@@ -1,4 +1,4 @@
-name: p4pa-auth - Code Review
+name: Code Review
 
 on:
   # Running on push in order to update SonarCloud with the latest coverage report
