@@ -1,16 +1,26 @@
 name: p4pa-auth - Code Review
 
+triggering_paths: &triggering_paths
+  - 'src/**'
+  - 'gradle.lockfile'
+  - 'build.gradle'
+  - 'settings.gradle'
+  - 'gradle/**'
+
 on:
+  # Running on push in order to update SonarCloud with the latest coverage report
   push:
     branches:
       - main
       - uat
       - develop
+    paths: *triggering_paths
   pull_request:
     types:
       - opened
       - edited
       - synchronize
+    paths: *triggering_paths
 
 permissions:
   contents: read
