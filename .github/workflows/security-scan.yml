@@ -29,7 +29,13 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag localbuild/testimage:latest --build-arg IMAGE=ghcr.io/pagopa/p4pa-automation/eclipse-temurin
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          tags: localbuild/testimage:latest
+          platforms: linux/amd64
+          build-args: |
+            IMAGE=ghcr.io/pagopa/p4pa-automation/eclipse-temurin
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
         uses: ./.github/actions/containerScan
