@@ -29,6 +29,13 @@ jobs:
       CVE_HIGH: ${{env.CVE_HIGH}}
       CVE_MEDIUM: ${{env.CVE_MEDIUM}}
     steps:
+      - name: 🛃 Log in to the Github Container registry
+        # https://github.com/docker/login-action/releases/tag/v3.6.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
         uses: ./.github/actions/containerScan
