@@ -23,6 +23,7 @@ runs:
       with:
         sarif_file: 'results.sarif'
     - name: CVE Description escaped extraction and print
+      shell: bash
       run: |
         SCAN_RESULTS=$(jq -r 'try .runs[0].tool.driver.rules | try map(.help.text) | join("\\n\\n********************\\n\\n")' results.sarif)
         echo "CVE_CRITICAL=$(echo $SCAN_RESULTS | grep -o CRITICAL | wc -l)" >> $GITHUB_ENV
@@ -33,4 +34,5 @@ runs:
     - name: Fails if CVE HIGH or CRITICAL are detected
       id: cve-threshold
       if: env.CVE_HIGH > 0 || env.CVE_CRITICAL > 0
+      shell: bash
       run: exit 1
