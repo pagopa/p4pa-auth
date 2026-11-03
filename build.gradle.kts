@@ -34,6 +34,9 @@ configurations {
     compileClasspath {
         resolutionStrategy.activateDependencyLocking()
     }
+    runtimeClasspath {
+        resolutionStrategy.activateDependencyLocking()
+    }
 }
 
 licenseReport {
