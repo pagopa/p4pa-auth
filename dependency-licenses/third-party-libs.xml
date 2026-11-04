@@ -32,7 +32,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/auth0/jwks-rsa-java'>com.auth0:jwks-rsa</a></td>
-<td>0.24.1</td>
+<td>0.24.2</td>
 <td><a href='https://opensource.org/licenses/mit'>MIT</a></td>
 </tr>
 <tr>
@@ -97,7 +97,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/google/guava/'>com.google.guava:guava</a></td>
-<td>33.6.0-jre</td>
+<td>33.7.2-jre</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -512,7 +512,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/OpenAPITools/jackson-databind-nullable'>org.openapitools:jackson-databind-nullable</a></td>
-<td>0.2.12</td>
+<td>0.2.13</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -532,17 +532,17 @@
 </tr>
 <tr>
 <td>org.springdoc:springdoc-openapi-starter-common</td>
-<td>3.1.1</td>
+<td>3.2.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
 <td>org.springdoc:springdoc-openapi-starter-webmvc-api</td>
-<td>3.1.1</td>
+<td>3.2.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
 <td>org.springdoc:springdoc-openapi-starter-webmvc-ui</td>
-<td>3.1.1</td>
+<td>3.2.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -862,7 +862,7 @@
 </tr>
 <tr>
 <td><a href='https://www.webjars.org'>org.webjars:swagger-ui</a></td>
-<td>5.32.14</td>
+<td>5.34.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -872,7 +872,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/xerial/snappy-java'>org.xerial.snappy:snappy-java</a></td>
-<td>1.1.10.7</td>
+<td>1.1.10.9</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
