@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "47faa630-1944-4b05-99e9-b894cc38f244",
+    "_postman_id": "2791bec8-a90e-442f-82aa-0a836c4cc4e9",
     "name": "p4pa-auth-E2E",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "15747968",
-    "_collection_link": "https://go.postman.co/collection/15747968-47faa630-1944-4b05-99e9-b894cc38f244?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/15747968-2791bec8-a90e-442f-82aa-0a836c4cc4e9?source=collection_link"
   },
   "item": [
     {
@@ -1453,20 +1453,14 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Auth - 04.logout - Responses with 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
                 "type": "text/javascript",
-                "packages": {}
+                "exec": [
+                  "pm.test(\"Auth - 04.logout - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
             "method": "POST",
             "header": [],
             "url": {
