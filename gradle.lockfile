@@ -2,7 +2,7 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 aopalliance:aopalliance:1.0=compileClasspath,runtimeClasspath
-at.yawk.lz4:lz4-java:1.12.1=compileClasspath,runtimeClasspath
+at.yawk.lz4:lz4-java:1.13.0=compileClasspath,runtimeClasspath
 biz.aQute.bnd:biz.aQute.bnd.annotation:7.1.0=compileClasspath
 ch.qos.logback:logback-classic:1.5.38=compileClasspath,runtimeClasspath
 ch.qos.logback:logback-core:1.5.38=compileClasspath,runtimeClasspath
