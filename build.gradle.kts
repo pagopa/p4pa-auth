@@ -66,7 +66,7 @@ val caffeineVersion = "3.3.1"
 val httpClientVersion = "5.6.5"
 val httpCoreVersion = "5.4.4"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.12.1"
+val lz4JavaVersion = "1.13.0"
 val commonsLang3Version = "3.21.0"
 val podamVersion = "8.0.2.RELEASE"
 
