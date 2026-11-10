@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "47faa630-1944-4b05-99e9-b894cc38f244",
+    "_postman_id": "0afbac11-f325-4615-9654-1c35cbf5eefa",
     "name": "p4pa-auth-E2E",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "15747968",
-    "_collection_link": "https://go.postman.co/collection/15747968-47faa630-1944-4b05-99e9-b894cc38f244?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/15747968-0afbac11-f325-4615-9654-1c35cbf5eefa?source=collection_link"
   },
   "item": [
     {
@@ -1453,24 +1453,18 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Auth - 04.logout - Responses with 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
                 "type": "text/javascript",
-                "packages": {}
+                "exec": [
+                  "pm.test(\"Auth - 04.logout - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{p4paAuthBaseUrl}}/oauth/revoke?client_id=piattaforma-unitaria&token={{accessToken}}",
+              "raw": "{{p4paAuthBaseUrl}}/oauth/revoke?client_id=piattaforma-unitaria&revoked_token={{accessToken}}",
               "host": [
                 "{{p4paAuthBaseUrl}}"
               ],
@@ -1484,7 +1478,7 @@
                   "value": "piattaforma-unitaria"
                 },
                 {
-                  "key": "token",
+                  "key": "revoked_token",
                   "value": "{{accessToken}}"
                 }
               ]
@@ -1805,6 +1799,473 @@
           }
         }
       ]
+    },
+    {
+      "name": "05.authn_refreshToken",
+      "item": [
+        {
+          "name": "05.postToken org3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.postToken org3 - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Auth - 05.postToken org3 - Verify response body\", function () {\r\n    let jsonResponse = pm.response.json();\r\n    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r\n    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r\n    pm.expect(jsonResponse).have.property(\"access_token\");\r\n    pm.expect(jsonResponse).have.property(\"refresh_expires_in\");\r\n    pm.expect(jsonResponse).have.property(\"refresh_token\");\r\n\r\n    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r\n    pm.collectionVariables.set(\"refreshToken\", jsonResponse.refresh_token)\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id=piattaforma-unitaria&grant_type=urn:ietf:params:oauth:grant-type:token-exchange&subject_token={{tokenExchange_subjectToken_3}}&subject_issuer={{tokenExchange_issuer}}&scope=openid&subject_token_type=urn:ietf:params:oauth:token-type:jwt",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "token"
+              ],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "piattaforma-unitaria"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "urn:ietf:params:oauth:grant-type:token-exchange"
+                },
+                {
+                  "key": "subject_token",
+                  "value": "{{tokenExchange_subjectToken_3}}"
+                },
+                {
+                  "key": "subject_issuer",
+                  "value": "{{tokenExchange_issuer}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                },
+                {
+                  "key": "subject_token_type",
+                  "value": "urn:ietf:params:oauth:token-type:jwt"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.getUserInfo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.getUserInfo - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Auth - 05.getUserInfo - Verify response body\", function () {\r\n    let jsonResponse = pm.response.json();\r\n\r\n    pm.expect(jsonResponse).have.property(\"_type\").to.eq(\"UserInfo\")\r\n    pm.expect(jsonResponse).have.property(\"userId\")\r\n    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")\r\n    pm.expect(jsonResponse).have.property(\"name\").to.eq(\"demo\")\r\n    pm.expect(jsonResponse).have.property(\"familyName\").to.eq(\"demo\")\r\n    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r\n    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r\n    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r\n    pm.expect(jsonResponse).to.have.property(\"brokerId\").that.is.a(\"number\");\r\n    pm.expect(jsonResponse).to.have.property(\"brokerFiscalCode\").that.is.a(\"string\");\r\n    pm.expect(jsonResponse).to.have.property(\"canManageUsers\").that.is.a(\"boolean\");\r\n    pm.expect(jsonResponse).have.property(\"systemUser\").eq(false);\r\n\r\n    pm.expect(jsonResponse.organizations).to.have.property(\"length\").to.gte(3);\r\n    \r\n    pm.collectionVariables.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r\n    pm.collectionVariables.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r\n    var recognizedOrganizations = 0\r\n    const registeredOrganizations=[\r\n        \"IPA_TEST\",\r\n        \"IPA_TEST_2\",\r\n        \"DEMO\"\r\n    ]\r\n    jsonResponse.organizations.forEach(org => {\r\n        pm.expect(org).have.property(\"operatorId\")\r\n        pm.expect(org).have.property(\"organizationId\").that.is.a(\"number\");\r\n        pm.expect(org).have.property(\"organizationIpaCode\").that.is.a(\"string\");\r\n        pm.expect(org).have.property(\"organizationFiscalCode\").that.is.a(\"string\");\r\n        if(registeredOrganizations.includes(org.organizationIpaCode)){\r\n            pm.expect(org.roles).have.property(\"length\").to.eq(1)\r\n            pm.expect(org).have.property(\"email\")\r\n            pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r\n            recognizedOrganizations++\r\n        }\r\n    });\r\n\r\n    pm.expect(recognizedOrganizations).to.eq(3)\r\n\r\n    const firstOrg = jsonResponse.organizations[0]\r\n\r\n    pm.collectionVariables.set(\"selectedOrganizationId\",firstOrg.organizationId)\r\n    pm.collectionVariables.set(\"selectedOrganizationName\",firstOrg.organizationIpaCode)\r\n\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "userinfo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.logout accessToken",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.logout accessToken - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/revoke?client_id=piattaforma-unitaria&revoked_token={{accessToken}}",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "revoke"
+              ],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "piattaforma-unitaria"
+                },
+                {
+                  "key": "revoked_token",
+                  "value": "{{accessToken}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.getUserInfo NoSession",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.getUserInfo NoSession - Responses with 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "userinfo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.postToken org3 refreshToken",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.postToken org3 refreshToken - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Auth - 05.postToken org3 - Verify response body\", function () {\r\n    let jsonResponse = pm.response.json();\r\n    pm.expect(jsonResponse).have.property(\"token_type\").to.eq(\"bearer\");\r\n    pm.expect(jsonResponse).have.property(\"expires_in\").to.eq(14400);\r\n    pm.expect(jsonResponse).have.property(\"access_token\");\r\n    pm.expect(jsonResponse).have.property(\"refresh_expires_in\");\r\n    pm.expect(jsonResponse).have.property(\"refresh_token\");\r\n\r\n    pm.collectionVariables.set(\"accessToken\", jsonResponse.access_token)\r\n    pm.collectionVariables.set(\"newRefreshToken\", jsonResponse.refresh_token)\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id=piattaforma-unitaria&grant_type=refresh_token&refresh_token={{refreshToken}}&scope=openid",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "token"
+              ],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "piattaforma-unitaria"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refreshToken}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.postToken org3 refreshToken on expired refreshToken",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.postToken org3 refreshToken on expired refreshToken - Responses with 401\", function () {\r\n    pm.response.to.have.status(401);\r\n    \r\n    pm.collectionVariables.set(\"refreshToken\", pm.collectionVariables.get(\"newRefreshToken\"))\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id=piattaforma-unitaria&grant_type=refresh_token&refresh_token={{refreshToken}}&scope=openid",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "token"
+              ],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "piattaforma-unitaria"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refreshToken}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.getUserInfo postRefresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.getUserInfo postRefresh - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Auth - 05.getUserInfo postRefresh - Verify response body\", function () {\r\n    let jsonResponse = pm.response.json();\r\n\r\n    pm.expect(jsonResponse).have.property(\"_type\").to.eq(\"UserInfo\")\r\n    pm.expect(jsonResponse).have.property(\"userId\")\r\n    pm.expect(jsonResponse).have.property(\"mappedExternalUserId\")\r\n    pm.expect(jsonResponse).have.property(\"name\").to.eq(\"demo\")\r\n    pm.expect(jsonResponse).have.property(\"familyName\").to.eq(\"demo\")\r\n    pm.expect(jsonResponse).have.property(\"fiscalCode\").to.eq(\"DMEMPY15L21L736U\")\r\n    pm.expect(jsonResponse).have.property(\"issuer\").to.eq(pm.environment.get(\"tokenExchange_issuer\"))\r\n    pm.expect(jsonResponse).have.property(\"organizationAccess\").to.eq(\"IPA_TEST\")\r\n    pm.expect(jsonResponse).to.have.property(\"brokerId\").that.is.a(\"number\");\r\n    pm.expect(jsonResponse).to.have.property(\"brokerFiscalCode\").that.is.a(\"string\");\r\n    pm.expect(jsonResponse).to.have.property(\"canManageUsers\").that.is.a(\"boolean\");\r\n    pm.expect(jsonResponse).have.property(\"systemUser\").eq(false);\r\n\r\n    pm.expect(jsonResponse.organizations).to.have.property(\"length\").to.gte(3);\r\n    \r\n    pm.collectionVariables.set(\"mappedExternalUserId\",jsonResponse.mappedExternalUserId)\r\n    pm.collectionVariables.set(\"organizationIpaCode\",jsonResponse.organizationAccess)\r\n    var recognizedOrganizations = 0\r\n    const registeredOrganizations=[\r\n        \"IPA_TEST\",\r\n        \"IPA_TEST_2\",\r\n        \"DEMO\"\r\n    ]\r\n    jsonResponse.organizations.forEach(org => {\r\n        pm.expect(org).have.property(\"operatorId\")\r\n        pm.expect(org).have.property(\"organizationId\").that.is.a(\"number\");\r\n        pm.expect(org).have.property(\"organizationIpaCode\").that.is.a(\"string\");\r\n        pm.expect(org).have.property(\"organizationFiscalCode\").that.is.a(\"string\");\r\n        if(registeredOrganizations.includes(org.organizationIpaCode)){\r\n            pm.expect(org.roles).have.property(\"length\").to.eq(1)\r\n            pm.expect(org).have.property(\"email\")\r\n            pm.expect(org.roles[0]).to.eq(\"ROLE_ADMIN\")\r\n            recognizedOrganizations++\r\n        }\r\n    });\r\n\r\n    pm.expect(recognizedOrganizations).to.eq(3)\r\n\r\n    const firstOrg = jsonResponse.organizations[0]\r\n\r\n    pm.collectionVariables.set(\"selectedOrganizationId\",firstOrg.organizationId)\r\n    pm.collectionVariables.set(\"selectedOrganizationName\",firstOrg.organizationIpaCode)\r\n\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "userinfo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.logout refreshToken",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.logout refreshToken - Responses with 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/revoke?client_id=piattaforma-unitaria&revoked_token={{refreshToken}}",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "revoke"
+              ],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "piattaforma-unitaria"
+                },
+                {
+                  "key": "revoked_token",
+                  "value": "{{refreshToken}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.getUserInfo NoSession after refreshToken revoke",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.getUserInfo NoSession after refreshToken revoke - Responses with 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/userinfo",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "userinfo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.postToken org3 refreshToken on revoked refreshToken",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Auth - 05.postToken org3 refreshToken on revoked refreshToken - Responses with 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{p4paAuthBaseUrl}}/oauth/token?client_id=piattaforma-unitaria&grant_type=refresh_token&refresh_token={{refreshToken}}&scope=openid",
+              "host": [
+                "{{p4paAuthBaseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "token"
+              ],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "piattaforma-unitaria"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refreshToken}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
@@ -1868,6 +2329,14 @@
     },
     {
       "key": "selectedOrganizationName",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "newRefreshToken",
       "value": ""
     }
   ]

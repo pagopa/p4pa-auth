@@ -25,7 +25,7 @@ public class AuthExceptionHandler extends CommonExceptionHandler {
         this.auditService = auditService;
     }
 
-    @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class})
+    @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class, InvalidAccessTokenException.class})
     public ResponseEntity<AuthErrorDTO> handleInvalidGrantError(RuntimeException ex, HttpServletRequest request) {
         logAuditFailure(ex, request, "Unauthorized access or invalid token/grant type.");
         return handleException(ex, request, HttpStatus.UNAUTHORIZED, AuthErrorDTO.ErrorEnum.INVALID_GRANT);
