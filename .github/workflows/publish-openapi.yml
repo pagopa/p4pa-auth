@@ -43,11 +43,11 @@ jobs:
           
           OPENAPI_FILE_GENERATED=$DEST_DIR/$REPO_NAME.generated.openapi.json
           OPENAPI_FILE_MANUAL=$DEST_DIR/$REPO_NAME.openapi.yaml
-          OPENAPI_FILE_PUBLIC=$DEST_DIR_PUBLIC/$REPO_NAME.openapi.yaml
+          OPENAPI_FILE_PUBLIC=$DEST_DIR_PUBLIC/$REPO_NAME.openapi.json
 
           cp ../$REPO_NAME/openapi/generated.openapi.json $OPENAPI_FILE_GENERATED
           cp ../$REPO_NAME/openapi/$REPO_NAME.openapi.yaml $OPENAPI_FILE_MANUAL
-          cp ../$REPO_NAME/openapi/$REPO_NAME.openapi.yaml $OPENAPI_FILE_PUBLIC
+          cp ../$REPO_NAME/openapi/generated.openapi.json $OPENAPI_FILE_PUBLIC
 
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "p4pa-pagopa-github-bot"
