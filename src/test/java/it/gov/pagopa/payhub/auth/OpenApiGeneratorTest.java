@@ -27,7 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE, addFilters = false)
 @TestPropertySource(properties = {
-  "logging.level.org.springdoc.core.utils.SpringDocAnnotationsUtils=OFF"
+  "logging.level.org.springdoc.core.utils.SpringDocAnnotationsUtils=OFF",
+
+  "springdoc.pathsToMatch=/payhub/**",
+  "springdoc.pathsToExclude=/payhub/.well-known/**"
 })
 @Slf4j
 class OpenApiGeneratorTest {
@@ -50,7 +53,9 @@ class OpenApiGeneratorTest {
       .andReturn();
 
     String openApiResult = result.getResponse().getContentAsString()
-      .replace("\r", "");
+      .replace("\r", "")
+      .replaceAll("\"http://localhost(?::[0-9]+)?\"", "\"https://\\${hostname}/payhub\"")
+      .replace("\"/payhub/", "\"/");
 
     Assertions.assertTrue(openApiResult.startsWith("{\n  \"openapi\" : \"3."));
 
